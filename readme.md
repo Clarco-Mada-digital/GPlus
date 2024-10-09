@@ -29,7 +29,7 @@ pip install -r requirements.txt
 
 ### Installer TailwindCSS
 ```bash
-python manage.py tailwind init
+python manage.py tailwind install
 ```
 ## Lancer le serveur de développement
 ```bash
