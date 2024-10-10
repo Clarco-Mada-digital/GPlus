@@ -2,5 +2,5 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
-class user(AbstractUser):
-  pass
+class CustomUser(AbstractUser):
+      photo = models.ImageField(upload_to='photos/', blank=True, default="photos/pdp_defaut.png")
