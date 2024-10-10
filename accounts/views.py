@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import CustomUser
@@ -18,7 +19,7 @@ def signIn(request):
             return redirect('signIn')
 
         # Authentifier l'utilisateur avec l'email et le mot de passe
-        user = authenticate(request, email=user.username, password=password)
+        user = authenticate(request, username=user.username, password=password)
         if user is not None:
             login(request, user)
             return redirect('home')  # Rediriger vers la page d'accueil après la connexion
