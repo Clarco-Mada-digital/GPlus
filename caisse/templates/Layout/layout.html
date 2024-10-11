@@ -1,0 +1,115 @@
+{% load tailwind_tags %}
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>G+</title>
+        {% tailwind_css %}
+    </head>
+
+    <body>
+        <div class="flex h-screen bg-gray-50">
+            <!-- Sidebar (hidden on small screens) -->
+            <aside id="sidebar"
+                class="w-64 p-3 bg-white border fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out sm:translate-x-0 sm:relative sm:flex-shrink-0">
+                <button id="sidebarClose"
+                    class="text-gray-500 focus:outline-none sm:hidden">
+                    <svg class="w-6 h-6" fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+
+                <div class="px-6 py-4">
+                    <h1 class="text-2xl font-bold text-blue-600">Cash
+                        Ledger</h1>
+                </div>
+                <nav class="mt-6">
+                    <a href="{% url 'index' %}"
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        <span class="ml-3">Dashboard</span>
+                    </a>
+                    <a href="{% url 'operations' %}"
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/operations/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        <span class="ml-3">Opérations</span>
+                    </a>
+                    <a href="{% url 'listes' %}"
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/listes/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        <span class="ml-3">Listes</span>
+                    </a>
+                    <a href="{% url 'depenses' %}"
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/depenses/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        <span class="ml-3">Dépenses</span>
+                    </a>
+                    <a href="{% url 'acteurs' %}"
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/acteurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        <span class="ml-3">Acteurs</span>
+                    </a>
+
+                </nav>
+            </aside>
+
+            <!-- Main content -->
+            <div class="flex-1 flex flex-col">
+                <!-- Header with button to toggle sidebar -->
+                <header
+                    class="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
+                    <button id="sidebarToggle"
+                        class="text-gray-500 focus:outline-none sm:hidden">
+                        <svg class="w-6 h-6" fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <div class></div>
+                    <div class="flex items-center">
+                        <!-- Button to toggle sidebar -->
+
+                        <!-- Button to close sidebar (visible only on small screens) -->
+
+                        <input
+                            class="w-64 px-4 py-2 ml-4 border border-gray-300 rounded-lg"
+                            type="text"
+                            placeholder="Entrer votre recherche ici">
+                        <img class="w-10 h-10 ml-4 rounded-full"
+                            src="https://randomuser.me/api/portraits/women/50.jpg"
+                            alt="User Photo">
+                    </div>
+                </header>
+
+                <!-- Content -->
+                <main class="p-6">
+                    {% block content %}
+                    <!-- Page content will go here -->
+                    {% endblock %}
+                </main>
+            </div>
+        </div>
+
+        <script>
+    // Toggle the sidebar visibility
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebarClose = document.getElementById('sidebarClose'); // New line
+    const sidebar = document.getElementById('sidebar');
+  
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+    });
+    
+    sidebarClose.addEventListener('click', () => { // New event listener
+      sidebar.classList.add('-translate-x-full');
+    });
+  </script>
+    </body>
+</html>
