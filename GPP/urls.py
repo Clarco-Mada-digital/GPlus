@@ -24,8 +24,6 @@ from caisse.views import index
 
 urlpatterns = [
     path("", include("accounts.urls")),
-    # path("accounts/login/", auth_views.LoginView.as_view()),
-    # path('', index, name='index'),
     path('admin/', admin.site.urls),
     path('caisse/', include("caisse.urls")),
     path("__reload__/", include("django_browser_reload.urls")),
