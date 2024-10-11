@@ -17,14 +17,16 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
+from django.contrib.auth import views as auth_views
 
 from caisse.views import index
 
 
 urlpatterns = [
-    path('', index, name='index'),
+    path("", include("accounts.urls")),
+    # path("accounts/login/", auth_views.LoginView.as_view()),
+    # path('', index, name='index'),
     path('admin/', admin.site.urls),
-    # path('admin/', admin.site.urls),
     path('caisse/', include("caisse.urls")),
     path("__reload__/", include("django_browser_reload.urls")),
 ]
