@@ -79,3 +79,31 @@ Raises:
 def logout_user(request)->None:
   logout(request)
   return redirect("login_user")
+
+
+
+"""
+Affiche le tableau de bord de l'utilisateur.
+
+Cette fonction gère la requête HTTP pour afficher le tableau de bord de l'utilisateur connecté.
+Elle peut inclure des informations personnalisées, des statistiques ou des actions spécifiques à l'utilisateur.
+
+Args:
+    request: L'objet de requête HTTP.
+
+Returns:
+    HttpResponse: Rendu de la page dashboard.html avec le contexte approprié.
+
+Raises:
+    None: Cette fonction ne lève pas explicitement d'exceptions.
+
+Note:
+    Cette vue nécessite que l'utilisateur soit authentifié. Assurez-vous d'ajouter le décorateur @login_required si nécessaire.
+"""
+@login_required(login_url="login_user")
+def dashboard(request):
+  return render(request, "dashboard.html")
+
+@login_required(login_url="login_user")
+def pricing(request):
+  return render(request, "pricing.html")
