@@ -3,5 +3,55 @@
 {% block title %}Ajout des Opérations{% endblock %}
 
 {% block content %}
-<h1 class="text-3xl font-bold">Ajout des Opérations</h1>
+    <div class="container mx-auto bg-white rounded-lg shadow-md p-6">
+
+        <div class="flex justify-end space-x-4 mb-4">
+            <button class="bg-green-200 hover:bg-green-100 text-green-700 font-bold py-2 px-4 rounded">Entrées</button>
+            <button class="bg-white hover:bg-white text-gray-400 font-bold py-2 px-4 rounded">Sorties</button>
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Listes des Opérations</button>
+        </div>
+
+        <div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Date:</label>
+                <input type="date" id="dateInput" class="shadow appearance-none border rounded w-50 py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"> 
+                <script>
+                    // Get the current date in YYYY-MM-DD format
+                    let today = new Date().toISOString().slice(0, 10);
+                
+                    // Set the value of the date input
+                    document.getElementById('dateInput').value = today;
+                </script>
+            </div>
+            <div class="mb-4">
+                <label for="designation" class="block text-gray-700 text-sm font-bold mb-2">Désignation:</label>
+                <input type="text" id="designation" class="shadow appearance-none border rounded w-30 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="mb-4">
+                <label for="categorie" class="block text-gray-700 text-sm font-bold mb-2">Catégorie:</label>
+                <input type="text" id="categorie" class="shadow appearance-none border rounded w-30 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="mb-4">
+                <label for="montant" class="block text-gray-700 text-sm font-bold mb-2">Montant:</label>
+                <input type="number" id="montant" class="shadow appearance-none border rounded w-28 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                </svg>
+                Ajouter une ligne
+            </button>
+        </div>
+
+        <div class="flex justify-end">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enregistrer</button>
+        </div>
+
+    </div>
+
 {% endblock %}
