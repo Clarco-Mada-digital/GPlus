@@ -7,15 +7,28 @@
         <title>G+</title>
         {% tailwind_css %}
     </head>
-    <body>
-        <body class="bg-gray-100 h-screen flex justify-center items-center">
+    <body class="bg-gray-100 h-screen flex justify-center items-center">
 
-            <div class="text-center">
-                <h1 class="text-4xl font-bold">Bienvenue à la page
-                    d'accueil</h1>
-                <a href="{% url 'logout' %}"
-                    class="mt-4 inline-block bg-primary hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Déconnexion</a>
-            </div>
+        <div class="text-center">
+            <h1 class="text-4xl font-bold">Bienvenue à la page d'accueil</h1>
 
-        </body>
-    </html>
+            <!-- Bouton Gestion de Journal de Caisse -->
+            <a href="{% url 'index' %}"  
+                class="mt-4 inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Gestion de Journal de Caisse
+            </a>
+
+            <!-- Bouton Gestion des salariés -->
+            <a href="{% url 'home' %}"  
+                class="mt-4 inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                Gestion des salariés
+            </a> <br>
+
+                        
+            <!-- Bouton de déconnexion -->
+            <a href="{% url 'logout' %}" 
+    class="mt-4 inline-block bg-red hover:bg-rose-600 text-white font-bold py-2 px-4 rounded">Déconnexion</a>
+        </div>
+        
+    </body>
+</html>

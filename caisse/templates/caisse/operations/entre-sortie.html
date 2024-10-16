@@ -1,0 +1,121 @@
+{% extends 'layout/layout.html' %}
+
+{% block title %}Ajout des Opérations{% endblock %}
+
+{% block content %}
+    <div x-data="{ operation: 'entree', lignesEntrees: [{ date: '', designation: '', montant: '', categorie: '' }], lignesSorties: [{ date: '', designation: '', beneficiaire: '', fournisseur: '', quantite: 1, prixUnitaire: '', categorie: '', prixTotal: '' }] }" class="container mx-auto bg-white rounded-lg shadow-md p-6">
+
+        <div class="flex justify-between space-x-4 mb-4">
+            <div></div>
+            <div>
+                <button x-on:click="operation = 'entree'" :class="operation === 'entree' ? 'bg-green-200 hover:bg-green-100 text-green-700 font-bold py-2 px-4 rounded' : 'bg-white text-gray-600 font-bold py-2 px-6 rounded'">Entrées</button>
+                <button x-on:click="operation = 'sortie'" :class="operation === 'sortie' ? 'bg-rose-200 hover:bg-rose-100 text-rose-500 font-bold py-2 px-4 rounded' : 'bg-white text-gray-600 font-bold py-2 px-6 rounded'">Sorties</button>
+            </div>
+            <div>
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Listes des Opérations</button>
+            </div>
+        </div>
+
+        <!-- Section Entrée -->
+        <div x-show="operation === 'entree'">
+            <template x-for="(ligne, index) in lignesEntrees" :key="index">
+                <div class="flex justify-between flex-wrap">
+
+                    <div class="mb-4 flex w-[15%] shadow-sm border-gray-500 border-b-2">
+                        <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Date:</span>
+                        <input type="date" autocomplete="off" x-model="ligne.date" class="dateInput block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                    </div>
+
+                    <div class="mb-4 w-[45%] px-2 shadow-sm border-gray-500 border-b-2">
+                        <input type="text" x-model="ligne.designation" placeholder="Désignation" class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                    </div>
+
+                    <div class="mb-4 w-[25%] shadow-sm border-gray-500 border-b-2">
+                        <input type="number" x-model="ligne.montant" placeholder="Montant" class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                    </div>
+
+                    <div class="mb-4 w-[25%] shadow-sm border-gray-500 border-b-2">
+                        <input type="text" x-model="ligne.categorie" placeholder="Catégorie" class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+            </template>
+
+            <div class="mb-4">
+                <button x-on:click="lignesEntrees.push({ date: '', designation: '', montant: '', categorie: '' })" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                    </svg>
+                    Ajouter une ligne
+                </button>
+            </div>
+
+            <div class="flex justify-end">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enregistrer</button>
+            </div>
+        </div>
+
+        <!-- Section Sortie -->
+        <div x-show="operation === 'sortie'">
+            <template x-for="(ligne, index) in lignesSorties" :key="index">
+                <div class="flex justify-between flex-wrap">
+
+                    <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
+                        <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Date:</span>
+                        <input type="date" x-init="ligne.date = new Date().toISOString().split('T')[0]" x-model="ligne.date" id="datenow" autocomplete="off" class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                    </div>
+
+                    <div class="mb-4 flex w-[47%] shadow-sm border-gray-500 border-b-2">
+                        <input type="text" x-model="ligne.designation" placeholder="Désignation" class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                    </div>
+
+                    <div class="mb-4 flex w-[25%] shadow-sm border-gray-500 border-b-2">
+                        <input type="text" x-model="ligne.beneficiaire" placeholder="Bénéficiaire" class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                    </div>
+
+                    <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
+                        <input type="text" x-model="ligne.fournisseur" placeholder="Fournisseur" class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                    </div>
+
+                    <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
+                        <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Quantité:</span>
+                        <input type="number" x-model="ligne.quantite" min="1" placeholder="Quantité" class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                    </div>
+
+                    <div class="mb-4 flex w-[25%] shadow-sm border-gray-500 border-b-2">
+                        <input type="number" x-model="ligne.prixUnitaire" placeholder="Prix Unitaire" class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                    </div>
+
+                    <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
+                        <input type="text" x-model="ligne.categorie" placeholder="Catégorie" class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                    </div>
+
+                    <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
+                        <input type="number" x-model="ligne.prixTotal" placeholder="Prix Total" class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+            </template>
+
+            <div class="mb-4">
+                <button x-on:click="lignesSorties.push({ date: '', designation: '', beneficiaire: '', fournisseur: '', quantite: 1, prixUnitaire: '', categorie: '', prixTotal: '' })" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                    </svg>
+                    Ajouter une ligne
+                </button>
+            </div>
+
+            <div class="flex justify-end">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enregistrer</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script defer>
+        const dateListes = document.querySelectorAll('.dateInput')
+        console.log(dateListe)
+        let today = new Date().toISOString().slice(0, 10);
+        
+        //document.getElementById('dateInput').value = today;
+    </script>
+{% endblock %}
