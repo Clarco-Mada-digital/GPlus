@@ -1,8 +1,184 @@
-<!-- templates/depenses/index.html -->
 {% extends 'layout/layout.html' %}
 
-{% block title %}Dépenses{% endblock %}
+{% block title %}Détails des Dépenses{% endblock %}
 
 {% block content %}
-<h1 class="text-3xl font-bold">Gestion des Dépenses</h1>
+<div class="container mx-auto px-4 py-8" x-data="{
+    selectedMonth: 'Août 2024',
+    selectedCategory: 'Catégories',
+    employeeExpenses: [
+        { employee: 'Juliana Sosa', amount: 700000, category: 'Matériel', quantity: 3 },
+        { employee: 'Jason Price', amount: 45000, category: 'Matériel', quantity: 1 },
+        { employee: 'Lenora Benson', amount: 8000, category: 'Transport', quantity: 2 }
+    ],
+    categoryExpenses: [
+        { category: 'Transport', amount: 3000, quantity: 1 },
+        { category: 'Matériel', amount: 145000, quantity: 3 },
+        { category: 'Produit ménage', amount: 2000, quantity: 1 }
+    ],
+    monthlyExpenses: [
+        { year: 2021, amount: 10000 },
+        { year: 2022, amount: 25000 },
+        { year: 2023, amount: 20000 },
+        { year: 2024, amount: 30000 },
+        { year: 2025, amount: 40000 },
+        { year: 2026, amount: 35000 },
+        { year: 2027, amount: 50000 }
+    ]
+}">
+    <h1 class="text-3xl font-bold mb-8">Détails des Dépenses</h1>
+
+    <!-- Dépenses par Employés -->
+    <div class="bg-white rounded-lg border mb-8">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h2 class="text-xl font-semibold">Détails des Dépenses par
+                Employés</h2>
+            <select x-model="selectedMonth" class="border rounded px-2 py-1">
+                <option>Août 2024</option>
+                <!-- Ajoutez d'autres options de mois ici -->
+            </select>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="p-2 text-left">Employé</th>
+                        <th class="p-2 text-left">Total des dépenses</th>
+                        <th class="p-2 text-left">Catégorie la plus
+                            dépensée</th>
+                        <th class="p-2 text-left">Nombre total des dépenses</th>
+                        <th class="p-2 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="expense in employeeExpenses"
+                        :key="expense.employee">
+                        <tr class="border-b">
+                            <td class="p-2" x-text="expense.employee"></td>
+                            <td class="p-2"
+                                x-text="expense.amount.toLocaleString() + ' Ar'"></td>
+                            <td class="p-2" x-text="expense.category"></td>
+                            <td class="p-2" x-text="expense.quantity"></td>
+                            <td class="p-2">
+                                <button
+                                    class="text-blue-500 hover:text-blue-700">•••</button>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Dépenses par Catégories -->
+    <div class="bg-white rounded-lg border mb-8">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h2 class="text-xl font-semibold">Détails des Dépenses par
+                Catégories</h2>
+            <select x-model="selectedMonth" class="border rounded px-2 py-1">
+                <option>Août 2024</option>
+                <!-- Ajoutez d'autres options de mois ici -->
+            </select>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="p-2 text-left">Catégorie</th>
+                        <th class="p-2 text-left">Total des dépenses</th>
+                        <th class="p-2 text-left">Nombre total des dépenses</th>
+                        <th class="p-2 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="expense in categoryExpenses"
+                        :key="expense.category">
+                        <tr class="border-b">
+                            <td class="p-2" x-text="expense.category"></td>
+                            <td class="p-2"
+                                x-text="expense.amount.toLocaleString() + ' Ar'"></td>
+                            <td class="p-2" x-text="expense.quantity"></td>
+                            <td class="p-2">
+                                <button
+                                    class="text-blue-500 hover:text-blue-700">•••</button>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Graphique par Catégories -->
+        <div class="bg-white rounded-lg border p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Graphique par</h2>
+                <select x-model="selectedCategory"
+                    class="border rounded px-2 py-1">
+                    <option>Catégories</option>
+                    <!-- Ajoutez d'autres options ici -->
+                </select>
+            </div>
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+        <!-- Graphique Dépenses par année -->
+        <div class="bg-white rounded-lg border p-4">
+            <h2 class="text-xl font-semibold mb-4">Dépenses par année</h2>
+            <canvas id="yearlyExpensesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('alpine:init', () => {
+        // Graphique par Catégories
+        const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+        new Chart(ctxCategory, {
+            type: 'bar',
+            data: {
+                labels: ['Matériel', 'Produit ménagers', 'Transports', 'Communication'],
+                datasets: [{
+                    label: 'Dépenses par Catégorie',
+                    data: [150, 200, 180, 100],
+                    backgroundColor: ['#3B82F6', '#EF4444', '#F59E0B', '#10B981'],
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Graphique Dépenses par année
+        const ctxYearly = document.getElementById('yearlyExpensesChart').getContext('2d');
+        new Chart(ctxYearly, {
+            type: 'line',
+            data: {
+                labels: ['2021', '2022', '2023', '2024', '2025', '2026', '2027'],
+                datasets: [{
+                    label: 'Dépenses par année',
+                    data: [10000, 25000, 20000, 30000, 40000, 35000, 50000],
+                    borderColor: '#3B82F6',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}
