@@ -1,6 +1,7 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from .models import Categorie, Fournisseur, Beneficiaire
 
 # Create your views here.
 @login_required  # Ajout du décorateur pour restreindre l'accès
@@ -22,3 +23,7 @@ def depenses(request):
 @login_required
 def acteurs(request):
     return render(request, "caisse/acteurs/acteurs.html")  # Créez ce fichier HTML
+
+@login_required
+def operation_entree(request):
+    pass
