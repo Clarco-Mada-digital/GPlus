@@ -6,7 +6,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>G+</title>
         {% tailwind_css %}
-        <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js"
+            defer></script>
+        <!-- Ajout du CDN de Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     </head>
 
     <body>
@@ -91,10 +96,12 @@
                 </header>
 
                 <!-- Content -->
-                <main class="p-6">
-                    {% block content %}
-                    <!-- Page content will go here -->
-                    {% endblock %}
+                <main class="p-6 overflow-y-auto h-full">
+                    <div class="max-h-full">
+                        {% block content %}
+                        <!-- Page content will go here -->
+                        {% endblock %}
+                    </div>
                 </main>
             </div>
         </div>
