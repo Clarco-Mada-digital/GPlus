@@ -129,7 +129,7 @@ class OperationSortir(models.Model):
 
 
     def __str__(self):
-        return f"{self.description} - {self.montant} - {self.beneficiaire}"   
+        return f"{self.description} - {self.montant} - {self.beneficiaire} - {self.categorie}"   
 
 # Modèle Caisse
 class Caisse(models.Model):
