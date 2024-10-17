@@ -3,16 +3,31 @@ import re
 from django.forms import ValidationError
 from django.utils import timezone
 from django.db import models
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 
 # Create your models here.
 
 # Modèle Category - Catégorie des transactions
 class Categorie(models.Model):
-    name = models.CharField(max_length=50, unique=True, default= "Mensuel")  # Nom de la catégorie (ex: Salaire, Vente, Fournitures)
-    description = models.TextField(null=True, blank=True)  # Description de la catégorie
+    TYPE_CHOICES = [
+        ('entree', 'Entrée'),
+        ('sortie', 'Sortie'),
+    ]
+    name = models.CharField(max_length=50, unique=True)
+    description = models.TextField(null=True, blank=True)
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='entree')
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.get_type_display()})"
+
+    def to_json(self):
+        return json.dumps({
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'type': self.type
+        }, cls=DjangoJSONEncoder)
 
 # Modèle Personnel
 class Personnel(models.Model):
@@ -59,6 +74,19 @@ class Personnel(models.Model):
     def __str__(self):
         return f"{self.last_name} {self.first_name}"
 
+    def to_json(self):
+        return json.dumps({
+            'id': self.id,
+            'last_name': self.last_name,
+            'first_name': self.first_name,
+            'tel': self.tel,
+            'email': self.email,
+            'sexe': self.sexe,
+            'date_naissance': self.date_naissance.isoformat(),
+            'photo': self.photo.url if self.photo else None,
+            'adresse': self.adresse,
+            'type_personnel': self.type_personnel
+        }, cls=DjangoJSONEncoder)
 
 # Modèle Fournisseur
 class Fournisseur(models.Model):
@@ -68,6 +96,12 @@ class Fournisseur(models.Model):
     def __str__(self):
         return self.name
 
+    def to_json(self):
+        return json.dumps({
+            'id': self.id,
+            'name': self.name,
+            'contact': self.contact
+        }, cls=DjangoJSONEncoder)
 
 # Modèle Beneficiaire
 class Beneficiaire(models.Model):
