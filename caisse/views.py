@@ -1,22 +1,62 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.core.serializers import serialize
+import json
+from .models import Categorie, Personnel, Fournisseur, OperationEntrer
+from .forms import FournisseurForm, PersonnelForm, CategorieForm
 
-# Create your views here.
-@login_required  # Ajout du décorateur pour restreindre l'accès
+# Vues principales
+
+@login_required
 def index(request):
+    """
+    Affiche le tableau de bord principal.
+    """
     return render(request, "caisse/dashboard.html")
 
 @login_required
+def operations(request):
+    """
+    Affiche la page des opérations.
+    """
+    return render(request, "caisse/operations/entre-sortie.html")
+
+@login_required
+def categories(request):
+    """
+    Affiche la liste des catégories.
+    """
+    categories = Categorie.objects.all()
+    categories_json = json.loads(serialize('json', categories))
+    
+    context = {
+        'categories': json.dumps([{**item['fields'], 'id': item['pk']} for item in categories_json]),
+    }
+    return render(request, "caisse/categories/categories.html", context)
+
+@login_required
 def listes(request):
-    return render(request, "caisse/listes/listes_operations.html")  # Créez ce fichier HTML
+    """
+    Affiche la liste des opérations.
+    """
+    return render(request, "caisse/listes/listes_operations.html")
 
 @login_required
 def depenses(request):
-    return render(request, "caisse/depenses/depense.html")  # Créez ce fichier HTML
+    """
+    Affiche la page des dépenses.
+    """
+    return render(request, "caisse/depenses/depense.html")
+
+# Gestion des acteurs
 
 @login_required
 def acteurs(request):
+    """
+    Affiche la page des acteurs (personnels, fournisseurs, catégories).
+    """
     personnels = Personnel.objects.all()
     fournisseurs = Fournisseur.objects.all()
     categories = Categorie.objects.all()
@@ -36,6 +76,9 @@ def acteurs(request):
 
 @login_required
 def ajouter_acteur(request):
+    """
+    Ajoute un nouvel acteur (fournisseur, employé ou catégorie).
+    """
     if request.method == 'POST':
         type_acteur = request.POST.get('type_acteur')
         if type_acteur == 'fournisseurs':
@@ -58,6 +101,9 @@ def ajouter_acteur(request):
 
 @login_required
 def ajouter_fournisseur(request):
+    """
+    Ajoute un nouveau fournisseur.
+    """
     if request.method == 'POST':
         form = FournisseurForm(request.POST)
         if form.is_valid():
@@ -70,6 +116,9 @@ def ajouter_fournisseur(request):
 
 @login_required
 def modifier_acteur(request, type_acteur, pk):
+    """
+    Modifie un acteur existant (fournisseur, personnel ou catégorie).
+    """
     if type_acteur == 'fournisseurs':
         acteur = get_object_or_404(Fournisseur, pk=pk)
         form_class = FournisseurForm
@@ -101,6 +150,9 @@ def modifier_acteur(request, type_acteur, pk):
 
 @login_required
 def supprimer_acteur(request, type_acteur, pk):
+    """
+    Supprime un acteur existant (fournisseur, personnel ou catégorie).
+    """
     if type_acteur == 'fournisseurs':
         acteur = get_object_or_404(Fournisseur, pk=pk)
     elif type_acteur == 'personnels':
@@ -116,8 +168,13 @@ def supprimer_acteur(request, type_acteur, pk):
         messages.success(request, f"{type_acteur[:-1].capitalize()} supprimé avec succès.")
     return redirect('acteurs')
 
+# Gestion des catégories
+
 @login_required
 def ajouter_categorie(request):
+    """
+    Ajoute une nouvelle catégorie.
+    """
     if request.method == 'POST':
         form = CategorieForm(request.POST)
         if form.is_valid():
@@ -128,6 +185,9 @@ def ajouter_categorie(request):
 
 @login_required
 def modifier_categorie(request, pk):
+    """
+    Modifie une catégorie existante.
+    """
     categorie = get_object_or_404(Categorie, pk=pk)
     if request.method == 'POST':
         form = CategorieForm(request.POST, instance=categorie)
@@ -141,20 +201,28 @@ def modifier_categorie(request, pk):
 
 @login_required
 def supprimer_categorie(request, pk):
+    """
+    Supprime une catégorie existante.
+    """
     categorie = get_object_or_404(Categorie, pk=pk)
     if request.method == 'POST':
         categorie.delete()
         messages.success(request, "Catégorie supprimée avec succès.")
     return redirect('acteurs')
 
+# Gestion des opérations
+
 @login_required
 def ajouts_entree(request):
-    categories = Categorie.objects.all()  # Récupérer toutes les catégories
+    """
+    Gère l'ajout d'opérations d'entrée.
+    """
+    categories = Categorie.objects.all()
     
     if request.method == 'POST':
-        if 'date' in request.POST:  # Vérifier si c'est une opération d'entrée
+        if 'date' in request.POST:
             lignes_entrees = []
-            for i in range(len(request.POST.getlist('date'))):  # Itérer sur les lignes d'entrée
+            for i in range(len(request.POST.getlist('date'))):
                 date_operation = request.POST.getlist('date')[i]
                 designation = request.POST.getlist('désignation')[i]
                 montant = request.POST.getlist('montant')[i]
@@ -162,25 +230,19 @@ def ajouts_entree(request):
 
                 try:
                     montant = float(montant)
-                    categorie = Categorie.objects.get(id=categorie_id) # Récupérer l'objet Categorie
+                    categorie = Categorie.objects.get(id=categorie_id)
 
                     operation_entree = OperationEntrer(
                         date_transaction=date_operation,
                         description=designation,
                         montant=montant,
-                        categorie=categorie # Assigner l'objet Categorie
+                        categorie=categorie
                     )
                     operation_entree.save()
-                    lignes_entrees.append(operation_entree)  # Ajouter l'objet à la liste pour un traitement ultérieur si nécessaire
+                    lignes_entrees.append(operation_entree)
                 except (ValueError, Categorie.DoesNotExist):
-                    # Gérer les erreurs de conversion de montant ou si la catégorie n'existe pas
                     return render(request, 'caisse/operations/entre-sortie.html', {'error': 'Données invalides', 'categories': categories})
                 
-            # Rediriger ou afficher un message de succès
             return redirect('listes')
 
-        # Gestion des sorties (à implémenter de manière similaire aux entrées)
-        # ...
-
-
-    return render(request, 'caisse/operations/entre-sortie.html', {'categories': categories})  # Passer les catégories au contexte du template
+    return render(request, 'caisse/operations/entre-sortie.html', {'categories': categories})
