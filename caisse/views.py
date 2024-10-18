@@ -21,7 +21,8 @@ def operations(request):
     """
     Affiche la page des opérations.
     """
-    return render(request, "caisse/operations/entre-sortie.html")
+    categories = Categorie.objects.all()
+    return render(request, "caisse/operations/entre-sortie.html", {'categories': categories})
 
 @login_required
 def categories(request):
@@ -94,7 +95,7 @@ def ajouter_acteur(request):
         if form.is_valid():
             form.save()
             messages.success(request, f"{type_acteur[:-1].capitalize()} ajouté avec succès.")
-            return render(request, 'caisse/acteurs/acteurs.html')
+            return redirect('acteurs')
         else:
             messages.error(request, "Erreur dans le formulaire. Veuillez vérifier les données.")
     return redirect('acteurs')
@@ -109,7 +110,7 @@ def ajouter_fournisseur(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Fournisseur ajouté avec succès.")
-            return render(request, 'caisse/acteurs/acteurs.html')
+            return redirect('acteurs')
         else:
             messages.error(request, "Erreur dans le formulaire. Veuillez vérifier les données.")
     return redirect('acteurs')
