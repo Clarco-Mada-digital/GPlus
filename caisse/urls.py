@@ -27,6 +27,8 @@ urlpatterns = [
     
     # Opérations financières
     path('ajouts-entree/', views.ajouts_entree, name="ajouts_entree"),
+    path('ajouts-sortie/', views.ajouts_sortie, name="ajouts_sortie"),
+    
 
 
 

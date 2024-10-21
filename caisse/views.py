@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.serializers import serialize
 import json
-from .models import Categorie, Personnel, Fournisseur, OperationEntrer
+from .models import Categorie, Personnel, Fournisseur, OperationEntrer, OperationSortir, Beneficiaire
 from .forms import FournisseurForm, PersonnelForm, CategorieForm
 
 # Vues principales
@@ -218,32 +218,101 @@ def ajouts_entree(request):
     """
     Gère l'ajout d'opérations d'entrée.
     """
-    categories = Categorie.objects.all()
+    categories_entree = Categorie.objects.filter(type='entree')
     
+    if request.method == 'POST' and 'post' in request.POST:
+        lignes_entrees = []
+        for i in range(len(request.POST.getlist('post'))):
+            date_operation = request.POST.getlist('date')[i]
+            designation = request.POST.getlist('désignation')[i]
+            montant = request.POST.getlist('montant')[i]
+            categorie_id = request.POST.getlist('categorie')[i]
+    
+            try:
+                montant = float(montant)
+                categorie = Categorie.objects.get(id=categorie_id)
+    
+                operation_entree = OperationEntrer(
+                    date_transaction=date_operation,
+                    description=designation,
+                    montant=montant,
+                    categorie=categorie
+                )
+                operation_entree.save()
+                lignes_entrees.append(operation_entree)
+            except (ValueError, Categorie.DoesNotExist):
+                return render(request, 'caisse/operations/entre-sortie.html', {'error': 'Données invalides', 'categories_entree': categories_entree})
+            
+        return redirect('listes')
+
+    return render(request, 'caisse/operations/entre-sortie.html', {'categories_entree': categories_entree, 'operation': 'entree',})
+
+@login_required
+def ajouts_sortie(request):
+    """
+    Gère l'ajout d'opérations de sortie.
+    """
+    categories_sortie = Categorie.objects.filter(type='sortie') 
+    beneficiaires = Beneficiaire.objects.all()
+    fournisseurs = Fournisseur.objects.all()
+
     if request.method == 'POST':
-        if 'date' in request.POST:
-            lignes_entrees = []
-            for i in range(len(request.POST.getlist('date'))):
-                date_operation = request.POST.getlist('date')[i]
-                designation = request.POST.getlist('désignation')[i]
-                montant = request.POST.getlist('montant')[i]
-                categorie_id = request.POST.getlist('categorie')[i]
+        # Récupérer les données envoyées depuis le formulaire.
+        # Utiliser getlist pour gérer les listes de valeurs.
+        dates = request.POST.getlist('date')
+        designations = request.POST.getlist('designation')
+        beneficiaires_ids = request.POST.getlist('beneficiaire')
+        fournisseurs_ids = request.POST.getlist('fournisseur')
+        quantites = request.POST.getlist('quantite')
+        prix_unitaires = request.POST.getlist('prixUnitaire')
+        categories_ids = request.POST.getlist('categorie')
+        prix_total = request.POST.getlist('prixTotal')
+        for i in range(len(dates)):
+            try:
+                # Conversion explicite en types appropriés
+                date_operation = dates[i]
+                designation = designations[i]
+                beneficiaire_id = int(beneficiaires_ids[i])  # Conversion en entier
+                fournisseur_id = int(fournisseurs_ids[i])  # Conversion en entier
+                quantite = int(quantites[i])
+                prix_unitaire = float(prix_unitaires[i])
+                categorie_id = int(categories_ids[i])      # Conversion en entier
+                prix_total = float(prix_total[i])
 
-                try:
-                    montant = float(montant)
-                    categorie = Categorie.objects.get(id=categorie_id)
 
-                    operation_entree = OperationEntrer(
-                        date_transaction=date_operation,
-                        description=designation,
-                        montant=montant,
-                        categorie=categorie
-                    )
-                    operation_entree.save()
-                    lignes_entrees.append(operation_entree)
-                except (ValueError, Categorie.DoesNotExist):
-                    return render(request, 'caisse/operations/entre-sortie.html', {'error': 'Données invalides', 'categories': categories})
-                
-            return redirect('listes')
+                # Récupérer les objets ForeignKey en utilisant .get() et gérer les exceptions
+                categorie = Categorie.objects.get(pk=categorie_id)
+                beneficiaire = Beneficiaire.objects.get(pk=beneficiaire_id)
+                fournisseur = Fournisseur.objects.get(pk=fournisseur_id)
 
-    return render(request, 'caisse/operations/entre-sortie.html', {'categories': categories})
+                # Calculer le montant total
+                montant_total = quantite * prix_unitaire
+
+                # Créer une nouvelle opération de sortie
+                operation_sortie = OperationSortir(
+                    date_de_sortie=date_operation,
+                    description=designation,
+                    beneficiaire=beneficiaire,
+                    fournisseur=fournisseur,
+                    quantite=quantite,
+                    montant=montant_total, # Utiliser le montant total calculé
+                    categorie=categorie
+                )
+                operation_sortie.save()
+
+            except (ValueError, Categorie.DoesNotExist, Beneficiaire.DoesNotExist, Fournisseur.DoesNotExist) as e:
+                # Gérer les erreurs plus précisément : afficher le type d'erreur et l'index de la ligne problématique
+                return render(request, 'caisse/operations/entre-sortie.html', {
+                    'error': f"Erreur à la ligne {i+1} : {type(e).__name__} - {e}",
+                    'categories_sortie': categories_sortie,
+                    'beneficiaires': beneficiaires,
+                    'fournisseurs': fournisseurs,
+                })
+        return redirect('listes') # Rediriger après un traitement réussi
+
+    return render(request, 'caisse/operations/entre-sortie.html', {
+        'categories_sortie': categories_sortie,
+        'beneficiaires': beneficiaires,
+        'fournisseurs': fournisseurs,
+        'operation': 'sortie',
+    })

@@ -105,35 +105,20 @@ class Fournisseur(models.Model):
 
 # Modèle Beneficiaire
 class Beneficiaire(models.Model):
-#benéficiaire
-    C = 'Cuisine'
-    T = 'Toilette'
-    M = 'Moto'
+    personnel = models.ForeignKey(Personnel, on_delete=models.PROTECT, blank=True, null=True)
+    name = models.CharField(max_length=50, blank=True, null=True, help_text="Nom du bénéficiaire (facultatif, utilisé si personnel n'est pas spécifié)")
 
-    BENE_CHOICES = [
-        (C, 'Cuisine'),
-        (T, 'Toilette'),
-        (M, 'Moto'),
-    ]
-
-    name = models.CharField(max_length=50, choices=BENE_CHOICES, blank=True)
-    personnel = models.ForeignKey(Personnel, on_delete=models.PROTECT, blank=True) #clé étrangère vers Personne
-    
     def __str__(self):
-        # Si un name est défini, le retourner
-        if self.name:
+        if self.personnel:
+            return str(self.personnel)
+        elif self.name:
             return self.name
-        # Si un personnel est défini, formater et retourner son nom complet ou toute autre propriété que tu souhaites
-        elif self.personnel:
-            return str(self.personnel)  # Par exemple, utiliser la méthode __str__ de l'objet Personnel
-        # Si ni name ni personnel n'est défini, retourner une chaîne vide ou autre valeur par défaut
+        else:
+            return "Beneficiaire sans nom ni personnel"
 
-    # Méthode pour définir le nom si non défini lors de la création d'un objet
-    def save(self, *args, **kwargs):
-        # Si name n'est pas défini mais personnel l'est, définir name comme étant une chaîne formatée de personnel
-        if not self.name and self.personnel:
-            self.name = str(self.personnel)
-        super(Beneficiaire, self).save(*args, **kwargs)
+    def clean(self):
+        if not self.personnel and not self.name:
+            raise ValidationError("Au moins l'un des champs 'personnel' ou 'name' doit être rempli.")
 
 # Modèle pour les opérations (entrées et sorties)
 # Modèle pour les entrées
@@ -163,7 +148,7 @@ class OperationSortir(models.Model):
 
 
     def __str__(self):
-        return f"{self.description} - {self.montant} - {self.beneficiaire} - {self.categorie}"   
+        return f"{self.description} - {self.montant} - {self.beneficiaire} - {self.categorie} - {self.fournisseur}"
 
 # Modèle Caisse
 class Caisse(models.Model):
