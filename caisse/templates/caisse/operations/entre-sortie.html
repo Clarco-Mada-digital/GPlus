@@ -51,7 +51,7 @@
                 <div class="mb-4 w-[25%] shadow-sm border-gray-500 border-b-2">
                     <select x-model="ligne.categorie" name="categorie" placeholder="Catégorie" 
                         class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full focus:ring-0">
-                        <option value="" disabled selected>Choisissez une catégorie</option>
+                        <option value="Catégorie" disabled selected>Choisissez une catégorie</option>
                         <!-- Boucle sur les catégories récupérées depuis la vue -->
                         {% for categorie in categories %}
                         <option value="{{ categorie.id }}">{{ categorie.name }}</option>
@@ -83,6 +83,8 @@
     </div>
 </form>
         <!-- Section Sortie -->
+        <form method="POST" action="{% url 'operation' %}" >
+            {% csrf_token %}
         <div x-show="operation === 'sortie'">
             <template x-for="(ligne, index) in lignesSorties" :key="index">
                 <div class="flex justify-between flex-wrap">
@@ -133,9 +135,14 @@
 
                 <div
                     class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
-                    <input type="text" x-model="ligne.categorie"
-                        placeholder="Catégorie"
-                        class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                    <select x-model="ligne.categorie" name="categorie" placeholder="Catégorie" 
+                    class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full focus:ring-0">
+                    <option value="Catégorie" disabled selected>Choisissez une catégorie</option>
+                    <!-- Boucle sur les catégories récupérées depuis la vue -->
+                    {% for categorie in categories %}
+                    <option value="{{ categorie.id }}">{{ categorie.name }}</option>
+                    {% endfor %}
+                </select>
                 </div>
 
                 <div
@@ -166,6 +173,7 @@
             </div>
         </div>
     </div>
+</form>
 
 </div>
 
