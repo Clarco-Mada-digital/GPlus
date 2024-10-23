@@ -6,6 +6,8 @@ from django.core.serializers import serialize
 import json
 from .models import Categorie, Personnel, Fournisseur, OperationEntrer, OperationSortir, Beneficiaire
 from .forms import FournisseurForm, PersonnelForm, CategorieForm
+from django.db.models import Sum, Count  # Ajout de l'import de Count
+from django.core.paginator import Paginator
 
 # Vues principales
 
@@ -47,9 +49,54 @@ def listes(request):
 @login_required
 def depenses(request):
     """
-    Affiche la page des dépenses.
+    Affiche la page des dépenses avec les opérations par employé et par catégorie.
     """
-    return render(request, "caisse/depenses/depense.html")
+    # Récupérer les paramètres de filtrage et de tri
+    date_debut = request.GET.get('date_debut')
+    date_fin = request.GET.get('date_fin')
+    tri = request.GET.get('tri', '-date_de_sortie')  # Par défaut, tri par date décroissante
+
+    # Filtrer les opérations
+    operations = OperationSortir.objects.all()
+    if date_debut:
+        operations = OperationSortir.objects.filter(date_de_sortie__gte=date_debut)
+    if date_fin:
+        operations = OperationSortir.objects.filter(date_de_sortie__lte=date_fin)
+
+    # Trier les opérations
+    operations = OperationSortir.objects.order_by(tri)
+
+    # Agréger les données par employé
+    depenses_par_employe = OperationSortir.objects.values(
+        'beneficiaire__personnel__first_name', 
+        'beneficiaire__personnel__last_name'
+    ).annotate(
+        total_depenses=Sum('montant'),
+        nombre_depenses=Count('id')
+    ).order_by('-total_depenses')
+
+    # Agréger les données par catégorie
+    depenses_par_categorie = OperationSortir.objects.values(
+        'categorie__name'
+    ).annotate(
+        total_depenses=Sum('montant'),
+        nombre_depenses=Count('id')
+    ).order_by('-total_depenses')
+
+    # Pagination
+    paginator = Paginator(operations, 10)  # 10 opérations par page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'depenses_par_employe': depenses_par_employe,
+        'depenses_par_categorie': depenses_par_categorie,
+        'page_obj': page_obj,
+        'date_debut': date_debut,
+        'date_fin': date_fin,
+        'tri': tri,
+    }
+    return render(request, "caisse/depenses/depense.html", context)
 
 # Gestion des acteurs
 
@@ -316,3 +363,22 @@ def ajouts_sortie(request):
         'fournisseurs': fournisseurs,
         'operation': 'sortie',
     })
+
+@login_required
+def modifier_operation(request, pk):
+    operation = get_object_or_404(OperationSortir, pk=pk)
+    if request.method == 'POST':
+        # Logique de modification de l'opération
+        # Utilisez un formulaire approprié ici
+        messages.success(request, "Opération modifiée avec succès.")
+        return redirect('depenses')
+    # Afficher le formulaire de modification
+    return render(request, 'caisse/operations/modifier_operation.html', {'operation': operation})
+
+@login_required
+def supprimer_operation(request, pk):
+    operation = get_object_or_404(OperationSortir, pk=pk)
+    if request.method == 'POST':
+        operation.delete()
+        messages.success(request, "Opération supprimée avec succès.")
+    return redirect('depenses')

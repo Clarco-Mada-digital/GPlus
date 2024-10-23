@@ -3,40 +3,35 @@
 {% block title %}Détails des Dépenses{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8" x-data="{
-    selectedMonth: 'Août 2024',
-    selectedCategory: 'Catégories',
-    employeeExpenses: [
-        { employee: 'Juliana Sosa', amount: 700000, category: 'Matériel', quantity: 3 },
-        { employee: 'Jason Price', amount: 45000, category: 'Matériel', quantity: 1 },
-        { employee: 'Lenora Benson', amount: 8000, category: 'Transport', quantity: 2 }
-    ],
-    categoryExpenses: [
-        { category: 'Transport', amount: 3000, quantity: 1 },
-        { category: 'Matériel', amount: 145000, quantity: 3 },
-        { category: 'Produit ménage', amount: 2000, quantity: 1 }
-    ],
-    monthlyExpenses: [
-        { year: 2021, amount: 10000 },
-        { year: 2022, amount: 25000 },
-        { year: 2023, amount: 20000 },
-        { year: 2024, amount: 30000 },
-        { year: 2025, amount: 40000 },
-        { year: 2026, amount: 35000 },
-        { year: 2027, amount: 50000 }
-    ]
-}">
+<div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-8">Détails des Dépenses</h1>
+    <!-- Formulaire de filtrage et tri -->
+    <form method="get" class="mb-8">
+        <div class="flex space-x-4">
+            <input type="date" name="date_debut" value="{{ date_debut }}"
+                class="border rounded px-2 py-1">
+            <input type="date" name="date_fin" value="{{ date_fin }}"
+                class="border rounded px-2 py-1">
+            <select name="tri" class="border rounded px-2 py-1">
+                <option {% if tri == '-date_de_sortie' %}selected{% endif %}
+                    value="-date_de_sortie">Date (récent)</option>
+                <option {% if tri == 'date_de_sortie' %}selected{% endif %}
+                    value="date_de_sortie">Date (ancien)</option>
+                <option {% if tri == '-montant' %}selected{% endif %}
+                    value="-montant">Montant (décroissant)</option>
+                <option {% if tri == 'montant' %}selected{% endif %}
+                    value="montant">Montant (croissant)</option>
+            </select>
+            <button type="submit"
+                class="bg-blue-500 text-white px-4 py-2 rounded">Filtrer</button>
+        </div>
+    </form>
 
     <!-- Dépenses par Employés -->
     <div class="bg-white rounded-lg border mb-8">
-        <div class="flex justify-between items-center p-4 border-b">
+        <div class="p-4 border-b">
             <h2 class="text-xl font-semibold">Détails des Dépenses par
                 Employés</h2>
-            <select x-model="selectedMonth" class="border rounded px-2 py-1">
-                <option>Août 2024</option>
-                <!-- Ajoutez d'autres options de mois ici -->
-            </select>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full">
@@ -44,27 +39,20 @@
                     <tr class="bg-gray-100">
                         <th class="p-2 text-left">Employé</th>
                         <th class="p-2 text-left">Total des dépenses</th>
-                        <th class="p-2 text-left">Catégorie la plus
-                            dépensée</th>
                         <th class="p-2 text-left">Nombre total des dépenses</th>
-                        <th class="p-2 text-left">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <template x-for="expense in employeeExpenses"
-                        :key="expense.employee">
-                        <tr class="border-b">
-                            <td class="p-2" x-text="expense.employee"></td>
-                            <td class="p-2"
-                                x-text="expense.amount.toLocaleString() + ' Ar'"></td>
-                            <td class="p-2" x-text="expense.category"></td>
-                            <td class="p-2" x-text="expense.quantity"></td>
-                            <td class="p-2">
-                                <button
-                                    class="text-blue-500 hover:text-blue-700">•••</button>
-                            </td>
-                        </tr>
-                    </template>
+                    {% for depense in depenses_par_employe %}
+                    <tr class="border-b">
+                        <td class="p-2">{{
+                            depense.beneficiaire__personnel__first_name }} {{
+                            depense.beneficiaire__personnel__last_name }}</td>
+                        <td class="p-2">{{ depense.total_depenses|floatformat:0
+                            }} Ar</td>
+                        <td class="p-2">{{ depense.nombre_depenses }}</td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -72,13 +60,9 @@
 
     <!-- Dépenses par Catégories -->
     <div class="bg-white rounded-lg border mb-8">
-        <div class="flex justify-between items-center p-4 border-b">
+        <div class="p-4 border-b">
             <h2 class="text-xl font-semibold">Détails des Dépenses par
                 Catégories</h2>
-            <select x-model="selectedMonth" class="border rounded px-2 py-1">
-                <option>Août 2024</option>
-                <!-- Ajoutez d'autres options de mois ici -->
-            </select>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full">
@@ -87,98 +71,83 @@
                         <th class="p-2 text-left">Catégorie</th>
                         <th class="p-2 text-left">Total des dépenses</th>
                         <th class="p-2 text-left">Nombre total des dépenses</th>
-                        <th class="p-2 text-left">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <template x-for="expense in categoryExpenses"
-                        :key="expense.category">
-                        <tr class="border-b">
-                            <td class="p-2" x-text="expense.category"></td>
-                            <td class="p-2"
-                                x-text="expense.amount.toLocaleString() + ' Ar'"></td>
-                            <td class="p-2" x-text="expense.quantity"></td>
-                            <td class="p-2">
-                                <button
-                                    class="text-blue-500 hover:text-blue-700">•••</button>
-                            </td>
-                        </tr>
-                    </template>
+                    {% for depense in depenses_par_categorie %}
+                    <tr class="border-b">
+                        <td class="p-2">{{ depense.categorie__name }}</td>
+                        <td class="p-2">{{ depense.total_depenses|floatformat:0
+                            }} Ar</td>
+                        <td class="p-2">{{ depense.nombre_depenses }}</td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Graphiques -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- Graphique par Catégories -->
-        <div class="bg-white rounded-lg border p-4">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Graphique par</h2>
-                <select x-model="selectedCategory"
-                    class="border rounded px-2 py-1">
-                    <option>Catégories</option>
-                    <!-- Ajoutez d'autres options ici -->
-                </select>
-            </div>
-            <canvas id="categoryChart"></canvas>
+    <!-- Liste détaillée des opérations -->
+    <div class="bg-white rounded-lg border">
+        <div class="p-4 border-b">
+            <h2 class="text-xl font-semibold">Liste des Opérations</h2>
         </div>
-
-        <!-- Graphique Dépenses par année -->
-        <div class="bg-white rounded-lg border p-4">
-            <h2 class="text-xl font-semibold mb-4">Dépenses par année</h2>
-            <canvas id="yearlyExpensesChart"></canvas>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="p-2 text-left">Date</th>
+                        <th class="p-2 text-left">Description</th>
+                        <th class="p-2 text-left">Bénéficiaire</th>
+                        <th class="p-2 text-left">Catégorie</th>
+                        <th class="p-2 text-left">Montant</th>
+                        <th class="p-2 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for operation in page_obj %}
+                    <tr class="border-b">
+                        <td class="p-2">{{ operation.date_de_sortie }}</td>
+                        <td class="p-2">{{ operation.description }}</td>
+                        <td class="p-2">{{ operation.beneficiaire }}</td>
+                        <td class="p-2">{{ operation.categorie.name }}</td>
+                        <td class="p-2">{{ operation.montant|floatformat:0 }}
+                            Ar</td>
+                        <td class="p-2">
+                            <a
+                                href="{% url 'modifier_operation' operation.id %}"
+                                class="text-blue-500 hover:underline">Modifier</a>
+                            <a
+                                href="{% url 'supprimer_operation' operation.id %}"
+                                class="text-red-500 hover:underline ml-2"
+                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette opération ?')">Supprimer</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
+
+    <!-- Pagination -->
+    <div class="mt-4">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; première</a>
+            <a href="?page={{ page_obj.previous_page_number }}">précédente</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages
+                }}.
+            </span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">suivante</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">dernière
+                &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    document.addEventListener('alpine:init', () => {
-        // Graphique par Catégories
-        const ctxCategory = document.getElementById('categoryChart').getContext('2d');
-        new Chart(ctxCategory, {
-            type: 'bar',
-            data: {
-                labels: ['Matériel', 'Produit ménagers', 'Transports', 'Communication'],
-                datasets: [{
-                    label: 'Dépenses par Catégorie',
-                    data: [150, 200, 180, 100],
-                    backgroundColor: ['#3B82F6', '#EF4444', '#F59E0B', '#10B981'],
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        // Graphique Dépenses par année
-        const ctxYearly = document.getElementById('yearlyExpensesChart').getContext('2d');
-        new Chart(ctxYearly, {
-            type: 'line',
-            data: {
-                labels: ['2021', '2022', '2023', '2024', '2025', '2026', '2027'],
-                datasets: [{
-                    label: 'Dépenses par année',
-                    data: [10000, 25000, 20000, 30000, 40000, 35000, 50000],
-                    borderColor: '#3B82F6',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    });
-</script>
 {% endblock %}
