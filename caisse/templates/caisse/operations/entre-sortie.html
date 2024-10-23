@@ -4,7 +4,7 @@
 
 {% block content %}
 <div
-    x-data="{ operation: 'sortie', lignesEntrees: [{ date: '', designation: '', montant: '', categorie: '' }], lignesSorties: [{ date: '', designation: '', beneficiaire: '', fournisseur: '', quantite: 1, prixUnitaire: '', categorie: '', prixTotal: '' }] }"
+    x-data="{ operation: 'entree', lignesEntrees: [{ date: new Date().toISOString().split('T')[0], designation: '', montant: '', categorie: '' }], lignesSorties: [{ date: new Date().toISOString().split('T')[0], designation: '', beneficiaire: '', fournisseur: '', quantite: 1, prixUnitaire: '', categorie: '', prixTotal: '' }] }"
     class="container mx-auto bg-white rounded-lg border p-6">
 
         <div class="flex justify-between space-x-4 mb-4">
@@ -37,7 +37,7 @@
 
                 <div
                     class="mb-4 w-[45%] px-2 shadow-sm border-gray-500 border-b-2">
-                    <input type="text" x-model="ligne.designation" name="désignation"
+                    <input type="text" x-model="ligne.designation" name="designation"
                         placeholder="Désignation"
                         class="block flex-1 focus:ring-0 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6" required>
                 </div>
@@ -49,7 +49,6 @@
                 </div>
 
                 <div class="mb-4 w-[25%] shadow-sm border-gray-500 border-b-2">
-                    {{ categories_entree.count }}
                     <select x-model="ligne.categorie" name="categorie" placeholder="Catégorie" 
                         class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full focus:ring-0">
                         <option value="Catégorie" selected>Choisissez une catégorie</option>
@@ -140,7 +139,6 @@
         
                         <!-- Catégorie -->
                         <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
-                            {{ categories_sortie.count }}
                             <select name="categorie" x-model="ligne.categorie"
                                 class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full">
                                 <option value="" selected>Choisissez une catégorie</option>
@@ -179,12 +177,4 @@
         </form>
 
 </div>
-
-<script defer>
-        const dateListes = document.querySelectorAll('.dateInput')
-        console.log(dateListe)
-        let today = new Date().toISOString().slice(0, 10);
-        
-        //document.getElementById('dateInput').value = today;
-    </script>
 {% endblock %}

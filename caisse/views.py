@@ -24,7 +24,18 @@ def operations(request):
     Affiche la page des opérations.
     """
     categories = Categorie.objects.all()
-    return render(request, "caisse/operations/entre-sortie.html", {'categories': categories})
+    categories_entree = Categorie.objects.filter(type='entree')
+    categories_sortie = Categorie.objects.filter(type='sortie')
+    beneficiaires = Beneficiaire.objects.all()
+    fournisseurs = Fournisseur.objects.all()
+
+    return render(request, "caisse/operations/entre-sortie.html", {
+        'categories': categories,
+        'categories_entree': categories_entree,
+        'categories_sortie': categories_sortie,
+        'beneficiaires': beneficiaires,
+        'fournisseurs': fournisseurs,
+        })
 
 @login_required
 def categories(request):
@@ -267,11 +278,11 @@ def ajouts_entree(request):
     """
     categories_entree = Categorie.objects.filter(type='entree')
     
-    if request.method == 'POST' and 'post' in request.POST:
+    if request.method == 'POST' and 'date' in request.POST:
         lignes_entrees = []
-        for i in range(len(request.POST.getlist('post'))):
+        for i in range(len(request.POST.getlist('date'))):
             date_operation = request.POST.getlist('date')[i]
-            designation = request.POST.getlist('désignation')[i]
+            designation = request.POST.getlist('designation')[i]
             montant = request.POST.getlist('montant')[i]
             categorie_id = request.POST.getlist('categorie')[i]
     
@@ -341,7 +352,7 @@ def ajouts_sortie(request):
                     description=designation,
                     beneficiaire=beneficiaire,
                     fournisseur=fournisseur,
-                    quantite=quantite,
+                    quantité=quantite,
                     montant=montant_total, # Utiliser le montant total calculé
                     categorie=categorie
                 )
