@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.http import HttpResponseRedirect
 from accounts.models import User
 from django.shortcuts import redirect, render
 from django.contrib.auth import logout, authenticate, login
@@ -30,7 +31,7 @@ def signup(request)->None:
     if user := User.objects.filter(email=email).first():
       if auth_user := authenticate(username=user.username, password=password):       
         login(request, auth_user)
-        return redirect("index")
+        return redirect("accounts:index")
       else:
         message="Email ou Mot de passe inccorect"
     else:
@@ -57,7 +58,7 @@ Raises:
     None: Cette fonction ne lève pas explicitement d'exceptions.
 
 """
-@login_required(login_url="login_user")
+@login_required(login_url="accounts:login_user")
 def index(request)->None:
   # auth_user = authenticate()
   return render(request, "index.html")
@@ -100,10 +101,16 @@ Raises:
 Note:
     Cette vue nécessite que l'utilisateur soit authentifié. Assurez-vous d'ajouter le décorateur @login_required si nécessaire.
 """
-@login_required(login_url="login_user")
+@login_required(login_url="accounts:login_user")
 def dashboard(request):
   return render(request, "dashboard.html")
 
-@login_required(login_url="login_user")
+@login_required(login_url="accounts:login_user")
 def pricing(request):
   return render(request, "pricing.html")
+
+
+@login_required(login_url="accounts:login_user")
+def settings(request):
+  return render(request, "settings.html")
+

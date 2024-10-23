@@ -6,6 +6,7 @@
  */
 
 module.exports = {
+  darkMode: "class",
   content: [
     /**
      * HTML. Paths to Django template files that will contain Tailwind CSS classes.
@@ -89,5 +90,6 @@ module.exports = {
     require("@tailwindcss/typography"),
     require("@tailwindcss/aspect-ratio"),
     require("tailwindcss-animate"),
+    require("@tailwindcss/forms"),
   ],
 };

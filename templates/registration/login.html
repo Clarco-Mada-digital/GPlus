@@ -48,7 +48,7 @@
               <div class="flex md:flex-col w-full md:w-40 items-center gap-2 py-6 text-sm text-slate-600">
                 <div class="h-px w-full md:h-full md:w-px bg-slate-400"></div>OR<div class="h-px w-full md:h-full md:w-px bg-slate-400"></div>
               </div>
-              <form action="{% url 'login_user' %}" method="POST" class="w-full my-auto">
+              <form action="{% url 'accounts:login_user' %}" method="POST" class="w-full my-auto">
                 {% csrf_token %}
                 <div class="w-full mx-auto">
                   {% comment %}Alert{% endcomment %}

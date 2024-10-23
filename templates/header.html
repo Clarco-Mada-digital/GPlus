@@ -1,0 +1,58 @@
+<div class="flex justify-between items-center">
+  <h3 class="text-3xl font-extralight text-black dark:text-white/50"> {{ header_title }} </h3>
+  <div class="inline-flex items-center space-x-2">
+  <h3 class="font-extralight text-lg text-black dark:text-white/50 ml-2">Ravi de vous revoir, {{ user.username.capitalize }} </h3> <span class="inline-flex items-center justify-center w-10 h-10 rounded-full cursor-pointer mr-4 overflow-hidden"><img src="https://eu.ui-avatars.com/api/?name={{user.username}}&background=random" alt=""></span>
+    <a href="{% url 'change_theme' %}" id="theme-toggle" class="bg-gray-300 dark:bg-gray-900 text-black dark:text-white/50 p-2 rounded-full hover:text-white smooth-hover">
+      {% if not is_dark_theme %}
+      <svg id="dark-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>
+      {% else %}
+      <svg id="light-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+      {% endif %}
+    </a>
+
+    {% comment %} <script>
+      const themeToggle = document.getElementById('theme-toggle');
+      const darkIcon = document.getElementById('dark-icon');
+      const lightIcon = document.getElementById('light-icon');
+
+      // Fonction pour mettre à jour l'icône
+      function updateIcon(isDark) {
+        if (isDark) {
+          darkIcon.classList.add('hidden');
+          lightIcon.classList.remove('hidden');
+        } else {
+          lightIcon.classList.add('hidden');
+          darkIcon.classList.remove('hidden');
+        }
+      }
+
+      // Vérifier le thème au chargement
+      const currentTheme = localStorage.getItem('theme');
+      if (currentTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+        updateIcon(true);
+      }
+
+      themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        const isDark = document.documentElement.classList.contains('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        updateIcon(isDark);
+      });
+    </script> {% endcomment %}
+    <!-- <a class="bg-gray-900 text-white/50 p-2 rounded-md hover:text-white smooth-hover" href="#">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+      </svg>
+    </a>
+    <a class="bg-gray-900 text-white/50 p-2 rounded-md hover:text-white smooth-hover" href="#">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+      </svg>
+    </a> -->
+  </div>
+</div>

@@ -1,0 +1,388 @@
+{% extends 'base.html' %} {% block contentPage %}
+<div class="flex-1 px-2 sm:px-0">
+  {% comment %} Header Page {% endcomment %} 
+  {% include 'header.html' with header_title="Paramètres" %} 
+
+  <div class="flex items-start w-full h-full overflow-auto py-10">
+    <form>
+      <div class="space-y-12 mx-10">
+        <div class="border-b border-gray-900/10 pb-12">
+          <h2 class="text-base font-semibold leading-7 text-white">Profile</h2>
+          <p class="mt-1 text-sm leading-6 text-gray-600">
+            This information will be displayed publicly so be careful what you
+            share.
+          </p>
+
+          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div class="sm:col-span-4">
+              <label
+                for="username"
+                class="block text-sm font-medium leading-6 text-white"
+                >Nom utilisateur</label
+              >
+              <div class="mt-2">
+                <div
+                  class="flex rounded-xl shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary sm:max-w-md"
+                >
+                  <span
+                    class="flex select-none items-center pl-3 text-gray-500 sm:text-sm"
+                    >G+/</span
+                  >
+                  <input
+                    type="text"
+                    name="username"
+                    id="username"
+                    autocomplete="username"
+                    class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-white placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                    placeholder="janesmith"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="col-span-full">
+              <label
+                for="photo"
+                class="block text-sm font-medium leading-6 text-white"
+                >Photo</label
+              >
+              <div class="mt-2 flex items-center gap-x-3">
+                <svg
+                  class="h-12 w-12 text-gray-300"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                  data-slot="icon"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <button
+                  type="button"
+                  class="rounded-2xl px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-primary"
+                >
+                  Change
+                </button>
+              </div>
+            </div>
+
+            <!-- <div class="col-span-full">
+            <label for="cover-photo" class="block text-sm font-medium leading-6 text-white">Cover photo</label>
+            <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+              <div class="text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
+                  <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
+                </svg>
+                <div class="mt-4 flex text-sm leading-6 text-gray-600">
+                  <label for="file-upload" class="relative cursor-pointer rounded-md font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                    <span>Upload a file</span>
+                    <input id="file-upload" name="file-upload" type="file" class="sr-only">
+                  </label>
+                  <p class="pl-1">or drag and drop</p>
+                </div>
+                <p class="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+              </div>
+            </div>
+          </div> -->
+          </div>
+        </div>
+
+        <div class="border-b border-gray-900/10 pb-12">
+          <h2 class="text-base font-semibold leading-7 text-white">
+            Informations personnelles
+          </h2>
+          <p class="mt-1 text-sm leading-6 text-gray-600">
+            Utilisez une adresse permanente où vous pourrez recevoir du
+            courrier.
+          </p>
+
+          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div class="sm:col-span-3">
+              <label
+                for="first-name"
+                class="block text-sm font-medium leading-6 text-white"
+                >Nom</label
+              >
+              <div class="mt-2">
+                <input
+                  type="text"
+                  name="first-name"
+                  id="first-name"
+                  autocomplete="given-name"
+                  class="block w-full rounded-xl border-0 py-1.5 text-white shadow-sm ring-1 ring-inset bg-transparent ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div class="sm:col-span-3">
+              <label
+                for="last-name"
+                class="block text-sm font-medium leading-6 text-white"
+                >Prénom</label
+              >
+              <div class="mt-2">
+                <input
+                  type="text"
+                  name="last-name"
+                  id="last-name"
+                  autocomplete="family-name"
+                  class="block w-full rounded-xl border-0 py-1.5 text-white shadow-sm ring-1 ring-inset bg-transparent ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div class="sm:col-span-4">
+              <label
+                for="email"
+                class="block text-sm font-medium leading-6 text-white"
+                >Adresse email</label
+              >
+              <div class="mt-2">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  class="block w-full rounded-xl border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 bg-transparent placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div class="sm:col-span-3">
+              <label
+                for="country"
+                class="block text-sm font-medium leading-6 text-white"
+                >Pays</label
+              >
+              <div class="mt-2">
+                <select
+                  id="country"
+                  name="country"
+                  autocomplete="country-name"
+                  class="block w-full rounded-xl border-0 py-1.5 text-primary shadow-sm ring-1 ring-inset ring-gray-300 bg-transparent focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                >
+                  <option>United States</option>
+                  <option>Canada</option>
+                  <option>Mexico</option>
+                  <option>Madagascar</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-span-full">
+              <label
+                for="street-address"
+                class="block text-sm font-medium leading-6 text-white"
+                >Adresse</label
+              >
+              <div class="mt-2">
+                <input
+                  type="text"
+                  name="street-address"
+                  id="street-address"
+                  autocomplete="street-address"
+                  class="block w-full rounded-xl border-0 py-1.5 text-white shadow-sm ring-1 ring-inset bg-transparent ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div class="sm:col-span-2 sm:col-start-1">
+              <label
+                for="city"
+                class="block text-sm font-medium leading-6 text-white"
+                >Ville</label
+              >
+              <div class="mt-2">
+                <input
+                  type="text"
+                  name="city"
+                  id="city"
+                  autocomplete="address-level2"
+                  class="block w-full rounded-xl border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 bg-transparent placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div class="sm:col-span-2">
+              <label
+                for="region"
+                class="block text-sm font-medium leading-6 text-white"
+                >État / Province</label
+              >
+              <div class="mt-2">
+                <input
+                  type="text"
+                  name="region"
+                  id="region"
+                  autocomplete="address-level1"
+                  class="block w-full rounded-xl border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 bg-transparent placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div class="sm:col-span-2">
+              <label
+                for="postal-code"
+                class="block text-sm font-medium leading-6 text-white"
+                >Code postal</label
+              >
+              <div class="mt-2">
+                <input
+                  type="text"
+                  name="postal-code"
+                  id="postal-code"
+                  autocomplete="postal-code"
+                  class="block w-full rounded-xl border-0 py-1.5 text-white shadow-sm ring-1 ring-inset bg-transparent ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-b border-gray-900/10 pb-12">
+          <h2 class="text-base font-semibold leading-7 text-white">
+            Notifications
+          </h2>
+          <p class="mt-1 text-sm leading-6 text-gray-600">
+            Nous vous informerons toujours des changements importants, mais vous
+            choisissez les autres informations que vous souhaitez recevoir.
+          </p>
+          <div class="mt-10 space-y-10">
+            <fieldset>
+              <legend class="text-sm font-semibold leading-6 text-white">
+                Par Email
+              </legend>
+              <div class="mt-6 space-y-6">
+                <div class="relative flex gap-x-3">
+                  <div class="flex h-6 items-center">
+                    <input
+                      id="comments"
+                      name="comments"
+                      type="checkbox"
+                      class="h-4 w-4 rounded-xl border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    />
+                  </div>
+                  <div class="text-sm leading-6">
+                    <label for="comments" class="font-medium text-white"
+                      >Commentaires</label
+                    >
+                    <p class="text-gray-500">
+                      Reçois des messages quand quelqu'un publie un commentaire
+                      sur une publication.
+                    </p>
+                  </div>
+                </div>
+                <div class="relative flex gap-x-3">
+                  <div class="flex h-6 items-center">
+                    <input
+                      id="candidates"
+                      name="candidates"
+                      type="checkbox"
+                      class="h-4 w-4 rounded-xl border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    />
+                  </div>
+                  <div class="text-sm leading-6">
+                    <label for="candidates" class="font-medium text-white"
+                      >Candidats</label
+                    >
+                    <p class="text-gray-500">
+                      Soyez averti lorsqu'un candidat postule pour un emploi.
+                    </p>
+                  </div>
+                </div>
+                <div class="relative flex gap-x-3">
+                  <div class="flex h-6 items-center">
+                    <input
+                      id="offers"
+                      name="offers"
+                      type="checkbox"
+                      class="h-4 w-4 rounded-xl border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    />
+                  </div>
+                  <div class="text-sm leading-6">
+                    <label for="offers" class="font-medium text-white"
+                      >Offres</label
+                    >
+                    <p class="text-gray-500">
+                      Être averti lorsqu'un candidat accepte ou rejette une
+                      offre.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend class="text-sm font-semibold leading-6 text-white">
+                Notifications Push
+              </legend>
+              <p class="mt-1 text-sm leading-6 text-gray-600">
+                Ces notifications sont envoyées par SMS sur votre téléphone
+                portable.
+              </p>
+              <div class="mt-6 space-y-6">
+                <div class="flex items-center gap-x-3">
+                  <input
+                    id="push-everything"
+                    name="push-notifications"
+                    type="radio"
+                    class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                  />
+                  <label
+                    for="push-everything"
+                    class="block text-sm font-medium leading-6 text-white"
+                    >Tout</label
+                  >
+                </div>
+                <div class="flex items-center gap-x-3">
+                  <input
+                    id="push-email"
+                    name="push-notifications"
+                    type="radio"
+                    class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                  />
+                  <label
+                    for="push-email"
+                    class="block text-sm font-medium leading-6 text-white"
+                    >Identique à l'email</label
+                  >
+                </div>
+                <div class="flex items-center gap-x-3">
+                  <input
+                    id="push-nothing"
+                    name="push-notifications"
+                    type="radio"
+                    class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                  />
+                  <label
+                    for="push-nothing"
+                    class="block text-sm font-medium leading-6 text-white"
+                    >Aucune notification push</label
+                  >
+                </div>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex items-center justify-end gap-x-6">
+        <button
+          type="button"
+          class="text-sm font-semibold leading-6 text-white"
+        >
+          Annuler
+        </button>
+        <button
+          type="submit"
+          class="rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
+        >
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

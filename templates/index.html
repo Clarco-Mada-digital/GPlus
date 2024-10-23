@@ -3,23 +3,10 @@
 {% block contentPage %}    
   <!-- Content -->
   <div class="flex-1 px-2 sm:px-0">
-    <div class="flex justify-between items-center">
-      <h3 class="text-3xl font-extralight text-white/50">Applications</h3>
-      <div class="inline-flex items-center space-x-2">
-      <h3 class="font-extralight text-white/50 mx-2">Ravi de vous revoir, {{ user.username.capitalize }}</h3>
-        <a class="bg-gray-900 text-white/50 p-2 rounded-md hover:text-white smooth-hover" href="#">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-          </svg>
-        </a>
-        <a class="bg-gray-900 text-white/50 p-2 rounded-md hover:text-white smooth-hover" href="#">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-          </svg>
-        </a>
-      </div>
-    </div>
-    <div class="mb-10 sm:mb-0 mt-10 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    {% comment %} Header Page {% endcomment %}
+    {% include 'header.html' with header_title="Applications" %} 
+
+    <div class="mb-10 h-full overflow-auto sm:mb-0 mt-10 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {% comment %} <div class="group bg-gray-900/30 py-20 px-4 flex flex-col space-y-2 items-center cursor-pointer rounded-md hover:bg-gray-900/40 hover:smooth-hover">
         <a class="bg-gray-900/70 text-white/50 group-hover:text-white group-hover:smooth-hover flex w-20 h-20 rounded-full items-center justify-center" href="#">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -28,52 +15,33 @@
         </a>
         <a class="text-white/50 group-hover:text-white group-hover:smooth-hover text-center" href="#">Create group</a>
       </div> {% endcomment %}
-      <a href="{% url 'pricing_page' %}">
-      <div class="relative group bg-gray-900 py-10 sm:py-20 px-4 flex flex-col space-y-2 items-center cursor-pointer rounded-md hover:bg-gray-900/80 hover:smooth-hover">
-        <img class="w-20 h-20 object-cover object-center rounded-full" src="https://images.unsplash.com/photo-1549732565-d673b928da7f?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="cuisine" />
-        <h4 class="text-white text-2xl font-bold capitalize text-center">Personelle</h4>
-        <p class="text-white/50">55 Personnes</p>
-        <p class="absolute top-2 text-white/20 inline-flex items-center text-xs">22 Notification <span class="ml-2 w-2 h-2 block bg-green-500 rounded-full group-hover:animate-pulse"></span></p>
-      </div>
+      
+      <a href="{% url 'accounts:pricing_page' %}">
+      {% include 'components/Card.html' with title="Personelle" description="55 Personnes" notification_msg="22 Notification" image="https://images.unsplash.com/photo-1549732565-d673b928da7f?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" %}
       </a>
-      <a href="{% url 'pricing_page' %}">
-      <div class="relative group bg-gray-900 py-10 sm:py-20 px-4 flex flex-col space-y-2 items-center cursor-pointer rounded-md hover:bg-gray-900/80 hover:smooth-hover">
-        <img class="w-20 h-20 object-cover object-center rounded-full" src="https://images.unsplash.com/photo-1459257831348-f0cdd359235f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="art" />
-        <h4 class="text-white text-2xl font-bold capitalize text-center">Caisse</h4>
-        <p class="text-white/50">2 members</p>
-        <p class="absolute top-2 text-white/20 inline-flex items-center text-xs">4 Notification <span class="ml-2 w-2 h-2 block bg-green-500 rounded-full group-hover:animate-pulse"></span></p>
-      </div>
+
+      <a href="{% url 'accounts:pricing_page' %}">
+      {% include 'components/Card.html' with title="Caisse" description="2 members" notification_msg="4 Notification" image="https://images.unsplash.com/photo-1459257831348-f0cdd359235f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" %}
       </a>
-      <a href="{% url 'pricing_page' %}">
-      <div class="relative group bg-gray-900 py-10 sm:py-20 px-4 flex flex-col space-y-2 items-center cursor-pointer rounded-md hover:bg-gray-900/80 hover:smooth-hover">
-        <img class="w-20 h-20 object-cover object-center rounded-full" src="https://plus.unsplash.com/premium_photo-1677094310899-02303289cadf?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="gaming" />
-        <h4 class="text-white text-2xl font-bold capitalize text-center">MADA AI</h4>
-        <p class="text-white/50">207 members</p>
-        <p class="absolute top-2 text-white/20 inline-flex items-center text-xs">0 Notification <span class="ml-2 w-2 h-2 block bg-red-400 rounded-full group-hover:animate-pulse"></span></p>
-      </div>
+
+      <a href="{% url 'accounts:pricing_page' %}">
+      {% include 'components/Card.html' with title="MADA AI" description="207 members" notification_msg="0 Notification" image="https://plus.unsplash.com/premium_photo-1677094310899-02303289cadf?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" %}
       </a>
-      <a href="{% url 'pricing_page' %}">
-      <div class="relative group bg-gray-900 py-10 sm:py-20 px-4 flex flex-col space-y-2 items-center cursor-pointer rounded-md hover:bg-gray-900/80 hover:smooth-hover">
-        <img class="w-20 h-20 object-cover object-center rounded-full" src="https://plus.unsplash.com/premium_photo-1661290256778-3b821d52c514?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="cinema" />
-        <h4 class="text-white text-2xl font-bold capitalize text-center">Projets</h4>
-        <p class="text-white/50">105 projets en cours</p>
-        <p class="absolute top-2 text-white/20 inline-flex items-center text-xs">12 Notification <span class="ml-2 w-2 h-2 block bg-green-500 rounded-full group-hover:animate-pulse"></span></p>
-      </div> 
+
+      <a href="{% url 'accounts:pricing_page' %}">
+      {% include 'components/Card.html' with title="Projets" description="105 Projets en cours" notification_msg="12 Notification" image="https://plus.unsplash.com/premium_photo-1661290256778-3b821d52c514?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" %}
       </a>
+
+      <a href="{% url 'accounts:pricing_page' %}">
+      {% include 'components/Card.html' with title="Code" description="83 membres" notification_msg="43 Notification" image="https://images.unsplash.com/photo-1542831371-29b0f74f9713?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80" %}
+      </a>
+
       {% comment %} <div class="relative group bg-gray-900 py-10 sm:py-20 px-4 flex flex-col space-y-2 items-center cursor-pointer rounded-md hover:bg-gray-900/80 hover:smooth-hover">
         <img class="w-20 h-20 object-cover object-center rounded-full" src="https://images.unsplash.com/photo-1484704849700-f032a568e944?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80" alt="song" />
         <h4 class="text-white text-2xl font-bold capitalize text-center">Song</h4>
         <p class="text-white/50">67 members</p>
         <p class="absolute top-2 text-white/20 inline-flex items-center text-xs">3 Notification <span class="ml-2 w-2 h-2 block bg-green-500 rounded-full group-hover:animate-pulse"></span></p>
-      </div> {% endcomment %}
-      <a href="{% url 'pricing_page' %}">
-      <div class="relative group bg-gray-900 py-10 sm:py-20 px-4 flex flex-col space-y-2 items-center cursor-pointer rounded-md hover:bg-gray-900/80 hover:smooth-hover">
-        <img class="w-20 h-20 object-cover object-center rounded-full" src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80" alt="code" />
-        <h4 class="text-white text-2xl font-bold capitalize text-center">Code</h4>
-        <p class="text-white/50">83 members</p>
-        <p class="absolute top-2 text-white/20 inline-flex items-center text-xs">43 Notification <span class="ml-2 w-2 h-2 block bg-green-500 rounded-full group-hover:animate-pulse"></span></p>
-      </div>
-      </a>
+      </div> {% endcomment %}      
       {% comment %} <div class="relative group bg-gray-900 py-10 sm:py-20 px-4 flex flex-col space-y-2 items-center cursor-pointer rounded-md hover:bg-gray-900/80 hover:smooth-hover">
         <img class="w-20 h-20 object-cover object-center rounded-full" src="https://images.unsplash.com/photo-1533147670608-2a2f9775d3a4?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80" alt="dancing" />
         <h4 class="text-white text-2xl font-bold capitalize text-center">Dancing</h4>
@@ -81,6 +49,5 @@
         <p class="absolute top-2 text-white/20 inline-flex items-center text-xs">86 Notification <span class="ml-2 w-2 h-2 block bg-green-500 rounded-full group-hover:animate-pulse"></span></p>
       </div> {% endcomment %}
     </div>
-  </div>
- 
+  </div> 
 {% endblock contentPage %}

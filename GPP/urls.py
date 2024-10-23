@@ -19,12 +19,14 @@ from django.contrib import admin
 from django.urls import include, path
 from django.contrib.auth import views as auth_views
 
+from theme.views import change_theme
 from caisse.views import index
 
 
 urlpatterns = [
-    path("", include("accounts.urls")),
+    path("", include("accounts.urls", namespace='accounts')),
     path('admin/', admin.site.urls),
+    path('switch-theme/', change_theme, name='change_theme'),
     path('caisse/', include("caisse.urls")),
     path("__reload__/", include("django_browser_reload.urls")),
 ]
