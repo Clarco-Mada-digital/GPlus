@@ -32,5 +32,4 @@ urlpatterns = [
 
 
 
-    path('operations/', views.operations, name="operations"),  # Nouvelle URL
 ]
