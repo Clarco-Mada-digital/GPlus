@@ -29,8 +29,8 @@ urlpatterns = [
     path('ajouts-entree/', views.ajouts_entree, name="ajouts_entree"),
     path('ajouts-sortie/', views.ajouts_sortie, name="ajouts_sortie"),
     
-
-
+    path('operations/modifier/<int:pk>/', views.modifier_operation, name="modifier_operation"),
+    path('operations/supprimer/<int:pk>/', views.supprimer_operation, name="supprimer_operation"),
 
     path('operations/', views.operations, name="operations"),  # Nouvelle URL
 ]

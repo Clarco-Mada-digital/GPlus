@@ -3,11 +3,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.serializers import serialize
+from django.db import models  # Ajoutez cette ligne
 import json
 from .models import Categorie, Personnel, Fournisseur, OperationEntrer, OperationSortir, Beneficiaire
 from .forms import FournisseurForm, PersonnelForm, CategorieForm
-from django.db.models import Sum, Count  # Ajout de l'import de Count
+from django.db.models import Sum, Count
 from django.core.paginator import Paginator
+from django.db.models.functions import TruncYear
 
 # Vues principales
 
@@ -62,50 +64,47 @@ def depenses(request):
     """
     Affiche la page des dépenses avec les opérations par employé et par catégorie.
     """
-    # Récupérer les paramètres de filtrage et de tri
+    # Filtrage par date
     date_debut = request.GET.get('date_debut')
     date_fin = request.GET.get('date_fin')
-    tri = request.GET.get('tri', '-date_de_sortie')  # Par défaut, tri par date décroissante
+    mois_selectionne = request.GET.get('mois', 'Août 2024')  # Valeur par défaut
 
-    # Filtrer les opérations
     operations = OperationSortir.objects.all()
     if date_debut:
-        operations = OperationSortir.objects.filter(date_de_sortie__gte=date_debut)
+        operations = operations.filter(date_de_sortie__gte=date_debut)
     if date_fin:
-        operations = OperationSortir.objects.filter(date_de_sortie__lte=date_fin)
+        operations = operations.filter(date_de_sortie__lte=date_fin)
 
-    # Trier les opérations
-    operations = OperationSortir.objects.order_by(tri)
-
-    # Agréger les données par employé
-    depenses_par_employe = OperationSortir.objects.values(
+    # Dépenses par employé
+    depenses_par_employe = operations.values(
         'beneficiaire__personnel__first_name', 
         'beneficiaire__personnel__last_name'
     ).annotate(
         total_depenses=Sum('montant'),
-        nombre_depenses=Count('id')
+        nombre_depenses=Count('id'),
+        categorie_plus_depensee=models.F('categorie__name')
     ).order_by('-total_depenses')
 
-    # Agréger les données par catégorie
-    depenses_par_categorie = OperationSortir.objects.values(
+    # Dépenses par catégorie
+    depenses_par_categorie = operations.values(
         'categorie__name'
     ).annotate(
         total_depenses=Sum('montant'),
         nombre_depenses=Count('id')
     ).order_by('-total_depenses')
 
-    # Pagination
-    paginator = Paginator(operations, 10)  # 10 opérations par page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    # Dépenses par année
+    depenses_par_annee = operations.annotate(
+        year=TruncYear('date_de_sortie')
+    ).values('year').annotate(
+        total_depenses=Sum('montant')
+    ).order_by('year')
 
     context = {
         'depenses_par_employe': depenses_par_employe,
         'depenses_par_categorie': depenses_par_categorie,
-        'page_obj': page_obj,
-        'date_debut': date_debut,
-        'date_fin': date_fin,
-        'tri': tri,
+        'depenses_par_annee': depenses_par_annee,
+        'mois_selectionne': mois_selectionne,
     }
     return render(request, "caisse/depenses/depense.html", context)
 
@@ -393,3 +392,4 @@ def supprimer_operation(request, pk):
         operation.delete()
         messages.success(request, "Opération supprimée avec succès.")
     return redirect('depenses')
+
