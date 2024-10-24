@@ -8,7 +8,6 @@
     <h1 class="text-3xl font-bold mb-8">Détails des Dépenses</h1>
 
     <!-- Dépenses par Employés -->
-
     <div class="bg-white rounded-lg border p-4 mb-8">
         <div class="flex justify-between items-center p-4 border-b">
             <h2 class="text-xl font-semibold">Détails des Dépenses par
@@ -33,17 +32,17 @@
                 <tbody>
                     {% for depense in depenses_par_employe %}
                     <tr class="border-b">
-                        <td class="p-2">
-                            {{depense.beneficiaire__personnel__first_name}}
-                        </td>
-                        <td class="p-2">{{ depense.total_depenses }} Ar</td>
-                        <td class="p-2">
-                            {{ depense.categorie_plus_depensee }}
-                        </td>
+                        <td class="p-2">{{
+                            depense.beneficiaire__personnel__first_name }} {{
+                            depense.beneficiaire__personnel__last_name }}</td>
+                        <td class="p-2">{{ depense.total_depenses
+                            }} Ar</td>
+                        <td class="p-2">{{ depense.categorie_plus_depensee
+                            }}</td>
                         <td class="p-2">{{ depense.nombre_depenses }}</td>
                         <td class="p-2">
                             <button
-                                class="text-primary hover:text-primary">•••</button>
+                                class="text-blue-500 hover:text-blue-700">•••</button>
                         </td>
                     </tr>
                     {% endfor %}
@@ -63,7 +62,6 @@
             </select>
         </div>
         <div class="overflow-x-auto">
-
             <table class="w-full">
                 <thead>
                     <tr>
@@ -75,14 +73,13 @@
                 </thead>
                 <tbody>
                     {% for depense in depenses_par_categorie %}
-
                     <tr class="border-b">
                         <td class="p-2">{{ depense.categorie__name }}</td>
                         <td class="p-2">{{ depense.total_depenses }} Ar</td>
                         <td class="p-2">{{ depense.nombre_depenses }}</td>
                         <td class="p-2">
                             <button
-                                class="text-primary hover:text-primary">•••</button>
+                                class="text-blue-500 hover:text-blue-700">•••</button>
                         </td>
                     </tr>
                     {% endfor %}

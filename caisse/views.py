@@ -10,6 +10,7 @@ from .forms import FournisseurForm, PersonnelForm, CategorieForm
 from django.db.models import Sum, Count
 from django.core.paginator import Paginator
 from django.db.models.functions import TruncYear
+from django.db.models import Q
 
 # Vues principales
 
@@ -54,10 +55,111 @@ def categories(request):
 
 @login_required
 def listes(request):
-    """
-    Affiche la liste des opérations.
-    """
-    return render(request, "caisse/listes/listes_operations.html")
+    """Affiche la liste des opérations."""
+
+    entree = OperationEntrer.objects.all()
+    sortie = OperationSortir.objects.all()
+    categories = Categorie.objects.all()
+    beneficiaires = Beneficiaire.objects.all()
+    fournisseurs = Fournisseur.objects.all()
+    sort_by = request.GET.get('sort', 'date')
+
+    # Dictionnaire pour stocker les filtres
+    filters = {}
+
+    # Gestion des filtres (simplifiée et plus robuste)
+    for field in ['categorie', 'beneficiaire', 'fournisseur', 'sort']:
+        value = request.GET.get(field)
+        if value:
+            filters[field] = value
+
+    for field in ['montant_min', 'montant_max', 'quantite_min', 'quantite_max']:
+        value = request.GET.get(field)
+        if value:
+            try:
+                filters[field] = float(value)  # Conversion en nombre
+            except ValueError:
+                # Gérer l'erreur, par exemple afficher un message à l'utilisateur
+                # ou simplement ignorer la valeur invalide.
+                pass
+
+    for field in ['date_min', 'date_max']:
+         value = request.GET.get(field)
+         if value:
+             filters[field] = value
+
+
+    query = request.GET.get('q')
+    if query:
+       filters['query'] = query
+
+
+    # Application des filtres
+    if filters:
+        if 'query' in filters:
+            entree = entree.filter(
+                Q(description__icontains=filters['query']) |
+                Q(categorie__name__icontains=filters['query']) |
+                Q(montant__icontains=filters['query']) |
+                Q(date__icontains=filters['query'])
+            )
+            sortie = sortie.filter(
+                Q(description__icontains=filters['query']) |
+                Q(categorie__name__icontains=filters['query']) |
+                Q(montant__icontains=filters['query']) |
+                Q(date__icontains=filters['query'])
+            )
+
+        if 'categorie' in filters:
+            entree = entree.filter(categorie_id=filters['categorie'])
+            sortie = sortie.filter(categorie_id=filters['categorie'])
+
+        if 'beneficiaire' in filters:
+            sortie = sortie.filter(beneficiaire_id=filters['beneficiaire'])
+
+        if 'fournisseur' in filters:
+            sortie = sortie.filter(fournisseur_id=filters['fournisseur'])
+        
+        if 'montant_min' in filters:
+             entree = entree.filter(montant__gte=filters['montant_min'])
+             sortie = sortie.filter(montant__gte=filters['montant_min'])
+
+        if 'montant_max' in filters:
+             entree = entree.filter(montant__lte=filters['montant_max'])
+             sortie = sortie.filter(montant__lte=filters['montant_max'])
+
+        if 'quantite_min' in filters:
+             sortie = sortie.filter(quantité__gte=filters['quantite_min'])
+        if 'quantite_max' in filters:
+             sortie = sortie.filter(quantité__lte=filters['quantite_max'])
+
+
+        if 'date_min' in filters:
+             entree = entree.filter(date__gte=filters['date_min'])
+             sortie = sortie.filter(date__gte=filters['date_min'])
+
+        if 'date_max' in filters:
+             entree = entree.filter(date__lte=filters['date_max'])
+             sortie = sortie.filter(date__lte=filters['date_max'])
+        
+
+    # Tri
+    entree = entree.order_by(sort_by)
+    sortie = sortie.order_by(sort_by)
+    print(entree)
+    print(sortie)
+
+    context = {
+        'entree': entree,
+        'sortie': sortie,
+        'categories': categories,
+        'beneficiaires': beneficiaires,
+        'fournisseurs': fournisseurs,
+        'prix': "Ar",  # Vous pouvez gérer 'Ar' dans le template
+        'sort_by': sort_by,
+    }
+
+    return render(request, "caisse/listes/listes_operations.html", context)
 
 @login_required
 def depenses(request):
