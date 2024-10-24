@@ -55,8 +55,10 @@ def categories(request):
 
 @login_required
 def listes(request):
-    """Affiche la liste des opérations."""
-
+    """
+    Affiche la liste des opérations.
+    """
+    
     entree = OperationEntrer.objects.all()
     sortie = OperationSortir.objects.all()
     categories = Categorie.objects.all()
