@@ -58,7 +58,7 @@ def listes(request):
     """Affiche la liste des opérations."""
 
     entree = OperationEntrer.objects.all()
-    sortie = OperationSortir.objects.all()
+    sortie = OperationSortir.objects.select_related('beneficiaire', 'fournisseur', 'categorie').all()
     categories = Categorie.objects.all()
     beneficiaires = Beneficiaire.objects.all()
     fournisseurs = Fournisseur.objects.all()
@@ -142,6 +142,9 @@ def listes(request):
              entree = entree.filter(date__lte=filters['date_max'])
              sortie = sortie.filter(date__lte=filters['date_max'])
         
+
+    # Filtrer les opérations de sortie qui ont des bénéficiaires valides
+    sortie = sortie.filter(Q(beneficiaire__isnull=False) | Q(beneficiaire__personnel__isnull=False) | Q(beneficiaire__name__isnull=False))
 
     # Tri
     entree = entree.order_by(sort_by)
@@ -367,7 +370,7 @@ def supprimer_categorie(request, pk):
     categorie = get_object_or_404(Categorie, pk=pk)
     if request.method == 'POST':
         categorie.delete()
-        messages.success(request, "Catégorie supprimée avec succès.")
+        messages.success(request, "Cat��gorie supprimée avec succès.")
     return redirect('acteurs')
 
 # Gestion des opérations
