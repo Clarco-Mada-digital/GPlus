@@ -86,14 +86,14 @@ def listes(request):
                 pass
 
     for field in ['date_min', 'date_max']:
-         value = request.GET.get(field)
-         if value:
-             filters[field] = value
+        value = request.GET.get(field)
+        if value:
+            filters[field] = value
 
 
     query = request.GET.get('q')
     if query:
-       filters['query'] = query
+        filters['query'] = query
 
 
     # Application des filtres
@@ -123,26 +123,26 @@ def listes(request):
             sortie = sortie.filter(fournisseur_id=filters['fournisseur'])
         
         if 'montant_min' in filters:
-             entree = entree.filter(montant__gte=filters['montant_min'])
-             sortie = sortie.filter(montant__gte=filters['montant_min'])
+            entree = entree.filter(montant__gte=filters['montant_min'])
+            sortie = sortie.filter(montant__gte=filters['montant_min'])
 
         if 'montant_max' in filters:
-             entree = entree.filter(montant__lte=filters['montant_max'])
-             sortie = sortie.filter(montant__lte=filters['montant_max'])
+            entree = entree.filter(montant__lte=filters['montant_max'])
+            sortie = sortie.filter(montant__lte=filters['montant_max'])
 
         if 'quantite_min' in filters:
-             sortie = sortie.filter(quantité__gte=filters['quantite_min'])
+            sortie = sortie.filter(quantité__gte=filters['quantite_min'])
         if 'quantite_max' in filters:
-             sortie = sortie.filter(quantité__lte=filters['quantite_max'])
+            sortie = sortie.filter(quantité__lte=filters['quantite_max'])
 
 
         if 'date_min' in filters:
-             entree = entree.filter(date__gte=filters['date_min'])
-             sortie = sortie.filter(date__gte=filters['date_min'])
+            entree = entree.filter(date__gte=filters['date_min'])
+            sortie = sortie.filter(date__gte=filters['date_min'])
 
         if 'date_max' in filters:
-             entree = entree.filter(date__lte=filters['date_max'])
-             sortie = sortie.filter(date__lte=filters['date_max'])
+            entree = entree.filter(date__lte=filters['date_max'])
+            sortie = sortie.filter(date__lte=filters['date_max'])
         
 
     # Tri
