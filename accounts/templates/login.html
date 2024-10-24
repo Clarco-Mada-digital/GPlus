@@ -1,0 +1,51 @@
+{% extends "base_log_employee.html" %}
+
+{% block title %} Se connecter {% endblock %}
+
+{% block body %}  
+<div class="flex items-center justify-center gap-2">
+    <img src="/static/images/Employee/logo.png" class="w-14" alt="logo image">
+    <h1 class="text-2xl font-bold text-center">G plus</h1>
+</div>
+
+
+<div class="flex flex-col space-y-1">
+    <p class=" text-2xl font-bold">
+        Bonjour 👋 
+    </p>
+    <p class="text-xs text-gray-400 ">
+        Connectez-vous ici.
+    </p>
+
+</div> 
+
+<form action="{% url 'signIn' %}" method="POST"> 
+    {% csrf_token %}
+
+    <div class="relative z-0 w-full mb-4 group">
+        <input type="email" id="email" name="email" required
+            class="text-sm p-4 h-12 mt-2 block w-full px-3 py-2 bg-transparent border border-indigo-500 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm peer" placeholder="" />
+       <label for="email" class="absolute text-sm ml-2 text-cp_primary duration-300 transform -translate-y-6 scale-75 top-5 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Adresse email</label>
+    </div>
+
+    <div class="relative z-0 w-full mb-4 group">
+        <input type="password" id="password" name="password" required
+            class="text-sm p-4 h-12 mt-2 block w-full px-3 py-2 bg-transparent border border-indigo-500 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm peer" placeholder="" />
+       <label for="password" class="absolute text-sm ml-2 text-cp_primary duration-300 transform -translate-y-6 scale-75 top-5 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Mot de passe</label>
+    </div>
+
+    <div class="mb-4 flex items-center justify-between">
+        <label class="inline-flex items-center">
+            <input type="checkbox" name="remember_me" class="form-checkbox h-5 w-5 text-indigo-600">
+            <span class="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
+        </label>
+        <a href="{% url 'password_reset' %}" class="text-sm text-indigo-600 hover:underline">Mot de passe oublié ?</a>
+    </div>
+
+    <button type="submit"
+        class="w-full bg-cp_primary text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition">
+        Connexion
+    </button>
+</form>
+
+{% endblock %}

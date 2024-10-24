@@ -1,12 +1,14 @@
+import os
+import subprocess
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from django.http import HttpResponse
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
 from django.utils import timezone
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import logout, authenticate, login, update_session_auth_hash, get_user_model
-from django.contrib.auth.signals import user_logged_in, user_logged_out
-from django.dispatch import receiver
 from django.utils.translation import activate
 from django.contrib.auth.models import Permission, User
 from rest_framework.generics import UpdateAPIView
@@ -15,14 +17,18 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import ValidationError
 from rest_framework import status, viewsets, permissions
 from rest_framework.response import Response
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.views import APIView
 from xhtml2pdf import pisa
 from .models import Employee, Conge, Notification, Historique, Schedule, UserSettings, AgendaEvent, Paie, \
-    UserNotification
+    UserNotification, Poste, Departement, Competence
 from .serializers import RefusCongeSerializer, EmployeeSerializer, CongeSerializer, CongesDetailSerializer, \
     NotificationSerializer, ScheduleSerializer, SettingsSerializer, AgendaEventSerializer, HistoriqueSerializer, \
     ScheduleListSerializer, PaieSerializer, LoginSerializer, UserNotificationSerializer
 from .services import create_notification, create_global_notification
+from rest_framework.decorators import action
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import View
 
 CustomUser = get_user_model()
 
@@ -57,7 +63,8 @@ class DashboardAPIView(APIView):
             'tomorrow_events': list(tomorrow_events),
         }
 
-        return Response(context)
+        # Utiliser la fonction render pour rendre le template HTML
+        return render(request, 'dashboard.html', context)
 
 #Les classes pour gérer les permissions
 class EmployeePermission(permissions.BasePermission):
@@ -216,6 +223,11 @@ class ExportPaiePermission(permissions.BasePermission):
         return request.user.is_authenticated and request.user.has_perm('personnel.export_paie')
 
 
+# Pagination personnalisée
+class CustomPageNumberPagination(PageNumberPagination):
+    page_size_query_param = 'page_size'  # Permet à l'utilisateur de choisir le nombre d'éléments par page
+    max_page_size = 100  # Limite maximale d'employés par page
+
 #Les vues
 class EmployeeViewSet(viewsets.ModelViewSet):
     """
@@ -223,52 +235,105 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     """
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
-    permission_classes = [EmployeePermission]  # Exige que l'utilisateur soit authentifié et a les permission spécifique
+    #permission_classes = [EmployeePermission]  # Exige que l'utilisateur soit authentifié et a les permission spécifique
+    pagination_class = CustomPageNumberPagination  # Utilise la pagination personnalisée
+
+    # Spécifie que cette vue peut rendre du HTML
+    renderer_classes = [TemplateHTMLRenderer]
+
+    @action(detail=False, methods=['GET', 'POST'], renderer_classes=[TemplateHTMLRenderer])
+    def create_employee_form(self, request, *args, **kwargs):
+
+        # Pour les requêtes GET, on récupère les choix pour les départements et les postes
+        departements = Departement.objects.all()
+        postes = Poste.objects.all()
+        type_choices = Employee.TYPE_CHOICES
+        contrat_choices = Employee.CONTRAT_CHOICES
+        statut_matrimonials = Employee.STATUT_CHOICES
+        sexes = Employee.SEXE_CHOICES
+        competences = Competence.objects.all()
+
+        return Response({
+            'departements': departements,
+            'postes': postes,
+            'type_choices': type_choices,
+            'contrat_choices': contrat_choices,
+            'statut_matrimonial': statut_matrimonials,
+            'sexe': sexes,
+            'competences': competences,
+        }, template_name='employee_cree.html')
+
     # Liste des employés
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        employees = serializer.data
 
-        # Filtrage personnalisé des employés
-        filtered_employees = [
-            {
-                'photo': emp['photo'],
-                'nom': emp['nom'],
-                'prenom': emp['prenom'],
-                'id': emp['id'],
-                'poste': emp['poste'],
-                'type_salarie': emp['type_salarie'],
-                'statut': emp['statut'],
-                'date_embauche': emp['date_embauche'],
-                'departement': emp['departement'],
-                'email': emp['email'],
-            }
-            for emp in employees
-        ]
+        # Récupérer les filtres
+        id_filter = request.GET.get('id', None)
+        nom_filter = request.GET.get('nom', None)
+        poste_filter = request.GET.getlist('poste', None)
+        type_filter = request.GET.get('type_salarie', None)
+        statut_filter = request.GET.get('statut', None)
+        date_embauche_filter = request.GET.get('date_embauche', None)
+        departement_filter = request.GET.getlist('departement', None)
+        competence_filter = request.GET.getlist('competence', None)
 
-        return Response({'employees': filtered_employees})
+        if id_filter:
+            queryset = queryset.filter(id=id_filter)  # Filtrer par ID exact
+        if nom_filter:
+            queryset = queryset.filter(nom__icontains=nom_filter)  # Filtrer par nom (insensible à la casse)
+        if poste_filter:
+            queryset = queryset.filter(poste__id__in=poste_filter)  # Filtrer par le nom du poste
+        if type_filter:
+            queryset = queryset.filter(type_salarie=type_filter)  # Filtrer par type de salarié (exact)
+        if statut_filter:
+            queryset = queryset.filter(statut=statut_filter)  # Filtrer par statut (exact)
+        if date_embauche_filter:
+            queryset = queryset.filter(date_embauche=date_embauche_filter)  # Filtrer par date d'embauche exacte
+        if departement_filter:
+            queryset = queryset.filter(departement__id__in=departement_filter)
+
+        if competence_filter:
+            queryset = queryset.filter(competence__id__in=competence_filter).distinct()
+
+        # Paginer le queryset
+        paginator = CustomPageNumberPagination()
+        page = paginator.paginate_queryset(queryset, request)
+        total_employees = queryset.count()
+
+        filtered_employees = []
+        for emp in page:
+            filtered_employees.append({
+                'photo': emp.photo.url if emp.photo else None,
+                'nom': emp.nom,
+                'prenom': emp.prenom,
+                'id': emp.id,
+                'poste': emp.poste.nom if emp.poste else None,
+                'type_salarie': emp.get_type_salarie_display(),
+                'statut': emp.get_statut_display(),
+                'date_embauche': emp.date_embauche,
+                'departement': emp.departement.nom if emp.departement else None,
+                'email': emp.email,
+            })
+        num_pages = paginator.page.paginator.num_pages if paginator.page else None
+        departements = Departement.objects.all()  # Récupère tous les départements
+        competences = Competence.objects.all()  # Récupère toutes les compétences
+        types_salaries = Employee.TYPE_CHOICES  # Récupère les choix de types de salarié
+        postes = Poste.objects.all()
+
+        # Retourner les employés dans un template HTML avec la pagination
+        return render(request, 'employee_list.html', {
+            'employees': filtered_employees,
+            'paginator': paginator,
+            'page_obj': paginator.page,
+            'num_pages': num_pages,  # Passe explicitement le nombre total de pages
+            'total_employees': total_employees,
+            'departements': departements,
+            'competences': competences,
+            'type_salaries': types_salaries,
+            'postes': postes,
+        })
 
     # Création d'un employé
-    def perform_create(self, serializer):
-        employee = serializer.save()
-
-        # Créer une notification pour l'ajout d'un employé
-        create_notification(
-            user_action=self.request.user,
-            message=f"Un nouvel employé {employee.nom} a été ajouté.",
-            user_affected=employee.user
-        )
-
-        # Créer un historique de l'ajout de l'employé
-        Historique.objects.create(
-            utilisateur=self.request.user,
-            action='create',
-            consequence=f"Ajout d'un nouvel employé : {employee.nom} {employee.prenom}",
-            utilisateur_affecte=employee.user,
-            categorie='employe',
-            date_action=timezone.now(),
-        )
 
     # Mise à jour d'un employé
     def perform_update(self, serializer):
@@ -291,14 +356,72 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             date_action=timezone.now(),
         )
 
-    def create(self, request, *args, **kwargs):
-        response = super().create(request, *args, **kwargs)
-        employee = response.data
+        # Méthode de création d'employé via POST
 
-        return Response({
-            'status': 'success',
-            'message': f"L'employé {employee['nom']} {employee['prenom']} a été ajouté avec succès."
-        }, status=status.HTTP_201_CREATED)
+    def create(self, request, *args, **kwargs):
+        # Récupérer les données du formulaire POST
+        employee_data = request.POST
+
+        # Valider les données du formulaire
+        photo = employee_data.get('photo')
+        date_naissance = employee_data.get('date_naissance')
+        email = employee_data.get('email')
+        pays = employee_data.get('pays')
+        code_postal = employee_data.get('code_postal')
+        photo = employee_data.get('photo')
+
+
+
+        nom = employee_data.get('nom')
+        prenom = employee_data.get('prenom')
+        sexe = employee_data.get('sexe')
+        statut_matrimonial = employee_data.get('statut_matrimonial')
+        date_naissance = employee_data.get('date_naissance')
+        type_contrat = employee_data.get('type_contrat')
+        departement_id = employee_data.get('departement')
+        poste_id = employee_data.get('poste')
+
+        # Créer un nouvel employé après vérification des champs
+        new_employee = Employee(
+            photo=photo,
+            nom=nom,
+            prenom=prenom,
+            sexe=sexe,
+            statut_matrimonial=statut_matrimonial,
+            date_naissance=date_naissance,
+            type_contrat=type_contrat,
+            departement_id=departement_id,
+            poste_id=poste_id,
+
+        )
+
+        try:
+            # Enregistrer le nouvel employé
+            new_employee.save()
+
+            # Créer une notification pour l'ajout d'un employé
+            create_notification(
+                user_action=request.user,
+                message=f"Un nouvel employé {new_employee.nom} a été ajouté.",
+                user_affected=new_employee.user
+            )
+
+            # Créer un historique de l'ajout de l'employé
+            Historique.objects.create(
+                utilisateur=request.user,
+                action='create',
+                consequence=f"Ajout d'un nouvel employé : {new_employee.nom} {new_employee.prenom}",
+                utilisateur_affecte=new_employee.user,
+                categorie='employe',
+                date_action=timezone.now(),
+            )
+
+            # Rediriger après succès
+            return redirect('employee-list')
+
+        except Exception as e:
+            # Gestion d'erreur en cas de problème lors de la sauvegarde
+            return Response({'error': str(e)}, template_name='employee_cree.html')
 
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
@@ -310,15 +433,30 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         }, status=status.HTTP_200_OK)
 
 class CongeViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet pour la gestion des Congés.
+    Permet de créer, consulter, modifier, et supprimer des congés.
+    """
     queryset = Conge.objects.all()
     serializer_class = CongeSerializer
-    permission_classes = [IsAuthenticated, CongePermission]  # Exige que l'utilisateur soit authentifié et a les permission spécifique
+    permission_classes = [IsAuthenticated]  # Exige que l'utilisateur soit authentifié et a les permission spécifique
+
+    # Rendu du formulaire de création d'employé
 
     def get_queryset(self):
+        """
+        Surcharge de la méthode pour filtrer les congés en fonction des permissions de l'utilisateur.
+        Si l'utilisateur a la permission 'acces_all_conge', il verra tous les congés.
+        Sinon, il ne verra que ses propres congés.
+        """
         user = self.request.user
+
+        # Vérifie si l'utilisateur a la permission de voir tous les congés (par exemple, un manager)
         if user.has_perm('personnel.acces_all_conge'):
             return Conge.objects.all()  # Voir tous les congés si l'utilisateur est dans la direction
-        return Conge.objects.filter(employee__user=user)  # Sinon, voir seulement ses propres congés
+
+        # Sinon, l'utilisateur ne peut voir que ses propres congés
+        return Conge.objects.filter(employee__user=user)
 
     # Lister les congés pour un employé spécifique
     def get_conges_for_employee(self, request, employee_id):
@@ -355,6 +493,7 @@ class CongeViewSet(viewsets.ModelViewSet):
             # Créer la notification et l'historique
             create_notification(
                 user_action=request.user,
+                type='demande_conge',
                 message=f"Un nouveau congé pour {conge.employee.nom} {conge.employee.prenom} a été créé.",
                 user_affected=conge.employee.user
             )
@@ -414,7 +553,7 @@ class CongeViewSet(viewsets.ModelViewSet):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 class ApprouverCongeView(APIView):
-    permission_classes = [IsAuthenticated, CongePermission]  # Exige que l'utilisateur soit authentifié et a les permission spécifique
+    permission_classes = [IsAuthenticated]  # Exige que l'utilisateur soit authentifié et a les permission spécifique
 
     def post(self, request, conge_id, action):
 
@@ -444,14 +583,15 @@ class ApprouverCongeView(APIView):
 
             create_notification(
                 user_action=request.user,
-                message=f"Le congé de {conge.employee.nom} a été accepté.",
+                type='conge_approuve',
+                message=f"Le congé de {conge.employee.nom} {conge.employee.prenom} a été accepté par {request.user}.",
                 user_affected=conge.employee.user
             )
 
             Historique.objects.create(
                 utilisateur=request.user,
                 action='update',
-                consequence=f"Une demande de congé de {conge.employee.nom} {conge.employee.prenom} a été approuvée.",
+                consequence=f"Une demande de congé de {conge.employee.nom} {conge.employee.prenom} a été approuvée par {request.user}.",
                 utilisateur_affecte=conge.employee.user,
                 categorie='conge',
                 date_action=timezone.now(),
@@ -514,21 +654,38 @@ class NotificationListView(APIView):
             user_affected=request.user
         ).select_related('notification').order_by('-notification__date_created')
 
-        # Passez les objets complets au serializer
         serializer = UserNotificationSerializer(notifications, many=True)
-        return Response({'notifications': serializer.data}, status=status.HTTP_200_OK)
+
+        # Rendu du template HTML avec les notifications
+        return render(request, 'notification.html', {'notifications': serializer.data})
 class HistoriqueListView(APIView):
-    permission_classes = [IsAuthenticated, HistoriquePermission]  # Exige que l'utilisateur soit authentifié et a les permission spécifique
-    def get(self, request):
+    permission_classes = [IsAuthenticated]  # Exige que l'utilisateur soit authentifié et a les permission spécifique
+    def get(self, request, *args, **kwargs):
         """Récupérer et retourner l'historique en JSON."""
         historiques = Historique.objects.all().order_by('-date_action')
         serializer = HistoriqueSerializer(historiques, many=True)
-        return Response({'historiques': serializer.data}, status=status.HTTP_200_OK)
+        return render(request,'historique.html', {'historiques': serializer.data})
 
 
+def profile_view(request):
+    """Vue pour afficher le profil de l'utilisateur connecté."""
+    if request.user.is_authenticated:
+        employee = None
+        if hasattr(request.user, 'employee'):
+            employee = request.user.employee  # Récupérer l'objet Employee associé à l'utilisateur
+
+        context = {
+            'username': request.user.username,
+            'employee': employee
+        }
+        return render(request, 'profile.html', context)  # Rendre le template du profil avec le contexte
+    return redirect('login')  # Rediriger vers la page de connexion si non authentifié
+
+
+# Pour mettre à jour le profil, vous pouvez conserver votre API existante
 class ProfileAPIView(APIView):
-    permission_classes = [IsAuthenticated
-                          ]
+    permission_classes = [IsAuthenticated]
+
     def put(self, request):
         """Mettre à jour le profil de l'utilisateur connecté."""
         user = request.user  # Récupérer l'utilisateur connecté
@@ -553,7 +710,7 @@ class ProfileAPIView(APIView):
         }, status=status.HTTP_404_NOT_FOUND)
 
     def get(self, request):
-        """Récupérer le profil de l'utilisateur connecté."""
+        """Récupérer le profil de l'utilisateur connecté pour l'affichage."""
         user = request.user  # Récupérer l'utilisateur connecté
 
         if hasattr(user, 'employee'):
@@ -576,85 +733,7 @@ class ProfileAPIView(APIView):
         return Response({
             'error': 'Aucune information d\'employé trouvée pour cet utilisateur.'
         }, status=status.HTTP_404_NOT_FOUND)
-class LoginView(APIView):
-    permission_classes = [AllowAny]  # Autoriser l'accès à tout le monde
 
-    def post(self, request):
-        """Gérer la connexion de l'utilisateur."""
-        serializer = LoginSerializer(data=request.data)
-
-        if serializer.is_valid():  # Vérifie si les données sont valides
-            username = serializer.validated_data['username']
-            password = serializer.validated_data['password']
-            user = authenticate(request, username=username, password=password)
-
-            if user is not None:
-                login(request, user)  # Connecter l'utilisateur
-
-                # Créer une notification pour l'utilisateur connecté
-
-                create_notification(
-                    user_action=user,
-                    type='connexion_reussi',
-                    message=f"{user.username} s'est connecté.",
-                    user_affected=user
-                )
-
-                return Response({'success': True, 'message': 'Connexion réussie.'})
-            else:
-                return Response({'success': False, 'message': 'Nom d’utilisateur ou mot de passe incorrect.'},
-                                status=401)
-        else:
-            print(serializer.errors)  # Afficher les erreurs
-            return Response(serializer.errors, status=400)
-
-    def options(self, request):
-        """Gérer la méthode OPTIONS."""
-        return Response({'success': False, 'message': 'Méthode non autorisée.'}, status=405)
-
-
-class CustomLogoutView(APIView):
-    permission_classes = [IsAuthenticated]  # Sécurise la vue
-
-    def post(self, request):
-        """Gérer la déconnexion de l'utilisateur."""
-        logout(request)  # Déconnexion de l'utilisateur
-
-        create_notification(
-            user_action=request.user,
-            type='deconnexion_reussi',
-            message=f"{request.user.username} s'est déconnecté.",
-            user_affected=request.user
-        )
-
-        return Response({'message': 'Déconnexion réussie'}, status=200)
-
-    def get(self, request):
-        """Fournir le token CSRF dans une requête GET."""
-        csrf_token = get_token(request)  # Obtenir le token CSRF
-        return Response({'csrfToken': csrf_token}, status=200)
-
-@receiver(user_logged_in)
-def log_user_login(sender, request, user, **kwargs):
-    """Log la connexion de l'utilisateur."""
-    Historique.objects.create(
-        utilisateur=user,
-        action='login',
-        consequence='Utilisateur connecté',
-        categorie='session',
-        date_action=timezone.now(),
-    )
-
-@receiver(user_logged_out)
-def log_user_logout(sender, request, user, **kwargs):
-    """Log la déconnexion de l'utilisateur."""
-    Historique.objects.create(
-        utilisateur=user,
-        action='logout',
-        consequence='Utilisateur déconnecté',
-        categorie='session',
-        date_action=timezone.now(),
-    )
 
 class CustomPasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]
@@ -663,14 +742,16 @@ class CustomPasswordChangeView(APIView):
         old_password = request.data.get('old_password')
         new_password = request.data.get('new_password')
 
-        # Vérifiez si le mot de passe ancien est correct
+        # Vérifiez si l'ancien mot de passe est correct
         if not check_password(old_password, request.user.password):
-            raise ValidationError("L'ancien mot de passe est incorrect.")
+            return render(request, 'settings.html', {
+                'error': "L'ancien mot de passe est incorrect."
+            }, status=400)
 
         # Mettre à jour le mot de passe de l'utilisateur
         request.user.set_password(new_password)
         request.user.save()
-        update_session_auth_hash(request, request.user)  # Maintenir la session active
+        update_session_auth_hash(request, request.user)
 
         # Enregistrer l'historique
         Historique.objects.create(
@@ -682,8 +763,13 @@ class CustomPasswordChangeView(APIView):
             date_action=timezone.now(),
         )
 
-        return Response({'message': 'Mot de passe mis à jour avec succès', 'status': 'success'},
-                        status=status.HTTP_200_OK)
+        return render(request, 'settings.html', {
+            'success': 'Mot de passe mis à jour avec succès.'
+        }, status=200) # Par exemple, rediriger vers la page des paramètres après succès
+
+    def get(self, request, *args, **kwargs):
+        # Si l'utilisateur accède à cette vue avec GET, on redirige vers la page des paramètres
+        return render(request, 'settings.html')  # Afficher la page des paramètres
 
 class CustomPasswordChangeDoneView(APIView):
     permission_classes = [IsAuthenticated]
@@ -695,7 +781,10 @@ class CustomPasswordChangeDoneView(APIView):
 class ScheduleViewSet(viewsets.ModelViewSet):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
-    permission_classes = [SchedulePermission]
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination  # Utilise la pagination personnalisée
+    # Spécifie que cette vue peut rendre du HTML
+    renderer_classes = [TemplateHTMLRenderer]
 
     def perform_create(self, serializer):
         schedule = serializer.save()
@@ -703,7 +792,8 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         # Créer une notification pour l'ajout d'un emploi du temps
         create_notification(
             user_action=self.request.user,
-            message=f"Un nouvel emploi du temps a été ajouté pour {schedule.employee.nom} {schedule.employee.prenom}.",
+            type='schedule_create',
+            message=f"Un nouvel emploi du temps a été ajouté pour {schedule.employee.nom} {schedule.employee.prenom} par {self.request.user}.",
             user_affected=schedule.employee.user  # Associez la notification à l'utilisateur affecté
         )
 
@@ -711,7 +801,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         Historique.objects.create(
             utilisateur=self.request.user,
             action='create',
-            consequence=f"Ajout d'un emploi du temps pour {schedule.employee.nom} {schedule.employee.prenom}.",
+            consequence=f"Ajout d'un emploi du temps pour {schedule.employee.nom} {schedule.employee.prenom} par {self.request.user}.",
             utilisateur_affecte=schedule.employee.user,
             categorie='emploi_du_temps',
             date_action=timezone.now(),
@@ -750,17 +840,22 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         # Créer un dictionnaire pour stocker les résultats
         schedules_dict = {}
 
+        # Paginer le queryset
+        paginator = CustomPageNumberPagination()
+        page = paginator.paginate_queryset(queryset, request)
+        total_emploiedutemps = queryset.count()
+
         # Regrouper les horaires par employé
         for schedule in serializer.data:
             employee_id = f"{schedule['employee_first_name']} {schedule['employee_last_name']}"
             if employee_id not in schedules_dict:
                 schedules_dict[employee_id] = {
                     'employee_photo': schedule['employee_photo'],
-                    'employee_first_name': schedule['employee_first_name'],
-                    'employee_last_name': schedule['employee_last_name'],
+                    'employee_nom': schedule['employee_first_name'],
+                    'employee_prenom': schedule['employee_last_name'],
                     'employee_poste': schedule['employee_poste'],
-                    'employee_type': schedule['employee_type'],
-                    'employee_department': schedule['employee_department'],
+                    'employee_type_salarie': schedule['employee_type'],
+                    'employee_departement': schedule['employee_department'],
                     'schedules': []  # Initialiser une liste pour les horaires
                 }
             # Ajouter les horaires sans les imbriquer dans une liste supplémentaire
@@ -771,9 +866,16 @@ class ScheduleViewSet(viewsets.ModelViewSet):
                 'jour_fin': schedule['jour_fin'],
                 'location': schedule['location']
             })
+        num_pages = paginator.page.paginator.num_pages if paginator.page else None
 
-        # Retourner la réponse formatée
-        return Response({'schedules': list(schedules_dict.values())})
+
+        return render(request, 'calendrier_list.html', {
+            'schedules': schedules_dict,
+            'num_pages': num_pages,
+            'paginator': paginator,
+            'page_obj': paginator.page,
+            'total_emploiedutemps' : total_emploiedutemps,
+        })
 
 class MarkNotificationAsReadView(APIView):
     permission_classes = [IsAuthenticated]
@@ -788,65 +890,58 @@ class MarkNotificationAsReadView(APIView):
         user_notification.save()
 
         return Response({'success': True, 'message': 'Notification marquée comme lue.'}, status=status.HTTP_200_OK)
-class SettingsUpdateAPIView(UpdateAPIView):
-    queryset = Employee.objects.all()  # Tous les employés, mais nous allons filtrer par utilisateur
-    serializer_class = SettingsSerializer
-    permission_classes = [IsAuthenticated]  # l'utilisateur est authentifié
 
-    def get_object(self):
-        """Récupérer l'employé lié à l'utilisateur connecté."""
-        return self.request.user.employee  # Accéder à l'employé lié
 
-    def perform_update(self, serializer):
-        """Traiter la mise à jour après la validation."""
-        settings = serializer.save()  # Enregistrer les paramètres
-        # Gestion de la langue
-        activate(settings.language)
+class SettingsView(LoginRequiredMixin, View):
+    """Affichage et mise à jour des paramètres de l'utilisateur."""
+
+    template_name = 'settings.html'  # Template à rendre
 
     def get(self, request, *args, **kwargs):
-        """Récupérer les paramètres de l'utilisateur."""
-        employee = self.get_object()  # Récupérer l'employé lié
-        settings = get_object_or_404(UserSettings, user=request.user)  # Récupérer les paramètres de l'utilisateur
-        serializer = self.get_serializer(employee)  # Sérialiser les données de l'employé
-        # Ajouter les paramètres à la réponse
-        return Response({
-            'employee': serializer.data,
+        """Afficher la page de paramètres avec les données actuelles."""
+        employee = request.user.employee  # Récupérer l'employé lié à l'utilisateur connecté
+        settings = get_object_or_404(UserSettings, user=request.user)  # Récupérer les paramètres
+
+        # Injecter les données de l'employé et les paramètres dans le template
+        context = {
+            'employee': employee,
             'settings': {
                 'language': settings.language,
                 'theme': settings.theme,
                 'receive_desktop_notifications': settings.receive_desktop_notifications,
-                'receive_email_notifications': settings.receive_email_notifications
+                'receive_email_notifications': settings.receive_email_notifications,
             }
-        })  # Retourner les données en JSON
+        }
+        return render(request, self.template_name, context)
 
-    def patch(self, request, *args, **kwargs):
-        """Mise à jour partielle des paramètres de l'utilisateur."""
-        employee = self.get_object()  # Récupérer l'employé lié
-        language = request.data.get('language')
-        theme = request.data.get('theme')
+    def post(self, request, *args, **kwargs):
+        """Mettre à jour les paramètres lorsque l'utilisateur soumet le formulaire."""
+        employee = request.user.employee
+        settings = get_object_or_404(UserSettings, user=request.user)
 
-        settings = get_object_or_404(UserSettings, user=request.user)  # Récupérer les paramètres de l'utilisateur
+        # Récupérer les données du formulaire
+        language = request.POST.get('language')
+        theme = request.POST.get('theme')
+        receive_desktop_notifications = request.POST.get('receive_desktop_notifications') == 'on'
+        receive_email_notifications = request.POST.get('receive_email_notifications') == 'on'
 
+        # Mettre à jour les paramètres
         if language:
             settings.language = language
-            settings.save()
+            activate(settings.language)  # Changer la langue de l'utilisateur
 
         if theme:
             settings.theme = theme
-            settings.save()
 
-        # Pour les notifications
-        receive_desktop_notifications = request.data.get('receive_desktop_notifications')
-        if receive_desktop_notifications is not None:
-            settings.receive_desktop_notifications = receive_desktop_notifications
-            settings.save()
+        settings.receive_desktop_notifications = receive_desktop_notifications
+        settings.receive_email_notifications = receive_email_notifications
+        settings.save()
 
-        receive_email_notifications = request.data.get('receive_email_notifications')
-        if receive_email_notifications is not None:
-            settings.receive_email_notifications = receive_email_notifications
-            settings.save()
+        # Utiliser les messages pour le feedback utilisateur
+        messages.success(request, 'Paramètres mis à jour avec succès !')
 
-        return Response({'success': True, 'message': 'Paramètres mis à jour avec succès.'})
+        # Retourner à la page des paramètres après mise à jour
+        return redirect('settings')  # Remplacez 'settings' par le nom de votre URL
 
 class AgendaEventViewSet(viewsets.ModelViewSet):
     queryset = AgendaEvent.objects.all()
@@ -944,16 +1039,16 @@ class PaieViewSet(viewsets.ModelViewSet):
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            return render(request, 'paie_list.html', {'paies': page, 'messages': messages.get_messages(request)})
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return render(request, 'paie_list.html', {'paies': queryset, 'messages': messages.get_messages(request)})
 
     def retrieve(self, request, pk=None):
         """Récupérer le détail d'une fiche de paie."""
+        print(f"Récupération de la fiche de paie avec PK: {pk}")  # Debug log
         paie = get_object_or_404(Paie, pk=pk)
-        serializer = self.get_serializer(paie)
-        return Response(serializer.data)
+        return render(request, 'paie_detail.html', {'paie': paie})
 
     def create(self, request, *args, **kwargs):
         """Créer une nouvelle fiche de paie."""
@@ -1052,3 +1147,66 @@ class ExportFicheDePaiePDFView(APIView):
             # Gestion de l'erreur avec un message explicatif
             return Response({'error': f"Une erreur est survenue lors de la génération du PDF : {str(e)}"},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ExportDatabaseView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        # Récupérer le nom de la table depuis la requête POST
+        table = request.POST.get('table')
+
+        # Créer le chemin pour le fichier de sauvegarde
+        if table == 'all':
+            backup_file_path = os.path.join(settings.BASE_DIR, 'full_database_backup.sql')
+        else:
+            backup_file_path = os.path.join(settings.BASE_DIR, f'{table}_backup.sql')
+
+        # Informations sur la base de données
+        db_name = settings.DATABASES['default']['NAME']
+        db_user = settings.DATABASES['default']['USER']
+        db_password = settings.DATABASES['default']['PASSWORD']
+        db_host = settings.DATABASES['default']['HOST']
+        db_port = settings.DATABASES['default']['PORT'] or '3306'  # Par défaut, le port MySQL est 3306
+
+        # Vérifier si la table fait partie des tables que tu veux exporter ou si c'est "Tout exporter"
+        allowed_tables = [
+            'personnel_employee',
+            'personnel_paie',
+            'personnel_conge',
+            'personnel_schedule',
+        ]
+
+        try:
+            # Si l'utilisateur veut tout exporter, utilise mysqldump pour toute la base de données
+            if table == 'all':
+                # Exporter toute la base de données
+                with open(backup_file_path, 'w') as output_file:
+                    os.putenv('MYSQL_PWD', db_password)  # Mettre le mot de passe dans l'environnement pour mysqldump
+                    subprocess.run(
+                        ['mysqldump', '-u', db_user, '-h', db_host, '-P', db_port, db_name],
+                        stdout=output_file
+                    )
+                # Lire le fichier et créer une réponse pour le téléchargement
+                with open(backup_file_path, 'rb') as f:
+                    response = HttpResponse(f.read(), content_type='application/sql')
+                    response['Content-Disposition'] = 'attachment; filename="full_database_backup.sql"'
+                    return response
+
+            # Si l'utilisateur veut exporter une table spécifique
+            elif table in allowed_tables:
+                # Exporter la table spécifique
+                with open(backup_file_path, 'w') as output_file:
+                    os.putenv('MYSQL_PWD', db_password)
+                    subprocess.run(
+                        ['mysqldump', '-u', db_user, '-h', db_host, '-P', db_port, db_name, table],
+                        stdout=output_file
+                    )
+                # Lire le fichier et créer une réponse pour le téléchargement
+                with open(backup_file_path, 'rb') as f:
+                    response = HttpResponse(f.read(), content_type='application/sql')
+                    response['Content-Disposition'] = f'attachment; filename="{table}_backup.sql"'
+                    return response
+
+            else:
+                return HttpResponse(f"Table '{table}' non autorisée pour l'exportation.", status=400)
+
+        except Exception as e:
+            return HttpResponse(f"Erreur lors de l'export de la base de données: {str(e)}", status=500)

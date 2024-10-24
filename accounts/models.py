@@ -5,7 +5,7 @@ from django.conf import settings
 
 # Create your models here.
 class CustomUser(AbstractUser):
-  photo = models.ImageField(upload_to='photos/', null=True, blank=True)
+  photo = models.ImageField(upload_to='photos/', null=True, blank=True, default="photos/pdp_defaut.png")
 
   def __str__(self):
     return self.username

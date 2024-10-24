@@ -1,0 +1,56 @@
+<div class="container mx-auto mt-24">
+    <h1 class="text-2xl font-bold mb-4">Liste des Fiches de Paie</h1>
+
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <table class="table-auto w-full border-collapse border border-gray-300">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="border border-gray-300 px-4 py-2">#</th>
+                <th class="border border-gray-300 px-4 py-2">Employé</th>
+                <th class="border border-gray-300 px-4 py-2">Date de Création</th>
+                <th class="border border-gray-300 px-4 py-2">Montant</th>
+                <th class="border border-gray-300 px-4 py-2">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for paie in paies %}
+            <tr>
+                <td class="border border-gray-300 px-4 py-2">{{ forloop.counter }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ paie.employee.nom }} {{ paie.employee.prenom }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ paie.date_creation|date:"d/m/Y" }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ paie.montant }} MGA</td>
+                <td class="border border-gray-300 px-4 py-2">
+                    <a href="{% url 'payroll-detail' paie.pk %}" class="text-blue-500 hover:underline">Détails</a>
+                    <!-- Ajoutez d'autres actions ici si nécessaire -->
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="border border-gray-300 px-4 py-2 text-center">Aucune fiche de paie disponible.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="mt-4">
+        {% if paies.has_previous %}
+            <a href="?page=1" class="text-blue-500 hover:underline">« Première</a>
+            <a href="?page={{ paies.previous_page_number }}" class="text-blue-500 hover:underline">« Précédente</a>
+        {% endif %}
+
+        <span>Page {{ paies.number }} sur {{ paies.paginator.num_pages }}</span>
+
+        {% if paies.has_next %}
+            <a href="?page={{ paies.next_page_number }}" class="text-blue-500 hover:underline">Suivante »</a>
+            <a href="?page={{ paies.paginator.num_pages }}" class="text-blue-500 hover:underline">Dernière »</a>
+        {% endif %}
+    </div>
+</div>

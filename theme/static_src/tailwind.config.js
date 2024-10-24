@@ -48,6 +48,8 @@ module.exports = {
                 secondary: "#343C6A",
                 accent:"#16DBCC",
                 red:"#FF5991",
+                cp_primary : "#7152F3",
+                cp_secondary : "#DCDBDE"
             },
             fontFamily: {
                 sans: ['Inter', 'sans-serif'],

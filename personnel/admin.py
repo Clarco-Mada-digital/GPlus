@@ -1,6 +1,6 @@
 # Register your models here.
 from django.contrib import admin
-from .models import Employee, Poste, Departement, Conge, Competence, Paie
+from .models import Employee, Poste, Departement, Conge, Competence, Paie, AgendaEvent, Schedule
 
 
 @admin.register(Employee)
@@ -12,7 +12,7 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 @admin.register(Paie)
 class PayrollAdmin(admin.ModelAdmin):
-    list_display = ('matricule', 'employee', 'mois', 'salaire_net',  'statut')
+    list_display = ('statut', 'lot', 'employee__nom', 'employee__prenom')
     search_fields = ('employee__nom', 'employee__prenom')
 
 class PosteAdmin(admin.ModelAdmin):
@@ -36,3 +36,23 @@ admin.site.register(Conge, CongeAdmin)
 class CompetenceAdmin(admin.ModelAdmin):
     search_fields = ('nom',)  # Ajoute une barre de recherche pour le champ 'nom'
 admin.site.register(Competence, CompetenceAdmin)
+
+class ScheduleAdmin(admin.ModelAdmin):
+    search_fields = ('nom', 'lieu')  # Ajoute une barre de recherche pour le champ 'nom'
+admin.site.register(Schedule, ScheduleAdmin)
+
+
+
+class AgendaEventAdmin(admin.ModelAdmin):
+    # Colonnes qui s'affichent dans la liste des événements
+    list_display = ('title', 'start_date', 'start_time', 'created_at')
+
+    # Champs sur lesquels il est possible de rechercher
+    search_fields = ('title', 'description')
+
+    # Filtres disponibles dans la barre latérale de l'administration
+    list_filter = ('start_date', 'created_at')
+
+
+# Enregistrement du modèle avec la configuration personnalisée
+admin.site.register(AgendaEvent, AgendaEventAdmin)

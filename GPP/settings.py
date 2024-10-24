@@ -48,10 +48,12 @@ INSTALLED_APPS = [
     'caisse',
     'django_filters',
     'crispy_forms',
+    'crispy_tailwind',
     'reportlab',
     'widget_tweaks',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -92,7 +94,7 @@ WSGI_APPLICATION = 'GPP.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'g_app_db',
+        'NAME': 'gplus',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
@@ -155,14 +157,11 @@ INTERNAL_IPS = [
 STATICFILES_DIRS = [BASE_DIR / "static"]
 NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 
-AUTH_USER_MODEL = "accounts.user"
+AUTH_USER_MODEL = "accounts.CustomUser"
 
 
 ############ AJOUT_DONALDO #############################
 
-#Static file
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
@@ -176,12 +175,16 @@ MESSAGE_TAGS = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 1  # Le nombre par défaut d'élément par page si aucun n'est spécifié
+
 }
 
 LANGUAGES = [
@@ -191,3 +194,18 @@ LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
 ]
 
+
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
+CRISPY_TEMPLATE_PACK = "tailwind"
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.your_email_provider.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'dzoubery@gmail.com.com'
+EMAIL_HOST_PASSWORD = '1245689'
+DEFAULT_FROM_EMAIL = 'dzoubery@gmail.com.com'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

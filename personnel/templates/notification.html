@@ -1,0 +1,84 @@
+{% extends "base_primary_employee.html" %}
+
+{% block title %} Liste des notifications {% endblock %}
+
+{% block style %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+{% endblock %}
+
+
+{% block body %}
+    
+
+    <div class="max-w-screen mx-auto p-6 bg-white mt-12 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold mb-4 mt-4">Notifications</h2>
+        <p class="text-gray-600 mb-6">Toutes les notifications</p>
+
+        <div class="min-h-screen bg-white p-6">
+    
+            <div class="bg-white rounded-lg shadow-md max-w-screen mx-auto p-4 border-2 border-gray500">
+
+        {% for notification in notifications %}
+
+        <form id="notification" class="flex items-center justify-between p-4">
+            {% csrf_token %}
+            <div class="flex items-center space-x-4">
+                {% if not notification.is_read %}
+                <button id="read-btn-{{ notification.id }}" onclick="markAsRead('{{ notification.id }}')" class="bg-cp_primary text-white px-4 py-2 rounded">
+                    Marquer comme lue
+                </button>
+                {% endif %}
+                <div class="bg-purple-500 text-white p-3 rounded-full">
+                    <img src="{{ notification.notification_user.url }}" alt="">
+                </div>
+                <div>
+                    <h3 class="font-bold">{{ notification.notification_type }}</h3>
+                    <p class="text-gray-600">{{ notification.notification_message }}</p>
+                </div>
+            </div>
+            <small class="text-gray-300" id="notification-{{ notification.id }}-time" data-timestamp="{{ notification.notification_date_created }}">
+                <!-- La date sera insérée dynamiquement ici -->
+            </small>
+        </form>
+                  {% endfor %}
+
+
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+
+<script>
+    // Fonction pour marquer une notification comme lue
+    function markAsRead(notificationId) {
+        fetch(`/${notificationId}/mark-as-read/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: {}
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Met à jour l'interface pour refléter le changement
+                document.getElementById(`notification-${notificationId}`).classList.add('opacity-50');
+                document.getElementById(`read-btn-${notificationId}`).style.display = 'none';
+            }
+        })
+        .catch(error => console.error('Erreur:', error));
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('small[data-timestamp]').forEach(function(element) {
+            var timestamp = element.getAttribute('data-timestamp');
+            var relativeTime = moment(timestamp).fromNow();  // Calculer le temps relatif
+            element.innerHTML = "Il y a " + relativeTime;  // Afficher le temps relatif
+        });
+    });
+</script>
+
+{% endblock %}

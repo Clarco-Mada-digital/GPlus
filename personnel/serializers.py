@@ -1,12 +1,20 @@
 from rest_framework import serializers
 from .models import Employee, Conge, Notification, Schedule, AgendaEvent, Historique, UserSettings, Paie, \
     UserNotification
+from django.contrib.auth import get_user_model,authenticate
+
+user = get_user_model()
 
 
 class RefusCongeSerializer(serializers.Serializer):
     reason = serializers.CharField(required=True)
 
 class EmployeeSerializer(serializers.ModelSerializer):
+
+    poste = serializers.StringRelatedField()
+    type_salarie = serializers.StringRelatedField()
+    statut = serializers.StringRelatedField()
+    departement = serializers.StringRelatedField()
     class Meta:
         model = Employee
         fields = '__all__'
@@ -17,14 +25,15 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class UserNotificationSerializer(serializers.ModelSerializer):
-    notification_user = serializers.CharField(source='notification.user')
-    notification_type = serializers.CharField(source='notification.type')
+
+    notification_user = serializers.CharField(source='notification.user.photo')
+    notification_type = serializers.CharField(source='notification.get_type_display')
     notification_message = serializers.CharField(source='notification.message')
     notification_date_created = serializers.DateTimeField(source='notification.date_created')
 
     class Meta:
         model = UserNotification
-        fields = ['notification_user', 'notification_type', 'notification_message', 'notification_date_created', 'is_read']
+        fields = ['notification_user', 'user_affected', 'notification_type', 'notification_message', 'notification_date_created', 'is_read']
 
 class HistoriqueSerializer(serializers.ModelSerializer):
     class Meta:
@@ -120,5 +129,12 @@ class PaieSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True)
+    email = serializers.CharField(required=True)
     password = serializers.CharField(required=True, write_only=True)
+    def validate(self, data):
+        email = data.get('email')
+        password= data.get('password')
+        user = authenticate(email=email, password=password)
+        if user is None:
+            raise serializers.ValidationError("Nom d'utilisateur ou mot de passe incorrecte")
+        return data

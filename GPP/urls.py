@@ -18,14 +18,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from caisse.views import index
+from accounts.views import home
 
 
 urlpatterns = [
-    path('', index, name='index'),
+    path('', home, name='index'),
     path('admin/', admin.site.urls),
-    # path('admin/', admin.site.urls),
+    path('accounts/', include('accounts.urls')),
     path('caisse/', include("caisse.urls")),
-    path('personnel', include('personnel.urls')),
+    path('personnel/', include('personnel.urls')),
     path("__reload__/", include("django_browser_reload.urls")),
 ]

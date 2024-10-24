@@ -1,0 +1,43 @@
+<!-- templates/personnel/paie_detail.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails de la Fiche de Paie</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> <!-- Lien vers Tailwind CSS -->
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-6">
+        <h1 class="text-2xl font-bold text-center mb-4">Détails de la Fiche de Paie</h1>
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="min-w-full bg-white">
+                <thead>
+                    <tr class="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
+                        <th class="py-3 px-6 text-left">Détails</th>
+                        <th class="py-3 px-6 text-left">Informations</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-600 text-sm font-light">
+                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+                        <td class="py-3 px-6">Nom de l'employé</td>
+                        <td class="py-3 px-6">{{ paie.employee.nom }} {{ paie.employee.prenom }}</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+                        <td class="py-3 px-6">Date de création</td>
+                        <td class="py-3 px-6">{{ paie.date_creation|date:"d/m/Y" }}</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+                        <td class="py-3 px-6">Montant</td>
+                        <td class="py-3 px-6">{{ paie.montant }} MGA</td>
+                    </tr>
+                    <!-- Ajoutez d'autres détails ici si nécessaire -->
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4 text-center">
+            <a href="{% url 'payroll-list' %}" class="text-blue-500 hover:underline">Retour à la liste</a>
+        </div>
+    </div>
+</body>
+</html>

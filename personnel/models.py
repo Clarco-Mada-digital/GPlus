@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db import models
 from django.utils import timezone
 from datetime import date
@@ -15,7 +17,7 @@ class Poste(models.Model): #Model Poste
     nom = models.CharField(max_length=100)
     departement = models.ForeignKey(Departement, on_delete=models.CASCADE)
     def __str__(self):
-        return f"{self.departement} {self.nom}"
+        return f"{self.nom}"
 
 class Competence(models.Model): #Model Compétence
     nom = models.CharField(max_length=100)
@@ -70,7 +72,7 @@ class Employee(models.Model): #Model employée
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,  related_name='employee', blank=True, null=True)
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
-    photo = models.ImageField(upload_to='photos/', null=True, blank=True , default="photos/default.png")
+    photo = models.ImageField(upload_to='photos/', null=True, blank=True , default="photos/defaut.png")
     email = models.EmailField(max_length=100, unique=True)
     numero_telephone = models.CharField(max_length=15)
     date_naissance = models.DateField()
@@ -81,6 +83,8 @@ class Employee(models.Model): #Model employée
     nationalite = models.CharField(max_length=100)
     pays = models.CharField(max_length=100)
     code_postal = models.CharField(max_length=10)
+    groupe_sanguin = models.CharField(max_length=3, null=True)
+    maladie = models.CharField(max_length=200,  null=True)
     date_embauche = models.DateField(default=timezone.now)
     poste = models.ForeignKey(Poste, on_delete=models.SET_NULL, null=True)
     type_salarie = models.CharField(max_length=20, choices=TYPE_CHOICES)
@@ -121,8 +125,6 @@ class Employee(models.Model): #Model employée
 
     def __str__(self):
         return f"{self.nom} {self.prenom}"
-
- #User modifier pour rajouter photo de profil
 
  #Model Congé
 class Conge(models.Model):
@@ -222,7 +224,9 @@ class Notification(models.Model):
         ('avis_de_conge', 'Avis de congé'),
         ('demande_conge_recue', 'Demande de congé reçue'),
         ('connexion_reussi', 'Connéxion réussie'),
-        ('deconnexion_reussi', 'Déconnexion réussie')
+        ('deconnexion_reussi', 'Déconnexion réussie'),
+        ('demande_conge', 'Demande de congé envoyer avec succes'),
+        ('schedule_create', 'Un nouveau emploie du temps a été ajouter dans le calendrier')
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_creat_notifications')
@@ -291,7 +295,7 @@ class Schedule(models.Model):
     description = models.TextField(blank=True, null=True)  # Description des tâches
 
     def __str__(self):
-        return f'{self.employee.username} - {self.post}'
+        return f'{self.employee.nom} {self.employee.prenom} - {self.location}'
 
 class UserSettings(models.Model):
     THEME_CHOICES = [
@@ -319,27 +323,81 @@ class AgendaEvent(models.Model):
 
 class Paie(models.Model):
     TYPE_CHOICES = [
-        ('payé', 'payé'),
+        ('Payé', 'Payé'),
         ('En attente', 'En attente')
     ]
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    mois = models.CharField(max_length=20)
-    matricule = models.CharField(max_length=20, unique=True)
-    salaire_base = models.DecimalField(max_digits=10, decimal_places=2, )
-    indemnite_transport = models.DecimalField(max_digits=10, decimal_places=2, )
-    salaire_brut = models.DecimalField(max_digits=10, decimal_places=2, )
-    smids = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    cnaps = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    irsa = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    avance = models.DecimalField(max_digits=10, decimal_places=2, )
-    regul_smids = models.DecimalField(max_digits=10, decimal_places=2, )
-    salaire_net = models.DecimalField(max_digits=10, decimal_places=2, )
-    montant_imposable = models.DecimalField(max_digits=10, decimal_places=2, )
-    date_creation = models.DateTimeField(auto_now_add=True)  # Assurez-vous que ce champ existe
-    signature_directeur = models.CharField(max_length=100, blank=True, null=True)
-    signature_beneficiaire = models.CharField(max_length=100, blank=True, null=True)
+    salaire_base = models.DecimalField(max_digits=10, decimal_places=2)
+    primes = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    indemnites = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # Indemnité
+    indice_anciennete = models.DecimalField(max_digits=5, decimal_places=2, default=1.00)  # Indice d'ancienneté
+    cotisations_salariales = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    cotisations_patronales = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    net_imposable = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    net_a_payer = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    date_paie = models.DateField()
     statut = models.CharField(max_length=20, choices=TYPE_CHOICES, null=True)
+    # Champs pour la date de début et de fin d'exercice
+    date_debut = models.DateField(help_text="Début de la période d'exercice")
+    date_fin = models.DateField(help_text="Fin de la période d'exercice")
+
+    # Champ lot (mois et année, ex: Janvier 2024)
+    lot = models.DateField(help_text="Sélectionner mois et année")
+
+    # Date de création automatiquement générée
+    date_creation = models.DateTimeField(auto_now_add=True)
+
+    # Champ généré automatiquement pour l'exercice (intervalle de temps)
+    exercice = models.CharField(max_length=50, editable=False)
+
+    # Constantes pour les taux de cotisations à Madagascar
+    TAUX_CNAPS_EMPLOYEUR = 0.13
+    TAUX_CNAPS_EMPLOYE = 0.01
+    TAUX_SMIDS_EMPLOYEUR = 0.05
+    TAUX_SMIDS_EMPLOYE = 0.01
+
+    # Calcul du salaire brut en tenant compte de l'indemnité et de l'indice d'ancienneté
+    def calcul_salaire_brut(self):
+        salaire_base_anciennete = self.salaire_base * self.indice_anciennete
+        return salaire_base_anciennete + self.primes + self.indemnites
+
+    # Calcul des cotisations salariales (CNAPS + SMIDS)
+    def calcul_cotisations_salariales(self):
+        salaire_brut = self.calcul_salaire_brut()
+        cnaps = salaire_brut * Decimal(self.TAUX_CNAPS_EMPLOYE)
+        smids = salaire_brut * Decimal(self.TAUX_SMIDS_EMPLOYE)
+        return cnaps + smids
+
+    # Calcul des cotisations patronales (CNAPS + SMIDS)
+    def calcul_cotisations_patronales(self):
+        salaire_brut = self.calcul_salaire_brut()
+        cnaps = salaire_brut * Decimal(self.TAUX_CNAPS_EMPLOYEUR)
+        smids = salaire_brut * Decimal(self.TAUX_SMIDS_EMPLOYEUR)
+        return cnaps + smids
+
+    # Calcul du net imposable
+    def calcul_net_imposable(self):
+        salaire_brut = self.calcul_salaire_brut()
+        cotisations_salariales = self.calcul_cotisations_salariales()
+        return salaire_brut - cotisations_salariales
+
+    # Calcul du net à payer
+    def calcul_net_a_payer(self):
+        return self.calcul_net_imposable()
+
+    # Méthode save pour automatiser les calculs lors de la sauvegarde
+    def save(self, *args, **kwargs):
+        # On calcule les montants automatiquement avant de sauvegarder
+        self.cotisations_salariales = self.calcul_cotisations_salariales()
+        self.cotisations_patronales = self.calcul_cotisations_patronales()
+        self.net_imposable = self.calcul_net_imposable()
+        self.net_a_payer = self.calcul_net_a_payer()
+
+        # Génération automatique du champ "exercice"
+        self.exercice = f"{self.date_debut.strftime('%d %F')} - {self.date_fin.strftime('%d %B')}"
+
+        super(Paie, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f"Fiche de paie de {self.employee.prenom} {self.employee.nom} pour {self.mois}"
+        return f"Fiche de paie de {self.employee.prenom} {self.employee.nom} pour {self.lot}"
 
