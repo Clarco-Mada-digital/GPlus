@@ -337,6 +337,7 @@ class Paie(models.Model):
     net_a_payer = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     date_paie = models.DateField()
     statut = models.CharField(max_length=20, choices=TYPE_CHOICES, null=True)
+
     # Champs pour la date de début et de fin d'exercice
     date_debut = models.DateField(help_text="Début de la période d'exercice")
     date_fin = models.DateField(help_text="Fin de la période d'exercice")
@@ -394,7 +395,7 @@ class Paie(models.Model):
         self.net_a_payer = self.calcul_net_a_payer()
 
         # Génération automatique du champ "exercice"
-        self.exercice = f"{self.date_debut.strftime('%d %F')} - {self.date_fin.strftime('%d %B')}"
+        self.exercice = f"{self.date_debut.strftime('%d %b')} - {self.date_fin.strftime('%d %b')}"
 
         super(Paie, self).save(*args, **kwargs)
 
