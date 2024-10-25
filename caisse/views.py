@@ -343,58 +343,46 @@ def ajouter_fournisseur(request):
     return redirect('acteurs')
 
 @login_required
+@require_POST
+@csrf_exempt
 def modifier_acteur(request, type_acteur, pk):
-    """
-    Modifie un acteur existant (fournisseur, personnel ou catégorie).
-    """
-    if type_acteur == 'fournisseurs':
-        acteur = get_object_or_404(Fournisseur, pk=pk)
-        form_class = FournisseurForm
-    elif type_acteur == 'personnels':
+    if type_acteur == 'personnel':
         acteur = get_object_or_404(Personnel, pk=pk)
-        form_class = PersonnelForm
-    elif type_acteur == 'categories':
-        acteur = get_object_or_404(Categorie, pk=pk)
-        form_class = CategorieForm
+    elif type_acteur == 'fournisseur':
+        acteur = get_object_or_404(Fournisseur, pk=pk)
     else:
-        messages.error(request, "Type d'acteur non valide.")
-        return redirect('acteurs')
+        return JsonResponse({'success': False, 'error': 'Type d\'acteur invalide'}, status=400)
 
-    if request.method == 'POST':
-        form = form_class(request.POST, request.FILES, instance=acteur)
-        if form.is_valid():
-            form.save()
-            messages.success(request, f"{type_acteur[:-1].capitalize()} modifié avec succès.")
-            return redirect('acteurs')
-    else:
-        form = form_class(instance=acteur)
+    data = json.loads(request.body)
     
-    context = {
-        'form': form,
-        'type_acteur': type_acteur,
-        'acteur': acteur,
-    }
-    return render(request, 'caisse/acteurs/modifier_acteur.html', context)
+    for key, value in data.items():
+        setattr(acteur, key, value)
+    
+    acteur.save()
+    
+    return JsonResponse({
+        'success': True,
+        'acteur': {
+            'id': acteur.id,
+            'name': acteur.name if hasattr(acteur, 'name') else f"{acteur.first_name} {acteur.last_name}",
+            'contact': acteur.contact if hasattr(acteur, 'contact') else acteur.email,
+        }
+    })
 
 @login_required
+@require_POST
+@csrf_exempt
 def supprimer_acteur(request, type_acteur, pk):
-    """
-    Supprime un acteur existant (fournisseur, personnel ou catégorie).
-    """
-    if type_acteur == 'fournisseurs':
-        acteur = get_object_or_404(Fournisseur, pk=pk)
-    elif type_acteur == 'personnels':
+    if type_acteur == 'personnel':
         acteur = get_object_or_404(Personnel, pk=pk)
-    elif type_acteur == 'categories':
-        acteur = get_object_or_404(Categorie, pk=pk)
+    elif type_acteur == 'fournisseur':
+        acteur = get_object_or_404(Fournisseur, pk=pk)
     else:
-        messages.error(request, "Type d'acteur non valide.")
-        return redirect('acteurs')
+        return JsonResponse({'success': False, 'error': 'Type d\'acteur invalide'}, status=400)
 
-    if request.method == 'POST':
-        acteur.delete()
-        messages.success(request, f"{type_acteur[:-1].capitalize()} supprimé avec succès.")
-    return redirect('acteurs')
+    acteur.delete()
+    
+    return JsonResponse({'success': True})
 
 # Gestion des catégories
 
@@ -412,31 +400,35 @@ def ajouter_categorie(request):
     return redirect('acteurs')
 
 @login_required
+@require_POST
+@csrf_exempt
 def modifier_categorie(request, pk):
-    """
-    Modifie une catégorie existante.
-    """
     categorie = get_object_or_404(Categorie, pk=pk)
-    if request.method == 'POST':
-        form = CategorieForm(request.POST, instance=categorie)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Catégorie modifiée avec succès.")
-            return redirect('acteurs')
-    else:
-        form = CategorieForm(instance=categorie)
-    return render(request, 'caisse/acteurs/modifier_categorie.html', {'form': form})
+    data = json.loads(request.body)
+    
+    categorie.name = data.get('name', categorie.name)
+    categorie.description = data.get('description', categorie.description)
+    categorie.type = data.get('type', categorie.type)
+    
+    categorie.save()
+    
+    return JsonResponse({
+        'success': True,
+        'categorie': {
+            'id': categorie.id,
+            'name': categorie.name,
+            'description': categorie.description,
+            'type': categorie.type
+        }
+    })
 
 @login_required
+@require_POST
+@csrf_exempt
 def supprimer_categorie(request, pk):
-    """
-    Supprime une catégorie existante.
-    """
     categorie = get_object_or_404(Categorie, pk=pk)
-    if request.method == 'POST':
-        categorie.delete()
-        messages.success(request, "Categorie supprimée avec succès.")
-    return redirect('acteurs')
+    categorie.delete()
+    return JsonResponse({'success': True})
 
 # Gestion des opérations
 
@@ -597,3 +589,51 @@ def creer_categorie(request):
             'type': categorie.type
         }
     })
+
+@login_required
+def editer_acteur(request, type_acteur, pk):
+    if type_acteur == 'personnel':
+        acteur = get_object_or_404(Personnel, pk=pk)
+        form_class = PersonnelForm
+    elif type_acteur == 'fournisseur':
+        acteur = get_object_or_404(Fournisseur, pk=pk)
+        form_class = FournisseurForm
+    else:
+        messages.error(request, "Type d'acteur non valide.")
+        return redirect('acteurs')
+
+    if request.method == 'POST':
+        form = form_class(request.POST, request.FILES, instance=acteur)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"{type_acteur.capitalize()} modifié avec succès.")
+            return redirect('acteurs')
+    else:
+        form = form_class(instance=acteur)
+
+    context = {
+        'form': form,
+        'type_acteur': type_acteur,
+        'acteur': acteur,
+    }
+    return render(request, 'caisse/acteurs/editer_acteur.html', context)
+
+@login_required
+def editer_categorie(request, pk):
+    categorie = get_object_or_404(Categorie, pk=pk)
+    if request.method == 'POST':
+        form = CategorieForm(request.POST, instance=categorie)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Catégorie modifiée avec succès.")
+            return redirect('acteurs')
+    else:
+        form = CategorieForm(instance=categorie)
+    
+    context = {
+        'form': form,
+        'categorie': categorie,
+    }
+    return render(request, 'caisse/acteurs/editer_categorie.html', context)
+
+

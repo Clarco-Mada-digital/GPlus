@@ -18,6 +18,7 @@ urlpatterns = [
     path('acteurs/ajouter-fournisseur/', views.ajouter_fournisseur, name="ajouter_fournisseur"),
     path('acteurs/modifier/<str:type_acteur>/<int:pk>/', views.modifier_acteur, name="modifier_acteur"),
     path('acteurs/supprimer/<str:type_acteur>/<int:pk>/', views.supprimer_acteur, name="supprimer_acteur"),
+    path('acteurs/editer/<str:type_acteur>/<int:pk>/', views.editer_acteur, name="editer_acteur"),
     
     # Gestion des catégories
     path('categories/', views.categories, name="categories"),
@@ -25,6 +26,7 @@ urlpatterns = [
     path('categories/modifier/<int:pk>/', views.modifier_categorie, name="modifier_categorie"),
     path('categories/supprimer/<int:pk>/', views.supprimer_categorie, name="supprimer_categorie"),
     path('categories/creer/', views.creer_categorie, name="creer_categorie"),
+    path('categories/editer/<int:pk>/', views.editer_categorie, name="editer_categorie"),
     
     # Opérations financières
     path('ajouts-entree/', views.ajouts_entree, name="ajouts_entree"),
