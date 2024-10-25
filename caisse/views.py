@@ -5,21 +5,82 @@ from django.contrib import messages
 from django.core.serializers import serialize
 from django.db import models  # Ajoutez cette ligne
 import json
+from decimal import Decimal
 from .models import Categorie, Personnel, Fournisseur, OperationEntrer, OperationSortir, Beneficiaire
 from .forms import FournisseurForm, PersonnelForm, CategorieForm
 from django.db.models import Sum, Count
 from django.core.paginator import Paginator
-from django.db.models.functions import TruncYear
+from django.db.models.functions import TruncYear, TruncMonth
 from django.db.models import Q
+from django.utils import timezone
+from datetime import timedelta
 
 # Vues principales
 
 @login_required
 def index(request):
-    """
-    Affiche le tableau de bord principal.
-    """
-    return render(request, "caisse/dashboard.html")
+    today = timezone.now()
+    first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    
+    # Calcul des totaux
+    caisse_totale = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    caisse_totale -= OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    
+    entrees_mois = OperationEntrer.objects.filter(date__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
+    sorties_mois = OperationSortir.objects.filter(date__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
+
+    # Données pour le graphique Résumé du mois
+    six_months_ago = today - timedelta(days=180)
+    entrees_par_mois = OperationEntrer.objects.filter(date__gte=six_months_ago) \
+        .annotate(mois=TruncMonth('date')) \
+        .values('mois') \
+        .annotate(total=Sum('montant')) \
+        .order_by('mois')
+    sorties_par_mois = OperationSortir.objects.filter(date__gte=six_months_ago) \
+        .annotate(mois=TruncMonth('date')) \
+        .values('mois') \
+        .annotate(total=Sum('montant')) \
+        .order_by('mois')
+
+    labels_mois = [entry['mois'].strftime("%b") for entry in entrees_par_mois]
+    entrees_data = [entry['total'] for entry in entrees_par_mois]
+    sorties_data = [entry['total'] for entry in sorties_par_mois]
+
+    # Données pour le graphique Sorties par catégories
+    sorties_categories = OperationSortir.objects.values('categorie__name') \
+        .annotate(total=Sum('montant')) \
+        .order_by('-total')[:5]  # Top 5 catégories
+
+    labels_categories = [entry['categorie__name'] for entry in sorties_categories]
+    sorties_categories_data = [entry['total'] for entry in sorties_categories]
+
+    # Données pour les entrées des 4 derniers mois
+    quatre_mois_ago = today - timedelta(days=120)
+    entrees_4_mois = OperationEntrer.objects.filter(date__gte=quatre_mois_ago) \
+        .annotate(mois=TruncMonth('date')) \
+        .values('mois') \
+        .annotate(montant=Sum('montant')) \
+        .order_by('-mois')[:4]
+
+    # Fonction pour convertir Decimal en float
+    def decimal_default(obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        raise TypeError
+
+    context = {
+        'caisse_totale': float(caisse_totale),
+        'entrees_mois': float(entrees_mois),
+        'sorties_mois': float(sorties_mois),
+        'labels_mois': json.dumps(labels_mois),
+        'entrees_data': json.dumps([float(x) for x in entrees_data], default=decimal_default),
+        'sorties_data': json.dumps([float(x) for x in sorties_data], default=decimal_default),
+        'labels_categories': json.dumps(labels_categories),
+        'sorties_categories_data': json.dumps([float(x) for x in sorties_categories_data], default=decimal_default),
+        'entrees_4_mois': [{'mois': e['mois'], 'montant': float(e['montant'])} for e in entrees_4_mois],
+    }
+
+    return render(request, "caisse/dashboard.html", context)
 
 @login_required
 def operations(request):
@@ -372,7 +433,7 @@ def supprimer_categorie(request, pk):
     categorie = get_object_or_404(Categorie, pk=pk)
     if request.method == 'POST':
         categorie.delete()
-        messages.success(request, "Cat��gorie supprimée avec succès.")
+        messages.success(request, "Categorie supprimée avec succès.")
     return redirect('acteurs')
 
 # Gestion des opérations

@@ -29,6 +29,7 @@
     </div> <br>
 
     <!-- Filtrage -->
+    {% comment %}
     <form method="GET" action="{% url 'listes' %}" class="p-4">
         <div class="flex items-center space-x-4">
             <button type="submit"
@@ -91,6 +92,7 @@
 
         </div>
     </form>
+    {% endcomment %}
     <br>
 
     <!-- Table des opérations -->
