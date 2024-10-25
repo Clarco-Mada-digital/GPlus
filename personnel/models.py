@@ -72,7 +72,7 @@ class Employee(models.Model): #Model employée
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,  related_name='employee', blank=True, null=True)
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
-    photo = models.ImageField(upload_to='photos/', null=True, blank=True , default="photos/defaut.png")
+    photo = models.ImageField(upload_to='photos/', null=True, blank=True , default="photos/pdp_defaut.png")
     email = models.EmailField(max_length=100, unique=True)
     numero_telephone = models.CharField(max_length=15)
     date_naissance = models.DateField()
@@ -155,6 +155,10 @@ class Conge(models.Model):
     raison_refus = models.TextField(null=True, blank=True)
     responsable = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, related_name='conges_responsables')  # Lien avec l'employé qui répond au congé
 
+    def jours_utilises(self):
+        """" Calcule le nombre de jours utilisé"""
+        return self.date_fin - self.date_debut
+
     def jours_maximum(self):
         """Renvoie le nombre maximum de jours autorisés pour le type de congé."""
         if self.type_conge == 'ANN':
@@ -193,7 +197,7 @@ class Conge(models.Model):
             raise ValueError(f"Type de congé '{self.type_conge}' non valide.")
 
         # Calcul des jours restants
-        jours_restants = jours_disponibles[self.type_conge] - self.jours_utilises
+        jours_restants = jours_disponibles[self.type_conge] - self.jours_utilises()
 
         # Si jours_restants est négatif, retourne 0
         return max(jours_restants, 0)
@@ -207,6 +211,7 @@ class Conge(models.Model):
         if self.verifier_jours_restants() < 0:
             raise ValueError("Le nombre de jours restants pour cet employé est insuffisant.")
 
+        self.jours_utilises = self.jours_utilises()
         super().save(*args, **kwargs)
 
     def __str__(self):

@@ -17,7 +17,7 @@
     <!-- Conteneur du menu -->
 
                 <!-- Conteneur du menu petit ecran -->
-        <nav id="nav" class="flex fixed top-0 w-full bg-cp_secondary gap-20 xl:hidden">
+        <nav id="nav" class="flex fixed top-0 w-full bg-cp_secondary gap-20 xl:hidden z-50">
             <!-- Bouton Hamburger -->
             <button id="hamburger-btn" class="flex p-4  focus:outline-none top-4 left-4">
                 <img src="/static/images/Employee/logo.png" alt="logo image" class="h-6 w-6">
@@ -27,7 +27,7 @@
             <!-- Menu de l'utilisateur à droite -->
             <ul class="flex flex-col absolute right-4 top-1 flex items-center border border-gray/75 p-2 rounded-lg text-sm space-x-2 w-[182px]">
                 <li class=" flex items-center">
-                    <img src="#" alt="" class="h-6 w-6 rounded-full mr-2"> <!-- Photo de l'utilisateur -->
+                    <img src="{{ user.photo.url}}" alt="" class="h-6 w-6 rounded-full mr-2"> <!-- Photo de l'utilisateur -->
                     <div class="flex flex-col w-[150px] overflow-hidden" >
                         <p class="text-sm">{{user.username}}</p>
                         <p class="text-xs text-gray-600">{{user.employee.poste}}</p>
@@ -50,19 +50,19 @@
             </ul>
         </nav>
                         <!-- grand écran -->
-        <nav id="nav" class="flex flex-row fixed top-0 w-screen  bg-cp_secondary rounded-lg shadow-lg hidden xl:block">
+        <nav id="nav" class="flex flex-row fixed top-0 w-screen  bg-cp_secondary rounded-lg shadow-lg hidden xl:block z-50">
             <!-- liste navigation -->
 
             <ul class=" flex gap-2">
                 <li class="flex items-center text-sm">
                     <div class="block py-2 px-4 flex items-center text-sm">
-                        <img src="/static/images/Employee/logo.png" alt="logo image" class="h-6 w-6">
+                        <img src="/static/images/Employee/logo.png" alt="logo image" class="h-10 w-10">
 
                         <h1 class="block py-1 px-2 text-sm font-bold">G plus</h1>
                     </div>
                 </li>
 
-                <li class="flex items-center text-sm">
+                <li class="flex items-center text-sm ml-5">
                     <a href="{% url 'dashboard' %}" class="block py-2 px-4 hover:bg-indigo-500 rounded flex items-center text-sm  {% if request.resolver_match.url_name == 'dashboard' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
                         <svg width="24" height="24" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M1 3.9C1 2.57452 2.07452 1.5 3.4 1.5H8.2C9.52548 1.5 10.6 2.57452 10.6 3.9V8.7C10.6 10.0255 9.52548 11.1 8.2 11.1H3.4C2.07452 11.1 1 10.0255 1 8.7V3.9Z" stroke="#16151C" stroke-width="1.5"/>
@@ -105,7 +105,7 @@
                     </a>
                 </li>
                 <li class="flex items-center text-sm">
-                    <a href="conge-list" class="block py-2 px-4 hover:bg-indigo-500 rounded flex items-center text-sm {% if request.resolver_match.url_name == 'conge-list' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
+                    <a href="{% url 'conge-list' %}" class="block py-2 px-4 hover:bg-indigo-500 rounded flex items-center text-sm {% if request.resolver_match.url_name == 'conge-list' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M8 10H16M8 14H16M8 18H12M8 4C8 5.10457 8.89543 6 10 6H14C15.1046 6 16 5.10457 16 4M8 4C8 2.89543 8.89543 2 10 2H14C15.1046 2 16 2.89543 16 4M8 4H7C4.79086 4 3 5.79086 3 8V18C3 20.2091 4.79086 22 7 22H17C19.2091 22 21 20.2091 21 18V8C21 5.79086 19.2091 4 17 4H16" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
                             </svg>
@@ -121,25 +121,19 @@
                     </a>
                 </li>
                 
-                <li>
+                <li class="ml-16">
                     <div id="toggle-switch" class="block flex m-4 items-center text-sm -space-x-1">
                     <!-- Bouton pour le mode clair -->
-                    <button id="light-mode_xl" class="flex p-2 pr-6 bg-cp_primary text-white rounded-md shadow-lg gap-1" >
-                        <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <button id="light-mode_xl" class="flex items-center justify-center p-2 pr-6 bg-cp_primary text-white rounded-md shadow-lg gap-1" >
+                        <svg width="24" class="ml-2" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2.5V3.5M12 21.5V22.5M19.0711 5.42894L18.364 6.13605M5.63605 18.864L4.92894 19.5711M22 12.5H21M3 12.5H2M19.071 19.5711L18.3639 18.864M5.63605 6.13605L4.92894 5.42894M18 12.5C18 15.8137 15.3137 18.5 12 18.5C8.68629 18.5 6 15.8137 6 12.5C6 9.18629 8.68629 6.5 12 6.5C15.3137 6.5 18 9.18629 18 12.5Z" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
                             </svg>                            
-                        <p class="mt-1 text-sm ">
-                            Clair
-                        </p>
                     </button>
                     <!-- Bouton pour le mode sombre -->
-                    <button id="dark-mode_xl" class="flex p-2 bg-gray-300 rounded-md shadow-lg text-black gap-1">
-                        <svg width="24" height="24" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <button id="dark-mode_xl" class="flex p-2 pr-4 bg-gray-300 rounded-md shadow-lg ">
+                        <svg width="24" class="ml-2" height="24" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M5.67163 15.3687C10.751 15.3687 14.8687 11.251 14.8687 6.17163C14.8687 5.24246 14.7309 4.34548 14.4746 3.5C18.251 4.64461 21 8.15276 21 12.303C21 17.3824 16.8824 21.5 11.803 21.5C7.65276 21.5 4.14461 18.751 3 14.9746C3.84548 15.2309 4.74246 15.3687 5.67163 15.3687Z" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
                             </svg>                             
-                        <p class="mt-1 text-sm">
-                            Sombre
-                        </p>
                     </button>
                 </div>
             </li>
@@ -161,17 +155,14 @@
                         <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M16.0859 17.1875L11.7188 12.8203V5.46875H13.2812V12.1719L17.1875 16.0859L16.0859 17.1875Z" fill="#16151C"/>
                             <path d="M12.5 1.5625C11.0429 1.56271 9.60072 1.8553 8.25877 2.42294C6.91683 2.99058 5.70243 3.82174 4.6875 4.86719V1.5625H3.125V7.8125H9.375V6.25H5.53125C6.9969 4.62132 8.9867 3.55744 11.1551 3.24313C13.3235 2.92881 15.5335 3.38392 17.4012 4.52941C19.269 5.67489 20.6766 7.4384 21.3795 9.51364C22.0824 11.5889 22.0362 13.8448 21.249 15.8895C20.4617 17.9343 18.9832 19.6387 17.0701 20.7068C15.157 21.7749 12.9303 22.1392 10.7766 21.7364C8.62284 21.3336 6.67824 20.1892 5.28047 18.5019C3.88269 16.8146 3.12005 14.691 3.125 12.5H1.5625C1.5625 14.6632 2.20397 16.7779 3.4058 18.5765C4.60763 20.3752 6.31583 21.7771 8.3144 22.6049C10.313 23.4328 12.5121 23.6494 14.6338 23.2273C16.7555 22.8053 18.7043 21.7636 20.234 20.234C21.7636 18.7043 22.8053 16.7555 23.2273 14.6338C23.6494 12.5121 23.4328 10.313 22.6049 8.3144C21.7771 6.31583 20.3752 4.60763 18.5765 3.4058C16.7779 2.20397 14.6632 1.5625 12.5 1.5625Z" fill="#16151C"/>
-                            </svg>
-                            
-                          
-                          
+                            </svg>      
                     </a>
                 </div>
             </li>
 
             <li class=" flex items-center text-sm ">
                 <div class="flex items-center absolute right-11 top-5 text-sm border rounded border-gray/75 w-[168px] ">
-                <img src="#" alt="" class="h-6 w-6 rounded-full mr-2"> <!-- Photo de l'utilisateur -->
+                <img src="{{user.photo.url}}" alt="" class="h-6 w-6 rounded-full mr-2"> <!-- Photo de l'utilisateur -->
                 <div class="flex flex-col w-[118px] overflow-hidden ">
                     <p class="text-sm">{{user.username}}</p>
                     <p class="text-xs text-gray-600">{{user.employee.poste}}</p>
@@ -187,14 +178,22 @@
                     <!-- Menu déroulant -->
                 <ul id="dropdown-menu_xl" class="absolute right-4 mt-[-18px] mr-[27px]  w-[168px] bg-white rounded-b shadow-lg hidden text-sm duration-300 z-10">
                     <li class="block py-2 px-6 hover:bg-gray-200 cursor-pointer">
-                        <a href="{% url 'profile' %}">
-
+                        <a href="{% url 'profile' %}" class="flex gap-2">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <ellipse cx="10.0003" cy="14.5837" rx="5.83333" ry="2.91667" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
+                                <ellipse cx="10.0003" cy="5.83333" rx="3.33333" ry="3.33333" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
+                                </svg>
+                                
                             Mon Profil
                         </a>
                     </li>
                     <li class="block py-2 px-6  hover:bg-gray-200 cursor-pointer">
-                        <a href="{% url 'logout' %}" class="text-red-100">
-                           
+                        <a href="{% url 'logout' %}" class="flex gap-2 text-red">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 11.667L15.9596 10.7074C16.3501 10.3169 16.3501 9.68374 15.9596 9.29322L15 8.33366" stroke="#F45B69" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M15.833 10L10.833 10M3.33301 14.3886V6.05527M13.333 14.3886C13.333 15.3091 12.5868 16.0553 11.6663 16.0553H8.33301M13.333 6.05527C13.333 5.1348 12.5868 4.38861 11.6663 4.38861H8.33301M4.07517 16.5501L5.74184 17.6612C6.84943 18.3996 8.33301 17.6056 8.33301 16.2744V4.16947C8.33301 2.83831 6.84943 2.04432 5.74184 2.78272L4.07517 3.89383C3.61151 4.20294 3.33301 4.72333 3.33301 5.28058V15.1633C3.33301 15.7206 3.61151 16.2409 4.07517 16.5501Z" stroke="#F45B69" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                
                             Déconnexion
                         </a>
                     </li>

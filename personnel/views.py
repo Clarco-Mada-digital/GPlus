@@ -29,6 +29,8 @@ from .services import create_notification, create_global_notification
 from rest_framework.decorators import action
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
+from django.template.response import TemplateResponse
+
 
 CustomUser = get_user_model()
 
@@ -445,18 +447,10 @@ class CongeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """
-        Surcharge de la méthode pour filtrer les congés en fonction des permissions de l'utilisateur.
-        Si l'utilisateur a la permission 'acces_all_conge', il verra tous les congés.
-        Sinon, il ne verra que ses propres congés.
+
         """
-        user = self.request.user
 
-        # Vérifie si l'utilisateur a la permission de voir tous les congés (par exemple, un manager)
-        if user.has_perm('personnel.acces_all_conge'):
-            return Conge.objects.all()  # Voir tous les congés si l'utilisateur est dans la direction
-
-        # Sinon, l'utilisateur ne peut voir que ses propres congés
-        return Conge.objects.filter(employee__user=user)
+        return Conge.objects.all()
 
     # Lister les congés pour un employé spécifique
     def get_conges_for_employee(self, request, employee_id):
@@ -467,9 +461,13 @@ class CongeViewSet(viewsets.ModelViewSet):
     # Lister les congés (GET)
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({'conges': serializer.data}, status=status.HTTP_200_OK)
+        # Créer le contexte à passer au template
+        context = {
+            'conges': queryset  # Tu passes directement les objets ici
+        }
 
+        # Renvoyer la réponse avec le template 'conge_list.html' et le contexte
+        return TemplateResponse(request, 'conges_list.html', context)
     # Créer un nouveau congé (POST)
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -668,21 +666,29 @@ class HistoriqueListView(APIView):
 
 
 def profile_view(request):
-    """Vue pour afficher le profil de l'utilisateur connecté."""
+    """Vue pour afficher le profil de l'utilisateur connecté avec les congés, et gestion de privileges."""
     if request.user.is_authenticated:
         employee = None
+        conges = None
+        employees = Employee.objects.all()
+        types_conges = Conge.TYPE_CHOICES  # Récupère les choix de types de salarié
         if hasattr(request.user, 'employee'):
             employee = request.user.employee  # Récupérer l'objet Employee associé à l'utilisateur
+            conges = employee.conge_set.all()  # Récupérer tous les congés associés à l'employé
+
 
         context = {
             'username': request.user.username,
-            'employee': employee
+            'employee': employee,
+            'conges': conges,
+            'employees': employees,
+            'types_conges': types_conges
         }
         return render(request, 'profile.html', context)  # Rendre le template du profil avec le contexte
     return redirect('login')  # Rediriger vers la page de connexion si non authentifié
 
 
-# Pour mettre à jour le profil, vous pouvez conserver votre API existante
+# Pour mettre à jour le profil
 class ProfileAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -785,6 +791,16 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     pagination_class = CustomPageNumberPagination  # Utilise la pagination personnalisée
     # Spécifie que cette vue peut rendre du HTML
     renderer_classes = [TemplateHTMLRenderer]
+
+    @action(detail=False, methods=['GET', 'POST'])
+    def create_schedule_form(self, request, *args, **kwargs):
+
+        # Pour les requêtes GET, on récupère les choix pour les départements et les postes
+        employees = Employee.objects.all()
+
+        return Response({
+            'employees': employees,
+        }, template_name='calendrier_create.html')
 
     def perform_create(self, serializer):
         schedule = serializer.save()
@@ -1033,6 +1049,17 @@ class PaieViewSet(viewsets.ModelViewSet):
     pagination_class = PaiePagination
     permission_classes = [PaiePermission]
 
+    @action(detail=False, methods=['GET', 'POST'], renderer_classes=[TemplateHTMLRenderer])
+    def create_paie_form(self, request, *args, **kwargs):
+
+        # Pour les requêtes GET, on récupère les choix pour les départements et les postes
+        employees = Employee.objects.all()
+
+        # Retourner les employés dans un template HTML avec la pagination
+        return render(request, 'paie_create.html', {
+            'employees': employees
+        })
+
     def list(self, request, *args, **kwargs):
         """Liste paginée des fiches de paie."""
         queryset = self.get_queryset()
@@ -1051,17 +1078,46 @@ class PaieViewSet(viewsets.ModelViewSet):
         return render(request, 'paie_detail.html', {'paie': paie})
 
     def create(self, request, *args, **kwargs):
-        """Créer une nouvelle fiche de paie."""
-        serializer = PaieSerializer(data=request.data)
-        if serializer.is_valid():
-            nouvelle_fiche = serializer.save()
+        """Créer une nouvelle fiche de paie et rendre un fichier HTML."""
 
+        # Récupérer les données directement depuis request.POST
+        employee_id = request.POST.get('employee')
+        periode_debut = request.POST.get('periode_debut')
+        periode_fin = request.POST.get('periode_fin')
+        numero_matricule = request.POST.get('numero_matricule')
+        lot = request.POST.get('lot')
+        contrat = request.POST.get('contrat')
+        heures_travail = request.POST.get('heures_travail')
+
+        # Vérifier que tous les champs nécessaires sont fournis
+        if not (
+                employee_id and periode_debut and periode_fin and numero_matricule and lot and contrat and heures_travail):
+            # Rendre un template HTML avec un message d'erreur
+            return render(request, 'paie_create.html', {
+                'success': False,
+                'message': 'Tous les champs sont obligatoires.',
+            })
+
+        try:
+            # Créer une nouvelle fiche de paie
+            nouvelle_fiche = Paie.objects.create(
+                employee_id=employee_id,
+                periode_debut=periode_debut,
+                periode_fin=periode_fin,
+                numero_matricule=numero_matricule,
+                lot=lot,
+                contrat=contrat,
+                heures_travail=heures_travail
+            )
+
+            # Créer la notification pour l'utilisateur de l'employé
             create_notification(
                 user_action=request.user,
                 message=f"Une fiche de paie a été créée pour {nouvelle_fiche.employee.nom} {nouvelle_fiche.employee.prenom}.",
-                user_affected=nouvelle_fiche.employee.user  # Notification pour l'utilisateur de l'employé
+                user_affected=nouvelle_fiche.employee.user
             )
 
+            # Enregistrer l'historique de la création
             Historique.objects.create(
                 utilisateur=request.user,
                 action='create',
@@ -1072,10 +1128,19 @@ class PaieViewSet(viewsets.ModelViewSet):
                 date_action=timezone.now(),
             )
 
-            return Response({'success': True, 'message': 'Fiche de paie créée avec succès.'},
-                            status=status.HTTP_201_CREATED)
+            # Rendre un template HTML avec un message de succès
+            return render(request, 'paie_create.html', {
+                'success': True,
+                'message': 'Fiche de paie créée avec succès.',
+                'nouvelle_fiche': nouvelle_fiche,
+            })
 
-        return Response({'success': False, 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # Rendre un template HTML avec un message d'erreur en cas d'exception
+            return render(request, 'paie_create.html', {
+                'success': False,
+                'message': f'Erreur lors de la création de la fiche de paie: {str(e)}',
+            })
 
     def update(self, request, pk=None):
         """Mettre à jour une fiche de paie existante."""

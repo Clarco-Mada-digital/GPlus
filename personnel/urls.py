@@ -27,6 +27,12 @@ urlpatterns = [
                   path('employee/create/', EmployeeViewSet.as_view({'get': 'create_employee_form', 'post': 'create_employee_form'}),
                          name='employee-creates'),
 
+                  path('schedule/create/', ScheduleViewSet.as_view({'get': 'create_schedule_form', 'post': 'create_schedule_form'}),
+                    name='schedule-creates'),
+
+                  path('paie/create/', PaieViewSet.as_view({'get': 'create_paie_form', 'post': 'create_paie_form'}),
+                     name='paie-creates'),
+
                    path('api/notifications/', NotificationListView.as_view(), name='notifications_list'),
                   path('api/notifications/<int:notification_id>/mark-as-read/', MarkNotificationAsReadView.as_view(),
                        name='mark_notification_as_read'),

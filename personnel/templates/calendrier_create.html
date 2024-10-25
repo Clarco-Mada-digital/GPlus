@@ -1,0 +1,83 @@
+{% extends "base_primary_employee.html" %} 
+
+{% block title %} Nouveau emploie du temps {% endblock %}
+
+
+
+{% block body %}  
+<div class="container mx-auto mt-20">
+    <div class="">
+
+        <h2 class="text-2xl font-bold mt-20 ">Ajouter un nouveau emploie du temps</h2>
+        <p class="text-xs font-semibold text-gray-400">Tout les calendiers > Ajouter un nouveau emploie du temps</p>
+      
+      </div>        
+
+           <!-- nouveau emploie du temps -->
+           <div class="max-w-7xl mx-auto p-6">
+            <h1 class="text-3xl font-semibold mb-6">Calendrier</h1>
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <form>
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <!-- Employé -->
+                        <div>
+                            <label for="employee" class="block text-gray-700 font-semibold">Employé</label>
+                            <select id="employee" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                                <option>Employé</option>
+                            </select>
+                        </div>
+    
+                        <!-- Lieu -->
+                        <div>
+                            <label for="location" class="block text-gray-700 font-semibold">Lieu</label>
+                            <select id="location" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                                <option>Lieu</option>
+                            </select>
+                        </div>
+    
+                        <!-- Période -->
+                        <div class="flex space-x-2">
+                            <div class="flex-1">
+                                <label for="start_date" class="block text-gray-700 font-semibold">Période</label>
+                                <input type="date" id="start_date" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                            </div>
+                            <span class="text-gray-700 flex items-center">à</span>
+                            <div class="flex-1">
+                                <input type="date" id="end_date" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                            </div>
+                        </div>
+    
+                        <!-- Heures -->
+                        <div class="flex space-x-2">
+                            <div class="flex-1">
+                                <label for="start_time" class="block text-gray-700 font-semibold">Heure</label>
+                                <input type="time" id="start_time" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                            </div>
+                            <span class="text-gray-700 flex items-center">à</span>
+                            <div class="flex-1">
+                                <input type="time" id="end_time" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                            </div>
+                        </div>
+    
+                        <!-- Description -->
+                        <div class="col-span-2">
+                            <label for="description" class="block text-gray-700 font-semibold">Description</label>
+                            <textarea id="description" rows="4" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"></textarea>
+                        </div>
+                    </div>
+    
+                    <!-- Boutons -->
+                    <div class="flex justify-between mt-6">
+                        <button type="button" class="bg-gray-400 text-white py-2 px-6 rounded-lg">Annuler</button>
+                        <button type="submit" class="bg-purple-500 text-white py-2 px-6 rounded-lg">Valider</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        {% endblock %}  
+        
+{% block script %}
+
+{% endblock %}

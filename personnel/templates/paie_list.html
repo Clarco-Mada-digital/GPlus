@@ -15,11 +15,11 @@ Fiche de Paye
             class="text-sm p-4 mt-8 w-full px-3 py-2 bg-cp_secondary border rounded-md focus:border-indigo-500" placeholder="🔍 Recherche" />
     </div>
     <div class="flex items-center justify-between mt-4">
-        <a href="{% url 'employee-creates' %}" class="flex gap-2 py-2 px-4 ml-4 bg-cp_primary text-white text-xs whitespace-nowrap overflow-hidden text-ellipsis rounded-md duration-300 hover:scale-110">
+        <a href="{% url 'paie-creates' %}" class="flex gap-2 py-2 px-4 ml-4 bg-cp_primary text-white text-xs whitespace-nowrap overflow-hidden text-ellipsis rounded-md duration-300 hover:scale-110">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill="FFFFFF" d="M12 8V16M16 12H8M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <p class="mt-1 hidden md:block">Ajouter un nouvel employé</p>
+            <p class="mt-1 hidden md:block">Crée un nouveau fiche de paie</p>
         </a>
         <button onclick="togglePopup()" class="flex gap-2 py-2 px-4 m-4 bg-white text-black text-xs rounded-md border-2 border-gray-200 duration-300 hover:scale-110">
             <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -94,8 +94,8 @@ Fiche de Paye
         <tbody>
             {% for paie in paies %}
             <tr class="bg-white border-b" style="font-size: 0.83rem; font-weight: 500;">
-                <td class="px-6 py-4 whitespace-nowrap"><img src="{{ employee.photo }}" alt="Photo de {{ employee.nom }}" width="50"> {{ paie.employee.id|stringformat:"05d" }} </td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ paie.employee.nom }} {{ paie.employee.prenom }}</td>
+                <td class="px-6 py-4 whitespace-nowrap"> {{ paie.employee.id|stringformat:"05d" }} </td>
+                <td class="px-6 py-4 whitespace-nowrap flex items-center gap-4"> <img src="{{ paie.employee.photo.url }}" alt="Photo de {{ employee.nom }}" class="rounded-full w-12 h-10 ml-8">{{ paie.employee.nom }} {{ paie.employee.prenom }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ paie.exercice }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ paie.net_a_payer }} MGA</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ paie.salaire_base }} MGA</td>
@@ -121,6 +121,14 @@ Fiche de Paye
 
                     <a href="#" class="text-indigo-600 duration-300 hover:scale-150">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M7.46967 11.5303C7.17677 11.2374 7.17678 10.7626 7.46967 10.4697C7.76257 10.1768 8.23744 10.1768 8.53033 10.4697L11.25 13.1893L11.25 1C11.25 0.585786 11.5858 0.25 12 0.25C12.4142 0.25 12.75 0.585786 12.75 1V13.1894L15.4697 10.4697C15.7626 10.1768 16.2374 10.1768 16.5303 10.4697C16.8232 10.7626 16.8232 11.2374 16.5303 11.5303L12.5303 15.5303C12.3896 15.671 12.1989 15.75 12 15.75C11.801 15.75 11.6103 15.671 11.4696 15.5303L7.46967 11.5303ZM6.33981 8.46913C6.59889 8.14594 6.54692 7.67392 6.22373 7.41484C5.90054 7.15576 5.42852 7.20774 5.16944 7.53093C3.96871 9.02878 3.25 10.9315 3.25 13C3.25 17.8325 7.16751 21.75 12 21.75C16.8325 21.75 20.75 17.8325 20.75 13C20.75 10.9315 20.0313 9.02878 18.8306 7.53093C18.5715 7.20774 18.0995 7.15576 17.7763 7.41484C17.4531 7.67392 17.4011 8.14594 17.6602 8.46913C18.6553 9.71047 19.25 11.2848 19.25 13C19.25 17.0041 16.0041 20.25 12 20.25C7.99594 20.25 4.75 17.0041 4.75 13C4.75 11.2848 5.34472 9.71047 6.33981 8.46913Z" fill="#16151C"/>
+                            </svg>
+                            
+                                                        
+                    </a>
+
+                    <a href="#" class="text-indigo-600 duration-300 hover:scale-150">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M3 21H21M13.7844 5.31171C13.7844 5.31171 13.7844 6.94634 15.419 8.58096C17.0537 10.2156 18.6883 10.2156 18.6883 10.2156M7.31963 17.9881L10.7523 17.4977C11.2475 17.4269 11.7064 17.1975 12.06 16.8438L20.3229 8.58096C21.2257 7.67818 21.2257 6.21449 20.3229 5.31171L18.6883 3.67708C17.7855 2.77431 16.3218 2.77431 15.419 3.67708L7.15616 11.94C6.80248 12.2936 6.57305 12.7525 6.50231 13.2477L6.01193 16.6804C5.90295 17.4432 6.5568 18.097 7.31963 17.9881Z" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
                             </svg>                                
                     </a>
@@ -137,7 +145,7 @@ Fiche de Paye
 
         <tfoot>
             <tr>
-                <td colspan="9" class="px-6 py-4 text-xs ">
+                <td colspan="8" class="px-6 py-4 text-xs ">
                     <div class="flex justify-between ">
                         <div class="flex">
                             <p class="mt-1">
@@ -197,6 +205,23 @@ Fiche de Paye
            </tfoot>
     </table>
 </div>
+
+
+<!-- Pagination -->
+<div class="mt-4">
+    {% if paies.has_previous %}
+        <a href="?page=1" class="text-blue-500 hover:underline">« Première</a>
+        <a href="?page={{ paies.previous_page_number }}" class="text-blue-500 hover:underline">« Précédente</a>
+    {% endif %}
+
+    <span>Page {{ paies.number }} sur {{ paies.paginator.num_pages }}</span>
+
+    {% if paies.has_next %}
+        <a href="?page={{ paies.next_page_number }}" class="text-blue-500 hover:underline">Suivante »</a>
+        <a href="?page={{ paies.paginator.num_pages }}" class="text-blue-500 hover:underline">Dernière »</a>
+    {% endif %}
+</div>
+
 
 
 {% endblock %}

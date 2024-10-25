@@ -9,59 +9,7 @@
 </head>
 <body>
     
-        <div class=" grid grid-cols-2 gap-6" id="step2">
-            <!-- Type de congé -->
-    <div class="mb-4">
-       <select name="type_salarie" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-           <option value="" disabled selected>Sélectionner le type de salarié</option>
-           {% for type in type_choices %}
-           <option value="{{ type.0 }}">{{ type.1 }}</option>
-           {% endfor %}
-       </select>
-    </div>
-    
-     <!-- Periode de conges -->
-     <div class="relative mb-4  ">
-        <input type="date" id="date_naissance" name="date_naissance" 
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer" 
-               required>
-               <span id="datePlaceholder" class="absolute t-1 left-4 top-2 ">Date de naissance</span>
-    </div>
-
-    <div class="relative mb-4  ">
-        <input type="date" id="date_naissance" name="date_naissance" 
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer" 
-               required>
-               <span id="datePlaceholder" class="absolute t-1 left-4 top-2 ">Date de naissance</span>
-    </div>
-
-    
-    <!-- Upload Bulletin Salaire -->
-    <div class="flex flex-col items-center justify-center p-4 border-dashed border-2 border-cp_primary rounded-lg cursor-pointer upload-container">
-        <div class="bg-indigo-700 p-2 border border-indigo-800 rounded-lg">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 6L12 2M12 2L16 6M12 2L12 16" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M18.2454 9C19.3433 10.3696 20 12.1081 20 14C20 18.4183 16.4183 22 12 22C7.58172 22 4 18.4183 4 14C4 12.1081 4.65672 10.3696 5.75462 9" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-        </div>
-        <div>
-            <span class="upload-label text-gray-700 text-sm mr-2">Pièce Justificatif </span>
-        </div>
-        <input type="file" id="bulletin-input" class="hidden" name="bulletin_salaire" />
-        <label for="bulletin-input" class="file-name flex items-center ml-2">
-            <span id="bulletin-file-name" class="text-sm text-gray-300">Formats supportés: Image, PDF, DOCX</span>
-            <svg class="close-icon w-4 h-4 ml-1 cursor-pointer hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </label>
-    </div>
-
-     <!-- Description -->
-     <div class="mb-4">
-        <input type="text" name="nom" placeholder="Description" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-    </div>
-
+  
 
     
 <script>
