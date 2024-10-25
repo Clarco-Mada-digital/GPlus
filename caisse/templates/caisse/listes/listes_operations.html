@@ -4,68 +4,82 @@
 {% block title %}Liste des Opérations{% endblock %}
 
 {% block content %}
-<div class="container mx-auto bg-white rounded-lg border p-6" x-data="{ activeTab: 'entrees' }">
+<div class="container mx-auto bg-white rounded-lg border p-6"
+    x-data="{ activeTab: 'entrees' }">
 
     <div class="flex justify-between space-x-4 mb-4">
         <div></div>
         <!-- Tabs -->
         <div class="flex space-x-2">
-            <button 
-                @click="activeTab = 'entrees'" 
+            <button
+                @click="activeTab = 'entrees'"
                 :class="activeTab === 'entrees' ? 'bg-green-200 hover:bg-green-100 text-green-700 font-bold py-2 px-4 rounded' : 'bg-white text-gray-600 font-bold py-2 px-6 rounded'">
                 <i class="fas fa-link"></i> Entrées
             </button>
-            <button 
-                @click="activeTab = 'sorties'" 
+            <button
+                @click="activeTab = 'sorties'"
                 :class="activeTab === 'sorties' ? 'bg-rose-200 hover:bg-rose-100 text-rose-500 font-bold py-2 px-4 rounded' : 'bg-white text-gray-600 font-bold py-2 px-6 rounded'">
                 Sorties
             </button>
         </div>
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             <a href="{% url 'operation' %}">Nouvelle opération</a>
         </button>
     </div> <br>
 
     <!-- Filtrage -->
+    {% comment %}
     <form method="GET" action="{% url 'listes' %}" class="p-4">
         <div class="flex items-center space-x-4">
-            <button type="submit" class="flex items-center space-x-1 bg-white text-gray-600 font-medium px-3 py-2">
+            <button type="submit" class="flex items-center space-x-1 bg-gray-200 text-gray-600 font-medium px-3 py-2 rounded-lg">
                 <i class="fas fa-filter"></i>
                 <span>Filtrer par</span>
             </button>
             <div class="h-10 w-0.5 bg-gray-300"></div>
             <div class="flex space-x-4">
-                <select name="categorie" class="px py-2 border-none focus:ring-0 text-gray-600 font-medium">
+                <select name="categorie" class="px py-2 border-none focus:ring-0">
                     <option value="">Catégories</option>
                     {% for categorie in categories %}
-                        <option value="{{ categorie.id }}" {% if request.GET.categorie == categorie.id|stringformat:"s" %}selected{% endif %}>
-                            {{ categorie.name }}
-                        </option>
+                    <option value="{{ categorie.id }}"
+                        {% if request.GET.categorie ==
+                        categorie.id|stringformat:"s" %}selected{% endif %}>
+                        {{ categorie.name }}
+                    </option>
                     {% endfor %}
                 </select>
                 <div class="h-10 w-0.5 bg-gray-300"></div>
-                <select name="beneficiaire" class="px py-2 border-none focus:ring-0">
-                    <option value="">Bénéficiaires</option>
+                <select name="beneficiaire"
+                    class="px py-2 border-none focus:ring-0">
+                    <option value>Bénéficiaires</option>
                     {% for beneficiaire in beneficiaires %}
-                        <option value="{{ beneficiaire.id }}" {% if request.GET.beneficiaire == beneficiaire.id|stringformat:"s" %}selected{% endif %}>
-                            {{ beneficiaire.name }}
-                        </option>
+                    <option value="{{ beneficiaire.id }}" {% if
+                        request.GET.beneficiaire ==
+                        beneficiaire.id|stringformat:"s" %}selected{% endif %}>
+                        {{ beneficiaire.name }}
+                    </option>
                     {% endfor %}
                 </select>
                 <div class="h-10 w-0.5 bg-gray-300"></div>
-                <select name="fournisseur" class="px py-2 border-none focus:ring-0">
-                    <option value="" selected>Fournisseurs</option>
+                <select name="fournisseur"
+                    class="px py-2 border-none focus:ring-0">
+                    <option value selected>Fournisseurs</option>
                     {% for fournisseur in fournisseurs %}
-                        <option value="{{ fournisseur.id }}" {% if request.GET.fournisseur == fournisseur.id|stringformat:"s" %}selected{% endif %}>
-                            {{ fournisseur.name }}
-                        </option>
+                    <option value="{{ fournisseur.id }}" {% if
+                        request.GET.fournisseur ==
+                        fournisseur.id|stringformat:"s" %}selected{% endif %}>
+                        {{ fournisseur.name }}
+                    </option>
                     {% endfor %}
                 </select>
                 <div class="h-10 w-0.5 bg-gray-300"></div>
                 <select name="sort" class="px-3 py-2 border-none focus:ring-0">
-                    <option value="date" {% if request.GET.sort == "date" %}selected{% endif %}>Date</option>
-                    <option value="montant" {% if request.GET.sort == "montant" %}selected{% endif %}>Montant</option>
-                    <option value="quantite" {% if request.GET.sort == "quantite" %}selected{% endif %}>Quantité</option>
+                    <option value="date" {% if request.GET.sort == "date"
+                        %}selected{% endif %}>Date</option>
+                    <option value="montant" {% if request.GET.sort == "montant"
+                        %}selected{% endif %}>Montant</option>
+                    <option value="quantite" {% if request.GET.sort ==
+                        "quantite" %}selected{% endif %}>Quantité</option>
                 </select>
                 <div class="h-10 w-0.5 bg-gray-300"></div>
 
@@ -73,8 +87,10 @@
                     <i class="fas fa-sync-alt"></i> reset filter
                 </a>
             </div>
+
         </div>
     </form>
+    {% endcomment %}
     <br>
 
     <!-- Table des opérations -->
@@ -99,19 +115,24 @@
                 {% endfor %}
                 <template x-show="activeTab === 'entrees'" x-transition>
                     {% for operation in entree %}
-                    <tr :key="{{ operation.id }}" class="border-b hover:bg-gray-50">
+                    <tr :key="{{ operation.id }}"
+                        class="border-b hover:bg-gray-50">
                         <td class="px-4 py-2">{{ operation.description }}</td>
-                        <td class="px-4 py-2">{{ operation.categorie.name }}</td>
+                        <td class="px-4 py-2">{{ operation.categorie.name }}
+                        </td>
                         <td class="px-4 py-2"></td>
                         <td class="px-4 py-2"></td>
                         <td class="px-4 py-2">{{ operation.date }}</td>
-                        <td class="px-4 py-2 text-right">{{ operation.quantité }}</td>
-                        <td class="px-4 py-2 text-right">{{ operation.montant }} Ar</td>
+                        <td class="px-4 py-2 text-right">{{ operation.quantité
+                            }}</td>
+                        <td class="px-4 py-2 text-right">{{ operation.montant }}
+                            Ar</td>
                         <td class="px-4 py-2 text-center">
-                            <a href="" class="text-blue-600 hover:text-blue-800 mr-2">
+                            <a href
+                                class="text-blue-600 hover:text-blue-800 mr-2">
                                 Modifier
                             </a>
-                            <a href="" class="text-rose-600 hover:text-red-800">
+                            <a href class="text-rose-600 hover:text-red-800">
                                 Supprimer
                             </a>
                         </td>
@@ -122,19 +143,37 @@
                 <!-- Affichage des sorties -->
                 <template x-show="activeTab === 'sorties'" x-transition>
                     {% for operation in sortie %}
-                    <tr :key="{{ operation.id }}" class="border-b hover:bg-gray-50">
+                    <tr :key="{{ operation.id }}"
+                        class="border-b hover:bg-gray-50">
                         <td class="px-4 py-2">{{ operation.description }}</td>
                         <td class="px-4 py-2">{{ operation.categorie }}</td>
-                        <td class="px-4 py-2">{{ operation.beneficiaire.name }}</td>
-                        <td class="px-4 py-2">{{ operation.fournisseur.name }}</td>
+                        <td class="px-4 py-2">
+                            {% if operation.beneficiaire %}
+                            {% if operation.beneficiaire.personnel %}
+                            {{ operation.beneficiaire.personnel.first_name }}
+                            {{ operation.beneficiaire.personnel.last_name }}
+                            {% elif operation.beneficiaire.name %}
+                            {{ operation.beneficiaire.name }}
+                            {% else %}
+                            Bénéficiaire non spécifié
+                            {% endif %}
+                            {% else %}
+                            Bénéficiaire non spécifié
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-2">{{ operation.fournisseur.name
+                            }}</td>
                         <td class="px-4 py-2">{{ operation.date }}</td>
-                        <td class="px-4 py-2 text-right">{{ operation.quantite }}</td>
-                        <td class="px-4 py-2 text-right">{{ operation.montant }} Ar</td>
+                        <td class="px-4 py-2 text-right">{{ operation.quantite
+                            }}</td>
+                        <td class="px-4 py-2 text-right">{{ operation.montant }}
+                            Ar</td>
                         <td class="px-4 py-2 text-center">
-                            <a href="" class="text-blue-600 hover:text-blue-800 mr-2">
+                            <a href
+                                class="text-blue-600 hover:text-blue-800 mr-2">
                                 Modifier
                             </a>
-                            <a href="" class="text-rose-600 hover:text-red-800">
+                            <a href class="text-rose-600 hover:text-red-800">
                                 Supprimer
                             </a>
                         </td>
@@ -144,7 +183,7 @@
             </tbody>
         </table>
     </div>
-    
+
 </div>
 
-{% endblock %}
+{% endblock %}
