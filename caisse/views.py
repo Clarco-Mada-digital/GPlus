@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -14,6 +14,8 @@ from django.db.models.functions import TruncYear, TruncMonth
 from django.db.models import Q
 from django.utils import timezone
 from datetime import timedelta
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 # Vues principales
 
@@ -561,3 +563,37 @@ def supprimer_operation(request, pk):
         messages.success(request, "Opération supprimée avec succès.")
     return redirect('depenses')
 
+# Add this new view
+@login_required
+def parametres(request):
+    """
+    Affiche la page des paramètres.
+    """
+    context = {
+        # You can add any necessary context data here
+    }
+    return render(request, "caisse/parametres/parametres.html", context)
+
+@login_required
+@require_POST
+@csrf_exempt
+def creer_categorie(request):
+    data = json.loads(request.body)
+    name = data.get('name')
+    description = data.get('description')
+    type = data.get('type')
+    
+    if not name or not type:
+        return JsonResponse({'success': False, 'error': 'Nom et type sont requis'}, status=400)
+    
+    categorie = Categorie.objects.create(name=name, description=description, type=type)
+    
+    return JsonResponse({
+        'success': True,
+        'categorie': {
+            'id': categorie.id,
+            'name': categorie.name,
+            'description': categorie.description,
+            'type': categorie.type
+        }
+    })

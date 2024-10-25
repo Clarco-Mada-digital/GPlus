@@ -1,0 +1,50 @@
+{% extends "Layout/layout.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Paramètres</h1>
+
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <h2 class="text-2xl font-semibold mb-4">Paramètres généraux</h2>
+
+        <!-- Example settings -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2"
+                for="currency">
+                Devise
+            </label>
+            <select
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="currency">
+                <option>Ar (Ariary)</option>
+                <option>€ (Euro)</option>
+                <option>$ (Dollar)</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2"
+                for="language">
+                Langue
+            </label>
+            <select
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="language">
+                <option>Français</option>
+                <option>English</option>
+                <option>Malagasy</option>
+            </select>
+        </div>
+
+        <!-- Add more settings as needed -->
+
+        <div class="flex items-center justify-between mt-6">
+            <button
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="button">
+                Enregistrer les modifications
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

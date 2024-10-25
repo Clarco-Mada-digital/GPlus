@@ -24,6 +24,7 @@ urlpatterns = [
     path('categories/ajouter/', views.ajouter_categorie, name="ajouter_categorie"),
     path('categories/modifier/<int:pk>/', views.modifier_categorie, name="modifier_categorie"),
     path('categories/supprimer/<int:pk>/', views.supprimer_categorie, name="supprimer_categorie"),
+    path('categories/creer/', views.creer_categorie, name="creer_categorie"),
     
     # Opérations financières
     path('ajouts-entree/', views.ajouts_entree, name="ajouts_entree"),
@@ -33,4 +34,7 @@ urlpatterns = [
     path('operations/supprimer/<int:pk>/', views.supprimer_operation, name="supprimer_operation"),
 
     path('operations/', views.operations, name="operations"),  # Nouvelle URL
+    
+    # Add this new URL
+    path('parametres/', views.parametres, name="parametres"),
 ]
