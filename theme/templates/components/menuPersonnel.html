@@ -1,0 +1,11 @@
+<li class="flex items-center text-sm">
+    <a href="{% url 'personnel:dashboard' %}" class="block py-2 px-4 hover:bg-indigo-500 rounded flex items-center text-sm gap-3 {% if request.resolver_match.url_name == 'dashboard' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500 {% endif %}">
+        <svg width="24" height="24" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 3.9C1 2.57452 2.07452 1.5 3.4 1.5H8.2C9.52548 1.5 10.6 2.57452 10.6 3.9V8.7C10.6 10.0255 9.52548 11.1 8.2 11.1H3.4C2.07452 11.1 1 10.0255 1 8.7V3.9Z" stroke="#16151C" stroke-width="1.5"/>
+            <path d="M25 6.3C25 8.95097 22.851 11.1 20.2 11.1C17.549 11.1 15.4 8.95097 15.4 6.3C15.4 3.64903 17.549 1.5 20.2 1.5C22.851 1.5 25 3.64903 25 6.3Z" stroke="#16151C" stroke-width="1.5"/>
+            <path d="M10.6 20.7C10.6 23.351 8.45097 25.5 5.8 25.5C3.14903 25.5 1 23.351 1 20.7C1 18.049 3.14903 15.9 5.8 15.9C8.45097 15.9 10.6 18.049 10.6 20.7Z" stroke="#16151C" stroke-width="1.5"/>
+            <path d="M15.4 18.3C15.4 16.9745 16.4745 15.9 17.8 15.9H22.6C23.9255 15.9 25 16.9745 25 18.3V23.1C25 24.4255 23.9255 25.5 22.6 25.5H17.8C16.4745 25.5 15.4 24.4255 15.4 23.1V18.3Z" stroke="#16151C" stroke-width="1.5"/>
+        </svg>
+        {{ nom_menu }}
+    </a>
+</li>

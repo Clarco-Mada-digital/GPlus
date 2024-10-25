@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
 {% block contentPage %}    
+
   <!-- Content -->
   <div class="flex-1 px-2 sm:px-0">
     {% comment %} Header Page {% endcomment %}
-    {% include 'header.html' with header_title="Applications" %} 
+    {% include 'accounts/header.html' with header_title="Applications" %} 
 
     <div class="mb-10 h-full overflow-auto sm:mb-0 mt-10 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {% comment %} <div class="group bg-gray-900/30 py-20 px-4 flex flex-col space-y-2 items-center cursor-pointer rounded-md hover:bg-gray-900/40 hover:smooth-hover">
@@ -16,7 +17,7 @@
         <a class="text-white/50 group-hover:text-white group-hover:smooth-hover text-center" href="#">Create group</a>
       </div> {% endcomment %}
       
-      <a href="{% url 'accounts:pricing_page' %}">
+      <a href="{% url 'personnel:dashboard' %}">
       {% include 'components/Card.html' with title="Personelle" description="55 Personnes" notification_msg="22 Notification" image="https://images.unsplash.com/photo-1549732565-d673b928da7f?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" %}
       </a>
 

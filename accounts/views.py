@@ -61,7 +61,7 @@ Raises:
 @login_required(login_url="accounts:login_user")
 def index(request)->None:
   # auth_user = authenticate()
-  return render(request, "index.html")
+  return render(request, "accounts/index.html")
 
 
 """
@@ -79,7 +79,7 @@ Raises:
 """
 def logout_user(request)->None:
   logout(request)
-  return redirect("login_user")
+  return redirect("accounts:login_user")
 
 
 
@@ -107,10 +107,10 @@ def dashboard(request):
 
 @login_required(login_url="accounts:login_user")
 def pricing(request):
-  return render(request, "pricing.html")
+  return render(request, "accounts/pricing.html")
 
 
 @login_required(login_url="accounts:login_user")
 def settings(request):
-  return render(request, "settings.html")
+  return render(request, "accounts/settings.html")
 

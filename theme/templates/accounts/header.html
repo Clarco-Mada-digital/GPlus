@@ -1,7 +1,9 @@
 <div class="flex justify-between items-center">
   <h3 class="text-3xl font-extralight text-black dark:text-white/50"> {{ header_title }} </h3>
   <div class="inline-flex items-center space-x-2">
-  <h3 class="font-extralight text-lg text-black dark:text-white/50 ml-2">Ravi de vous revoir, {{ user.username.capitalize }} </h3> <span class="inline-flex items-center justify-center w-10 h-10 rounded-full cursor-pointer mr-4 overflow-hidden"><img src="https://eu.ui-avatars.com/api/?name={{user.username}}&background=random" alt=""></span>
+  <h3 class="font-extralight text-lg text-black dark:text-white/50 ml-2">Ravi de vous revoir, {{ user.username.capitalize }} </h3> <span class="inline-flex items-center justify-center w-10 h-10 rounded-full cursor-pointer mr-4 overflow-hidden">
+    <img src="{{ user.photo.url }}" alt="photo de profil"></span>
+    {% comment %} https://eu.ui-avatars.com/api/?name={{user.username}}&background=random {% endcomment %}
     <a href="{% url 'change_theme' %}" id="theme-toggle" class="bg-gray-300 dark:bg-gray-900 text-black dark:text-white/50 p-2 rounded-full hover:text-white smooth-hover">
       {% if not is_dark_theme %}
       <svg id="dark-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

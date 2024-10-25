@@ -54,11 +54,8 @@ module.exports = {
         accent: "#16DBCC",
         red: "#FF5991",
         white: "#FFFFFF",
-      },
-      borderRadius: {
-        lg: `var(--radius)`,
-        md: `calc(var(--radius) - 2px)`,
-        sm: "calc(var(--radius) - 4px)",
+        cp_primary : "#7152F3",
+        cp_secondary : "#DCDBDE",
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
