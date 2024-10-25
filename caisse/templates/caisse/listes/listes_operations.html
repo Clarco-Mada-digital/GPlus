@@ -32,16 +32,14 @@
     {% comment %}
     <form method="GET" action="{% url 'listes' %}" class="p-4">
         <div class="flex items-center space-x-4">
-            <button type="submit"
-                class="flex items-center space-x-1 bg-gray-200 text-gray-600 font-medium px-3 py-2 rounded-lg">
+            <button type="submit" class="flex items-center space-x-1 bg-gray-200 text-gray-600 font-medium px-3 py-2 rounded-lg">
                 <i class="fas fa-filter"></i>
                 <span>Filtrer par</span>
             </button>
             <div class="h-10 w-0.5 bg-gray-300"></div>
             <div class="flex space-x-4">
-                <select name="categorie"
-                    class="px py-2 border-none focus:ring-0">
-                    <option value>Catégories</option>
+                <select name="categorie" class="px py-2 border-none focus:ring-0">
+                    <option value="">Catégories</option>
                     {% for categorie in categories %}
                     <option value="{{ categorie.id }}"
                         {% if request.GET.categorie ==
@@ -112,6 +110,9 @@
             </thead>
             <tbody>
                 <!-- Affichage des entrées -->
+                {% for operation in entree %}
+                {{ operation }}
+                {% endfor %}
                 <template x-show="activeTab === 'entrees'" x-transition>
                     {% for operation in entree %}
                     <tr :key="{{ operation.id }}"
