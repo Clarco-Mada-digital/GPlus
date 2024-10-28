@@ -39,4 +39,11 @@ urlpatterns = [
     
     # Add this new URL
     path('parametres/', views.parametres, name="parametres"),
+    # Ajouter ces lignes aux patterns existants
+    path('utilisateurs/', views.utilisateurs, name='utilisateurs'),
+    path('utilisateurs/creer/', views.creer_utilisateur, name='creer_utilisateur'),
+    path('utilisateurs/modifier/<int:pk>/', views.modifier_utilisateur, name='modifier_utilisateur'),
+    path('utilisateurs/supprimer/<int:pk>/', views.supprimer_utilisateur, name='supprimer_utilisateur'),
+    # Ajouter cette ligne aux patterns existants
+    path('utilisateurs/editer/<int:pk>/', views.editer_utilisateur, name='editer_utilisateur'),
 ]

@@ -1,6 +1,6 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.core.serializers import serialize
 from django.db import models  # Ajoutez cette ligne
@@ -16,6 +16,12 @@ from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+def is_admin(user):
+    return user.is_staff
 
 # Vues principales
 
@@ -659,5 +665,170 @@ def editer_categorie(request, pk):
         'categorie': categorie,
     }
     return render(request, 'caisse/acteurs/editer_categorie.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def utilisateurs(request):
+    """
+    Affiche la liste des utilisateurs.
+    """
+    users = User.objects.all()
+    return render(request, 'caisse/utilisateurs/utilisateurs.html', {'users': users})
+
+@login_required
+@user_passes_test(is_admin)
+@csrf_exempt
+def creer_utilisateur(request):
+    """
+    Crée un nouvel utilisateur.
+    """
+    if request.method != 'POST':
+        return redirect('utilisateurs')
+    
+    try:
+        # Récupérer les données du formulaire
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
+        is_staff = request.POST.get('is_staff') == 'true'
+        is_active = request.POST.get('is_active') == 'true'
+        
+        # Vérifier si l'utilisateur existe déjà
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Un utilisateur avec ce nom d'utilisateur existe déjà")
+            return redirect('utilisateurs')
+            
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Un utilisateur avec cet email existe déjà")
+            return redirect('utilisateurs')
+        
+        # Créer l'utilisateur
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            is_staff=is_staff,
+            is_active=is_active
+        )
+
+        # Gérer l'upload de la photo
+        if 'photo' in request.FILES:
+            user.photo = request.FILES['photo']
+            user.save()
+        
+        messages.success(request, "Utilisateur créé avec succès")
+        return redirect('utilisateurs')
+        
+    except Exception as e:
+        messages.error(request, f"Erreur lors de la création de l'utilisateur: {str(e)}")
+        return redirect('utilisateurs')
+
+@login_required
+@user_passes_test(is_admin)
+@require_POST
+@csrf_exempt
+def modifier_utilisateur(request, pk):
+    """
+    Modifie un utilisateur existant.
+    """
+    user = get_object_or_404(User, pk=pk)
+    
+    try:
+        # Si les données sont envoyées en multipart/form-data
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            data = request.POST.dict()
+            # Convertir les chaînes 'true'/'false' en booléens
+            data['is_staff'] = data.get('is_staff', 'false').lower() == 'true'
+            data['is_active'] = data.get('is_active', 'true').lower() == 'true'
+        else:
+            # Si les données sont envoyées en JSON
+            data = json.loads(request.body)
+        
+        # Vérifier si le nom d'utilisateur existe déjà pour un autre utilisateur
+        if User.objects.exclude(pk=pk).filter(username=data['username']).exists():
+            return JsonResponse({
+                'success': False, 
+                'error': "Un utilisateur avec ce nom d'utilisateur existe déjà"
+            }, status=400)
+            
+        if User.objects.exclude(pk=pk).filter(email=data['email']).exists():
+            return JsonResponse({
+                'success': False, 
+                'error': "Un utilisateur avec cet email existe déjà"
+            }, status=400)
+        
+        user.username = data['username']
+        user.email = data['email']
+        user.first_name = data.get('first_name', '')
+        user.last_name = data.get('last_name', '')
+        user.is_staff = data.get('is_staff', False)
+        user.is_active = data.get('is_active', True)
+        
+        if data.get('password'):
+            user.set_password(data['password'])
+            
+        # Gérer l'upload de la photo
+        if 'photo' in request.FILES:
+            user.photo = request.FILES['photo']
+            
+        user.save()
+        
+        return JsonResponse({
+            'success': True,
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'is_staff': user.is_staff,
+                'is_active': user.is_active,
+                'photo_url': user.photo.url if user.photo else None
+            }
+        })
+    except KeyError as e:
+        return JsonResponse({
+            'success': False, 
+            'error': f"Champ requis manquant: {str(e)}"
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False, 
+            'error': str(e)
+        }, status=400)
+
+@login_required
+@user_passes_test(is_admin)
+@require_POST
+@csrf_exempt
+def supprimer_utilisateur(request, pk):
+    """
+    Supprime un utilisateur.
+    """
+    user = get_object_or_404(User, pk=pk)
+    
+    try:
+        user.delete()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@login_required
+@user_passes_test(is_admin)
+def editer_utilisateur(request, pk):
+    """
+    Affiche le formulaire de modification d'un utilisateur.
+    """
+    user = get_object_or_404(User, pk=pk)
+    if request.method == 'GET':
+        return render(request, 'caisse/utilisateurs/modifier_utilisateur.html', {'user': user})
+    
+    return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
+
+
 
 

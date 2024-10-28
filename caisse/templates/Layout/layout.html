@@ -32,7 +32,7 @@
     h5,
     h6,
     p {
-        color: #1403af;
+        color: #1800f5;
     }
     </style>
 
@@ -56,7 +56,7 @@
 
                 <div class="px-6 py-4">
                     <h1 class="text-2xl font-bold text-blue-600">Cash
-                        </h1>
+                    </h1>
                 </div>
 
                 <nav class="mt-6">
@@ -116,6 +116,17 @@
                         </svg>
                         <span class="ml-3">Acteurs</span>
                     </a>
+                    <!-- Nouvel élément pour les utilisateurs -->
+                    <a href="{% url 'utilisateurs' %}"
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/utilisateurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path
+                                d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                        </svg>
+                        <span class="ml-3">Utilisateurs</span>
+                    </a>
                     <a href="{% url 'parametres' %}"
                         class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/parametres/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -157,9 +168,15 @@
                             class="w-64 px-4 py-2 ml-4 border border-gray-300 rounded-lg"
                             type="text"
                             placeholder="Entrer votre recherche ici">
+                        {% if request.user.photo %}
+                        <img class="w-10 h-10 ml-4 rounded-full"
+                            src="{{ request.user.photo.url }}"
+                            alt="Photo de profil de {{ request.user.username }}">
+                        {% else %}
                         <img class="w-10 h-10 ml-4 rounded-full"
                             src="https://randomuser.me/api/portraits/women/50.jpg"
-                            alt="Photo de profil">
+                            alt="Photo de profil de {{ request.user.username }}">
+                        {% endif %}
                     </div>
                 </header>
 
