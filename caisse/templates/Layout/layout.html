@@ -168,9 +168,15 @@
                             class="w-64 px-4 py-2 ml-4 border border-gray-300 rounded-lg"
                             type="text"
                             placeholder="Entrer votre recherche ici">
+                        {% if request.user.photo %}
+                        <img class="w-10 h-10 ml-4 rounded-full"
+                            src="{{ request.user.photo.url }}"
+                            alt="Photo de profil de {{ request.user.username }}">
+                        {% else %}
                         <img class="w-10 h-10 ml-4 rounded-full"
                             src="https://randomuser.me/api/portraits/women/50.jpg"
-                            alt="Photo de profil">
+                            alt="Photo de profil de {{ request.user.username }}">
+                        {% endif %}
                     </div>
                 </header>
 

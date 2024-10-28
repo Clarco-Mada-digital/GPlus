@@ -368,7 +368,7 @@
             <div
                 class="bg-white rounded-lg border p-6 flex flex-col items-center">
                 <img
-                    :src="acteur.photo ? acteur.photo : 'https://img.freepik.com/vecteurs-premium/illustration-vectorielle-plate-echelle-gris-profil-utilisateur-avatar-image-profil-personne-icone-convient-pour-profils-medias-sociaux-icones-economiseurs-ecran-comme-modelex9xa_719432-1256.jpg'"
+                    :src="acteur.photo ? '/media/' + acteur.photo : '/media/photos/pdp_defaut.png'"
                     :alt="acteur.last_name"
                     class="w-24 h-24 rounded-full mb-4 object-cover">
                 <h2 class="text-xl font-semibold mb-2"
