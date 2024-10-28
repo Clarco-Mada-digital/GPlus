@@ -1,0 +1,47 @@
+
+<form id="operation-form" data-operation-id="{{ pk }}" data-type-operation="{{ type_operation }}">
+    {% csrf_token %}  <!-- Important for CSRF protection -->
+    <!-- Your form fields here ... -->
+    <button type="submit">Save Changes</button>
+</form>
+
+<script>
+    document.getElementById('operation-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const form = event.target;
+        const operationId = form.dataset.operationId;
+        const typeOperation = form.dataset.typeOperation;
+        const formData = new FormData(form);
+
+        fetch(`/caisse/modifier/${operationId}/${typeOperation}/`, {  // Adjust your URL
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value // Get CSRF token
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Success feedback (e.g., display a success message)
+                alert("Operation updated successfully!");
+                // Optionally, refresh the data on the page or redirect
+            } else {
+                // Display error messages (e.g., using `data.errors`)
+                console.error("Form errors:", data.errors);
+                 // Example: display errors next to the fields
+                for (const field in data.errors) {
+                    const errorElement = document.getElementById(`${field}-error`);
+                    if(errorElement) {errorElement.textContent = data.errors[field][0];}
+                   // ... (handle other fields)
+                }
+
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+             // Display a generic error message to the user
+        });
+    });
+
+</script>

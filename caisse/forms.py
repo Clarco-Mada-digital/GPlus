@@ -1,5 +1,5 @@
 from django import forms
-from .models import Fournisseur, Categorie, Personnel
+from .models import Fournisseur, Categorie, Personnel, OperationEntrer, OperationSortir
 
 class FournisseurForm(forms.ModelForm):
     class Meta:
@@ -19,3 +19,13 @@ class PersonnelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['date_naissance'].widget = forms.DateInput(attrs={'type': 'date'})
+
+class OperationEntrerForm(forms.ModelForm):
+    class Meta:
+        model = OperationEntrer
+        fields = ['description', 'montant', 'categorie', 'date_transaction']
+
+class OperationSortirForm(forms.ModelForm):
+    class Meta:
+        model = OperationSortir
+        fields = ['description', 'montant', 'categorie', 'beneficiaire', 'fournisseur', 'date_de_sortie', 'quantité']

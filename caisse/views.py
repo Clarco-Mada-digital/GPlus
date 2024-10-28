@@ -7,7 +7,7 @@ from django.db import models  # Ajoutez cette ligne
 import json
 from decimal import Decimal
 from .models import Categorie, Personnel, Fournisseur, OperationEntrer, OperationSortir, Beneficiaire
-from .forms import FournisseurForm, PersonnelForm, CategorieForm
+from .forms import FournisseurForm, PersonnelForm, CategorieForm, OperationEntrerForm, OperationSortirForm
 from django.db.models import Sum, Count
 from django.core.paginator import Paginator
 from django.db.models.functions import TruncYear, TruncMonth
@@ -122,13 +122,16 @@ def listes(request):
     Affiche la liste des opérations.
     """
     
-    entree = OperationEntrer.objects.all()
-    sortie = OperationSortir.objects.select_related('beneficiaire', 'fournisseur', 'categorie').all()
+    entrees = OperationEntrer.objects.all()
+    sorties = OperationSortir.objects.select_related('beneficiaire', 'fournisseur', 'categorie').all()
     categories = Categorie.objects.all()
     beneficiaires = Beneficiaire.objects.all()
     fournisseurs = Fournisseur.objects.all()
     sort_by = request.GET.get('sort', 'date')
 
+    # Détecter le type d'opération choisi (par défaut, affichage des entrées)
+    type_operation = request.GET.get('type', 'entrees')
+    
     # Dictionnaire pour stocker les filtres
     filters = {}
 
@@ -162,13 +165,13 @@ def listes(request):
     # Application des filtres
     if filters:
         if 'query' in filters:
-            entree = entree.filter(
+            entrees = entrees.filter(
                 Q(description__icontains=filters['query']) |
                 Q(categorie__name__icontains=filters['query']) |
                 Q(montant__icontains=filters['query']) |
                 Q(date__icontains=filters['query'])
             )
-            sortie = sortie.filter(
+            sorties = sorties.filter(
                 Q(description__icontains=filters['query']) |
                 Q(categorie__name__icontains=filters['query']) |
                 Q(montant__icontains=filters['query']) |
@@ -176,55 +179,54 @@ def listes(request):
             )
 
         if 'categorie' in filters:
-            entree = entree.filter(categorie_id=filters['categorie'])
-            sortie = sortie.filter(categorie_id=filters['categorie'])
+            entrees = entrees.filter(categorie_id=filters['categorie'])
+            sorties = sorties.filter(categorie_id=filters['categorie'])
 
         if 'beneficiaire' in filters:
-            sortie = sortie.filter(beneficiaire_id=filters['beneficiaire'])
+            sorties = sorties.filter(beneficiaire_id=filters['beneficiaire'])
 
         if 'fournisseur' in filters:
-            sortie = sortie.filter(fournisseur_id=filters['fournisseur'])
+            sorties = sortie.filter(fournisseur_id=filters['fournisseur'])
         
         if 'montant_min' in filters:
-            entree = entree.filter(montant__gte=filters['montant_min'])
-            sortie = sortie.filter(montant__gte=filters['montant_min'])
+            entrees = entrees.filter(montant__gte=filters['montant_min'])
+            sorties = sorties.filter(montant__gte=filters['montant_min'])
 
         if 'montant_max' in filters:
-            entree = entree.filter(montant__lte=filters['montant_max'])
-            sortie = sortie.filter(montant__lte=filters['montant_max'])
+            entrees = entrees.filter(montant__lte=filters['montant_max'])
+            sorties = sorties.filter(montant__lte=filters['montant_max'])
 
         if 'quantite_min' in filters:
-            sortie = sortie.filter(quantité__gte=filters['quantite_min'])
+            sorties = sorties.filter(quantité__gte=filters['quantite_min'])
         if 'quantite_max' in filters:
-            sortie = sortie.filter(quantité__lte=filters['quantite_max'])
+            sorties = sorties.filter(quantité__lte=filters['quantite_max'])
 
 
         if 'date_min' in filters:
-            entree = entree.filter(date__gte=filters['date_min'])
-            sortie = sortie.filter(date__gte=filters['date_min'])
+            entrees = entrees.filter(date__gte=filters['date_min'])
+            sorties = sorties.filter(date__gte=filters['date_min'])
 
         if 'date_max' in filters:
-            entree = entree.filter(date__lte=filters['date_max'])
-            sortie = sortie.filter(date__lte=filters['date_max'])
-        
+            entrees = entrees.filter(date__lte=filters['date_max'])
+            sorties = sorties.filter(date__lte=filters['date_max'])
+    
 
     # Filtrer les opérations de sortie qui ont des bénéficiaires valides
-    sortie = sortie.filter(Q(beneficiaire__isnull=False) | Q(beneficiaire__personnel__isnull=False) | Q(beneficiaire__name__isnull=False))
+    sorties = sorties.filter(Q(beneficiaire__isnull=False) | Q(beneficiaire__personnel__isnull=False) | Q(beneficiaire__name__isnull=False))
 
     # Tri
-    entree = entree.order_by(sort_by)
-    sortie = sortie.order_by(sort_by)
-    print(entree)
-    print(sortie)
+    entrees = entrees.order_by(sort_by)
+    sorties = sorties.order_by(sort_by)
 
     context = {
-        'entree': entree,
-        'sortie': sortie,
+        'entrees': entrees,
+        'sorties': sorties,
         'categories': categories,
         'beneficiaires': beneficiaires,
         'fournisseurs': fournisseurs,
         'prix': "Ar",  # Vous pouvez gérer 'Ar' dans le template
         'sort_by': sort_by,
+        'type_operation': type_operation
     }
 
     return render(request, "caisse/listes/listes_operations.html", context)
@@ -537,23 +539,45 @@ def ajouts_sortie(request):
     })
 
 @login_required
-def modifier_operation(request, pk):
-    operation = get_object_or_404(OperationSortir, pk=pk)
-    if request.method == 'POST':
-        # Logique de modification de l'opération
-        # Utilisez un formulaire approprié ici
-        messages.success(request, "Opération modifiée avec succès.")
-        return redirect('depenses')
-    # Afficher le formulaire de modification
-    return render(request, 'caisse/operations/modifier_operation.html', {'operation': operation})
+def modifier_operation(request, operation_id, type_operation):
+    if type_operation == 'entrees':
+        operation = get_object_or_404(OperationEntrer, id=operation_id)
+        form_class = OperationEntrerForm
+    elif type_operation == 'sorties':  # Add an "elif" here
+        operation = get_object_or_404(OperationSortir, id=operation_id)
+        form_class = OperationSortirForm
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid type_operation'}) # Handle invalid type
 
-@login_required
-def supprimer_operation(request, pk):
-    operation = get_object_or_404(OperationSortir, pk=pk)
     if request.method == 'POST':
-        operation.delete()
-        messages.success(request, "Opération supprimée avec succès.")
-    return redirect('depenses')
+        form = form_class(request.POST, instance=operation)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    else:
+        form = form_class(instance=operation)
+        form_data = {}
+        for field_name, field in form.fields.items():
+            form_data[field_name] = field.initial if field.initial is not None else ''  # Handle initial data for new forms or model instances that might have blank fields.
+        return JsonResponse({'form': form_data, 'type_operation': type_operation})
+
+#Suppression des sorties
+@login_required
+def supprimer_operation(request, operation_id, type_operation):
+    """
+    Supprime une opération d'entrée ou de sortie en fonction de son ID.
+    """
+    if type_operation == 'entree':
+        operation = get_object_or_404(OperationEntrer, id=operation_id)
+    else:
+        operation = get_object_or_404(OperationSortir, id=operation_id)
+    
+    operation.delete()
+    messages.success(request, "L'opération a été supprimée avec succès.")
+    
+    return redirect(reverse('listes'))
 
 # Add this new view
 @login_required
