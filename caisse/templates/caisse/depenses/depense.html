@@ -13,9 +13,9 @@
         <div class="flex justify-between items-center p-4 border-b">
             <h2 class="text-xl font-semibold">Détails des Dépenses par
                 Employés</h2>
-            <select id="moisSelect" class="border rounded px-2 py-1">
+            <select id="moisSelect" class="border rounded px-12 py-1">
                 <option>{{ mois_selectionne }}</option>
-                <!-- Ajoutez d'autres options de mois ici -->
+
             </select>
         </div>
         <div class="overflow-x-auto">
@@ -53,16 +53,16 @@
     </div>
 
     <!-- Dépenses par Catégories -->
-    <div class="bg-white rounded-lg border mb-8  p-4">
+    <div class="bg-white rounded-lg border mb-8  p-4 ">
         <div class="flex justify-between items-center p-4 border-b">
             <h2 class="text-xl font-semibold">Détails des Dépenses par
                 Catégories</h2>
-            <select id="moisSelectCategories" class="border rounded px-2 py-1">
+            <select id="moisSelectCategories" class="border rounded px-12 py-1">
                 <option>{{ mois_selectionne }}</option>
                 <!-- Ajoutez d'autres options de mois ici -->
             </select>
         </div>
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto pb-10">
 
             <table class="w-full">
                 <thead>
@@ -97,7 +97,7 @@
         <div class="bg-white rounded-lg border p-4">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Graphique par</h2>
-                <select id="graphiqueSelect" class="border rounded px-2 py-1">
+                <select id="graphiqueSelect" class="border rounded px-12 py-1">
                     <option>Catégories</option>
                     <!-- Ajoutez d'autres options ici -->
                 </select>

@@ -72,9 +72,9 @@
         </div>
     </div>
 
-    <div class="p-6 rounded-lg bg-white border mb-8">
+    <div class="p-10 rounded-lg bg-white border mb-8 h-[500px]">
         <h2 class="text-xl font-semibold mb-4">Résumé du mois</h2>
-        <canvas id="resumeMoisChart"></canvas>
+        <canvas class="h-[300px]" id="resumeMoisChart"></canvas>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -132,7 +132,9 @@
                 data: JSON.parse('{{ sorties_data|safe }}'),
                 backgroundColor: 'rgba(239, 68, 68, 0.6)',
                 borderColor: 'rgba(239, 68, 68, 1)',
-                borderWidth: 1
+                borderWidth: 1,
+                hoverBackgroundColor: 'rgba(239, 68, 68, 0.8)',
+                hoverBorderColor: 'rgba(239, 68, 68, 1)'
             }]
         },
         options: {
