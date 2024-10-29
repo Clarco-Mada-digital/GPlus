@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'accounts',
     'personnel',
     'caisse',
+    'simple_history',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "django_browser_reload.middleware.BrowserReloadMiddleware",
+    'simple_history.middleware.HistoryRequestMiddleware'
 ]
 
 ROOT_URLCONF = 'GPP.urls'

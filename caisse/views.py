@@ -17,6 +17,7 @@ from datetime import timedelta
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
+from django.contrib.admin.views.decorators import staff_member_required
 
 User = get_user_model()
 
@@ -829,6 +830,18 @@ def editer_utilisateur(request, pk):
     
     return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
 
+def superuser_required(view_func):
+    return user_passes_test(lambda u: u.is_superuser)(view_func)
 
+@superuser_required
+def historique(request):
+    """
+    Affiche l'historique des activités de tous les utilisateurs (admin ou non)
+    """
+    if request.user.is_superuser:
+        historique = OperationSortir.history.all()
+        return render(request, 'caisse/historique/historique.html', {'historique': historique})
+    else:
+        return redirect('index')
 
 

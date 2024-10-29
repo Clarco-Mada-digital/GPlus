@@ -46,4 +46,7 @@ urlpatterns = [
     path('utilisateurs/supprimer/<int:pk>/', views.supprimer_utilisateur, name='supprimer_utilisateur'),
     # Ajouter cette ligne aux patterns existants
     path('utilisateurs/editer/<int:pk>/', views.editer_utilisateur, name='editer_utilisateur'),
+    
+    #Historique
+    path('historique/', views.historique, name='historique'),
 ]
