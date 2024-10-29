@@ -1,0 +1,56 @@
+{% extends 'layout/layout.html' %}
+
+{% block title %}Historique des Opérations{% endblock %}
+
+{% block content %}
+
+<div class="container mx-auto my-10">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Historique des Activités</h1>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200">
+            <thead>
+                <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">Utilisateur</th>
+                    <th class="py-3 px-6 text-left">Action</th>
+                    <th class="py-3 px-6 text-left">Date</th>
+                    <th class="py-3 px-6 text-left">Détails</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-700 text-sm font-light">
+                {% for entry in historique %}
+                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6 text-left whitespace-nowrap">
+                        {% if entry.history_user %}
+                        {{ entry.history_user.last_name }} {{ entry.history_user.first_name }}
+                        {% else %}
+                            Utilisateur inconnu
+                        {% endif %}
+                    </td>
+                    <td class="py-3 px-6 text-left">
+                        {{ entry.get_history_type_display }}
+                    </td>
+                    <td class="py-3 px-6 text-left">
+                        {{ entry.history_date|date:"d M Y H:i" }}
+                    </td>
+                    <td class="py-3 px-6 text-left">
+                        {% if entry.history_type == 'A' %}
+                            {{ entry.history_user.last_name }} a ajouté un nouvel enregistrement : "{{ entry }}".
+                        {% elif entry.history_type == 'C' %}
+                            {{ entry.history_user.username }} a modifié l'enregistrement : "{{ entry }}".
+                        {% elif entry.history_type == 'D' %}
+                            {{ entry.history_user.username }} a supprimé l'enregistrement : "{{ entry }}".
+                        {% else %}
+                            Action inconnue sur l'enregistrement : "{{ entry }}".
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-3 px-6 text-gray-500">Aucune activité enregistrée</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

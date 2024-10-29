@@ -4,7 +4,7 @@
 
 {% block content %}
 <div
-    x-data="{ operation: 'entree', lignesEntrees: [{ date: new Date().toISOString().split('T')[0], designation: '', montant: '', categorie: '' }], lignesSorties: [{ date: new Date().toISOString().split('T')[0], designation: '', beneficiaire: '', fournisseur: '', quantite: 1, prixUnitaire: '', categorie: '', prixTotal: '' }] }"
+    x-data="{ operation: 'entree', maxLignes: 10, lignesEntrees: [{ date: new Date().toISOString().split('T')[0], designation: '', montant: '', categorie: '' }], lignesSorties: [{ date: new Date().toISOString().split('T')[0], designation: '', beneficiaire: '', fournisseur: '', quantite: 1, prixUnitaire: '', categorie: '', prixTotal: '' }] }"
     class="container mx-auto bg-white rounded-lg border p-6">
 
         <div class="flex justify-between space-x-4 mb-4">
@@ -26,7 +26,7 @@
         <div x-show="operation === 'entree'">
             <template x-for="(ligne, index) in lignesEntrees" :key="index">
                 <div class="flex justify-between flex-wrap">
-
+                    <span class="mb-4 w-auto self-center font-bold text-gray-500">Ligne <span x-text="index + 1"></span>:</span>
                 <div
                     class="mb-4 flex w-[15%] shadow-sm border-gray-500 border-b-2">
                     <span
@@ -63,7 +63,7 @@
 
         <div class="mb-4">
             <button type="button"
-                x-on:click="lignesEntrees.push({ date: '', designation: '', montant: '', categorie: '' })"
+                x-on:click="lignesEntrees.length < maxLignes && lignesEntrees.push({ date: new Date().toISOString().split('T')[0], designation: '', montant: '', categorie: '' })"
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -88,6 +88,7 @@
             <div x-show="operation === 'sortie'">
                 <template x-for="(ligne, index) in lignesSorties" :key="index">
                     <div class="flex justify-between flex-wrap">
+                        <span class="mb-4 w-auto self-center font-bold text-gray-500">Ligne <span x-text="index + 1"></span>:</span>
                         <!-- Date -->
                         <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
                             <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Date:</span>
@@ -159,7 +160,7 @@
                 <!-- Ajouter une ligne -->
                 <div class="mb-4">
                     <button type="button"
-                        x-on:click="lignesSorties.push({ date: '', designation: '', beneficiaire: '', fournisseur: '', quantite: 1, prixUnitaire: '', categorie: '', prixTotal: '' })"
+                        x-on:click="lignesSorties.length < maxLignes && lignesSorties.push({ date: new Date().toISOString().split('T')[0], designation: '', beneficiaire: '', fournisseur: '', quantite: 1, prixUnitaire: '', categorie: '', prixTotal: '' })"
                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                             class="w-6 h-6 mr-2">

@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.db import models
 import json
 from django.core.serializers.json import DjangoJSONEncoder
+from simple_history.models import HistoricalRecords
 
 # Create your models here.
 
@@ -17,6 +18,7 @@ class Categorie(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(null=True, blank=True)
     type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='entree')
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.name} ({self.get_type_display()})"
@@ -60,6 +62,7 @@ class Personnel(models.Model):
     photo = models.ImageField(upload_to='photos/', blank=True , default="photos/pdp_defaut.png")
     adresse = models.CharField(max_length=100, null=True)
     type_personnel = models.CharField(max_length=10, choices=TYPE_CHOICES, null=False, default='Salarié')
+    history = HistoricalRecords()
 
     def clean(self):
 
@@ -92,6 +95,7 @@ class Personnel(models.Model):
 class Fournisseur(models.Model):
     name = models.CharField(max_length=50)
     contact = models.CharField(max_length=15)  # Contact comme numéro de téléphone
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
@@ -107,6 +111,7 @@ class Fournisseur(models.Model):
 class Beneficiaire(models.Model):
     personnel = models.ForeignKey(Personnel, on_delete=models.PROTECT, blank=True, null=True)
     name = models.CharField(max_length=50, blank=True, null=True, help_text="Nom du bénéficiaire (facultatif, utilisé si personnel n'est pas spécifié)")
+    history = HistoricalRecords()
 
     def __str__(self):
         if self.personnel:
@@ -129,6 +134,7 @@ class OperationEntrer(models.Model):
     date = models.DateField(auto_now_add=True)  # Date de l'ajout dans l'application
     date_transaction = models.DateField(default=timezone.now) # Date de l'opération
     categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, null=True)  # Clé étrangère vers Categorie
+    history = HistoricalRecords()
     
 
     def __str__(self):
@@ -145,6 +151,7 @@ class OperationSortir(models.Model):
     categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, null=False)  # Clé étrangère vers Categorie
     beneficiaire = models.ForeignKey(Beneficiaire, on_delete=models.PROTECT, null=False) #clé étrangère vers Personnel
     fournisseur = models.ForeignKey(Fournisseur, on_delete=models.PROTECT, null=False) #clé étrangère vers Fournisseur
+    history = HistoricalRecords()
 
 
     def __str__(self):
@@ -154,6 +161,7 @@ class OperationSortir(models.Model):
 class Caisse(models.Model):
     montant = models.DecimalField(max_digits=10, decimal_places=2)  # Montant en décimal pour plus de précision
     date_creation = models.DateField(auto_now_add=True)  # Date de création automatique
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"Caisse {self.id} - Montant: {self.montant}"

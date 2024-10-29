@@ -32,8 +32,8 @@ urlpatterns = [
     path('ajouts-entree/', views.ajouts_entree, name="ajouts_entree"),
     path('ajouts-sortie/', views.ajouts_sortie, name="ajouts_sortie"),
     
-    path('operations/modifier/<int:pk>/', views.modifier_operation, name="modifier_operation"),
-    path('operations/supprimer/<int:pk>/', views.supprimer_operation, name="supprimer_operation"),
+    path('caisse/operations/modifier/<int:pk>/', views.modifier_operation, name='modifier_operation'),
+    path('caisse/operations/supprimer/<int:pk>/', views.supprimer_operation, name="supprimer_operation"),
 
     path('operations/', views.operations, name="operations"),  # Nouvelle URL
     
@@ -46,4 +46,7 @@ urlpatterns = [
     path('utilisateurs/supprimer/<int:pk>/', views.supprimer_utilisateur, name='supprimer_utilisateur'),
     # Ajouter cette ligne aux patterns existants
     path('utilisateurs/editer/<int:pk>/', views.editer_utilisateur, name='editer_utilisateur'),
+    
+    #Historique
+    path('historique/', views.historique, name='historique'),
 ]
