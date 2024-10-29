@@ -37,7 +37,7 @@ urlpatterns = [
 
     path('operations/', views.operations, name="operations"),  # Nouvelle URL
     
-    # Add this new URL
+    
     path('parametres/', views.parametres, name="parametres"),
     # Ajouter ces lignes aux patterns existants
     path('utilisateurs/', views.utilisateurs, name='utilisateurs'),
