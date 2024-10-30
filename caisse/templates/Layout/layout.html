@@ -54,11 +54,11 @@
                     </svg>
                 </button>
 
-                <div class="px-6 py-4">
-                    <img src="/static/images/logo-caisse.png" alt="logo caisse">
+                <a href="{% url 'accounts:index' %}" class="px-6 py-4 flex items-center justify-center">
+                    <img class="w-24 h-24" src="/static/images/Logo mada-digital.png" alt="logo caisse">
                     {% comment %} <h1 class="text-2xl font-bold text-blue-600">Cash
                     </h1> {% endcomment %}
-                </div>
+                </a>
 
                 <nav class="mt-6">
                     <a href="{% url 'caisse:index' %}"
