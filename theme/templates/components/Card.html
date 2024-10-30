@@ -1,19 +1,18 @@
 <div
-  class="relative group bg-white dark:bg-gray-900 py-10 sm:py-20 px-4 flex flex-col space-y-2 items-center cursor-pointer rounded-xl shadow hover:bg-primary/25 dark:hover:bg-gray-900/45 hover:smooth-hover"
+  class="relative group bg-white dark:bg-gray-900 sm:py-20 px-4 flex flex-col items-center cursor-pointer rounded-xl shadow hover:bg-primary/25 dark:hover:bg-gray-900/45 hover:smooth-hover"
 >
   <img
-    class="w-20 h-20 object-cover object-center rounded-full"
+    class="w-24 h-24 object-cover object-center"
     src="{{ image }}"
     alt="cuisine"
   />
   <h4 class="text-gray-800 dark:text-white text-2xl font-bold capitalize text-center">
     {{ title }}
   </h4>
-  <p class="text-gray-800 dark:text-white/50">{{ description }}</p>
   <p class="absolute top-2 text-gray-800 dark:text-white/20 inline-flex items-center text-xs">
-    {{ notification_msg }}
     <span
-      class="ml-2 w-2 h-2 block bg-green-500 rounded-full group-hover:animate-pulse"
+      class="mr-2 w-2 h-2 block bg-green-500 rounded-full group-hover:animate-pulse"
     ></span>
+    {{ notification_msg }}
   </p>
 </div>

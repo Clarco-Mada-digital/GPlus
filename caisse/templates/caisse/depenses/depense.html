@@ -1,0 +1,165 @@
+{% extends 'layout/layout.html' %}
+{% load static %}
+
+{% block title %}Détails des Dépenses{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Détails des Dépenses</h1>
+
+    <!-- Dépenses par Employés -->
+
+    <div class="bg-white rounded-lg border p-4 mb-8">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h2 class="text-xl font-semibold">Détails des Dépenses par
+                Employés</h2>
+            <select id="moisSelect" class="border rounded px-12 py-1">
+                <option>{{ mois_selectionne }}</option>
+
+            </select>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class>
+                        <th class="p-2 text-left">Employé</th>
+                        <th class="p-2 text-left">Total des dépenses</th>
+                        <th class="p-2 text-left">Catégorie la plus
+                            dépensée</th>
+                        <th class="p-2 text-left">Nombre total des dépenses</th>
+                        <th class="p-2 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for depense in depenses_par_employe %}
+                    <tr class="border-b">
+                        <td class="p-2">
+                            {{depense.beneficiaire__personnel__first_name}}
+                        </td>
+                        <td class="p-2">{{ depense.total_depenses }} Ar</td>
+                        <td class="p-2">
+                            {{ depense.categorie_plus_depensee }}
+                        </td>
+                        <td class="p-2">{{ depense.nombre_depenses }}</td>
+                        <td class="p-2">
+                            <button
+                                class="text-primary hover:text-primary">•••</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Dépenses par Catégories -->
+    <div class="bg-white rounded-lg border mb-8  p-4 ">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h2 class="text-xl font-semibold">Détails des Dépenses par
+                Catégories</h2>
+            <select id="moisSelectCategories" class="border rounded px-12 py-1">
+                <option>{{ mois_selectionne }}</option>
+                <!-- Ajoutez d'autres options de mois ici -->
+            </select>
+        </div>
+        <div class="overflow-x-auto pb-10">
+
+            <table class="w-full">
+                <thead>
+                    <tr>
+                        <th class="p-2 text-left">Catégorie</th>
+                        <th class="p-2 text-left">Total des dépenses</th>
+                        <th class="p-2 text-left">Nombre total des dépenses</th>
+                        <th class="p-2 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for depense in depenses_par_categorie %}
+
+                    <tr class="border-b">
+                        <td class="p-2">{{ depense.categorie__name }}</td>
+                        <td class="p-2">{{ depense.total_depenses }} Ar</td>
+                        <td class="p-2">{{ depense.nombre_depenses }}</td>
+                        <td class="p-2">
+                            <button
+                                class="text-primary hover:text-primary">•••</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Graphique par Catégories -->
+        <div class="bg-white rounded-lg border p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Graphique par</h2>
+                <select id="graphiqueSelect" class="border rounded px-12 py-1">
+                    <option>Catégories</option>
+                    <!-- Ajoutez d'autres options ici -->
+                </select>
+            </div>
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+        <!-- Graphique Dépenses par année -->
+        <div class="bg-white rounded-lg border p-4">
+            <h2 class="text-xl font-semibold mb-4">Dépenses par année</h2>
+            <canvas id="yearlyExpensesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Graphique par Catégories
+        const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+        new Chart(ctxCategory, {
+            type: 'bar',
+            data: {
+                labels: [{% for depense in depenses_par_categorie %}'{{ depense.categorie__name }}',{% endfor %}],
+                datasets: [{
+                    label: 'Dépenses par Catégorie',
+                    data: [{% for depense in depenses_par_categorie %}{{ depense.total_depenses }},{% endfor %}],
+                    backgroundColor: ['#3B82F6', '#EF4444', '#F59E0B', '#10B981'],
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Graphique Dépenses par année
+        const ctxYearly = document.getElementById('yearlyExpensesChart').getContext('2d');
+        new Chart(ctxYearly, {
+            type: 'line',
+            data: {
+                labels: [{% for depense in depenses_par_annee %}'{{ depense.year|date:"Y" }}',{% endfor %}],
+                datasets: [{
+                    label: 'Dépenses par année',
+                    data: [{% for depense in depenses_par_annee %}{{ depense.total_depenses }},{% endfor %}],
+                    borderColor: '#3B82F6',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

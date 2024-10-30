@@ -1,0 +1,578 @@
+<!-- templates/acteurs/index.html -->
+{% extends 'layout/layout.html' %}
+
+{% block title %}Acteurs{% endblock %}
+
+{% block content %}
+<div x-data="{
+    acteurType: 'employes',
+    showForm: false,
+    showCategorieForm: false,
+    newActeur: {
+        nom: '',
+        prenom: '',
+        email: '',
+        telephone: '',
+        image: null
+    },
+    personnels: JSON.parse('{{ personnels|escapejs }}'),
+    fournisseurs: JSON.parse('{{ fournisseurs|escapejs }}'),
+    categories: {
+        entrees: JSON.parse('{{ categories_entrees|escapejs }}'),
+        sorties: JSON.parse('{{ categories_sorties|escapejs }}')
+    },
+    categorieForm: {
+        name: '',
+        description: '',
+        type: 'entree'                                  
+    },
+    editingCategorie: null,
+    submitForm() {
+        // Logique pour ajouter un nouvel acteur
+        this.acteurs[this.acteurType].push({...this.newActeur});
+        this.resetForm();
+    },
+    resetForm() {
+        this.newActeur = {
+            nom: '',
+            prenom: '',
+            email: '',
+            telephone: '',
+            image: null
+        };
+        this.showForm = false;
+    },
+    openAddCategorieForm(type) {
+        this.editingCategorie = null;
+        this.categorieForm = { name: '', description: '', type: type };
+        this.showCategorieForm = true;
+    },
+    openEditCategorieForm(categorie, type) {
+        this.editingCategorie = categorie;
+        this.categorieForm = { ...categorie, type: type };
+        this.showCategorieForm = true;
+    },
+    closeCategorieForm() {
+        this.showCategorieForm = false;
+        this.editingCategorie = null;
+        this.categorieForm = { name: '', description: '', type: 'entree' };
+    },
+    submitCategorie() {
+        fetch('/caisse/categories/creer/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(this.categorieForm)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (this.categorieForm.type === 'entree') {
+                    this.categories.entrees.push(data.categorie);
+                } else {
+                    this.categories.sorties.push(data.categorie);
+                }
+                this.closeCategorieForm();
+                // Vous pouvez ajouter un message de succès ici si vous le souhaitez
+            } else {
+                alert('Erreur lors de la création de la catégorie: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Une erreur est survenue lors de la création de la catégorie');
+        });
+    },
+    modifierActeur(acteur, type) {
+        fetch(`/caisse/acteurs/modifier/${type}/${acteur.id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(acteur)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (type === 'personnel') {
+                    this.personnels = this.personnels.map(p => p.id === acteur.id ? data.acteur : p);
+                } else {
+                    this.fournisseurs = this.fournisseurs.map(f => f.id === acteur.id ? data.acteur : f);
+                }
+                // Vous pouvez ajouter un message de succès ici si vous le souhaitez
+            } else {
+                alert('Erreur lors de la modification de l\'acteur: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Une erreur est survenue lors de la modification de l\'acteur');
+        });
+    },
+    supprimerActeur(acteur, type) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cet acteur ?')) {
+            fetch(`/caisse/acteurs/supprimer/${type}/${acteur.id}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (type === 'personnel') {
+                        this.personnels = this.personnels.filter(p => p.id !== acteur.id);
+                    } else {
+                        this.fournisseurs = this.fournisseurs.filter(f => f.id !== acteur.id);
+                    }
+                    // Vous pouvez ajouter un message de succès ici si vous le souhaitez
+                } else {
+                    alert('Erreur lors de la suppression de l\'acteur: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Une erreur est survenue lors de la suppression de l\'acteur');
+            });
+        }
+    },
+    modifierCategorie(categorie) {
+        fetch(`/caisse/categories/modifier/${categorie.id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(categorie)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (categorie.type === 'entree') {
+                    this.categories.entrees = this.categories.entrees.map(c => c.id === categorie.id ? data.categorie : c);
+                } else {
+                    this.categories.sorties = this.categories.sorties.map(c => c.id === categorie.id ? data.categorie : c);
+                }
+                this.closeCategorieForm();
+                // Vous pouvez ajouter un message de succès ici si vous le souhaitez
+            } else {
+                alert('Erreur lors de la modification de la catégorie: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Une erreur est survenue lors de la modification de la catégorie');
+        });
+    },
+    supprimerCategorie(categorie) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) {
+            fetch(`/caisse/categories/supprimer/${categorie.id}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (categorie.type === 'entree') {
+                        this.categories.entrees = this.categories.entrees.filter(c => c.id !== categorie.id);
+                    } else {
+                        this.categories.sorties = this.categories.sorties.filter(c => c.id !== categorie.id);
+                    }
+                    // Vous pouvez ajouter un message de succès ici si vous le souhaitez
+                } else {
+                    alert('Erreur lors de la suppression de la catégorie: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Une erreur est survenue lors de la suppression de la catégorie');
+            });
+        }
+    }
+}" class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">Acteurs</h1>
+        <div class="flex space-x-4">
+            <div
+                class="flex space-x-4 items-center p-2 bg-white rounded-lg border border-gray-300">
+                <button @click="acteurType = 'employes'; showForm = false"
+                    :class="{ 'bg-blue-500 text-white': acteurType === 'employes', 'bg-white text-gray-800 ': acteurType !== 'employes' }"
+                    class="font-semibold py-2 px-4 rounded">
+                    Employés
+                </button>
+                <button @click="acteurType = 'fournisseurs'; showForm = false"
+                    :class="{ 'bg-blue-500 text-white': acteurType === 'fournisseurs', 'bg-white text-gray-800 ': acteurType !== 'fournisseurs' }"
+                    class="font-semibold py-2 px-4 rounded">
+                    Fournisseurs
+                </button>
+            </div>
+            <button @click="showForm = true"
+                class="bg-blue-500 hover:bg-primary text-white font-semibold py-2 px-4 rounded flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2"
+                    viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                        clip-rule="evenodd" />
+                </svg>
+                <span
+                    x-text="acteurType === 'employes' ? 'Nouveau employé' : 'Nouveau fournisseur'"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Formulaire d'ajout -->
+    <div x-show="showForm" class="mb-8 bg-white p-6 rounded-lg border">
+        <h2 class="text-2xl font-bold mb-4"
+            x-text="acteurType === 'employes' ? 'Ajouter un employé' : 'Ajouter un fournisseur'"></h2>
+        <form x-show="acteurType === 'employes'"
+            action="{% url 'caisse:ajouter_acteur' %}" method="POST"
+            enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="type_acteur" value="employes">
+
+            <!-- Formulaire pour les employés -->
+            <div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="last_name"
+                            class="block text-sm font-medium text-gray-700">Nom</label>
+                        <input type="text" id="last_name" name="last_name"
+                            required
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label for="first_name"
+                            class="block text-sm font-medium text-gray-700">Prénom</label>
+                        <input type="text" id="first_name" name="first_name"
+                            required
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label for="email"
+                            class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="email" name="email" required
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label for="tel"
+                            class="block text-sm font-medium text-gray-700">Numéro
+                            de téléphone</label>
+                        <input type="tel" id="tel" name="tel" required
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label for="sexe"
+                            class="block text-sm font-medium text-gray-700">Sexe</label>
+                        <select id="sexe" name="sexe" required
+                            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="Homme">Homme</option>
+                            <option value="Femme">Femme</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="date_naissance"
+                            class="block text-sm font-medium text-gray-700">Date
+                            de naissance</label>
+                        <input type="date" id="date_naissance"
+                            name="date_naissance" required
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label for="adresse"
+                            class="block text-sm font-medium text-gray-700">Adresse</label>
+                        <input type="text" id="adresse" name="adresse"
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label for="type_personnel"
+                            class="block text-sm font-medium text-gray-700">Type
+                            de personnel</label>
+                        <select id="type_personnel" name="type_personnel"
+                            required
+                            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="Salarié">Salarié</option>
+                            <option value="Bénévole">Bénévole</option>
+                            <option value="Freelance">Freelance</option>
+                            <option value="Stagiaire">Stagiaire</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2">
+                        <label for="photo"
+                            class="block text-sm font-medium text-gray-700">Photo</label>
+                        <input type="file" id="photo" name="photo"
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 flex justify-end space-x-2">
+                <button type="button" @click="showForm = false"
+                    class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Annuler
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Enregistrer
+                </button>
+            </div>
+        </form>
+
+        <form x-show="acteurType === 'fournisseurs'"
+            action="{% url 'caisse:ajouter_fournisseur' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="type_acteur" value="fournisseurs">
+
+            <!-- Formulaire pour les fournisseurs -->
+            <div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="name"
+                            class="block text-sm font-medium text-gray-700">Nom</label>
+                        <input type="text" id="name" name="name" required
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label for="contact"
+                            class="block text-sm font-medium text-gray-700">Contact</label>
+                        <input type="tel" id="contact" name="contact" required
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 flex justify-end space-x-2">
+                <button type="button" @click="showForm = false"
+                    class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Annuler
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Liste des acteurs -->
+    <div x-show="acteurType === 'employes'"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <template x-for="acteur in personnels" :key="acteur.id">
+
+            <div
+                class="bg-white rounded-lg border p-6 flex flex-col items-center">
+                <img
+                    :src="acteur.photo ? '/media/' + acteur.photo : '/media/photos/pdp_defaut.png'"
+                    :alt="acteur.last_name"
+                    class="w-24 h-24 rounded-full mb-4 object-cover">
+                <h2 class="text-xl font-semibold mb-2"
+                    x-text="acteur.first_name + ' ' + acteur.last_name"></h2>
+                <p class="text-gray-600 mb-2" x-text="acteur.tel"></p>
+                <p class="text-gray-600" x-text="acteur.email"></p>
+                <div class="mt-4 flex space-x-2">
+                    <a
+                        :href="'/caisse/acteurs/editer/personnel/' + acteur.id + '/'"
+                        class="text-gray-600 hover:text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                            viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                    </a>
+                    <button @click="supprimerActeur(acteur, 'personnel')"
+                        class="text-gray-600 hover:text-red-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                            viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <div x-show="acteurType === 'fournisseurs'"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <template x-for="acteur in fournisseurs" :key="acteur.id">
+            <div
+                class="bg-white rounded-lg border p-6 flex flex-col items-center">
+                <h2 class="text-xl font-semibold mb-2"
+                    x-text="acteur.name"></h2>
+                <p class="text-gray-600 mb-2" x-text="acteur.contact"></p>
+                <div class="mt-4 flex space-x-2">
+                    <a
+                        :href="'/caisse/acteurs/editer/fournisseur/' + acteur.id + '/'"
+                        class="text-gray-600 hover:text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                            viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                    </a>
+                    <button @click="supprimerActeur(acteur, 'fournisseur')"
+                        class="text-gray-600 hover:text-red-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                            viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+    {% for categorie in categories %}
+    <div value="{{ categorie_entree.id }}">{{ categorie_entree.name }}</div>
+    {% endfor %}
+
+    <div class="mt-12">
+
+        <div class="flex justify-between items-center mb-4">
+            <div>
+                <h2 class="text-2xl font-bold mb-6">Catégories</h2>
+            </div>
+            <button @click="openAddCategorieForm(acteurType)"
+                class="bg-blue-500 hover:bg-primary text-white font-semibold py-2 px-4 rounded flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2"
+                    viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                        clip-rule="evenodd" />
+                </svg>
+                Ajouter une nouvelle catégorie
+            </button>
+        </div>
+
+        <!-- Formulaire d'ajout de catégorie -->
+        <div x-show="showCategorieForm"
+            class="my-8 bg-white p-6 rounded-lg border">
+            <h2 class="text-2xl font-bold mb-4"
+                x-text="editingCategorie ? 'Modifier la catégorie' : 'Ajouter une nouvelle catégorie'"></h2>
+            <form @submit.prevent="submitCategorie">
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label for="categorie_name"
+                            class="block text-sm font-medium text-gray-700">Nom
+                            de
+                            la catégorie</label>
+                        <input type="text" id="categorie_name"
+                            x-model="categorieForm.name" required
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label for="categorie_description"
+                            class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea id="categorie_description"
+                            x-model="categorieForm.description"
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
+                    </div>
+                    <div>
+                        <label for="categorie_type"
+                            class="block text-sm font-medium text-gray-700">Type</label>
+                        <select id="categorie_type" x-model="categorieForm.type"
+                            required
+                            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="entree">Entrée</option>
+                            <option value="sortie">Sortie</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-end space-x-2">
+                    <button type="button" @click="closeCategorieForm"
+                        class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <span
+                            x-text="editingCategorie ? 'Modifier' : 'Ajouter'"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div
+                class="bg-white rounded-lg border p-6 ">
+                <h3 class="text-xl font-semibold mb-4">Entrées</h3>
+                <ul class="space-y-3">
+                    <template x-for="categorie in categories.entrees"
+                        :key="categorie.id">
+                        <li
+                            class="flex items-center justify-between bg-gray-100 rounded-md p-2 ">
+                            <span x-text="categorie.name"></span>
+                            <div class="flex space-x-2">
+                                <a
+                                    :href="'/caisse/categories/editer/' + categorie.id + '/'"
+                                    class="text-gray-600 hover:text-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path
+                                            d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                    </svg>
+                                </a>
+                                <button @click="supprimerCategorie(categorie)"
+                                    class="text-gray-600 hover:text-red-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+
+            </div>
+            <div
+                class="bg-white rounded-lg border p-6 ">
+                <h3 class="text-xl font-semibold mb-4">Sorties</h3>
+                <ul class="space-y-3">
+                    <template x-for="categorie in categories.sorties"
+                        :key="categorie.id">
+                        <li
+                            class="flex items-center justify-between bg-gray-100 p-2 rounded-md">
+                            <span x-text="categorie.name"></span>
+                            <div class="flex space-x-2">
+                                <a
+                                    :href="'/caisse/categories/editer/' + categorie.id + '/'"
+                                    class="text-gray-600 hover:text-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path
+                                            d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                    </svg>
+                                </a>
+                                <button @click="supprimerCategorie(categorie)"
+                                    class="text-gray-600 hover:text-red-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

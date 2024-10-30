@@ -1,0 +1,25 @@
+{% extends 'layout/layout.html' %}
+
+{% block title %}Modifier {{ type_acteur }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Modifier {{ type_acteur }}</h1>
+
+    <form action="{% url 'modifier_acteur' type_acteur acteur.id %}"
+        method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="mt-4">
+            <button type="submit"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+                Enregistrer les modifications
+            </button>
+            <a href="{% url 'acteurs' %}"
+                class="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded">
+                Annuler
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

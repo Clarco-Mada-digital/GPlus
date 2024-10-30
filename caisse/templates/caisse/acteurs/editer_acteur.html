@@ -1,0 +1,60 @@
+{% extends 'layout/layout.html' %}
+
+{% block title %}Modifier {{ type_acteur|capfirst }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Modifier {{ type_acteur|capfirst }}</h1>
+    <form method="post" enctype="multipart/form-data"
+        class="bg-white border rounded px-8 pt-6 pb-8 mb-4">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2"
+                for="{{ field.id_for_label }}">
+                {{ field.label }}
+            </label>
+            {% if field.field.widget.input_type == 'checkbox' %}
+            <input type="checkbox" name="{{ field.name }}"
+                id="{{ field.id_for_label }}"
+                {% if field.value %}checked{% endif %}
+                class="mr-2 leading-tight border-gray-300">
+            {% elif field.field.widget.input_type == 'select' %}
+            <select name="{{ field.name }}" id="{{ field.id_for_label }}"
+                class=" appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:-outline">
+                {% for choice in field.field.choices %}
+                <option value="{{ choice.0 }}"
+                    {% if choice.0 == field.value %}selected{% endif %}>
+                    {{ choice.1 }}
+                </option>
+                {% endfor %}
+            </select>
+            {% else %}
+            <input type="{{ field.field.widget.input_type }}"
+                name="{{ field.name }}"
+                id="{{ field.id_for_label }}"
+                value="{{ field.value|default:'' }}"
+                class=" appearance-none border border-gray-300  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:-outline"
+                {% if field.field.required %}required{% endif %}>
+            {% endif %}
+            {% if field.help_text %}
+            <p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>
+            {% endif %}
+            {% for error in field.errors %}
+            <p class="text-red-500 text-xs italic">{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <div class="flex items-center justify-between">
+            <button type="submit"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:-outline">
+                Enregistrer les modifications
+            </button>
+            <a href="{% url 'acteurs' %}"
+                class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                Annuler
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
