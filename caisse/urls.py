@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 
-
+app_name='caisse'
 """
 Définit le modèle d'URL pour la vue de l'application caisse.
 """
@@ -32,8 +32,10 @@ urlpatterns = [
     path('ajouts-entree/', views.ajouts_entree, name="ajouts_entree"),
     path('ajouts-sortie/', views.ajouts_sortie, name="ajouts_sortie"),
     
-    path('caisse/operations/modifier/<int:pk>/', views.modifier_operation, name='modifier_operation'),
-    path('caisse/operations/supprimer/<int:pk>/', views.supprimer_operation, name="supprimer_operation"),
+    path('operations/modifier/entree/<int:pk>/', views.modifier_entree, name='modifier_entree'),
+    path('operations/modifier/sortie/<int:pk>/', views.modifier_sortie, name='modifier_sortie'),
+    path('caisse/operations/supprimer_entrer/<int:pk>/', views.supprimer_entree, name="supprimer_entree"),
+    path('caisse/operations/supprimer_sortir/<int:pk>/', views.supprimer_sortie, name="supprimer_sortie"),
 
     path('operations/', views.operations, name="operations"),  # Nouvelle URL
     

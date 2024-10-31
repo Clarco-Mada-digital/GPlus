@@ -14,7 +14,7 @@ from django.db.models.functions import TruncYear, TruncMonth
 from django.db.models import Q
 from django.utils import timezone
 from datetime import timedelta
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from django.contrib.admin.views.decorators import staff_member_required
@@ -36,17 +36,17 @@ def index(request):
     caisse_totale = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
     caisse_totale -= OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
     
-    entrees_mois = OperationEntrer.objects.filter(date__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
-    sorties_mois = OperationSortir.objects.filter(date__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
+    entrees_mois = OperationEntrer.objects.filter(date_transaction__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
+    sorties_mois = OperationSortir.objects.filter(date_de_sortie__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
 
     # Données pour le graphique Résumé du mois
     six_months_ago = today - timedelta(days=180)
-    entrees_par_mois = OperationEntrer.objects.filter(date__gte=six_months_ago) \
+    entrees_par_mois = OperationEntrer.objects.filter(date_transaction__gte=six_months_ago) \
         .annotate(mois=TruncMonth('date')) \
         .values('mois') \
         .annotate(total=Sum('montant')) \
         .order_by('mois')
-    sorties_par_mois = OperationSortir.objects.filter(date__gte=six_months_ago) \
+    sorties_par_mois = OperationSortir.objects.filter(date_de_sortie__gte=six_months_ago) \
         .annotate(mois=TruncMonth('date')) \
         .values('mois') \
         .annotate(total=Sum('montant')) \
@@ -66,7 +66,7 @@ def index(request):
 
     # Données pour les entrées des 4 derniers mois
     quatre_mois_ago = today - timedelta(days=120)
-    entrees_4_mois = OperationEntrer.objects.filter(date__gte=quatre_mois_ago) \
+    entrees_4_mois = OperationEntrer.objects.filter(date_transaction__gte=quatre_mois_ago) \
         .annotate(mois=TruncMonth('date')) \
         .values('mois') \
         .annotate(montant=Sum('montant')) \
@@ -572,45 +572,143 @@ def ajouts_sortie(request):
     })
 
 @login_required
-def modifier_operation(request, operation_id, type_operation):
-    if type_operation == 'entrees':
-        operation = get_object_or_404(OperationEntrer, id=operation_id)
-        form_class = OperationEntrerForm
-    elif type_operation == 'sorties':  # Add an "elif" here
-        operation = get_object_or_404(OperationSortir, id=operation_id)
-        form_class = OperationSortirForm
-    else:
-        return JsonResponse({'success': False, 'error': 'Invalid type_operation'}) # Handle invalid type
+@require_http_methods(["GET", "POST"])
+def modifier_entree(request, pk):
+    """
+    Modifie une opération d'entrée.
+    """
+    operation = get_object_or_404(OperationEntrer, pk=pk)
 
-    if request.method == 'POST':
-        form = form_class(request.POST, instance=operation)
-        if form.is_valid():
-            form.save()
-            return JsonResponse({'success': True})
+    try:
+        if request.method == 'POST':
+            # Si les données sont envoyées en multipart/form-data
+            if request.content_type and 'multipart/form-data' in request.content_type:
+                data = request.POST.dict()
+            else:
+                # Si les données sont envoyées en JSON
+                data = json.loads(request.body)
+
+            # Mise à jour des champs
+            operation.description = data.get('description', operation.description)
+            operation.montant = float(data.get('montant', operation.montant))
+            operation.date = data.get('date', operation.date)
+            operation.categorie_id = data.get('categorie', operation.categorie_id)
+
+            operation.save()
+
+            return JsonResponse({
+                'success': True,
+                'operation': {
+                    'id': operation.id,
+                    'description': operation.description,
+                    'montant': operation.montant,
+                    'date': operation.date,
+                    'categorie': operation.categorie.name if operation.categorie else None,
+                }
+            })
         else:
-            return JsonResponse({'success': False, 'errors': form.errors})
-    else:
-        form = form_class(instance=operation)
-        form_data = {}
-        for field_name, field in form.fields.items():
-            form_data[field_name] = field.initial if field.initial is not None else ''  # Handle initial data for new forms or model instances that might have blank fields.
-        return JsonResponse({'form': form_data, 'type_operation': type_operation})
+            # Préparation des données pour affichage
+            form = OperationEntrerForm(instance=operation)
+            form_data = {field_name: form[field_name].value() for field_name in form.fields}
+            return JsonResponse({'form': form_data, 'type_operation': 'entrees'})
 
-#Suppression des sorties
+    except KeyError as e:
+        return JsonResponse({
+            'success': False, 
+            'error': f"Champ requis manquant: {str(e)}"
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False, 
+            'error': str(e)
+        }, status=400)
+
+
 @login_required
-def supprimer_operation(request, operation_id, type_operation):
+@require_http_methods(["GET", "POST"])
+def modifier_sortie(request, pk):
+    """
+    Modifie une opération de sortie.
+    """
+    operation = get_object_or_404(OperationSortir, pk=pk)
+
+    try:
+        if request.method == 'POST':
+            # Si les données sont envoyées en multipart/form-data
+            if request.content_type and 'multipart/form-data' in request.content_type:
+                data = request.POST.dict()
+            else:
+                # Si les données sont envoyées en JSON
+                data = json.loads(request.body)
+
+            # Mise à jour des champs
+            operation.description = data.get('description', operation.description)
+            operation.montant = float(data.get('montant', operation.montant))
+            operation.quantite = int(data.get('quantite', operation.quantite))
+            operation.date = data.get('date', operation.date)
+            operation.categorie_id = data.get('categorie', operation.categorie_id)
+            operation.beneficiaire_id = data.get('beneficiaire', operation.beneficiaire_id)
+            operation.fournisseur_id = data.get('fournisseur', operation.fournisseur_id)
+
+            operation.save()
+
+            return JsonResponse({
+                'success': True,
+                'operation': {
+                    'id': operation.id,
+                    'description': operation.description,
+                    'montant': operation.montant,
+                    'quantite': operation.quantite,
+                    'date': operation.date,
+                    'categorie': operation.categorie.name if operation.categorie else None,
+                    'beneficiaire': operation.beneficiaire.name if operation.beneficiaire else None,
+                    'fournisseur': operation.fournisseur.name if operation.fournisseur else None,
+                }
+            })
+        else:
+            # Préparation des données pour affichage
+            form = OperationSortirForm(instance=operation)
+            form_data = {field_name: form[field_name].value() for field_name in form.fields}
+            return JsonResponse({'form': form_data, 'type_operation': 'sorties'})
+
+    except KeyError as e:
+        return JsonResponse({
+            'success': False, 
+            'error': f"Champ requis manquant: {str(e)}"
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False, 
+            'error': str(e)
+        }, status=400)
+
+#Suppression des entrées
+@login_required
+def supprimer_entree(request, pk):
     """
     Supprime une opération d'entrée ou de sortie en fonction de son ID.
     """
-    if type_operation == 'entree':
-        operation = get_object_or_404(OperationEntrer, id=operation_id)
-    else:
-        operation = get_object_or_404(OperationSortir, id=operation_id)
+
+    operation = OperationEntrer.objects.get(pk=pk)
     
     operation.delete()
     messages.success(request, "L'opération a été supprimée avec succès.")
     
-    return redirect(reverse('listes'))
+    return redirect('listes')
+
+#Suppression des sorties
+@login_required
+def supprimer_sortie(request, pk):
+    """
+    Supprime une opération d'entrée ou de sortie en fonction de son ID.
+    """
+
+    operation = OperationSortir.objects.get(pk=pk)
+    
+    operation.delete()
+    messages.success(request, "L'opération a été supprimée avec succès.")
+    
+    return redirect('listes')
 
 # Add this new view
 @login_required
