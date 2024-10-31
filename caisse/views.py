@@ -42,12 +42,12 @@ def index(request):
     # Données pour le graphique Résumé du mois
     six_months_ago = today - timedelta(days=180)
     entrees_par_mois = OperationEntrer.objects.filter(date_transaction__gte=six_months_ago) \
-        .annotate(mois=TruncMonth('date')) \
+        .annotate(mois=TruncMonth('date_transaction')) \
         .values('mois') \
         .annotate(total=Sum('montant')) \
         .order_by('mois')
     sorties_par_mois = OperationSortir.objects.filter(date_de_sortie__gte=six_months_ago) \
-        .annotate(mois=TruncMonth('date')) \
+        .annotate(mois=TruncMonth('date_de_sortie')) \
         .values('mois') \
         .annotate(total=Sum('montant')) \
         .order_by('mois')
@@ -67,7 +67,7 @@ def index(request):
     # Données pour les entrées des 4 derniers mois
     quatre_mois_ago = today - timedelta(days=120)
     entrees_4_mois = OperationEntrer.objects.filter(date_transaction__gte=quatre_mois_ago) \
-        .annotate(mois=TruncMonth('date')) \
+        .annotate(mois=TruncMonth('date_transaction')) \
         .values('mois') \
         .annotate(montant=Sum('montant')) \
         .order_by('-mois')[:4]
