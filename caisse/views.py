@@ -497,7 +497,7 @@ def ajouts_entree(request):
             except (ValueError, Categorie.DoesNotExist):
                 return render(request, 'caisse/operations/entre-sortie.html', {'error': 'Données invalides', 'categories_entree': categories_entree})
             
-        return redirect('listes')
+        return redirect('caisse:listes')
 
     return render(request, 'caisse/operations/entre-sortie.html', {'categories_entree': categories_entree, 'operation': 'entree',})
 
@@ -562,7 +562,7 @@ def ajouts_sortie(request):
                     'beneficiaires': beneficiaires,
                     'fournisseurs': fournisseurs,
                 })
-        return redirect('listes') # Rediriger après un traitement réussi
+        return redirect('caisse:listes') # Rediriger après un traitement réussi
 
     return render(request, 'caisse/operations/entre-sortie.html', {
         'categories_sortie': categories_sortie,
@@ -694,7 +694,7 @@ def supprimer_entree(request, pk):
     operation.delete()
     messages.success(request, "L'opération a été supprimée avec succès.")
     
-    return redirect('listes')
+    return redirect('caisse:listes')
 
 #Suppression des sorties
 @login_required
@@ -708,7 +708,7 @@ def supprimer_sortie(request, pk):
     operation.delete()
     messages.success(request, "L'opération a été supprimée avec succès.")
     
-    return redirect('listes')
+    return redirect('caisse:listes')
 
 # Add this new view
 @login_required
@@ -755,14 +755,14 @@ def editer_acteur(request, type_acteur, pk):
         form_class = FournisseurForm
     else:
         messages.error(request, "Type d'acteur non valide.")
-        return redirect('acteurs')
+        return redirect('caisse:acteurs')
 
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES, instance=acteur)
         if form.is_valid():
             form.save()
             messages.success(request, f"{type_acteur.capitalize()} modifié avec succès.")
-            return redirect('acteurs')
+            return redirect('caisse:acteurs')
     else:
         form = form_class(instance=acteur)
 
@@ -781,7 +781,7 @@ def editer_categorie(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, "Catégorie modifiée avec succès.")
-            return redirect('acteurs')
+            return redirect('caisse:acteurs')
     else:
         form = CategorieForm(instance=categorie)
     
@@ -808,7 +808,7 @@ def creer_utilisateur(request):
     Crée un nouvel utilisateur.
     """
     if request.method != 'POST':
-        return redirect('utilisateurs')
+        return redirect('caisse:utilisateurs')
     
     try:
         # Récupérer les données du formulaire
@@ -823,11 +823,11 @@ def creer_utilisateur(request):
         # Vérifier si l'utilisateur existe déjà
         if User.objects.filter(username=username).exists():
             messages.error(request, "Un utilisateur avec ce nom d'utilisateur existe déjà")
-            return redirect('utilisateurs')
+            return redirect('caisse:utilisateurs')
             
         if User.objects.filter(email=email).exists():
             messages.error(request, "Un utilisateur avec cet email existe déjà")
-            return redirect('utilisateurs')
+            return redirect('caisse:utilisateurs')
         
         # Créer l'utilisateur
         user = User.objects.create_user(
@@ -846,11 +846,11 @@ def creer_utilisateur(request):
             user.save()
         
         messages.success(request, "Utilisateur créé avec succès")
-        return redirect('utilisateurs')
+        return redirect('caisse:utilisateurs')
         
     except Exception as e:
         messages.error(request, f"Erreur lors de la création de l'utilisateur: {str(e)}")
-        return redirect('utilisateurs')
+        return redirect('caisse:utilisateurs')
 
 @login_required
 @user_passes_test(is_admin)
@@ -984,9 +984,9 @@ def update_profile(request):
         except Exception as e:
             messages.error(request, f'Erreur lors de la mise à jour du profil: {str(e)}')
         
-        return redirect('parametres')
+        return redirect('caisse:parametres')
     
-    return redirect('parametres')
+    return redirect('caisse:parametres')
 
 @login_required
 def change_password(request):
@@ -1000,12 +1000,12 @@ def change_password(request):
         # Vérification du mot de passe actuel
         if not user.check_password(current_password):
             messages.error(request, 'Le mot de passe actuel est incorrect.')
-            return redirect('parametres')
+            return redirect('caisse:parametres')
         
         # Vérification de la correspondance des nouveaux mots de passe
         if new_password != confirm_password:
             messages.error(request, 'Les nouveaux mots de passe ne correspondent pas.')
-            return redirect('parametres')
+            return redirect('caisse:parametres')
         
         # Mise à jour du mot de passe
         try:
@@ -1016,8 +1016,8 @@ def change_password(request):
         except Exception as e:
             messages.error(request, f'Erreur lors du changement de mot de passe: {str(e)}')
         
-        return redirect('parametres')
+        return redirect('caisse:parametres')
     
-    return redirect('parametres')
+    return redirect('caisse:parametres')
 
 

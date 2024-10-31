@@ -9,7 +9,7 @@
         <h1 class="text-2xl font-bold text-gray-900">Modifier l'utilisateur :
             {{user.username }}
         </h1>
-        <a href="{% url 'utilisateurs' %}"
+        <a href="{% url 'caisse:utilisateurs' %}"
             class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors">
             Retour à la liste
         </a>
@@ -122,7 +122,7 @@
             </div>
 
             <div class="mt-6 flex justify-end space-x-3">
-                <a href="{% url 'utilisateurs' %}"
+                <a href="{% url 'caisse:utilisateurs' %}"
                     class="bg-gray-100 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Annuler
                 </a>
@@ -181,7 +181,7 @@ function modificationForm() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.href = "{% url 'utilisateurs' %}";
+                    window.location.href = "{% url 'caisse:utilisateurs' %}";
                 } else {
                     alert('Erreur: ' + data.error);
                 }
