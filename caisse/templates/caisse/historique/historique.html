@@ -1,9 +1,8 @@
 {% extends 'layout/layout.html' %}
 
-{% block title %}Historique des Opérations{% endblock %}
+{% block title %}Historique des Activités{% endblock %}
 
 {% block content %}
-
 <div class="container mx-auto my-10">
     <h1 class="text-2xl font-bold text-gray-800 mb-6">Historique des Activités</h1>
     <div class="overflow-x-auto">
@@ -11,42 +10,51 @@
             <thead>
                 <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                     <th class="py-3 px-6 text-center">Utilisateur</th>
-                    <th class="py-3 px-9 text-center">Action</th>
+                    <th class="py-3 px-6 text-center">Action</th>
                     <th class="py-3 px-6 text-center">Date</th>
+                    <th class="py-3 px-6 text-center">Catégorie</th> <!-- Colonne Catégorie -->
                     <th class="py-3 px-6 text-center">Détails</th>
                 </tr>
             </thead>
             <tbody class="text-gray-700 text-sm font-light">
                 {% for entry in historique %}
                 <tr class="border-b border-gray-200 hover:bg-gray-100">
-                    <td class="py-3 px-6 center whitespace-nowrap">
+                    <td class="py-3 px-6 text-center">
                         {% if entry.history_user %}
-                        {{ entry.history_user.last_name }} {{ entry.history_user.first_name }}
+                            {{ entry.history_user.last_name }} {{ entry.history_user.first_name }}
                         {% else %}
                             Utilisateur inconnu
                         {% endif %}
                     </td>
-                    <td class="flex py-3 px-6 text-center">
-                        <p class="text-gray-700">a {{ entry.get_history_type_display }}</p>
+                    <td class="py-3 px-6 text-center">
+                        {{ entry.get_history_type_display }}
                     </td>
                     <td class="py-3 px-6 text-center">
                         {{ entry.history_date|date:"d M Y H:i" }}
                     </td>
+                    <!-- Vérifie la catégorie et affiche son nom ou un message si elle est supprimée -->
+                    <td class="py-3 px-6 text-center">
+                        {% if entry.instance.categorie %}
+                            {{ entry.instance.categorie.name }}
+                        {% else %}
+                            Catégorie supprimée
+                        {% endif %}
+                    </td>
                     <td class="py-3 px-6 text-center">
                         {% if entry.history_type == 'A' %}
-                            {{ entry.history_user.last_name }} a ajouté un nouvel enregistrement : "{{ entry }}".
+                            Ajout d'un nouvel enregistrement : "{{ entry }}"
                         {% elif entry.history_type == 'C' %}
-                            {{ entry.history_user.username }} a modifié l'enregistrement : "{{ entry }}".
+                            Modification de l'enregistrement : "{{ entry }}"
                         {% elif entry.history_type == 'D' %}
-                            {{ entry.history_user.username }} a supprimé l'enregistrement : "{{ entry }}".
+                            Suppression de l'enregistrement : "{{ entry }}"
                         {% else %}
-                            Action inconnue sur l'enregistrement : "{{ entry }}".
+                            Action inconnue
                         {% endif %}
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="text-center py-3 px-6 text-gray-500">Aucune activité enregistrée</td>
+                    <td colspan="5" class="text-center py-3 px-6 text-gray-500">Aucune activité enregistrée</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -929,17 +929,24 @@ def editer_utilisateur(request, pk):
     return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
 
 def superuser_required(view_func):
-    return user_passes_test(lambda u: u.is_superuser)(view_func)
+    decorated_view_func = user_passes_test(lambda u: u.is_superuser, login_url='index')(view_func)
+    return decorated_view_func
 
 @superuser_required
 def historique(request):
     """
-    Affiche l'historique des activités de tous les utilisateurs (admin ou non)
+    Affiche l'historique des activités des opérations d'entrées et de sorties.
     """
-    if request.user.is_superuser:
-        historique = OperationSortir.history.all()
-        return render(request, 'caisse/historique/historique.html', {'historique': historique})
-    else:
-        return redirect('index')
+    # Récupérer l'historique des entrées et des sorties
+    historique_entrees = OperationEntrer.history.all()
+    historique_sorties = OperationSortir.history.all()
+    
+    # Fusionner les historiques pour les afficher ensemble
+    historique = sorted(
+        list(historique_entrees) + list(historique_sorties),
+        key=lambda entry: entry.history_date,
+        reverse=True
+    )
 
+    return render(request, 'caisse/historique/historique.html', {'historique': historique})
 
