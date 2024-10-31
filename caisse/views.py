@@ -18,6 +18,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import update_session_auth_hash
 
 User = get_user_model()
 
@@ -243,16 +244,21 @@ def depenses(request):
     """
     Affiche la page des dépenses avec les opérations par employé et par catégorie.
     """
-    # Filtrage par date
-    date_debut = request.GET.get('date_debut')
-    date_fin = request.GET.get('date_fin')
-    mois_selectionne = request.GET.get('mois', 'Août 2024')  # Valeur par défaut
+    # Récupérer le mois sélectionné
+    mois_selectionne = request.GET.get('mois', timezone.now().strftime('%Y-%m'))
+    
+    try:
+        date_debut = timezone.datetime.strptime(f"{mois_selectionne}-01", '%Y-%m-%d')
+        date_fin = (date_debut + timezone.timedelta(days=32)).replace(day=1) - timezone.timedelta(days=1)
+    except ValueError:
+        date_debut = timezone.now().replace(day=1)
+        date_fin = (date_debut + timezone.timedelta(days=32)).replace(day=1) - timezone.timedelta(days=1)
 
-    operations = OperationSortir.objects.all()
-    if date_debut:
-        operations = operations.filter(date_de_sortie__gte=date_debut)
-    if date_fin:
-        operations = operations.filter(date_de_sortie__lte=date_fin)
+    # Filtrer les opérations par mois
+    operations = OperationSortir.objects.filter(
+        date_de_sortie__gte=date_debut,
+        date_de_sortie__lte=date_fin
+    )
 
     # Dépenses par employé
     depenses_par_employe = operations.values(
@@ -272,18 +278,38 @@ def depenses(request):
         nombre_depenses=Count('id')
     ).order_by('-total_depenses')
 
+    # Couleurs pour les catégories
+    colors = [
+        '#3B82F6', '#EF4444', '#F59E0B', '#10B981', '#6366F1',
+        '#EC4899', '#8B5CF6', '#14B8A6', '#F97316', '#06B6D4'
+    ]
+    
+    for i, depense in enumerate(depenses_par_categorie):
+        depense['color'] = colors[i % len(colors)]
+
     # Dépenses par année
-    depenses_par_annee = operations.annotate(
+    depenses_par_annee = OperationSortir.objects.annotate(
         year=TruncYear('date_de_sortie')
     ).values('year').annotate(
         total_depenses=Sum('montant')
     ).order_by('year')
+
+    # Générer la liste des mois
+    mois_liste = []
+    date_courante = timezone.now()
+    for i in range(12):
+        date = date_courante - timezone.timedelta(days=30*i)
+        mois_liste.append({
+            'value': date.strftime('%Y-%m'),
+            'label': date.strftime('%B %Y')
+        })
 
     context = {
         'depenses_par_employe': depenses_par_employe,
         'depenses_par_categorie': depenses_par_categorie,
         'depenses_par_annee': depenses_par_annee,
         'mois_selectionne': mois_selectionne,
+        'mois_liste': mois_liste,
     }
     return render(request, "caisse/depenses/depense.html", context)
 
@@ -830,18 +856,70 @@ def editer_utilisateur(request, pk):
     
     return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
 
-def superuser_required(view_func):
-    return user_passes_test(lambda u: u.is_superuser)(view_func)
-
-@superuser_required
+@login_required
+@user_passes_test(is_admin)
 def historique(request):
     """
     Affiche l'historique des activités de tous les utilisateurs (admin ou non)
     """
-    if request.user.is_superuser:
-        historique = OperationSortir.history.all()
-        return render(request, 'caisse/historique/historique.html', {'historique': historique})
-    else:
-        return redirect('index')
+    historique = OperationSortir.history.all()
+    return render(request, 'caisse/historique/historique.html', {'historique': historique})
+    
+@login_required
+def update_profile(request):
+    if request.method == 'POST':
+        user = request.user
+        
+        # Mise à jour des informations de base
+        user.first_name = request.POST.get('first_name', '')
+        user.last_name = request.POST.get('last_name', '')
+        user.email = request.POST.get('email', '')
+        user.phone = request.POST.get('phone', '')
+
+        # Gestion de la photo de profil
+        if 'photo' in request.FILES:
+            user.photo = request.FILES['photo']
+        
+        try:
+            user.save()
+            messages.success(request, 'Votre profil a été mis à jour avec succès.')
+        except Exception as e:
+            messages.error(request, f'Erreur lors de la mise à jour du profil: {str(e)}')
+        
+        return redirect('parametres')
+    
+    return redirect('parametres')
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        user = request.user
+        
+        # Vérification du mot de passe actuel
+        if not user.check_password(current_password):
+            messages.error(request, 'Le mot de passe actuel est incorrect.')
+            return redirect('parametres')
+        
+        # Vérification de la correspondance des nouveaux mots de passe
+        if new_password != confirm_password:
+            messages.error(request, 'Les nouveaux mots de passe ne correspondent pas.')
+            return redirect('parametres')
+        
+        # Mise à jour du mot de passe
+        try:
+            user.set_password(new_password)
+            user.save()
+            update_session_auth_hash(request, user)  # Garde l'utilisateur connecté
+            messages.success(request, 'Votre mot de passe a été modifié avec succès.')
+        except Exception as e:
+            messages.error(request, f'Erreur lors du changement de mot de passe: {str(e)}')
+        
+        return redirect('parametres')
+    
+    return redirect('parametres')
 
 

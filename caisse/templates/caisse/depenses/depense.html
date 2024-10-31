@@ -9,78 +9,116 @@
 
     <!-- Dépenses par Employés -->
 
-    <div class="bg-white rounded-lg border p-4 mb-8">
+    <div class="bg-white border overflow-hidden sm:rounded-lg mb-8">
         <div class="flex justify-between items-center p-4 border-b">
             <h2 class="text-xl font-semibold">Détails des Dépenses par
                 Employés</h2>
-            <select id="moisSelect" class="border rounded px-12 py-1">
-                <option>{{ mois_selectionne }}</option>
-
+            <select id="moisSelect" class="border rounded px-12 py-1"
+                onchange="updateMonth(this.value)">
+                {% for mois in mois_liste %}
+                <option value="{{ mois.value }}"
+                    {% if mois.value == mois_selectionne %}selected{% endif %}>
+                    {{ mois.label }}
+                </option>
+                {% endfor %}
             </select>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead>
-                    <tr class>
-                        <th class="p-2 text-left">Employé</th>
-                        <th class="p-2 text-left">Total des dépenses</th>
-                        <th class="p-2 text-left">Catégorie la plus
-                            dépensée</th>
-                        <th class="p-2 text-left">Nombre total des dépenses</th>
-                        <th class="p-2 text-left">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for depense in depenses_par_employe %}
-                    <tr class="border-b">
-                        <td class="p-2">
-                            {{depense.beneficiaire__personnel__first_name}}
-                        </td>
-                        <td class="p-2">{{ depense.total_depenses }} Ar</td>
-                        <td class="p-2">
-                            {{ depense.categorie_plus_depensee }}
-                        </td>
-                        <td class="p-2">{{ depense.nombre_depenses }}</td>
-                        <td class="p-2">
-                            <button
-                                class="text-primary hover:text-primary">•••</button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-primary/70">
+                <tr>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Employé</th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Total
+                        des dépenses</th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Catégorie
+                        la plus dépensée</th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Nombre
+                        total des dépenses</th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for depense in depenses_par_employe %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {{ depense.beneficiaire__personnel__first_name }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {{ depense.total_depenses }} Ar
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {{ depense.categorie_plus_depensee }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {{ depense.nombre_depenses }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button
+                            class="text-primary hover:text-primary">•••</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
     <!-- Dépenses par Catégories -->
-    <div class="bg-white rounded-lg border mb-8  p-4 ">
+    <div class="bg-white border overflow-hidden sm:rounded-lg mb-8">
         <div class="flex justify-between items-center p-4 border-b">
             <h2 class="text-xl font-semibold">Détails des Dépenses par
                 Catégories</h2>
-            <select id="moisSelectCategories" class="border rounded px-12 py-1">
-                <option>{{ mois_selectionne }}</option>
-                <!-- Ajoutez d'autres options de mois ici -->
-            </select>
-        </div>
-        <div class="overflow-x-auto pb-10">
-
-            <table class="w-full">
-                <thead>
+            <div class="flex gap-4">
+                <select id="categorieFilter" class="border rounded px-12 py-1"
+                    onchange="filterTableByCategory(this.value)">
+                    <option value>Toutes les catégories</option>
+                    {% for categorie in categories_sortie %}
+                    <option value="{{ categorie.name }}">
+                        {{ categorie.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <select id="moisSelectCategories"
+                    class="border rounded px-12 py-1">
+                    {% for mois in mois_liste %}
+                    <option value="{{ mois.value }}"
+                        {{ mois.label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-primary/70">
                     <tr>
-                        <th class="p-2 text-left">Catégorie</th>
-                        <th class="p-2 text-left">Total des dépenses</th>
-                        <th class="p-2 text-left">Nombre total des dépenses</th>
-                        <th class="p-2 text-left">Actions</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Catégorie</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Total
+                            des dépenses</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Nombre
+                            total des dépenses</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="bg-white divide-y divide-gray-200">
                     {% for depense in depenses_par_categorie %}
-
-                    <tr class="border-b">
-                        <td class="p-2">{{ depense.categorie__name }}</td>
-                        <td class="p-2">{{ depense.total_depenses }} Ar</td>
-                        <td class="p-2">{{ depense.nombre_depenses }}</td>
-                        <td class="p-2">
+                    <tr>
+                        <td class="px-6 py-4 ">
+                            {{ depense.categorie__name }}
+                        </td>
+                        <td class="px-6 py-4 ">
+                            {{ depense.total_depenses }} Ar
+                        </td>
+                        <td class="px-6 py-4 ">
+                            {{ depense.nombre_depenses }}
+                        </td>
+                        <td class="px-6 py-4 ">
                             <button
                                 class="text-primary hover:text-primary">•••</button>
                         </td>
@@ -89,50 +127,158 @@
                 </tbody>
             </table>
         </div>
-    </div>
 
-    <!-- Graphiques -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- Graphique par Catégories -->
-        <div class="bg-white rounded-lg border p-4">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Graphique par</h2>
-                <select id="graphiqueSelect" class="border rounded px-12 py-1">
-                    <option>Catégories</option>
-                    <!-- Ajoutez d'autres options ici -->
-                </select>
+        <!-- Graphiques -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Graphique par Catégories -->
+            <div class="bg-white rounded-lg border p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Graphique par</h2>
+                    <select id="graphiqueSelect"
+                        class="border rounded px-12 py-1"
+                        onchange="updateGraphType(this.value)">
+                        <option value="mensuel">Mensuel</option>
+                        <option value="annuel">Annuel</option>
+                    </select>
+                </div>
+                <canvas id="categoryChart"></canvas>
             </div>
-            <canvas id="categoryChart"></canvas>
-        </div>
 
-        <!-- Graphique Dépenses par année -->
-        <div class="bg-white rounded-lg border p-4">
-            <h2 class="text-xl font-semibold mb-4">Dépenses par année</h2>
-            <canvas id="yearlyExpensesChart"></canvas>
+            <!-- Graphique Dépenses par année -->
+            <div class="bg-white rounded-lg border p-4">
+                <h2 class="text-xl font-semibold mb-4">Dépenses par année</h2>
+                <canvas id="yearlyExpensesChart"></canvas>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
-<script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+    <script>
+    function updateMonth(mois) {
+        const url = new URL(window.location);
+        url.searchParams.set('mois', mois);
+        window.location.href = url.toString();
+    }
+
+    function updateGraphType(type) {
+        const url = new URL(window.location);
+        url.searchParams.set('graph_type', type);
+        window.location.href = url.toString();
+    }
+
+    function filterTableByCategory(category) {
+        const tables = document.querySelectorAll('table tbody tr');
+        
+        tables.forEach(row => {
+            const categoryCell = row.querySelector('td:first-child');
+            if (!categoryCell) return;
+            
+            if (!category || categoryCell.textContent.trim() === category) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Mettre à jour le graphique
+        updateChartByCategory(category);
+    }
+
+    function updateChartByCategory(category) {
+        const chartData = {
+            labels: [],
+            data: [],
+            colors: []
+        };
+
+        // Récupérer les données filtrées
+        const tables = document.querySelectorAll('table tbody tr');
+        tables.forEach(row => {
+            const categoryCell = row.querySelector('td:first-child');
+            const amountCell = row.querySelector('td:nth-child(2)');
+            if (!categoryCell || !amountCell) return;
+
+            const categoryName = categoryCell.textContent.trim();
+            if (!category || categoryName === category) {
+                chartData.labels.push(categoryName);
+                // Convertir le montant en nombre (enlever "Ar" et les espaces)
+                const amount = parseFloat(amountCell.textContent.replace('Ar', '').trim());
+                chartData.data.push(amount);
+                // Utiliser la même couleur que celle définie dans la vue
+                const colorIndex = chartData.labels.length - 1;
+                chartData.colors.push(colors[colorIndex % colors.length]);
+            }
+        });
+
+        // Mettre à jour le graphique
+        if (categoryChart) {
+            categoryChart.data.labels = chartData.labels;
+            categoryChart.data.datasets[0].data = chartData.data;
+            categoryChart.data.datasets[0].backgroundColor = chartData.colors;
+            categoryChart.update();
+        }
+    }
+
+    // Définir les couleurs pour les catégories
+    const colors = [
+        '#3B82F6', '#EF4444', '#F59E0B', '#10B981', '#6366F1',
+        '#EC4899', '#8B5CF6', '#14B8A6', '#F97316', '#06B6D4'
+    ];
+
     document.addEventListener('DOMContentLoaded', function() {
+        // Synchroniser les sélecteurs de mois
+        const moisSelect = document.getElementById('moisSelect');
+        const moisSelectCategories = document.getElementById('moisSelectCategories');
+        
+        if (moisSelect && moisSelectCategories) {
+            moisSelectCategories.innerHTML = moisSelect.innerHTML;
+            moisSelectCategories.value = moisSelect.value;
+            
+            moisSelectCategories.addEventListener('change', function() {
+                updateMonth(this.value);
+            });
+        }
+
         // Graphique par Catégories
         const ctxCategory = document.getElementById('categoryChart').getContext('2d');
-        new Chart(ctxCategory, {
+        const categoryChart = new Chart(ctxCategory, {
             type: 'bar',
             data: {
                 labels: [{% for depense in depenses_par_categorie %}'{{ depense.categorie__name }}',{% endfor %}],
                 datasets: [{
                     label: 'Dépenses par Catégorie',
                     data: [{% for depense in depenses_par_categorie %}{{ depense.total_depenses }},{% endfor %}],
-                    backgroundColor: ['#3B82F6', '#EF4444', '#F59E0B', '#10B981'],
+                    backgroundColor: [{% for depense in depenses_par_categorie %}'{{ depense.color }}',{% endfor %}],
                 }]
             },
             options: {
                 responsive: true,
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString() + ' Ar';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.parsed.y.toLocaleString() + ' Ar';
+                                return label;
+                            }
+                        }
                     }
                 }
             }
@@ -155,11 +301,27 @@
                 responsive: true,
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString() + ' Ar';
+                            }
+                        }
                     }
                 }
             }
         });
+
+        // Initialiser le filtre de catégorie
+        const categorieFilter = document.getElementById('categorieFilter');
+        if (categorieFilter) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedCategory = urlParams.get('categorie');
+            if (selectedCategory) {
+                categorieFilter.value = selectedCategory;
+                filterTableByCategory(selectedCategory);
+            }
+        }
     });
 </script>
-{% endblock %}
+    {% endblock %}
