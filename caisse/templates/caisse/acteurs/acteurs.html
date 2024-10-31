@@ -232,7 +232,7 @@
         <h2 class="text-2xl font-bold mb-4"
             x-text="acteurType === 'employes' ? 'Ajouter un employé' : 'Ajouter un fournisseur'"></h2>
         <form x-show="acteurType === 'employes'"
-            action="{% url 'ajouter_acteur' %}" method="POST"
+            action="{% url 'caisse:ajouter_acteur' %}" method="POST"
             enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" name="type_acteur" value="employes">
@@ -325,7 +325,7 @@
         </form>
 
         <form x-show="acteurType === 'fournisseurs'"
-            action="{% url 'ajouter_fournisseur' %}" method="POST">
+            action="{% url 'caisse:ajouter_fournisseur' %}" method="POST">
             {% csrf_token %}
             <input type="hidden" name="type_acteur" value="fournisseurs">
 

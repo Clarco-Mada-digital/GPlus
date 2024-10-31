@@ -10,29 +10,29 @@
         <table class="min-w-full bg-white border border-gray-200">
             <thead>
                 <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                    <th class="py-3 px-6 text-left">Utilisateur</th>
-                    <th class="py-3 px-6 text-left">Action</th>
-                    <th class="py-3 px-6 text-left">Date</th>
-                    <th class="py-3 px-6 text-left">Détails</th>
+                    <th class="py-3 px-6 text-center">Utilisateur</th>
+                    <th class="py-3 px-9 text-center">Action</th>
+                    <th class="py-3 px-6 text-center">Date</th>
+                    <th class="py-3 px-6 text-center">Détails</th>
                 </tr>
             </thead>
             <tbody class="text-gray-700 text-sm font-light">
                 {% for entry in historique %}
                 <tr class="border-b border-gray-200 hover:bg-gray-100">
-                    <td class="py-3 px-6 text-left whitespace-nowrap">
+                    <td class="py-3 px-6 center whitespace-nowrap">
                         {% if entry.history_user %}
                         {{ entry.history_user.last_name }} {{ entry.history_user.first_name }}
                         {% else %}
                             Utilisateur inconnu
                         {% endif %}
                     </td>
-                    <td class="py-3 px-6 text-left">
-                        {{ entry.get_history_type_display }}
+                    <td class="flex py-3 px-6 text-center">
+                        <p class="text-gray-700">a {{ entry.get_history_type_display }}</p>
                     </td>
-                    <td class="py-3 px-6 text-left">
+                    <td class="py-3 px-6 text-center">
                         {{ entry.history_date|date:"d M Y H:i" }}
                     </td>
-                    <td class="py-3 px-6 text-left">
+                    <td class="py-3 px-6 text-center">
                         {% if entry.history_type == 'A' %}
                             {{ entry.history_user.last_name }} a ajouté un nouvel enregistrement : "{{ entry }}".
                         {% elif entry.history_type == 'C' %}
