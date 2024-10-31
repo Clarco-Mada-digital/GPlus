@@ -181,11 +181,11 @@
                             type="text"
                             placeholder="Entrer votre recherche ici">
                         {% if request.user.photo %}
-                        <img class="w-10 h-10 ml-4 rounded-full"
+                        <img class="w-10 h-10 ml-4 rounded-full object-cover"
                             src="{{ request.user.photo.url }}"
                             alt="Photo de profil de {{ request.user.username }}">
                         {% else %}
-                        <img class="w-10 h-10 ml-4 rounded-full"
+                        <img class="w-10 h-10 ml-4 rounded-full object-cover"
                             src="https://randomuser.me/api/portraits/women/50.jpg"
                             alt="Photo de profil de {{ request.user.username }}">
                         {% endif %}
