@@ -19,6 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import update_session_auth_hash
+from django.template import loader
 
 User = get_user_model()
 
@@ -129,115 +130,77 @@ def listes(request):
     """
     Affiche la liste des opérations.
     """
-    
-    entrees = OperationEntrer.objects.all()
-    sorties = OperationSortir.objects.select_related('beneficiaire', 'fournisseur', 'categorie').all()
+    # Récupérer les filtres de recherche et de triage
+    query = request.GET.get('q')
+    categorie_id = request.GET.get('categorie')
+    beneficiaire_id = request.GET.get('beneficiaire')
+    fournisseur_id = request.GET.get('fournisseur')
+    montant_min = request.GET.get('montant_min')
+    montant_max = request.GET.get('montant_max')
+    date_min = request.GET.get('date_min')
+    date_max = request.GET.get('date_max')
+    quantite_min = request.GET.get('quantite_min')
+    quantite_max = request.GET.get('quantite_max')
+
+    sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
+
+    # Filtrer les opérations d'entrée
+    entree = OperationEntrer.objects.all()
+    sortie = OperationSortir.objects.all()
+
+    if query:
+        # Filtrer les résultats selon le terme de recherche
+        entree = OperationEntrer.objects.filter(
+            Q(description__icontains=query) | 
+            Q(categorie__name__icontains=query) |
+            Q(montant__icontains=query) | 
+            Q(date_transaction__icontains=query)
+        )  
+        sortie = OperationSortir.objects.filter(
+            Q(description__icontains=query) | 
+            Q(categorie__name__icontains=query) |
+            Q(montant__icontains=query) | 
+            Q(date_de_sortie__icontains=query)
+        )
+    if categorie_id:
+        entree = entree.filter(categorie_id=categorie_id)
+        sortie = sortie.filter(categorie_id=categorie_id)
+
+    if beneficiaire_id:
+        sortie = sortie.filter(beneficiaire_id=beneficiaire_id)
+
+    if fournisseur_id:
+        sortie = sortie.filter(fournisseur_id=fournisseur_id)
+
+    if date_min:
+        entree = entree.filter(date_transaction__gte=date_min)
+        sortie = sortie.filter(date_de_sortie__gte=date_min)
+
+    if date_max:
+        entree = entree.filter(date_transaction__lte=date_max)
+        sortie = sortie.filter(date_de_sortie__lte=date_max)
+
+
+    # Appliquer le triage sur les opérations (catégorie, bénéficiaire, fournisseur, montant, date, quantité)
+    entree = entree.order_by(sort_by)
+    sortie = sortie.order_by(sort_by)
+
+    # Récupérer les catégories, bénéficiaires et fournisseurs pour les options de filtrage
     categories = Categorie.objects.all()
     beneficiaires = Beneficiaire.objects.all()
     fournisseurs = Fournisseur.objects.all()
-    sort_by = request.GET.get('sort', 'date')
-
-    # Détecter le type d'opération choisi (par défaut, affichage des entrées)
-    type_operation = request.GET.get('type', 'entrees')
-    
-    # Dictionnaire pour stocker les filtres
-    filters = {}
-
-    # Gestion des filtres (simplifiée et plus robuste)
-    for field in ['categorie', 'beneficiaire', 'fournisseur', 'sort']:
-        value = request.GET.get(field)
-        if value:
-            filters[field] = value
-
-    for field in ['montant_min', 'montant_max', 'quantite_min', 'quantite_max']:
-        value = request.GET.get(field)
-        if value:
-            try:
-                filters[field] = float(value)  # Conversion en nombre
-            except ValueError:
-                # Gérer l'erreur, par exemple afficher un message à l'utilisateur
-                # ou simplement ignorer la valeur invalide.
-                pass
-
-    for field in ['date_min', 'date_max']:
-        value = request.GET.get(field)
-        if value:
-            filters[field] = value
-
-
-    query = request.GET.get('q')
-    if query:
-        filters['query'] = query
-
-
-    # Application des filtres
-    if filters:
-        if 'query' in filters:
-            entrees = entrees.filter(
-                Q(description__icontains=filters['query']) |
-                Q(categorie__name__icontains=filters['query']) |
-                Q(montant__icontains=filters['query']) |
-                Q(date__icontains=filters['query'])
-            )
-            sorties = sorties.filter(
-                Q(description__icontains=filters['query']) |
-                Q(categorie__name__icontains=filters['query']) |
-                Q(montant__icontains=filters['query']) |
-                Q(date__icontains=filters['query'])
-            )
-
-        if 'categorie' in filters:
-            entrees = entrees.filter(categorie_id=filters['categorie'])
-            sorties = sorties.filter(categorie_id=filters['categorie'])
-
-        if 'beneficiaire' in filters:
-            sorties = sorties.filter(beneficiaire_id=filters['beneficiaire'])
-
-        if 'fournisseur' in filters:
-            sorties = sortie.filter(fournisseur_id=filters['fournisseur'])
-        
-        if 'montant_min' in filters:
-            entrees = entrees.filter(montant__gte=filters['montant_min'])
-            sorties = sorties.filter(montant__gte=filters['montant_min'])
-
-        if 'montant_max' in filters:
-            entrees = entrees.filter(montant__lte=filters['montant_max'])
-            sorties = sorties.filter(montant__lte=filters['montant_max'])
-
-        if 'quantite_min' in filters:
-            sorties = sorties.filter(quantité__gte=filters['quantite_min'])
-        if 'quantite_max' in filters:
-            sorties = sorties.filter(quantité__lte=filters['quantite_max'])
-
-
-        if 'date_min' in filters:
-            entrees = entrees.filter(date__gte=filters['date_min'])
-            sorties = sorties.filter(date__gte=filters['date_min'])
-
-        if 'date_max' in filters:
-            entrees = entrees.filter(date__lte=filters['date_max'])
-            sorties = sorties.filter(date__lte=filters['date_max'])
-    
-
-    # Filtrer les opérations de sortie qui ont des bénéficiaires valides
-    sorties = sorties.filter(Q(beneficiaire__isnull=False) | Q(beneficiaire__personnel__isnull=False) | Q(beneficiaire__name__isnull=False))
-
-    # Tri
-    entrees = entrees.order_by(sort_by)
-    sorties = sorties.order_by(sort_by)
+    template = loader.get_template('caisse/listes/listes_operations.html')
 
     context = {
-        'entrees': entrees,
-        'sorties': sorties,
+        'entree': entree,
+        'sortie': sortie,
         'categories': categories,
         'beneficiaires': beneficiaires,
         'fournisseurs': fournisseurs,
-        'prix': "Ar",  # Vous pouvez gérer 'Ar' dans le template
+        'prix': "Ar",
         'sort_by': sort_by,
-        'type_operation': type_operation
     }
-
-    return render(request, "caisse/listes/listes_operations.html", context)
+    return HttpResponse(template.render(context, request))
 
 @login_required
 def depenses(request):
@@ -1025,4 +988,110 @@ def change_password(request):
     
     return redirect('caisse:parametres')
 
+@login_required
+def liste_entrees(request):
+    """
+    Affiche la liste des opérations d'entrée.
+    """
+    # Récupérer les filtres de recherche et de triage
+    query = request.GET.get('q')
+    categorie_id = request.GET.get('categorie')
+    montant_min = request.GET.get('montant_min')
+    montant_max = request.GET.get('montant_max')
+    date_min = request.GET.get('date_min')
+    date_max = request.GET.get('date_max')
+    sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
 
+    # Filtrer les opérations d'entrée
+    entrees = OperationEntrer.objects.all()
+
+    if query:
+        entrees = entrees.filter(
+            Q(description__icontains=query) | 
+            Q(categorie__name__icontains=query) |
+            Q(montant__icontains=query) | 
+            Q(date_transaction__icontains=query)
+        )
+    if categorie_id:
+        entrees = entrees.filter(categorie_id=categorie_id)
+    if date_min:
+        entrees = entrees.filter(date_transaction__gte=date_min)
+    if date_max:
+        entrees = entrees.filter(date_transaction__lte=date_max)
+
+    # Appliquer le triage
+    entrees = entrees.order_by(sort_by)
+
+    # Récupérer uniquement les catégories de type "entrée" pour les options de filtrage
+    categories = Categorie.objects.filter(type="entrée")
+
+    # Charger le template
+    template = loader.get_template('caisse/listes/entrees.html')
+
+    # Contexte à passer au template
+    context = {
+        'entrees': entrees,
+        'categories': categories,
+        'prix': "Ar",
+        'sort_by': sort_by,
+    }
+    return HttpResponse(template.render(context, request))
+
+@login_required
+def liste_sorties(request):
+    """
+    Affiche la liste des opérations de sortie.
+    """
+    # Récupérer les filtres de recherche et de triage
+    query = request.GET.get('q')
+    categorie_id = request.GET.get('categorie')
+    beneficiaire_id = request.GET.get('beneficiaire')
+    fournisseur_id = request.GET.get('fournisseur')
+    montant_min = request.GET.get('montant_min')
+    montant_max = request.GET.get('montant_max')
+    date_min = request.GET.get('date_min')
+    date_max = request.GET.get('date_max')
+    sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
+
+    # Filtrer les opérations de sortie
+    sorties = OperationSortir.objects.all()
+
+    if query:
+        sorties = sorties.filter(
+            Q(description__icontains=query) | 
+            Q(categorie__name__icontains=query) |
+            Q(montant__icontains=query) | 
+            Q(date_de_sortie__icontains=query)
+        )
+    if categorie_id:
+        sorties = sorties.filter(categorie_id=categorie_id)
+    if beneficiaire_id:
+        sorties = sorties.filter(beneficiaire_id=beneficiaire_id)
+    if fournisseur_id:
+        sorties = sorties.filter(fournisseur_id=fournisseur_id)
+    if date_min:
+        sorties = sorties.filter(date_de_sortie__gte=date_min)
+    if date_max:
+        sorties = sorties.filter(date_de_sortie__lte=date_max)
+
+    # Appliquer le triage
+    sorties = sorties.order_by(sort_by)
+
+    # Récupérer uniquement les catégories de type "sortie" pour les options de filtrage
+    categories = Categorie.objects.filter(type="sortie")
+    beneficiaires = Beneficiaire.objects.all()
+    fournisseurs = Fournisseur.objects.all()
+
+    # Charger le template
+    template = loader.get_template('caisse/listes/sorties.html')
+
+    # Contexte à passer au template
+    context = {
+        'sorties': sorties,
+        'categories': categories,
+        'beneficiaires': beneficiaires,
+        'fournisseurs': fournisseurs,
+        'prix': "Ar",
+        'sort_by': sort_by,
+    }
+    return HttpResponse(template.render(context, request))

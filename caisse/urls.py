@@ -31,7 +31,8 @@ urlpatterns = [
     # Opérations financières
     path('ajouts-entree/', views.ajouts_entree, name="ajouts_entree"),
     path('ajouts-sortie/', views.ajouts_sortie, name="ajouts_sortie"),
-    
+    path('entrees/', views.liste_entrees, name='liste_entrees'),
+    path('sorties/', views.liste_sorties, name='liste_sorties'),
     path('operations/modifier/entree/<int:pk>/', views.modifier_entree, name='modifier_entree'),
     path('operations/modifier/sortie/<int:pk>/', views.modifier_sortie, name='modifier_sortie'),
     path('caisse/operations/supprimer_entrer/<int:pk>/', views.supprimer_entree, name="supprimer_entree"),
