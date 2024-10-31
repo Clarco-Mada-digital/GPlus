@@ -107,7 +107,7 @@
                     </td>
                     <td
                         class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="{% url 'editer_utilisateur' user.id %}"
+                        <a href="{% url 'caisse:editer_utilisateur' user.id %}"
                             class="text-indigo-600 hover:text-indigo-900 mr-3">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 class="h-5 w-5 inline" fill="none"
@@ -139,7 +139,7 @@
         <div class="px-4 py-5 sm:p-6">
             <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Créer
                 un nouvel utilisateur</h3>
-            <form method="POST" action="{% url 'creer_utilisateur' %}"
+            <form method="POST" action="{% url 'caisse:creer_utilisateur' %}"
                 enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
