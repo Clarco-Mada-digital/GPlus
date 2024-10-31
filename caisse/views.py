@@ -968,4 +968,61 @@ def historique(request):
     else:
         return redirect('index')
 
+@login_required
+def update_profile(request):
+    if request.method == 'POST':
+        user = request.user
+        
+        # Mise à jour des informations de base
+        user.first_name = request.POST.get('first_name', '')
+        user.last_name = request.POST.get('last_name', '')
+        user.email = request.POST.get('email', '')
+        user.phone = request.POST.get('phone', '')
+
+        # Gestion de la photo de profil
+        if 'photo' in request.FILES:
+            user.photo = request.FILES['photo']
+        
+        try:
+            user.save()
+            messages.success(request, 'Votre profil a été mis à jour avec succès.')
+        except Exception as e:
+            messages.error(request, f'Erreur lors de la mise à jour du profil: {str(e)}')
+        
+        return redirect('caisse:parametres')
+    
+    return redirect('caisse:parametres')
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        user = request.user
+        
+        # Vérification du mot de passe actuel
+        if not user.check_password(current_password):
+            messages.error(request, 'Le mot de passe actuel est incorrect.')
+            return redirect('caisse:parametres')
+        
+        # Vérification de la correspondance des nouveaux mots de passe
+        if new_password != confirm_password:
+            messages.error(request, 'Les nouveaux mots de passe ne correspondent pas.')
+            return redirect('caisse:parametres')
+        
+        # Mise à jour du mot de passe
+        try:
+            user.set_password(new_password)
+            user.save()
+            update_session_auth_hash(request, user)  # Garde l'utilisateur connecté
+            messages.success(request, 'Votre mot de passe a été modifié avec succès.')
+        except Exception as e:
+            messages.error(request, f'Erreur lors du changement de mot de passe: {str(e)}')
+        
+        return redirect('caisse:parametres')
+    
+    return redirect('caisse:parametres')
+
 

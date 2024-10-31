@@ -166,7 +166,18 @@
             <div class="bg-white rounded-lg border p-6">
                 <h2 class="text-xl font-semibold mb-4">Actions</h2>
                 <div class="space-y-4">
-
+                    <a href="{% url 'accounts:logout' %}"
+                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-red text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 mr-2"
+                            viewBox="0 0 24 24"
+                            fill="currentColor">
+                            <path d="M16 13v-2H7V8l-5 4 5 4v-3z" />
+                            <path
+                                d="M20 3h-9c-1.1 0-2 .9-2 2v4h2V5h9v14h-9v-4H9v4c0 1.1.9 2 2 2h9c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" />
+                        </svg>
+                        Se déconnecter
+                    </a>
                 </div>
             </div>
         </div>
