@@ -147,7 +147,7 @@ class OperationSortir(models.Model):
     montant = models.DecimalField(max_digits=10, decimal_places=0, default=500)  # Montant
     date = models.DateField(auto_now_add=True)  # Date de l'ajout dans l'application
     date_de_sortie = models.DateField(default=timezone.now)
-    quantité = models.DecimalField(max_digits=10, decimal_places=0, default=1)
+    quantite = models.DecimalField(max_digits=10, decimal_places=0, default=1)
     categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, null=False)  # Clé étrangère vers Categorie
     beneficiaire = models.ForeignKey(Beneficiaire, on_delete=models.PROTECT, null=False) #clé étrangère vers Personnel
     fournisseur = models.ForeignKey(Fournisseur, on_delete=models.PROTECT, null=False) #clé étrangère vers Fournisseur

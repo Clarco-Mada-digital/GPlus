@@ -123,7 +123,7 @@
                 OR
                 <div class="h-px w-full md:h-full md:w-px bg-slate-400"></div>
               </div>
-              <form action="{% url 'signIn' %}" method="POST"
+              <form action="{% url 'accounts:signIn' %}" method="POST"
                 class="w-full my-auto"> {% csrf_token %}
                 <div class="w-full mx-auto">
                   <div class="relative mt-6">

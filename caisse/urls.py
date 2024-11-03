@@ -54,4 +54,9 @@ urlpatterns = [
     path('historique/', views.historique, name='historique'),
     path('parametres/update-profile/', views.update_profile, name='update_profile'),
     path('parametres/change-password/', views.change_password, name='change_password'),
+    
+    #Pour générer un rapport en EXCEL (.xlsx)
+    path('export/excel/', views.generer_excel_operations, name='generer_excel_operations'), 
+    path('export-entree/excel/', views.generer_excel_operations_entrees, name='generer_excel_operations_entrees'),
+    path('export-sortie/excel/',views.generer_excel_operations_sorties, name="generer_excel_operations_sorties"),
 ]

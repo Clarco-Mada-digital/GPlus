@@ -16,13 +16,13 @@ def signIn(request):
             user = CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist:
             messages.error(request, "L'email ou le mot de passe est incorrect.")
-            return redirect('signIn')
+            return redirect('accounts:signIn')
 
         # Authentifier l'utilisateur avec l'email et le mot de passe
         user = authenticate(request, username=user.username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')  # Rediriger vers la page d'accueil après la connexion
+            return redirect('accounts:home')  # Rediriger vers la page d'accueil après la connexion
         else:
             messages.error(request, "L'email ou le mot de passe est incorrect.")
 
@@ -31,8 +31,8 @@ def signIn(request):
 
 def logout_user(request):
   logout(request)  # Déconnexion de l'utilisateur
-  return redirect('signIn')  # Redirection vers la page de connexion après déconnexion
+  return redirect('accounts:signIn')  # Redirection vers la page de connexion après déconnexion
 
-@login_required(login_url='signIn')
+@login_required(login_url='accounts:signIn')
 def home(request):
     return render(request, 'home.html')

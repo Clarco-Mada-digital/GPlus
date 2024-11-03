@@ -20,6 +20,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import update_session_auth_hash
 from django.template import loader
+import openpyxl
+from openpyxl import Workbook
+from datetime import datetime
+from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.utils import get_column_letter
 
 User = get_user_model()
 
@@ -141,25 +146,25 @@ def listes(request):
     date_max = request.GET.get('date_max')
     quantite_min = request.GET.get('quantite_min')
     quantite_max = request.GET.get('quantite_max')
+    sort_by = request.GET.get('sort', 'date')  # Par défaut, tri par date
+    ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
 
-    sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
-
-    # Filtrer les opérations d'entrée
+    # Filtrer les opérations d'entrée et de sortie
     entree = OperationEntrer.objects.all()
     sortie = OperationSortir.objects.all()
 
+    # Appliquer les filtres
     if query:
-        # Filtrer les résultats selon le terme de recherche
-        entree = OperationEntrer.objects.filter(
-            Q(description__icontains=query) | 
+        entree = entree.filter(
+            Q(description__icontains=query) |
             Q(categorie__name__icontains=query) |
-            Q(montant__icontains=query) | 
+            Q(montant__icontains=query) |
             Q(date_transaction__icontains=query)
-        )  
-        sortie = OperationSortir.objects.filter(
-            Q(description__icontains=query) | 
+        )
+        sortie = sortie.filter(
+            Q(description__icontains=query) |
             Q(categorie__name__icontains=query) |
-            Q(montant__icontains=query) | 
+            Q(montant__icontains=query) |
             Q(date_de_sortie__icontains=query)
         )
     if categorie_id:
@@ -180,17 +185,27 @@ def listes(request):
         entree = entree.filter(date_transaction__lte=date_max)
         sortie = sortie.filter(date_de_sortie__lte=date_max)
 
-
-    # Appliquer le triage sur les opérations (catégorie, bénéficiaire, fournisseur, montant, date, quantité)
-    entree = entree.order_by(sort_by)
-    sortie = sortie.order_by(sort_by)
+    # Définir le triage pour chaque type d'opération
+    sort_order = '' if ordre == 'asc' else '-'
+    if sort_by == 'date':
+        entree = entree.order_by(f"{sort_order}date_transaction")
+        sortie = sortie.order_by(f"{sort_order}date_de_sortie")
+    elif sort_by == 'montant':
+        entree = entree.order_by(f"{sort_order}montant")
+        sortie = sortie.order_by(f"{sort_order}montant")
+    elif sort_by == 'categorie':
+        entree = entree.order_by(f"{sort_order}categorie__name")
+        sortie = sortie.order_by(f"{sort_order}categorie__name")
+    elif sort_by == 'beneficiaire':
+        sortie = sortie.order_by(f"{sort_order}beneficiaire__name")
 
     # Récupérer les catégories, bénéficiaires et fournisseurs pour les options de filtrage
     categories = Categorie.objects.all()
     beneficiaires = Beneficiaire.objects.all()
     fournisseurs = Fournisseur.objects.all()
-    template = loader.get_template('caisse/listes/listes_operations.html')
 
+    # Contexte et rendu du template
+    template = loader.get_template('caisse/listes/listes_operations.html')
     context = {
         'entree': entree,
         'sortie': sortie,
@@ -199,6 +214,7 @@ def listes(request):
         'fournisseurs': fournisseurs,
         'prix': "Ar",
         'sort_by': sort_by,
+        'ordre': ordre,
     }
     return HttpResponse(template.render(context, request))
 
@@ -929,7 +945,7 @@ def historique(request):
         historique = OperationSortir.history.all()
         return render(request, 'caisse/historique/historique.html', {'historique': historique})
     else:
-        return redirect('index')
+        return redirect('caisse:index')
 
 @login_required
 def update_profile(request):
@@ -996,8 +1012,6 @@ def liste_entrees(request):
     # Récupérer les filtres de recherche et de triage
     query = request.GET.get('q')
     categorie_id = request.GET.get('categorie')
-    montant_min = request.GET.get('montant_min')
-    montant_max = request.GET.get('montant_max')
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
     sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
@@ -1047,8 +1061,6 @@ def liste_sorties(request):
     categorie_id = request.GET.get('categorie')
     beneficiaire_id = request.GET.get('beneficiaire')
     fournisseur_id = request.GET.get('fournisseur')
-    montant_min = request.GET.get('montant_min')
-    montant_max = request.GET.get('montant_max')
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
     sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
@@ -1095,3 +1107,150 @@ def liste_sorties(request):
         'sort_by': sort_by,
     }
     return HttpResponse(template.render(context, request))
+
+
+#Pour générer un rapport en EXCEL (.xlsx)
+def generer_excel_operations(request):
+    # Vérifie si l'utilisateur souhaite exporter toutes les opérations ou seulement celles sélectionnées
+    if request.POST.get("export_all"):
+        operations_entrer = OperationEntrer.objects.all()
+        operations_sortir = OperationSortir.objects.all()
+    else:
+        selected_ids = request.POST.getlist("selected_operations")
+        operations_entrer = OperationEntrer.objects.filter(id__in=selected_ids)
+        operations_sortir = OperationSortir.objects.filter(id__in=selected_ids)
+
+    # Création d'un nouveau classeur Excel
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Liste des Opérations"
+
+    # En-têtes
+    headers = ["Type", "Description", "Catégorie", "Bénéficiaire", "Fournisseur", "Date", "Quantité", "Montant"]
+    sheet.append(headers)
+
+    # Style des en-têtes
+    header_font = Font(bold=True, color="FFFFFF")
+    header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+    for col_num, header in enumerate(headers, 1):
+        cell = sheet.cell(row=1, column=col_num)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    # Définir la largeur des colonnes
+    column_widths = [10, 30, 15, 25, 20, 20, 15, 15]
+    for i, width in enumerate(column_widths, 1):
+        sheet.column_dimensions[get_column_letter(i)].width = width
+
+    # Fonction pour ajouter des opérations au fichier Excel
+    def ajouter_operations(operations, type_operation, avec_beneficiaire=False):
+        for operation in operations:
+            beneficiaire = operation.beneficiaire.name if avec_beneficiaire else "N/A"
+            fournisseur = operation.fournisseur.name if avec_beneficiaire else "N/A"
+            quantite = operation.quantite if avec_beneficiaire else "N/A"
+            date_str = operation.date.strftime('%d-%m-%Y')
+            row = [type_operation, operation.description, operation.categorie.name, beneficiaire, fournisseur, date_str, quantite, operation.montant]
+            sheet.append(row)
+
+    # Ajouter les opérations d'entrée et de sortie
+    ajouter_operations(operations_entrer, "Entrée")
+    ajouter_operations(operations_sortir, "Sortie", avec_beneficiaire=True)
+
+    # Nom du fichier avec la date et l'heure actuelles
+    now = datetime.now().strftime('%d-%m-%Y_%H-%M')
+    filename = f"rapport_operations_{now}.xlsx"
+
+    # Préparer la réponse HTTP
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    workbook.save(response)
+
+    return response
+
+def generer_excel_operations_entrees(request):
+    if request.POST.get("export_all"):
+        operations_entrer = OperationEntrer.objects.all()
+    else:
+        selected_ids = request.POST.getlist("selected_operations")
+        operations_entrer = OperationEntrer.objects.filter(id__in=selected_ids)
+
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Entrées"
+
+    headers = ["Description", "Catégorie", "Date", "Montant"]
+    sheet.append(headers)
+
+    for col_num, header in enumerate(headers, 1):
+        cell = sheet.cell(row=1, column=col_num)
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+        
+    # Définir la largeur des colonnes
+    column_widths = [10, 30, 15, 25, 20, 20, 15, 15]
+    for i, width in enumerate(column_widths, 1):
+        sheet.column_dimensions[get_column_letter(i)].width = width
+
+
+    for operation in operations_entrer:
+        row = [operation.description, operation.categorie.name, operation.date_transaction, operation.montant]
+        sheet.append(row)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    filename = f"entrees_{datetime.now().strftime('%d-%m-%Y_%H-%M')}.xlsx"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    workbook.save(response)
+
+    return response
+
+def generer_excel_operations_sorties(request):
+    # Vérifier si l'utilisateur souhaite exporter toutes les opérations ou seulement celles sélectionnées
+    if request.POST.get("export_all"):
+        operations_sortie = OperationSortir.objects.all()
+    else:
+        selected_ids = request.POST.getlist("selected_operations")
+        operations_sortie = OperationSortir.objects.filter(id__in=selected_ids)
+
+    # Créer un nouveau classeur Excel
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Sorties"
+
+    # Définir les en-têtes
+    headers = ["Description", "Catégorie", "Bénéficiaire", "Fournisseur", "Date", "Quantité", "Montant"]
+    sheet.append(headers)
+
+    # Style des en-têtes
+    for col_num, header in enumerate(headers, 1):
+        cell = sheet.cell(row=1, column=col_num)
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    # Remplir les données des opérations de sortie
+    for operation in operations_sortie:
+        row = [
+            operation.description,
+            operation.categorie.name,
+            f"{operation.beneficiaire.personnel} {operation.beneficiaire.name}",
+            operation.fournisseur.name,
+            operation.date_de_sortie.strftime('%d-%m-%Y'),
+            operation.quantite,
+            operation.montant,
+        ]
+        sheet.append(row)
+
+    # Ajuster la largeur des colonnes
+    column_widths = [30, 20, 25, 25, 20, 10, 15]  # Largeurs ajustées
+    for i, width in enumerate(column_widths, 1):
+        sheet.column_dimensions[get_column_letter(i)].width = width
+
+    # Créer la réponse HTTP pour le fichier Excel
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    filename = f"sorties_{datetime.now().strftime('%d-%m-%Y_%H-%M')}.xlsx"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    workbook.save(response)
+
+    return response

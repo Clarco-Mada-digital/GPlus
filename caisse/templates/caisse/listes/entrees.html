@@ -33,7 +33,7 @@
                 <i class="fas fa-filter"></i>
                 <span>Filtrer par</span>
             </button>
-            <div class="h-5 w-0.5 bg-gray-300"></div>
+            <div class="h-10 w-0.5 bg-gray-300"></div>
             <div class="flex space-x-4">
                 <!-- Sélecteur Catégories -->
                 <select name="categorie" class="px-0 py-2 border-none focus:ring-0">
@@ -44,7 +44,7 @@
                         </option>
                     {% endfor %}
                 </select>
-                <div class="h-5 w-0.5 bg-gray-300"></div>
+                <div class="h-10 w-0.5 bg-gray-300"></div>
     
                 <!-- Sélecteur Bénéficiaires -->
                 <select name="beneficiaire" class="px py-2 bg-white border-none focus:ring-0 rounded-md">
@@ -55,7 +55,7 @@
                         </option>
                     {% endfor %}
                 </select>
-                <div class="h-5 w-0.5 bg-gray-300"></div>
+                <div class="h-10 w-0.5 bg-gray-300"></div>
     
                 <!-- Sélecteur Fournisseurs -->
                 <select name="fournisseur" class="px py-2 bg-white border-none focus:ring-0 rounded-md">
@@ -66,7 +66,7 @@
                         </option>
                     {% endfor %}
                 </select>
-                <div class="h-5 w-0.5 bg-gray-300"></div>
+                <div class="h-10 w-0.5 bg-gray-300"></div>
     
                 <!-- Sélecteur de Tri -->
                 <div class="flex space-x-4">
@@ -91,51 +91,70 @@
 
 
     <!-- Tableau des opérations -->
-    <div class="overflow-x-auto bg-white border rounded-lg">
-        <table class="w-full">
-            <thead>
-                <tr class="bg-gray-100 text-left text-gray-700">
-                    <th class="px-4 py-2">Déscription</th>
-                    <th class="px-4 py-2">Catégories</th>
-                    <th class="px-4 py-2">Bénéficiaires</th>
-                    <th class="px-4 py-2">Fournisseurs</th>
-                    <th class="px-4 py-2">Dates</th>
-                    <th class="px-4 py-2 text-right">Quantités</th>
-                    <th class="px-4 py-2 text-right">Sommes</th>
-                    <th class="px-4 py-2 text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                
+    <form method="post" action="{% url 'caisse:generer_excel_operations_entrees' %}">
+        {% csrf_token %}
+        <div class="overflow-x-auto bg-white border rounded-lg">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-100 text-left text-gray-700">
+                        <th class="px-4 py-2">
+                            <input type="checkbox" id="select-all-entrees">
+                        </th>
+                        <th class="px-4 py-2">Description</th>
+                        <th class="px-4 py-2">Catégorie</th>
+                        <th class="px-4 py-2">Date</th>
+                        <th class="px-4 py-2 text-right">Montant</th>
+                        <th class="px-4 py-2 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
                     {% for operation in entrees %}
-                    <tr :key="{{ operation.id }}"
-                    class="border-b hover:bg-gray-50">
-                    <td class="px-4 py-2">{{ operation.description }}</td>
-                    <td class="px-4 py-2">{{ operation.categorie.name }}
-                    </td>
-                    <td class="px-4 py-2"></td>
-                    <td class="px-4 py-2"></td>
-                    <td class="px-4 py-2">{{ operation.date_transaction }}</td>
-                    <td class="px-4 py-2 text-right"></td>
-                    <td class="px-4 py-2 text-right">{{ operation.montant }}
-                        Ar</td>
-                    <td class="px-4 py-2 text-center">
-                        <div class="flex items-center space-x-2">
-                            <!-- Icône de modification (stylo) -->
-                            <a href="{% url 'caisse:modifier_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                </svg>
-                            </a>
-                    
-                            <!-- Icône de suppression -->
-                            <a href="{% url 'caisse:supprimer_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?');">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
+                    <tr :key="{{ operation.id }}" class="{% cycle 'bg-gray-200' 'bg-white' %} border-b hover:bg-gray-50">
+                        <td class="px-4 py-2">
+                            <input type="checkbox" name="selected_operations" value="{{ operation.id }}">
+                        </td>
+                        <td class="px-4 py-2">{{ operation.description }}</td>
+                        <td class="px-4 py-2">{{ operation.categorie.name }}</td>
+                        <td class="px-4 py-2">{{ operation.date_transaction }}</td>
+                        <td class="px-4 py-2 text-right">{{ operation.montant }} Ar</td>
+                        <td class="px-4 py-2 text-center">
+                            <div class="flex items-center space-x-2">
+                                <!-- Icône de modification (stylo) -->
+                                <a href="{% url 'caisse:modifier_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                    </svg>
+                                </a>
+                        
+                                <!-- Icône de suppression -->
+                                <a href="{% url 'caisse:supprimer_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?');">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
                     {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    
+        <!-- Boutons d'exportation -->
+        <div class="flex justify-end mt-4">
+            <button type="submit" name="export_selected" value="true" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Exporter Sélection
+            </button>
+            <button type="submit" name="export_all" value="true" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2">
+                Exporter Tout
+            </button>
+        </div>
+    </form>
+    
+    <script>
+        document.getElementById('select-all-entrees').addEventListener('click', function(event) {
+            const checkboxes = document.querySelectorAll('input[name="selected_operations"]');
+            checkboxes.forEach(checkbox => checkbox.checked = event.target.checked);
+        });
+    </script>
 {% endblock %}

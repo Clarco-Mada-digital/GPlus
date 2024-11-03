@@ -28,4 +28,4 @@ class OperationEntrerForm(forms.ModelForm):
 class OperationSortirForm(forms.ModelForm):
     class Meta:
         model = OperationSortir
-        fields = ['description', 'montant', 'categorie', 'beneficiaire', 'fournisseur', 'date_de_sortie', 'quantité']
+        fields = ['description', 'montant', 'categorie', 'beneficiaire', 'fournisseur', 'date_de_sortie', 'quantite']

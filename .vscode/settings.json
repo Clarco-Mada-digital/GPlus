@@ -8,5 +8,11 @@
     "latex",
     "plaintext"
   ],
-  "mithrilEmmet.outputDefaultTagName": true
+  "mithrilEmmet.outputDefaultTagName": true,
+  "html.format.templating": true,
+  "emmet.triggerExpansionOnTab": true,
+  "editor.quickSuggestions": {
+    "comments": "on",
+    "strings": "inline"
+  }
 }
