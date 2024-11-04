@@ -7,7 +7,7 @@
 <div class="container mx-auto px-4 py-8">
     <!-- Cartes des totaux -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg border p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Solde Actuel</p>
@@ -25,7 +25,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg border p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Total des Entrées</p>
@@ -42,14 +42,14 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg border p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Total des Sorties</p>
                     <h3 class="text-2xl font-bold">Ar
                         {{ total_sorties|floatformat:0 }}</h3>
                 </div>
-                <div class="bg-red-100 p-3 rounded-full">
+                <div class="bg-red/40 p-3 rounded-full">
                     <svg class="w-6 h-6 text-red-600" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -61,7 +61,7 @@
     </div>
 
     <!-- Graphique principal -->
-    <div class="bg-white rounded-lg shadow p-6 mb-8">
+    <div class="bg-white rounded-lg border p-6 mb-8">
         <h2 class="text-lg font-semibold mb-4">Résumé du mois</h2>
         <div class="h-[300px]">
             <canvas id="resumeMoisChart"></canvas>
@@ -70,7 +70,7 @@
 
     <!-- Graphiques inférieurs -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg border p-6">
             <h2 class="text-lg font-semibold mb-4">Statistique des sorties par
                 catégories</h2>
             <div class="h-[250px]">
@@ -78,7 +78,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg border p-6">
             <h2 class="text-lg font-semibold mb-4">Visualisation des entrées de
                 ces 4 derniers mois</h2>
             <div class="overflow-x-auto">
@@ -130,13 +130,9 @@
             }, {
                 label: 'Solde',
                 data: soldesParMois.map(item => item.solde),
-                type: 'line',
+                backgroundColor: 'rgba(59, 130, 246, 0.6)',
                 borderColor: 'rgba(59, 130, 246, 1)',
-                borderWidth: 2,
-                fill: false,
-                tension: 0.4,
-                pointBackgroundColor: 'rgba(59, 130, 246, 1)',
-                pointRadius: 4
+                borderWidth: 1
             }]
         },
         options: {
