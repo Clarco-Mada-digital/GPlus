@@ -1,52 +1,53 @@
 {% extends 'layout/layout.html' %}
 
+
 {% block title %}Historique des Opérations{% endblock %}
 
 {% block content %}
 
 <div class="container mx-auto p-4 bg-white rounded shadow-md max-w-md">
     <h2 class="text-2xl font-bold mb-4" id="form-title">Modifier une Opération</h2>
-    <form id="operation-form" class="space-y-4" data-type="entree" data-id="{{ operation.id }}" method="POST">
+
+    <form id="operation-form" data-type="entree" data-id="{{ operation.id }}" method="POST">
         {% csrf_token %}
-        
-        <!-- Description -->
-        <div>
+       <!-- Description -->
+        <div class="mb-4">
             <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-            <input type="text" id="description" name="description" class="w-full border border-gray-300 rounded p-2 mt-1" placeholder="Description" required>
+            <input type="text" id="description" name="description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Description" required>
         </div>
 
         <!-- Montant -->
-        <div>
+        <div class="mb-4">
             <label for="montant" class="block text-sm font-medium text-gray-700">Montant</label>
-            <input type="number" id="montant" name="montant" class="w-full border border-gray-300 rounded p-2 mt-1" placeholder="Montant" required>
+            <input type="number" id="montant" name="montant" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Montant" required>
         </div>
 
         <!-- Quantité (visible uniquement pour sortie) -->
-        <div id="quantite-field" class="hidden">
+        <div id="quantite-field" class="hidden mb-4">
             <label for="quantite" class="block text-sm font-medium text-gray-700">Quantité</label>
-            <input type="number" id="quantite" name="quantite" class="w-full border border-gray-300 rounded p-2 mt-1" placeholder="Quantité">
+            <input type="number" id="quantite" name="quantite" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Quantité">
         </div>
 
         <!-- Date -->
-        <div>
+        <div class="mb-4">
             <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
-            <input type="date" id="date" name="date" class="w-full border border-gray-300 rounded p-2 mt-1" required>
+            <input type="date" id="date" name="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
         </div>
 
         <!-- Catégorie -->
-        <div>
+        <div class="mb-4">
             <label for="categorie" class="block text-sm font-medium text-gray-700">Catégorie</label>
-            <select id="categorie" name="categorie" class="w-full border border-gray-300 rounded p-2 mt-1">
+            <select id="categorie" name="categorie" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 {% for categorie in categories %}
-                <option value="{{ categorie.id }}">{{ categorie.name }}</option>
+                    <option value="{{ categorie.id }}">{{ categorie.name }}</option>
                 {% endfor %}
             </select>
         </div>
 
         <!-- Bénéficiaire (visible uniquement pour sortie) -->
-        <div id="beneficiaire-field" class="hidden">
+        <div id="beneficiaire-field" class="hidden mb-4">
             <label for="beneficiaire" class="block text-sm font-medium text-gray-700">Bénéficiaire</label>
-            <select id="beneficiaire" name="beneficiaire" class="w-full border border-gray-300 rounded p-2 mt-1">
+            <select id="beneficiaire" name="beneficiaire" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 {% for beneficiaire in beneficiaires %}
                 <option value="{{ beneficiaire.id }}">{{ beneficiaire.name }}</option>
                 {% endfor %}
@@ -54,53 +55,23 @@
         </div>
 
         <!-- Fournisseur (visible uniquement pour sortie) -->
-        <div id="fournisseur-field" class="hidden">
+        <div id="fournisseur-field" class="hidden mb-4">
             <label for="fournisseur" class="block text-sm font-medium text-gray-700">Fournisseur</label>
-            <select id="fournisseur" name="fournisseur" class="w-full border border-gray-300 rounded p-2 mt-1">
+             <select id="fournisseur" name="fournisseur" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 {% for fournisseur in fournisseurs %}
                 <option value="{{ fournisseur.id }}">{{ fournisseur.name }}</option>
                 {% endfor %}
             </select>
         </div>
 
-        <!-- Submit Button -->
         <button type="submit" class="w-full bg-blue-500 text-white rounded p-2 mt-4 hover:bg-blue-600">Enregistrer</button>
     </form>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("operation-form");
-    const formTitle = document.getElementById("form-title");
-    const quantiteField = document.getElementById("quantite-field");
-    const beneficiaireField = document.getElementById("beneficiaire-field");
-    const fournisseurField = document.getElementById("fournisseur-field");
-
-    const type = form.dataset.type;
-    const operationId = form.dataset.id;
-    const apiUrl = type === "entree"
-        ? `{% url 'modifier_entree' pk=operationId %}`
-        : `{% url 'modifier_sortie' pk=operationId %}`;
-
-    if (type === "sortie") {
-        formTitle.innerText = "Modifier une Opération de Sortie";
-        quantiteField.classList.remove("hidden");
-        beneficiaireField.classList.remove("hidden");
-        fournisseurField.classList.remove("hidden");
-    }
-
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            const formData = data.form;
-            Object.keys(formData).forEach(field => {
-                document.getElementById(field).value = formData[field];
-            });
-        });
-
     form.addEventListener("submit", function (event) {
         event.preventDefault();
-
+    
         const formData = new FormData(form);
         fetch(apiUrl, {
             method: "POST",
@@ -109,20 +80,24 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             body: formData,
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("L'opération a été mise à jour avec succès !");
-                    window.location.href = "{% url 'listes' %}";
-                } else {
-                    alert("Une erreur est survenue : " + data.error);
-                }
-            })
-            .catch(error => {
-                console.error("Erreur lors de la mise à jour de l'opération:", error);
-                alert("Erreur lors de la mise à jour.");
-            });
+        .then(response => {
+            if (!response.ok) { // Vérification du statut de la réponse
+                return response.json().then(data => {
+                    throw new Error(data.errors); // Lance une erreur avec les erreurs du formulaire
+                });
+            }
+            return response.json(); // Retourne les données JSON si la requête est OK
+        })
+        .then(data => {
+            if (data.success) {
+                alert("L'opération a été mise à jour avec succès !");
+                // ... (redirection ou autre action) ...
+            } 
+        })
+        .catch(error => {
+            console.error("Erreur lors de la mise à jour :", error);
+            alert("Erreur lors de la mise à jour : " + error); // Affiche le message d'erreur complet
+        });
     });
-});
 </script>
 {% endblock %}

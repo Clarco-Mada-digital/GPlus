@@ -357,15 +357,15 @@ def ajouter_acteur(request):
             form = CategorieForm(request.POST)
         else:
             messages.error(request, "Type d'acteur non valide.")
-            return redirect('acteurs')
+            return redirect('caisse:acteurs')
 
         if form.is_valid():
             form.save()
             messages.success(request, f"{type_acteur[:-1].capitalize()} ajouté avec succès.")
-            return redirect('acteurs')
+            return redirect('caisse:acteurs')
         else:
             messages.error(request, "Erreur dans le formulaire. Veuillez vérifier les données.")
-    return redirect('acteurs')
+    return redirect('caisse:acteurs')
 
 @login_required
 def ajouter_fournisseur(request):
@@ -377,10 +377,10 @@ def ajouter_fournisseur(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Fournisseur ajouté avec succès.")
-            return redirect('acteurs')
+            return redirect('caisse:acteurs')
         else:
             messages.error(request, "Erreur dans le formulaire. Veuillez vérifier les données.")
-    return redirect('acteurs')
+    return redirect('caisse:acteurs')
 
 @login_required
 @require_POST
@@ -436,8 +436,8 @@ def ajouter_categorie(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Catégorie ajoutée avec succès.")
-            return redirect('acteurs')
-    return redirect('acteurs')
+            return redirect('caisse:acteurs')
+    return redirect('caisse:acteurs')
 
 @login_required
 @require_POST
@@ -579,54 +579,20 @@ def ajouts_sortie(request):
 @login_required
 @require_http_methods(["GET", "POST"])
 def modifier_entree(request, pk):
-    """
-    Modifie une opération d'entrée.
-    """
     operation = get_object_or_404(OperationEntrer, pk=pk)
 
-    try:
-        if request.method == 'POST':
-            # Si les données sont envoyées en multipart/form-data
-            if request.content_type and 'multipart/form-data' in request.content_type:
-                data = request.POST.dict()
-            else:
-                # Si les données sont envoyées en JSON
-                data = json.loads(request.body)
-
-            # Mise à jour des champs
-            operation.description = data.get('description', operation.description)
-            operation.montant = float(data.get('montant', operation.montant))
-            operation.date = data.get('date', operation.date)
-            operation.categorie_id = data.get('categorie', operation.categorie_id)
-
-            operation.save()
-
-            return JsonResponse({
-                'success': True,
-                'operation': {
-                    'id': operation.id,
-                    'description': operation.description,
-                    'montant': operation.montant,
-                    'date': operation.date,
-                    'categorie': operation.categorie.name if operation.categorie else None,
-                }
-            })
+    if request.method == 'POST':
+        form = OperationEntrerForm(request.POST, instance=operation)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True, 'message': 'Opération modifiée avec succès!'})
         else:
-            # Préparation des données pour affichage
-            form = OperationEntrerForm(instance=operation)
-            form_data = {field_name: form[field_name].value() for field_name in form.fields}
-            return JsonResponse({'form': form_data, 'type_operation': 'entrees'})
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
 
-    except KeyError as e:
-        return JsonResponse({
-            'success': False, 
-            'error': f"Champ requis manquant: {str(e)}"
-        }, status=400)
-    except Exception as e:
-        return JsonResponse({
-            'success': False, 
-            'error': str(e)
-        }, status=400)
+    else: # GET request
+        form = OperationEntrerForm(instance=operation)
+        form_data = {field_name: form[field_name].value() for field_name in form.fields}
+        return JsonResponse({'form': form_data, 'type_operation': 'entrees'})
 
 
 @login_required

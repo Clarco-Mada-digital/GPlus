@@ -25,7 +25,7 @@
         {% csrf_token %}
         <div x-show="operation === 'entree'">
             <template x-for="(ligne, index) in lignesEntrees" :key="index">
-                <div class="flex justify-between flex-wrap">
+                <div class="flex justify-between flex-wrap md:w-auto md:flex-row space-y-2 md:space-y-0 md:space-x-2">
                     <span class="mb-4 w-auto self-center font-bold text-gray-500">Ligne <span x-text="index + 1"></span>:</span>
                 <div
                     class="mb-4 flex w-[15%] shadow-sm border-gray-500 border-b-2">
@@ -59,7 +59,7 @@
                     </select>
                 </div>
             </div>
-        </template>
+        </template> <br>
 
         <div class="mb-4">
             <button type="button"
@@ -87,7 +87,7 @@
             {% csrf_token %}
             <div x-show="operation === 'sortie'">
                 <template x-for="(ligne, index) in lignesSorties" :key="index">
-                    <div class="flex justify-between flex-wrap">
+                    <div class="flex justify-between flex-wrap sm:txt-lg md:text-xl lg:text-2xl">
                         <span class="mb-4 w-auto self-center font-bold text-gray-500">Ligne <span x-text="index + 1"></span>:</span>
                         <!-- Date -->
                         <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
@@ -155,7 +155,7 @@
                                 class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6" readonly>
                         </div>
                     </div>
-                </template>
+                </template> <br>
         
                 <!-- Ajouter une ligne -->
                 <div class="mb-4">
