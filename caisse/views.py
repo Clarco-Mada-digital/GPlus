@@ -39,61 +39,87 @@ def index(request):
     first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     
     # Calcul des totaux
-    caisse_totale = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
-    caisse_totale -= OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    solde_actuel = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    solde_actuel -= OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
     
-    entrees_mois = OperationEntrer.objects.filter(date_transaction__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
-    sorties_mois = OperationSortir.objects.filter(date_de_sortie__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
+    total_entrees = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    total_sorties = OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
 
-    # Données pour le graphique Résumé du mois
-    six_months_ago = today - timedelta(days=180)
-    entrees_par_mois = OperationEntrer.objects.filter(date_transaction__gte=six_months_ago) \
+    # Données pour le graphique Résumé du mois (12 derniers mois)
+    douze_mois_ago = today - timedelta(days=365)
+    
+    # Récupérer les entrées et sorties par mois
+    entrees_par_mois = OperationEntrer.objects.filter(date_transaction__gte=douze_mois_ago) \
         .annotate(mois=TruncMonth('date_transaction')) \
         .values('mois') \
         .annotate(total=Sum('montant')) \
         .order_by('mois')
-    sorties_par_mois = OperationSortir.objects.filter(date_de_sortie__gte=six_months_ago) \
+    
+    sorties_par_mois = OperationSortir.objects.filter(date_de_sortie__gte=douze_mois_ago) \
         .annotate(mois=TruncMonth('date_de_sortie')) \
         .values('mois') \
         .annotate(total=Sum('montant')) \
         .order_by('mois')
 
-    labels_mois = [entry['mois'].strftime("%b") for entry in entrees_par_mois]
-    entrees_data = [entry['total'] for entry in entrees_par_mois]
-    sorties_data = [entry['total'] for entry in sorties_par_mois]
+    # Calculer le solde cumulatif pour chaque mois
+    soldes_par_mois = []
+    solde_cumule = 0
+    
+    # Créer un dictionnaire des entrées et sorties par mois
+    mois_data = {}
+    
+    for entry in entrees_par_mois:
+        mois = entry['mois'].strftime("%b")
+        if mois not in mois_data:
+            mois_data[mois] = {'entrees': 0, 'sorties': 0}
+        mois_data[mois]['entrees'] = float(entry['total'])
 
-    # Données pour le graphique Sorties par catégories
+    for entry in sorties_par_mois:
+        mois = entry['mois'].strftime("%b")
+        if mois not in mois_data:
+            mois_data[mois] = {'entrees': 0, 'sorties': 0}
+        mois_data[mois]['sorties'] = float(entry['total'])
+
+    # Calculer le solde cumulatif
+    for mois in mois_data:
+        solde_cumule += mois_data[mois]['entrees'] - mois_data[mois]['sorties']
+        soldes_par_mois.append({
+            'mois': mois,
+            'solde': solde_cumule
+        })
+
+    # Données pour le graphique circulaire des catégories
     sorties_categories = OperationSortir.objects.values('categorie__name') \
         .annotate(total=Sum('montant')) \
-        .order_by('-total')[:5]  # Top 5 catégories
+        .order_by('-total')
 
-    labels_categories = [entry['categorie__name'] for entry in sorties_categories]
-    sorties_categories_data = [entry['total'] for entry in sorties_categories]
-
-    # Données pour les entrées des 4 derniers mois
+    # Données pour les 4 derniers mois
     quatre_mois_ago = today - timedelta(days=120)
     entrees_4_mois = OperationEntrer.objects.filter(date_transaction__gte=quatre_mois_ago) \
-        .annotate(mois=TruncMonth('date_transaction')) \
-        .values('mois') \
-        .annotate(montant=Sum('montant')) \
-        .order_by('-mois')[:4]
-
-    # Fonction pour convertir Decimal en float
-    def decimal_default(obj):
-        if isinstance(obj, Decimal):
-            return float(obj)
-        raise TypeError
+        .values('date_transaction', 'montant') \
+        .order_by('-date_transaction')[:4]
 
     context = {
-        'caisse_totale': float(caisse_totale),
-        'entrees_mois': float(entrees_mois),
-        'sorties_mois': float(sorties_mois),
-        'labels_mois': json.dumps(labels_mois),
-        'entrees_data': json.dumps([float(x) for x in entrees_data], default=decimal_default),
-        'sorties_data': json.dumps([float(x) for x in sorties_data], default=decimal_default),
-        'labels_categories': json.dumps(labels_categories),
-        'sorties_categories_data': json.dumps([float(x) for x in sorties_categories_data], default=decimal_default),
-        'entrees_4_mois': [{'mois': e['mois'], 'montant': float(e['montant'])} for e in entrees_4_mois],
+        'solde_actuel': float(solde_actuel),
+        'total_entrees': float(total_entrees),
+        'total_sorties': float(total_sorties),
+        'entrees_par_mois': json.dumps([{
+            'mois': entry['mois'].strftime("%b"),
+            'total': float(entry['total'])
+        } for entry in entrees_par_mois], default=str),
+        'sorties_par_mois': json.dumps([{
+            'mois': entry['mois'].strftime("%b"),
+            'total': float(entry['total'])
+        } for entry in sorties_par_mois], default=str),
+        'soldes_par_mois': json.dumps(soldes_par_mois, default=str),
+        'sorties_categories': json.dumps([{
+            'categorie': entry['categorie__name'],
+            'total': float(entry['total'])
+        } for entry in sorties_categories], default=str),
+        'entrees_4_mois': json.dumps([{
+            'date': entry['date_transaction'].strftime("%d/%m/%Y"),
+            'montant': float(entry['montant'])
+        } for entry in entrees_4_mois], default=str),
     }
 
     return render(request, "caisse/dashboard.html", context)
@@ -1074,7 +1100,7 @@ def liste_sorties(request):
             Q(categorie__name__icontains=query) |
             Q(montant__icontains=query) | 
             Q(date_de_sortie__icontains=query)
-        )
+            )
     if categorie_id:
         sorties = sorties.filter(categorie_id=categorie_id)
     if beneficiaire_id:
