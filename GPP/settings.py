@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'personnel',
     'caisse',
     'simple_history',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
