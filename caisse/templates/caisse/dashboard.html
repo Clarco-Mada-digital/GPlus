@@ -1,5 +1,6 @@
 <!-- templates/dashboard.html -->
 {% extends 'layout/layout.html' %}
+{% load humanize %}
 
 {% block title %}Dashboard{% endblock %}
 
@@ -7,95 +8,148 @@
 <div class="container mx-auto px-4 py-8">
     <!-- Cartes des totaux -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white rounded-lg border p-6">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-2xl p-6">
+            <div class="flex items-center justify-center space-x-4">
+
+                <div class="bg-blue-100  rounded-full">
+                    <svg width="70" height="70" viewBox="0 0 70 70" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <rect width="70" height="70" rx="35" fill="#E7EDFF" />
+                        <path
+                            d="M29.99 25.625H40.01L42.1725 23.895C42.9088 23.3075 43.1838 22.3537 42.8725 21.4637C42.5613 20.5737 41.7525 20 40.8125 20H29.1875C28.2475 20 27.4388 20.575 27.1275 21.4637C26.8163 22.3525 27.0913 23.3075 27.8263 23.8937L29.99 25.625Z"
+                            fill="#396AFF" />
+                        <path
+                            d="M40.1813 27.625H29.8187C26.405 30.9762 23.75 36.8562 23.75 41.6875C23.75 45.8862 25.9725 50.125 30.9375 50.125H39.375C43.6162 50.125 46.25 46.8912 46.25 41.6875C46.25 36.8562 43.595 30.9762 40.1813 27.625ZM34.525 37.9375H35.475C36.9362 37.9375 38.125 39.1262 38.125 40.5875C38.125 41.9012 37.1775 42.9825 35.9375 43.2025V44.1862C35.9375 44.7037 35.5175 45.1237 35 45.1237C34.4825 45.1237 34.0625 44.7037 34.0625 44.1862V43.25H32.8125C32.295 43.25 31.875 42.83 31.875 42.3125C31.875 41.795 32.295 41.375 32.8125 41.375H35.475C35.9025 41.375 36.25 41.0275 36.25 40.6C36.25 40.16 35.9025 39.8125 35.475 39.8125H34.525C33.0638 39.8125 31.875 38.6237 31.875 37.1625C31.875 35.8487 32.8225 34.7675 34.0625 34.5475V33.5625C34.0625 33.045 34.4825 32.625 35 32.625C35.5175 32.625 35.9375 33.045 35.9375 33.5625V34.5H37.1875C37.705 34.5 38.125 34.92 38.125 35.4375C38.125 35.955 37.705 36.375 37.1875 36.375H34.525C34.0975 36.375 33.75 36.7225 33.75 37.15C33.75 37.59 34.0975 37.9375 34.525 37.9375Z"
+                            fill="#396AFF" />
+                    </svg>
+
+                </div>
                 <div>
                     <p class="text-sm text-gray-600">Solde Actuel</p>
-                    <h3 class="text-2xl font-bold">Ar
-                        {{solde_actuel|floatformat:0 }}</h3>
-                </div>
-                <div class="bg-blue-100 p-3 rounded-full">
-                    <svg class="w-6 h-6 text-blue-600" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                    <h3 class="text-3xl font-bold text-gray-800">Ar
+                        {{solde_actuel|floatformat:0|intcomma}}</h3>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg border p-6">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-2xl p-6">
+            <div class="flex items-center justify-center space-x-4">
+
+                <div class="bg-green-100  rounded-full">
+                    <svg width="70" height="70" viewBox="0 0 70 70" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <rect width="70" height="70" rx="35" fill="#DCFAF8" />
+                        <path
+                            d="M48.2318 33.4019H46.4475C46.0413 32.2657 45.3868 31.2484 44.5491 30.4168L47.3009 29.202C47.694 29.0284 47.9093 28.5947 47.7975 28.1799C47.4657 26.9484 46.3455 26.0425 45.0148 26.0425H42.7451C41.44 26.0425 40.338 26.9142 39.983 28.1096H37.5859C36.6857 31.4352 33.6446 33.8888 30.0413 33.8888C27.8417 33.8888 25.8518 32.9743 24.4303 31.5057C24.0299 32.0769 23.7019 32.703 23.4602 33.3708C22.7423 33.2137 22.1519 32.6458 21.9869 31.9063C21.8812 31.4325 21.4111 31.1338 20.9376 31.2399C20.4639 31.3457 20.1655 31.8155 20.2713 32.2892C20.4511 33.0947 20.9035 33.826 21.5451 34.3484C21.9843 34.706 22.5007 34.9548 23.0478 35.0797C23.0052 35.4146 22.9832 35.7561 22.9832 36.1027V36.9548C22.9832 40.1848 24.8902 42.9669 27.6346 44.2276V46.1645C27.6346 47.2186 28.4892 48.0732 29.5433 48.0732C30.5975 48.0732 31.4521 47.2186 31.4521 46.1645V44.9479H38.6024V46.1645C38.6024 47.2186 39.457 48.0732 40.5112 48.0732C41.5654 48.0732 42.42 47.2186 42.42 46.1645V44.1531C44.4266 43.177 45.9632 41.379 46.5967 39.1943H48.2317C49.3464 39.1943 50.2501 38.2864 50.2501 37.1664V35.4298C50.2502 34.3099 49.3465 33.4019 48.2318 33.4019ZM41.7464 33.9094C41.2628 33.9094 40.8707 33.5173 40.8707 33.0336C40.8707 32.5499 41.2627 32.1579 41.7464 32.1579C42.2301 32.1579 42.6222 32.5499 42.6222 33.0336C42.6222 33.5173 42.2301 33.9094 41.7464 33.9094Z"
+                            fill="#16DBCC" />
+                        <path
+                            d="M30.0413 20C26.7008 20 23.9832 22.721 23.9832 26.0655C23.9832 29.41 26.7008 32.131 30.0413 32.131C33.3817 32.131 36.0993 29.41 36.0993 26.0655C36.0993 22.7209 33.3816 20 30.0413 20ZM29.4787 25.1387H30.6038C31.873 25.1387 32.9054 26.1719 32.9054 27.442C32.9054 28.6045 32.0401 29.568 30.9202 29.7229V30.053C30.9202 30.5384 30.5266 30.9319 30.0413 30.9319C29.5559 30.9319 29.1623 30.5384 29.1623 30.053V29.7451H28.9381C27.9671 29.7451 27.177 28.9547 27.177 27.9831C27.177 27.4977 27.5705 27.1042 28.0559 27.1042C28.5413 27.1042 28.9348 27.4977 28.9348 27.9831L30.6038 27.9873C30.9036 27.9873 31.1476 27.7426 31.1476 27.4419C31.1476 27.1412 30.9036 26.8965 30.6038 26.8965H29.4786C28.2095 26.8965 27.177 25.8633 27.177 24.5933C27.177 23.4307 28.0424 22.4672 29.1623 22.3124V22.078C29.1623 21.5926 29.5559 21.1991 30.0413 21.1991C30.5266 21.1991 30.9202 21.5926 30.9202 22.078V22.29H31.1443C32.1154 22.29 32.9054 23.0805 32.9054 24.0521C32.9054 24.5375 32.5119 24.931 32.0265 24.931C31.5411 24.931 31.1476 24.5375 31.1476 24.0521C31.1476 24.0507 31.1475 24.0501 31.1475 24.0501L29.4787 24.0478C29.1788 24.0478 28.9349 24.2925 28.9349 24.5933C28.9349 24.894 29.1788 25.1387 29.4787 25.1387Z"
+                            fill="#16DBCC" />
+                    </svg>
+
+                </div>
                 <div>
                     <p class="text-sm text-gray-600">Total des Entrées</p>
-                    <h3 class="text-2xl font-bold">Ar
-                        {{total_entrees|floatformat:0 }}</h3>
-                </div>
-                <div class="bg-green-100 p-3 rounded-full">
-                    <svg class="w-6 h-6 text-green-600" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
+                    <h3 class="text-3xl font-bold text-gray-800">Ar
+                        {{total_entrees|floatformat:0|intcomma}}</h3>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg border p-6">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-2xl p-6">
+            <div class="flex items-center justify-center space-x-4">
+
+                <div class="bg-red/40 rounded-full">
+                    <svg width="70" height="70" viewBox="0 0 70 70" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <rect width="70" height="70" rx="35" fill="#FFE0EB" />
+                        <path
+                            d="M45.1322 20C43.4163 20 42.0252 21.391 42.0252 23.1069V32.3773H47.3602C47.8456 32.3773 48.2391 31.9838 48.2391 31.4984V23.1069C48.2391 21.391 46.8481 20 45.1322 20V20Z"
+                            fill="#FF82AC" />
+                        <path
+                            d="M30.6266 42.0898C30.6266 36.7805 34.9456 32.4076 40.326 32.4223V23.4855C40.326 22.1486 40.8293 20.9271 41.6559 20H26.154C23.7318 20 21.7607 21.9711 21.7607 24.3934V49.1053C21.7607 49.8959 22.7279 50.2844 23.2747 49.7129L24.3992 48.5387L25.5869 49.727C25.9296 50.0697 26.4863 50.0697 26.8296 49.727L27.9552 48.602L29.0919 49.7293C29.4347 50.0691 29.9872 50.0691 30.33 49.7293L31.4849 48.5844L32.6404 49.7293C32.9826 50.0691 33.5345 50.0691 33.8773 49.7299L34.1011 49.5084C31.9219 47.6864 30.6266 44.9923 30.6266 42.0898ZM28.8708 27.0898H30.6054V25.3552C30.6054 24.8698 30.9989 24.4763 31.4843 24.4763C31.9697 24.4763 32.3632 24.8698 32.3632 25.3552V27.0898H34.0978C34.5832 27.0898 34.9767 27.4834 34.9767 27.9688C34.9767 28.4541 34.5832 28.8477 34.0978 28.8477H32.3632V30.5823C32.3632 31.0677 31.9697 31.4612 31.4843 31.4612C30.9989 31.4612 30.6054 31.0677 30.6054 30.5823V28.8477H28.8708C28.3854 28.8477 27.9919 28.4541 27.9919 27.9688C27.9919 27.4834 28.3854 27.0898 28.8708 27.0898ZM26.2108 33.2451H32.1288C32.6142 33.2451 33.0078 33.6386 33.0078 34.124C33.0078 34.6094 32.6142 35.0029 32.1288 35.0029H26.2108C25.7254 35.0029 25.3319 34.6094 25.3319 34.124C25.3319 33.6386 25.7254 33.2451 26.2108 33.2451ZM29.1434 42.0283H26.205C25.7196 42.0283 25.3261 41.6348 25.3261 41.1494C25.3261 40.664 25.7196 40.2705 26.205 40.2705H29.1434C29.6288 40.2705 30.0223 40.664 30.0223 41.1494C30.0223 41.6348 29.6288 42.0283 29.1434 42.0283ZM29.7294 38.5186H26.2078C25.7224 38.5186 25.3289 38.125 25.3289 37.6396C25.3289 37.1543 25.7224 36.7607 26.2078 36.7607H29.7294C30.2148 36.7607 30.6083 37.1543 30.6083 37.6396C30.6083 38.125 30.2148 38.5186 29.7294 38.5186Z"
+                            fill="#FF82AC" />
+                        <path
+                            d="M40.2946 34.1797C35.9329 34.1797 32.3844 37.7282 32.3844 42.0898C32.3844 46.4515 35.9329 50 40.2946 50C44.6562 50 48.2047 46.4515 48.2047 42.0898C48.2047 37.7282 44.6562 34.1797 40.2946 34.1797ZM41.1762 45.4747V45.5583C41.1762 46.0437 40.7827 46.4372 40.2973 46.4372C39.8119 46.4372 39.4184 46.0437 39.4184 45.5583V45.5434C39.0247 45.4496 38.6594 45.2945 38.3698 45.105C37.9636 44.8392 37.8497 44.2946 38.1155 43.8883C38.3812 43.482 38.9259 43.3682 39.3322 43.634C39.6919 43.8693 40.2848 43.9587 40.5763 43.8216C40.7651 43.7327 40.9113 43.543 40.9316 43.3603C40.9751 42.9712 40.3654 42.7541 40.0014 42.6103C39.4505 42.3927 38.7648 42.1219 38.3668 41.4033C37.7994 40.3791 38.2963 39.0287 39.4184 38.5669V38.5227C39.4184 38.0373 39.8119 37.6437 40.2973 37.6437C40.7779 37.6437 41.1678 38.0296 41.1755 38.5084C41.4919 38.6073 41.7833 38.7655 42.0166 38.9807C42.3735 39.3098 42.3959 39.8658 42.0668 40.2226C41.7377 40.5795 41.1816 40.6019 40.8248 40.2728C40.6803 40.1394 40.2347 40.0856 40.041 40.2156C39.9108 40.3031 39.8598 40.4709 39.9044 40.5514C40.09 40.8865 41.0621 41.0013 41.7977 41.5746C43.3005 42.7457 42.7776 44.8604 41.1762 45.4747Z"
+                            fill="#FF82AC" />
+                    </svg>
+
+                </div>
+
                 <div>
                     <p class="text-sm text-gray-600">Total des Sorties</p>
-                    <h3 class="text-2xl font-bold">Ar
-                        {{ total_sorties|floatformat:0 }}</h3>
-                </div>
-                <div class="bg-red/40 p-3 rounded-full">
-                    <svg class="w-6 h-6 text-red-600" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            stroke-width="2" d="M20 12H4"></path>
-                    </svg>
+                    <h3 class="text-3xl font-bold text-gray-800">Ar
+                        {{total_sorties|floatformat:0|intcomma}}</h3>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Graphique principal -->
-    <div class="bg-white rounded-lg border p-6 mb-8">
-        <h2 class="text-lg font-semibold mb-4">Résumé du mois</h2>
+    <h2
+        class="text-lg font-semibold mb-4 text-gray-800 underline decoration underline-offset-4">Résumé
+        du
+        mois</h2>
+    <div class="bg-white rounded-2xl p-6 mb-8">
+
+        <!-- <div class="flex space-x-4 mb-4">
+            <div class="flex items-center">
+                <div class="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+                <span class="text-sm text-gray-600">Solde</span>
+            </div>
+            <div class="flex items-center">
+                <div class="w-3 h-3 rounded-full bg-cyan-400 mr-2"></div>
+                <span class="text-sm text-gray-600">Entrées</span>
+            </div>
+            <div class="flex items-center">
+                <div class="w-3 h-3 rounded-full bg-pink-400 mr-2"></div>
+                <span class="text-sm text-gray-600">Sorties</span>
+            </div>
+        </div> -->
         <div class="h-[300px]">
             <canvas id="resumeMoisChart"></canvas>
         </div>
     </div>
 
     <!-- Graphiques inférieurs -->
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="bg-white rounded-lg border p-6">
-            <h2 class="text-lg font-semibold mb-4">Statistique des sorties par
+
+        <div class>
+            <h2
+                class="text-lg font-semibold mb-4 text-gray-800 underline decoration underline-offset-4">Statistique
+                des sorties par
                 catégories</h2>
-            <div class="h-[250px]">
-                <canvas id="sortiesCategoriesChart"></canvas>
+            <div class="bg-white rounded-2xl p-6">
+
+                <div class="h-[250px]">
+                    <canvas id="sortiesCategoriesChart"></canvas>
+                </div>
             </div>
         </div>
-
-        <div class="bg-white rounded-lg border p-6">
-            <h2 class="text-lg font-semibold mb-4">Visualisation des entrées de
+        <div class>
+            <h2
+                class="text-lg font-semibold mb-4 text-gray-800 underline decoration underline-offset-4">Visualisation
+                des entrées de
                 ces 4 derniers mois</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full">
-                    <thead>
-                        <tr class="bg-gray-50">
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th
-                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200"
-                        id="entrees4mois">
-                        <!-- Rempli par JavaScript -->
-                    </tbody>
-                </table>
+            <div class="bg-white rounded-2xl p-6">
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th
+                                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200"
+                            id="entrees4mois">
+                            <!-- Rempli par JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -110,50 +164,95 @@
     const sortiesCategories = {{ sorties_categories|safe }};
     const entrees4Mois = {{ entrees_4_mois|safe }};
 
-    // Graphique Résumé du mois
-    new Chart(document.getElementById('resumeMoisChart'), {
-        type: 'bar',
-        data: {
-            labels: entreesParMois.map(item => item.mois),
-            datasets: [{
-                label: 'Entrées',
-                data: entreesParMois.map(item => item.total),
-                backgroundColor: 'rgba(34, 197, 94, 0.6)',
-                borderColor: 'rgba(34, 197, 94, 1)',
-                borderWidth: 1
-            }, {
-                label: 'Sorties',
-                data: sortiesParMois.map(item => item.total),
-                backgroundColor: 'rgba(239, 68, 68, 0.6)',
-                borderColor: 'rgba(239, 68, 68, 1)',
-                borderWidth: 1
-            }, {
-                label: 'Solde',
-                data: soldesParMois.map(item => item.solde),
-                backgroundColor: 'rgba(59, 130, 246, 0.6)',
-                borderColor: 'rgba(59, 130, 246, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: value => 'Ar ' + value.toLocaleString()
+  // Graphique Résumé du mois
+new Chart(document.getElementById('resumeMoisChart'), {
+    type: 'bar',
+    data: {
+        labels: entreesParMois.map(item => item.mois),
+        datasets: [ {
+            label: 'Solde',
+            data: soldesParMois.map(item => item.solde),
+            backgroundColor: '#396AFF',
+            borderColor: '#396AFF',
+            borderRadius: 10,  
+           
+            barThickness: 30 
+        }, {
+            label: 'Entrées',
+            data: entreesParMois.map(item => item.total),
+            backgroundColor: '#16DBCC',
+            borderColor: '#16DBCC',
+            borderRadius: 10,  
+           
+            barThickness: 30  
+        }, {
+            label: 'Sorties',
+            data: sortiesParMois.map(item => item.total),
+            backgroundColor: '#FF82AC',
+            borderColor: '#FF82AC',
+            borderRadius: 10,  
+            barThickness: 30  
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                position: 'right', 
+                ticks: {
+                    callback: value => 'Ar ' + value.toLocaleString('fr-FR'),
+                    font: {
+                        size: 12,  // Adjust font size for cleaner look
+                        weight: 'bold'  // Optional: make labels bolder
                     }
+                },
+                grid: {
+                    color: 'rgba(200, 200, 200, 0.3)'  // Lighter grid lines
                 }
             },
-            interaction: {
-                intersect: false,
-                mode: 'index'
+            x: {
+                grid: {
+                    display: false  // Hide x-axis grid lines for a cleaner look
+                },
+                ticks: {
+                    font: {
+                        size: 12,
+                        weight: 'bold'
+                    }
+                }
+            }
+        },
+        interaction: {
+            intersect: false,
+            mode: 'index'
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    font: {
+                        size: 12
+                    },
+                    usePointStyle: true,  // Use rounded legend markers
+                    padding: 20
+                },
+                position: 'top',  // Changed to top-left position
+                align: 'start'        // Align the legend to the left
+                
+            },
+            layout: {
+                padding: {
+                    top: 30,
+                    bottom: 30,  // Extra space below the legend
+                    left: 20,
+                    right: 20
+                }
             }
         }
-    });
-
-    // Graphique Sorties par catégories
+    }
+});
+// Graphique Sorties par catégories
     new Chart(document.getElementById('sortiesCategoriesChart'), {
         type: 'doughnut',
         data: {
@@ -161,17 +260,57 @@
             datasets: [{
                 data: sortiesCategories.map(item => item.total),
                 backgroundColor: [
-                    '#4F46E5', '#EF4444', '#F59E0B', '#10B981', '#6366F1',
-                    '#EC4899', '#8B5CF6', '#14B8A6', '#F97316', '#06B6D4'
-                ]
+                    '#4040FF',    // Bleu principal
+                    '#16DBCC',    // Turquoise
+                    '#FF82AC',    // Rose
+                    '#FFB800',    // Orange
+                ],
+                borderWidth: 0,   // Supprime les bordures
+                borderRadius: 10,  // Pas d'arrondi
+                spacing: 2        // Petit espacement entre les segments
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '75%',       // Augmente la taille du trou central
             plugins: {
                 legend: {
-                    position: 'right'
+                    position: 'left',
+                    labels: {
+                        usePointStyle: false,
+                        padding: 15,
+                        font: {
+                            size: 15
+                        },
+                        generateLabels: function(chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                return data.labels.map((label, i) => {
+                                    const value = data.datasets[0].data[i];
+                                    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    
+                                    return {
+                                        text: `${label} ${percentage}%`,
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        index: i
+                                    };
+                                });
+                            }
+                            return [];
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${context.label}: ${percentage}%`;
+                        }
+                    }
                 }
             }
         }
@@ -183,7 +322,7 @@
         const row = document.createElement('tr');
         row.innerHTML = `
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${entree.date}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">Ar ${entree.montant.toLocaleString()}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">Ar ${entree.montant.toLocaleString('fr-FR')}</td>
         `;
         tableBody.appendChild(row);
     });
