@@ -4,172 +4,188 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-4">
-
+<div class="container mx-auto px-4 py-8">
+    <!-- Cartes des totaux -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class=" p-6 rounded-lg bg-white border flex items-center">
-            <div class="mr-4 bg-blue-100 rounded-full p-3 text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" class="h-8 w-8 text-blue-600">
-                    <path
-                        d="M20.91 8.84 8.56 2.23a1.93 1.93 0 0 0-1.81 0L3.1 4.13a2.12 2.12 0 0 0-.05 3.69l12.22 6.93a2 2 0 0 0 1.94 0L21 12.51a2.12 2.12 0 0 0-.09-3.67Z"></path>
-                    <path
-                        d="m3.09 8.84 12.35-6.61a1.93 1.93 0 0 1 1.81 0l3.65 1.9a2.12 2.12 0 0 1 .1 3.69L8.73 14.75a2 2 0 0 1-1.94 0L3 12.51a2.12 2.12 0 0 1 .09-3.67Z"></path>
-                    <line x1="12" y1="22" x2="12" y2="13"></line>
-                    <path
-                        d="M20 13.5v3.37a2.06 2.06 0 0 1-1.11 1.83l-6 3.08a1.93 1.93 0 0 1-1.78 0l-6-3.08A2.06 2.06 0 0 1 4 16.87V13.5"></path>
-                </svg>
-            </div>
-            <div>
-                <p class="text-blue-600 font-semibold">Solde Actuel</p>
-                <p class="text-3xl font-bold text-blue-800">Ar
-                    {{ caisse_totale }}</p>
+        <div class="bg-white rounded-lg border p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Solde Actuel</p>
+                    <h3 class="text-2xl font-bold">Ar
+                        {{solde_actuel|floatformat:0 }}</h3>
+                </div>
+                <div class="bg-blue-100 p-3 rounded-full">
+                    <svg class="w-6 h-6 text-blue-600" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
             </div>
         </div>
-        <div class=" p-6 rounded-lg bg-white border flex items-center">
-            <div class="mr-4 bg-green-100 rounded-full p-3 text-green-600">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" class="h-8 w-8 text-green-600">
-                    <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
-                    <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
-                    <path d="M3 16v3a2 2 0 0 0 2 2h3"></path>
-                    <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
-                    <path d="m12 8 4 4-4 4"></path>
-                    <path d="M8 12h8"></path>
-                </svg>
-            </div>
-            <div>
-                <p class="text-green-600 font-semibold">Total des Entrées</p>
-                <p class="text-3xl font-bold text-green-800">Ar
-                    {{ entrees_mois }}</p>
+
+        <div class="bg-white rounded-lg border p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Total des Entrées</p>
+                    <h3 class="text-2xl font-bold">Ar
+                        {{total_entrees|floatformat:0 }}</h3>
+                </div>
+                <div class="bg-green-100 p-3 rounded-full">
+                    <svg class="w-6 h-6 text-green-600" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                </div>
             </div>
         </div>
-        <div
-            class="bg-red-100 p-6 rounded-lg bg-white border flex items-center">
-            <div class="mr-4 bg-rose-200 rounded-full p-3 text-rose-600">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" class="h-8 w-8 text-red-600">
-                    <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
-                    <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
-                    <path d="M3 16v3a2 2 0 0 0 2 2h3"></path>
-                    <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
-                    <path d="m12 8-4 4 4 4"></path>
-                    <path d="M16 12H8"></path>
-                </svg>
-            </div>
-            <div>
-                <p class="text-red-600 font-semibold">Total des Sorties</p>
-                <p class="text-3xl font-bold text-red-800">Ar
-                    {{ sorties_mois }}</p>
+
+        <div class="bg-white rounded-lg border p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Total des Sorties</p>
+                    <h3 class="text-2xl font-bold">Ar
+                        {{ total_sorties|floatformat:0 }}</h3>
+                </div>
+                <div class="bg-red/40 p-3 rounded-full">
+                    <svg class="w-6 h-6 text-red-600" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" d="M20 12H4"></path>
+                    </svg>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="p-10 rounded-lg bg-white border mb-8 h-[350px]">
-        <h2 class="text-xl font-semibold mb-4">Résumé du mois</h2>
-        <canvas class="h-[300px]" id="resumeMoisChart"></canvas>
+    <!-- Graphique principal -->
+    <div class="bg-white rounded-lg border p-6 mb-8">
+        <h2 class="text-lg font-semibold mb-4">Résumé du mois</h2>
+        <div class="h-[300px]">
+            <canvas id="resumeMoisChart"></canvas>
+        </div>
     </div>
 
+    <!-- Graphiques inférieurs -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="bg-white p-6 rounded-lg border">
-            <h2 class="text-xl font-semibold mb-4">Statistique des sorties par
+        <div class="bg-white rounded-lg border p-6">
+            <h2 class="text-lg font-semibold mb-4">Statistique des sorties par
                 catégories</h2>
-            <canvas id="sortiesCategoriesChart"></canvas>
+            <div class="h-[250px]">
+                <canvas id="sortiesCategoriesChart"></canvas>
+            </div>
         </div>
-        <div class="bg-white p-6 rounded-lg border">
-            <h2 class="text-xl font-semibold mb-4">Visualisation des entrées des
-                4 derniers mois</h2>
-            <table class="w-full">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="p-2 text-left">Mois</th>
-                        <th class="p-2 text-right">Montant</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for entree in entrees_4_mois %}
-                    <tr class="border-b">
-                        <td class="p-2">{{ entree.mois }}</td>
-                        <td class="p-2 text-right">Ar {{ entree.montant }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+        <div class="bg-white rounded-lg border p-6">
+            <h2 class="text-lg font-semibold mb-4">Visualisation des entrées de
+                ces 4 derniers mois</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th
+                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200"
+                        id="entrees4mois">
+                        <!-- Rempli par JavaScript -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Ajoutez ces lignes au début de votre script pour déboguer
-    console.log('Labels mois:', {{ labels_mois|safe }});
-    console.log('Entrées data:', {{ entrees_data|safe }});
-    console.log('Sorties data:', {{ sorties_data|safe }});
-    console.log('Labels catégories:', {{ labels_categories|safe }});
-    console.log('Sorties catégories data:', {{ sorties_categories_data|safe }});
+    // Données
+    const entreesParMois = {{ entrees_par_mois|safe }};
+    const sortiesParMois = {{ sorties_par_mois|safe }};
+    const soldesParMois = {{ soldes_par_mois|safe }};
+    const sortiesCategories = {{ sorties_categories|safe }};
+    const entrees4Mois = {{ entrees_4_mois|safe }};
 
     // Graphique Résumé du mois
-    var ctxResumeMois = document.getElementById('resumeMoisChart').getContext('2d');
-    var resumeMoisChart = new Chart(ctxResumeMois, {
+    new Chart(document.getElementById('resumeMoisChart'), {
         type: 'bar',
         data: {
-            labels: JSON.parse('{{ labels_mois|safe }}'),
+            labels: entreesParMois.map(item => item.mois),
             datasets: [{
                 label: 'Entrées',
-                data: JSON.parse('{{ entrees_data|safe }}'),
+                data: entreesParMois.map(item => item.total),
                 backgroundColor: 'rgba(34, 197, 94, 0.6)',
                 borderColor: 'rgba(34, 197, 94, 1)',
                 borderWidth: 1
             }, {
                 label: 'Sorties',
-                data: JSON.parse('{{ sorties_data|safe }}'),
+                data: sortiesParMois.map(item => item.total),
                 backgroundColor: 'rgba(239, 68, 68, 0.6)',
                 borderColor: 'rgba(239, 68, 68, 1)',
-                borderWidth: 1,
-                hoverBackgroundColor: 'rgba(239, 68, 68, 0.8)',
-                hoverBorderColor: 'rgba(239, 68, 68, 1)'
+                borderWidth: 1
+            }, {
+                label: 'Solde',
+                data: soldesParMois.map(item => item.solde),
+                backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1
             }]
         },
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: {
+                        callback: value => 'Ar ' + value.toLocaleString()
+                    }
                 }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
             }
         }
     });
 
     // Graphique Sorties par catégories
-    var ctxSortiesCategories = document.getElementById('sortiesCategoriesChart').getContext('2d');
-    var sortiesCategoriesChart = new Chart(ctxSortiesCategories, {
+    new Chart(document.getElementById('sortiesCategoriesChart'), {
         type: 'doughnut',
         data: {
-            labels: JSON.parse('{{ labels_categories|safe }}'),
+            labels: sortiesCategories.map(item => item.categorie),
             datasets: [{
-                data: JSON.parse('{{ sorties_categories_data|safe }}'),
+                data: sortiesCategories.map(item => item.total),
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.8)',
-                    'rgba(54, 162, 235, 0.8)',
-                    'rgba(255, 206, 86, 0.8)',
-                    'rgba(75, 192, 192, 0.8)',
-                    'rgba(153, 102, 255, 0.8)',
+                    '#4F46E5', '#EF4444', '#F59E0B', '#10B981', '#6366F1',
+                    '#EC4899', '#8B5CF6', '#14B8A6', '#F97316', '#06B6D4'
                 ]
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'right',
-                },
+                    position: 'right'
+                }
             }
         }
+    });
+
+    // Remplir le tableau des 4 derniers mois
+    const tableBody = document.getElementById('entrees4mois');
+    entrees4Mois.forEach(entree => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${entree.date}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">Ar ${entree.montant.toLocaleString()}</td>
+        `;
+        tableBody.appendChild(row);
     });
 </script>
 {% endblock %}
