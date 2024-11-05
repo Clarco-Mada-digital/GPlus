@@ -25,6 +25,10 @@ from openpyxl import Workbook
 from datetime import datetime
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
+from django.urls import reverse
+from itertools import chain
+from operator import attrgetter
+from django.core.paginator import Paginator
 
 User = get_user_model()
 
@@ -159,12 +163,8 @@ def listes(request):
     categorie_id = request.GET.get('categorie')
     beneficiaire_id = request.GET.get('beneficiaire')
     fournisseur_id = request.GET.get('fournisseur')
-    montant_min = request.GET.get('montant_min')
-    montant_max = request.GET.get('montant_max')
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
-    quantite_min = request.GET.get('quantite_min')
-    quantite_max = request.GET.get('quantite_max')
     sort_by = request.GET.get('sort', 'date')  # Par défaut, tri par date
     ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
 
@@ -204,20 +204,20 @@ def listes(request):
         entree = entree.filter(date_transaction__lte=date_max)
         sortie = sortie.filter(date_de_sortie__lte=date_max)
 
-    # Définir le triage pour chaque type d'opération
-    sort_order = '' if ordre == 'asc' else '-'
-    if sort_by == 'date':
-        entree = entree.order_by(f"{sort_order}date_transaction")
-        sortie = sortie.order_by(f"{sort_order}date_de_sortie")
-    elif sort_by == 'montant':
-        entree = entree.order_by(f"{sort_order}montant")
-        sortie = sortie.order_by(f"{sort_order}montant")
-    elif sort_by == 'categorie':
-        entree = entree.order_by(f"{sort_order}categorie__name")
-        sortie = sortie.order_by(f"{sort_order}categorie__name")
-    elif sort_by == 'beneficiaire':
-        sortie = sortie.order_by(f"{sort_order}beneficiaire__name")
+    # Récupérer le nombre de lignes par page depuis les paramètres GET
+    lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 10
 
+    # Combiner et trier par date
+    operations = sorted(
+        chain(entree, sortie),
+        key=lambda op: getattr(op, 'date_transaction', None) or getattr(op, 'date_de_sortie', None),
+        reverse=(ordre == 'desc')
+    )
+    # Pagination
+    paginator = Paginator(operations, lignes_par_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     # Récupérer les catégories, bénéficiaires et fournisseurs pour les options de filtrage
     categories = Categorie.objects.all()
     beneficiaires = Beneficiaire.objects.all()
@@ -226,14 +226,14 @@ def listes(request):
     # Contexte et rendu du template
     template = loader.get_template('caisse/listes/listes_operations.html')
     context = {
-        'entree': entree,
-        'sortie': sortie,
+        'page_obj': page_obj,
         'categories': categories,
         'beneficiaires': beneficiaires,
         'fournisseurs': fournisseurs,
         'prix': "Ar",
         'sort_by': sort_by,
         'ordre': ordre,
+        'lignes_par_page': lignes_par_page,
     }
     return HttpResponse(template.render(context, request))
 
@@ -570,115 +570,84 @@ def ajouts_sortie(request):
     })
 
 @login_required
-@require_http_methods(["GET", "POST"])
 def modifier_entree(request, pk):
-    """
-    Modifie une opération d'entrée.
-    """
-    operation = get_object_or_404(OperationEntrer, pk=pk)
+    # Récupérer l'entrée existante
+    entree = get_object_or_404(OperationEntrer, id=pk)
 
-    try:
-        if request.method == 'POST':
-            # Si les données sont envoyées en multipart/form-data
-            if request.content_type and 'multipart/form-data' in request.content_type:
-                data = request.POST.dict()
-            else:
-                # Si les données sont envoyées en JSON
-                data = json.loads(request.body)
+    if request.method == 'POST':
+        # Récupérer les données du formulaire
+        date_transaction = request.POST.get('date')
+        description = request.POST.get('description')
+        montant = request.POST.get('montant')
+        categorie_id = request.POST.get('categorie')
 
-            # Mise à jour des champs
-            operation.description = data.get('description', operation.description)
-            operation.montant = float(data.get('montant', operation.montant))
-            operation.date = data.get('date', operation.date)
-            operation.categorie_id = data.get('categorie', operation.categorie_id)
+        # Mettre à jour l'objet entrée
+        entree.date_transaction = date_transaction
+        entree.description = description
+        entree.montant = montant
+        entree.categorie_id = categorie_id
 
-            operation.save()
+        # Sauvegarder les modifications
+        entree.save()
 
-            return JsonResponse({
-                'success': True,
-                'operation': {
-                    'id': operation.id,
-                    'description': operation.description,
-                    'montant': operation.montant,
-                    'date': operation.date,
-                    'categorie': operation.categorie.name if operation.categorie else None,
-                }
-            })
-        else:
-            # Préparation des données pour affichage
-            form = OperationEntrerForm(instance=operation)
-            form_data = {field_name: form[field_name].value() for field_name in form.fields}
-            return JsonResponse({'form': form_data, 'type_operation': 'entrees'})
+        # Ajouter un message de succès
+        messages.success(request, "L'opération d'entrée a été modifiée avec succès.")
 
-    except KeyError as e:
-        return JsonResponse({
-            'success': False, 
-            'error': f"Champ requis manquant: {str(e)}"
-        }, status=400)
-    except Exception as e:
-        return JsonResponse({
-            'success': False, 
-            'error': str(e)
-        }, status=400)
+        # Rediriger vers la liste des entrées
+        return redirect(reverse('caisse:liste_entrees'))
+
+    # Préparer le contexte pour le template
+    context = {
+        'entree': entree,
+        'categories_entree': Categorie.objects.filter(type='entree'),
+    }
+
+    # Rendre le template avec le contexte
+    return render(request, 'caisse/listes/modifier_entree.html', context)
 
 
 @login_required
-@require_http_methods(["GET", "POST"])
 def modifier_sortie(request, pk):
-    """
-    Modifie une opération de sortie.
-    """
-    operation = get_object_or_404(OperationSortir, pk=pk)
+    # Récupérer l'opération de sortie spécifique
+    operation = get_object_or_404(OperationSortir, id=pk)
 
-    try:
-        if request.method == 'POST':
-            # Si les données sont envoyées en multipart/form-data
-            if request.content_type and 'multipart/form-data' in request.content_type:
-                data = request.POST.dict()
-            else:
-                # Si les données sont envoyées en JSON
-                data = json.loads(request.body)
+    if request.method == 'POST':
+        # Récupérer les données du formulaire
+        date_de_sortie = request.POST.get('date')
+        designation = request.POST.get('designation')
+        quantite = request.POST.get('quantite')
+        prix_unitaire = request.POST.get('prixUnitaire')
+        beneficiaire_id = request.POST.get('beneficiaire')
+        fournisseur_id = request.POST.get('fournisseur')
+        categorie_id = request.POST.get('categorie')
 
-            # Mise à jour des champs
-            operation.description = data.get('description', operation.description)
-            operation.montant = float(data.get('montant', operation.montant))
-            operation.quantite = int(data.get('quantite', operation.quantite))
-            operation.date = data.get('date', operation.date)
-            operation.categorie_id = data.get('categorie', operation.categorie_id)
-            operation.beneficiaire_id = data.get('beneficiaire', operation.beneficiaire_id)
-            operation.fournisseur_id = data.get('fournisseur', operation.fournisseur_id)
+        # Mettre à jour les champs de l'opération
+        operation.date_de_sortie = date_de_sortie
+        operation.description = designation
+        operation.quantite = quantite
+        operation.montant = prix_unitaire  # En supposant que 'montant' correspond au prix unitaire
+        operation.beneficiaire_id = beneficiaire_id
+        operation.fournisseur_id = fournisseur_id
+        operation.categorie_id = categorie_id
 
-            operation.save()
+        # Sauvegarder les modifications
+        operation.save()
 
-            return JsonResponse({
-                'success': True,
-                'operation': {
-                    'id': operation.id,
-                    'description': operation.description,
-                    'montant': operation.montant,
-                    'quantite': operation.quantite,
-                    'date': operation.date,
-                    'categorie': operation.categorie.name if operation.categorie else None,
-                    'beneficiaire': operation.beneficiaire.name if operation.beneficiaire else None,
-                    'fournisseur': operation.fournisseur.name if operation.fournisseur else None,
-                }
-            })
-        else:
-            # Préparation des données pour affichage
-            form = OperationSortirForm(instance=operation)
-            form_data = {field_name: form[field_name].value() for field_name in form.fields}
-            return JsonResponse({'form': form_data, 'type_operation': 'sorties'})
+        # Ajouter un message de succès
+        messages.success(request, "L'opération a été modifiée avec succès.")
+        # Rediriger vers la liste des sorties
+        return redirect(reverse('caisse:liste_sorties'))
 
-    except KeyError as e:
-        return JsonResponse({
-            'success': False, 
-            'error': f"Champ requis manquant: {str(e)}"
-        }, status=400)
-    except Exception as e:
-        return JsonResponse({
-            'success': False, 
-            'error': str(e)
-        }, status=400)
+    # Préparer le contexte pour le template avec les options de sélection
+    context = {
+        'operation': operation,
+        'beneficiaires': Beneficiaire.objects.all(),
+        'fournisseurs': Fournisseur.objects.all(),
+        'categories_sortie': Categorie.objects.filter(type='sortie'),
+    }
+
+    # Rendre le template avec le contexte
+    return render(request, 'caisse/listes/modifier_sortie.html', context)
 
 #Suppression des entrées
 @login_required
@@ -1056,17 +1025,23 @@ def liste_entrees(request):
     entrees = entrees.order_by(sort_by)
 
     # Récupérer uniquement les catégories de type "entrée" pour les options de filtrage
-    categories = Categorie.objects.filter(type="entrée")
+    categories = Categorie.objects.filter(type="entree")
 
     # Charger le template
     template = loader.get_template('caisse/listes/entrees.html')
-
+    
+    lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 5
+    paginator = Paginator(entrees, lignes_par_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     # Contexte à passer au template
     context = {
-        'entrees': entrees,
+        'page_obj': page_obj,
         'categories': categories,
         'prix': "Ar",
         'sort_by': sort_by,
+        'lignes_par_page': lignes_par_page,
     }
     return HttpResponse(template.render(context, request))
 
@@ -1116,14 +1091,20 @@ def liste_sorties(request):
     # Charger le template
     template = loader.get_template('caisse/listes/sorties.html')
 
+    # Pagination
+    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 10
+    paginator = Paginator(sorties, lignes_par_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     # Contexte à passer au template
     context = {
-        'sorties': sorties,
+        'page_obj': page_obj,
         'categories': categories,
         'beneficiaires': beneficiaires,
         'fournisseurs': fournisseurs,
         'prix': "Ar",
         'sort_by': sort_by,
+        'lignes_par_page': lignes_par_page,
     }
     return HttpResponse(template.render(context, request))
 
