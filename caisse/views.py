@@ -35,65 +35,84 @@ def is_admin(user):
 
 @login_required
 def index(request):
-    today = timezone.now()
-    first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    
     # Calcul des totaux
-    caisse_totale = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
-    caisse_totale -= OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    total_entrees = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    total_sorties = OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    solde_actuel = total_entrees - total_sorties
+
+    # Données pour le graphique par mois
+    six_months_ago = timezone.now() - timedelta(days=180)
     
-    entrees_mois = OperationEntrer.objects.filter(date_transaction__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
-    sorties_mois = OperationSortir.objects.filter(date_de_sortie__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
+    # Données des entrées par mois
+    entrees_par_mois = list(OperationEntrer.objects.filter(
+        date_transaction__gte=six_months_ago
+    ).annotate(
+        mois=TruncMonth('date_transaction')
+    ).values('mois').annotate(
+        total=Sum('montant')
+    ).order_by('mois'))
 
-    # Données pour le graphique Résumé du mois
-    six_months_ago = today - timedelta(days=180)
-    entrees_par_mois = OperationEntrer.objects.filter(date_transaction__gte=six_months_ago) \
-        .annotate(mois=TruncMonth('date_transaction')) \
-        .values('mois') \
-        .annotate(total=Sum('montant')) \
-        .order_by('mois')
-    sorties_par_mois = OperationSortir.objects.filter(date_de_sortie__gte=six_months_ago) \
-        .annotate(mois=TruncMonth('date_de_sortie')) \
-        .values('mois') \
-        .annotate(total=Sum('montant')) \
-        .order_by('mois')
+    # Données des sorties par mois
+    sorties_par_mois = list(OperationSortir.objects.filter(
+        date_de_sortie__gte=six_months_ago
+    ).annotate(
+        mois=TruncMonth('date_de_sortie')
+    ).values('mois').annotate(
+        total=Sum('montant')
+    ).order_by('mois'))
 
-    labels_mois = [entry['mois'].strftime("%b") for entry in entrees_par_mois]
-    entrees_data = [entry['total'] for entry in entrees_par_mois]
-    sorties_data = [entry['total'] for entry in sorties_par_mois]
+    # Calcul des soldes par mois
+    soldes_par_mois = []
+    for entree in entrees_par_mois:
+        mois = entree['mois']
+        total_entree = entree['total']
+        total_sortie = next(
+            (item['total'] for item in sorties_par_mois if item['mois'] == mois),
+            0
+        )
+        soldes_par_mois.append({
+            'mois': mois.strftime('%B %Y'),
+            'solde': float(total_entree - total_sortie)
+        })
 
-    # Données pour le graphique Sorties par catégories
-    sorties_categories = OperationSortir.objects.values('categorie__name') \
-        .annotate(total=Sum('montant')) \
-        .order_by('-total')[:5]  # Top 5 catégories
+    # Données pour le graphique des catégories de sorties
+    sorties_categories = list(OperationSortir.objects.values(
+        'categorie__name'
+    ).annotate(
+        total=Sum('montant')
+    ).order_by('-total')[:5])
 
-    labels_categories = [entry['categorie__name'] for entry in sorties_categories]
-    sorties_categories_data = [entry['total'] for entry in sorties_categories]
+    # Données pour les 4 derniers mois
+    entrees_4_mois = list(OperationEntrer.objects.filter(
+        date_transaction__gte=timezone.now() - timedelta(days=120)
+    ).annotate(
+        mois=TruncMonth('date_transaction')
+    ).values('mois').annotate(
+        montant=Sum('montant')
+    ).order_by('-mois')[:4])
 
-    # Données pour les entrées des 4 derniers mois
-    quatre_mois_ago = today - timedelta(days=120)
-    entrees_4_mois = OperationEntrer.objects.filter(date_transaction__gte=quatre_mois_ago) \
-        .annotate(mois=TruncMonth('date_transaction')) \
-        .values('mois') \
-        .annotate(montant=Sum('montant')) \
-        .order_by('-mois')[:4]
-
-    # Fonction pour convertir Decimal en float
-    def decimal_default(obj):
-        if isinstance(obj, Decimal):
-            return float(obj)
-        raise TypeError
-
+    # Formater les données pour le template
     context = {
-        'caisse_totale': float(caisse_totale),
-        'entrees_mois': float(entrees_mois),
-        'sorties_mois': float(sorties_mois),
-        'labels_mois': json.dumps(labels_mois),
-        'entrees_data': json.dumps([float(x) for x in entrees_data], default=decimal_default),
-        'sorties_data': json.dumps([float(x) for x in sorties_data], default=decimal_default),
-        'labels_categories': json.dumps(labels_categories),
-        'sorties_categories_data': json.dumps([float(x) for x in sorties_categories_data], default=decimal_default),
-        'entrees_4_mois': [{'mois': e['mois'], 'montant': float(e['montant'])} for e in entrees_4_mois],
+        'solde_actuel': float(solde_actuel),
+        'total_entrees': float(total_entrees),
+        'total_sorties': float(total_sorties),
+        'entrees_par_mois': json.dumps([{
+            'mois': item['mois'].strftime('%B %Y'),
+            'total': float(item['total'])
+        } for item in entrees_par_mois]),
+        'sorties_par_mois': json.dumps([{
+            'mois': item['mois'].strftime('%B %Y'),
+            'total': float(item['total'])
+        } for item in sorties_par_mois]),
+        'soldes_par_mois': json.dumps(soldes_par_mois),
+        'sorties_categories': json.dumps([{
+            'categorie': item['categorie__name'],
+            'total': float(item['total'])
+        } for item in sorties_categories]),
+        'entrees_4_mois': json.dumps([{
+            'date': item['mois'].strftime('%B %Y'),
+            'montant': float(item['montant'])
+        } for item in entrees_4_mois])
     }
 
     return render(request, "caisse/dashboard.html", context)
