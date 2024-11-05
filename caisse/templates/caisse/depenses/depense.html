@@ -9,7 +9,7 @@
 
     <!-- Dépenses par Employés -->
 
-    <div class="bg-white border overflow-hidden sm:rounded-lg mb-8">
+    <div class="bg-white rounded-2xl overflow-hidden mb-8">
         <div class="flex justify-between items-center p-4 border-b">
             <h2 class="text-xl font-semibold">Détails des Dépenses par
                 Employés</h2>
@@ -67,93 +67,77 @@
     </div>
 
     <!-- Dépenses par Catégories -->
-    <div class="bg-white border overflow-hidden sm:rounded-lg mb-8">
-        <div class="flex justify-between items-center p-4 border-b">
-            <h2 class="text-xl font-semibold">Détails des Dépenses par
-                Catégories</h2>
-            <div class="flex gap-4">
-                <select id="categorieFilter" class="border rounded px-12 py-1"
-                    onchange="filterTableByCategory(this.value)">
-                    <option value>Toutes les catégories</option>
-                    {% for categorie in categories_sortie %}
-                    <option value="{{ categorie.name }}">
-                        {{ categorie.name }}
-                    </option>
-                    {% endfor %}
-                </select>
-                <select id="moisSelectCategories"
-                    class="border rounded px-12 py-1">
-                    {% for mois in mois_liste %}
-                    <option value="{{ mois.value }}"
-                        {{ mois.label }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-primary/70">
-                    <tr>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Catégorie</th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Total
-                            des dépenses</th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Nombre
-                            total des dépenses</th>
-                        <th
-                            class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    {% for depense in depenses_par_categorie %}
-                    <tr>
-                        <td class="px-6 py-4 ">
-                            {{ depense.categorie__name }}
-                        </td>
-                        <td class="px-6 py-4 ">
-                            {{ depense.total_depenses }} Ar
-                        </td>
-                        <td class="px-6 py-4 ">
-                            {{ depense.nombre_depenses }}
-                        </td>
-                        <td class="px-6 py-4 ">
-                            <button
-                                class="text-primary hover:text-primary">•••</button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <h2 class="text-xl font-semibold mb-3">Détails des Dépenses par
+        Catégories</h2>
+    <div class="bg-white rounded-2xl overflow-hidden mb-8">
 
-        <!-- Graphiques -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Graphique par Catégories -->
-            <div class="bg-white rounded-lg border p-4">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold">Graphique par</h2>
-                    <select id="graphiqueSelect"
-                        class="border rounded px-12 py-1"
-                        onchange="updateGraphType(this.value)">
-                        <option value="mensuel">Mensuel</option>
-                        <option value="annuel">Annuel</option>
-                    </select>
-                </div>
+        <table class="min-w-full divide-y divide-gray-200 py-4">
+            <thead class="text-center">
+                <tr>
+                    <th
+                        class="px-6 py-3 text-left text-md font-medium text-gray-800  tracking-wider">Catégorie</th>
+                    <th
+                        class="px-6 py-3 text-left text-md font-medium text-gray-800  tracking-wider">Total
+                        des dépenses</th>
+                    <th
+                        class="px-6 py-3 text-left text-md font-medium text-gray-800  tracking-wider">Nombre
+                        total des dépenses</th>
+                    <th
+                        class="px-6 py-3 text-left text-md font-medium text-gray-800  tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white text-center divide-y divide-gray-200">
+                {% for depense in depenses_par_categorie %}
+                <tr>
+                    <td class="px-6 py-4 ">
+                        {{ depense.categorie__name }}
+                    </td>
+                    <td class="px-6 py-4 ">
+                        {{ depense.total_depenses }} Ar
+                    </td>
+                    <td class="px-6 py-4 ">
+                        {{ depense.nombre_depenses }}
+                    </td>
+                    <td class="px-6 py-4 ">
+                        <button
+                            class="text-primary hover:text-primary">•••</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Graphique par Catégories -->
+        <div class>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Graphique par</h2>
+                <select id="graphiqueSelect"
+                    class="border-none rounded-md px-12 py-2"
+                    onchange="updateGraphType(this.value)">
+                    <option value="mensuel">Mensuel</option>
+                    <option value="annuel">Annuel</option>
+                </select>
+            </div>
+            <div class="bg-white rounded-2xl p-4" style="height: 400px;">
                 <canvas id="categoryChart"></canvas>
             </div>
+        </div>
 
-            <!-- Graphique Dépenses par année -->
-            <div class="bg-white rounded-lg border p-4">
-                <h2 class="text-xl font-semibold mb-4">Dépenses par année</h2>
+        <!-- Graphique Dépenses par année -->
+        <div>
+            <h2 class="text-xl font-semibold mb-4">Dépenses par année</h2>
+            <div class="bg-white rounded-2xl p-4" style="height: 400px;">
                 <canvas id="yearlyExpensesChart"></canvas>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
-    <script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+<script>
     function updateMonth(mois) {
         const url = new URL(window.location);
         url.searchParams.set('mois', mois);
@@ -221,7 +205,7 @@
 
     // Définir les couleurs pour les catégories
     const colors = [
-        '#3B82F6', '#EF4444', '#F59E0B', '#10B981', '#6366F1',
+        '#396AFF', '#16DBCC', '#FF82AC', '#FFB800', '#4040FF',
         '#EC4899', '#8B5CF6', '#14B8A6', '#F97316', '#06B6D4'
     ];
 
@@ -238,27 +222,56 @@
                 updateMonth(this.value);
             });
         }
-
         // Graphique par Catégories
         const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+        
+        // Préparer les données initiales
+        const initialData = {
+            labels: [{% for depense in depenses_par_categorie %}'{{ depense.categorie__name }}',{% endfor %}],
+            data: [{% for depense in depenses_par_categorie %}{{ depense.total_depenses }},{% endfor %}]
+        };
+
         const categoryChart = new Chart(ctxCategory, {
             type: 'bar',
             data: {
-                labels: [{% for depense in depenses_par_categorie %}'{{ depense.categorie__name }}',{% endfor %}],
+                labels: initialData.labels,
                 datasets: [{
                     label: 'Dépenses par Catégorie',
-                    data: [{% for depense in depenses_par_categorie %}{{ depense.total_depenses }},{% endfor %}],
-                    backgroundColor: [{% for depense in depenses_par_categorie %}'{{ depense.color }}',{% endfor %}],
+                    data: initialData.data,
+                    backgroundColor: colors.slice(0, initialData.labels.length),
+                    borderRadius: 10,
+                    barThickness: 40
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,
+                        position: 'left',
                         ticks: {
                             callback: function(value) {
-                                return value.toLocaleString() + ' Ar';
+                                return 'Ar ' + value.toLocaleString('fr-FR');
+                            },
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(200, 200, 200, 0.3)'
+                        },
+                        max: Math.max(...initialData.data) * 1.1
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12,
+                                weight: 'bold'
                             }
                         }
                     }
@@ -266,23 +279,70 @@
                 plugins: {
                     legend: {
                         display: true,
-                        position: 'bottom'
+                        position: 'top',
+                        // align: 'start',
+                        labels: {
+                            font: {
+                                size: 12
+                            },
+                            usePointStyle: true,
+                            padding: 20,
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const value = data.datasets[0].data[i];
+                                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        
+                                        return {
+                                            text: `${label} ${percentage}%`,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            index: i
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
                     },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                label += context.parsed.y.toLocaleString() + ' Ar';
-                                return label;
+                                const value = context.raw;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${context.label}: ${percentage}% (Ar ${value.toLocaleString('fr-FR')})`;
                             }
                         }
                     }
+                },
+                layout: {
+                    padding: {
+                        top: 30,
+                        bottom: 30,
+                        left: 20,
+                        right: 20
+                    }
+                },
+                animation: {
+                    duration: 0 // Désactive l'animation
                 }
             }
         });
+
+        // Rendre le graphique accessible globalement pour les mises à jour
+        window.categoryChart = categoryChart;
+
+        // Limiter le nombre de catégories affichées
+        const maxCategories = 10; // Nombre maximum de catégories à afficher
+        if (categoryChart.data.labels.length > maxCategories) {
+            categoryChart.data.labels = categoryChart.data.labels.slice(0, maxCategories);
+            categoryChart.data.datasets[0].data = categoryChart.data.datasets[0].data.slice(0, maxCategories);
+            categoryChart.data.datasets[0].backgroundColor = categoryChart.data.datasets[0].backgroundColor.slice(0, maxCategories);
+        }
+
+        categoryChart.update();
 
         // Graphique Dépenses par année
         const ctxYearly = document.getElementById('yearlyExpensesChart').getContext('2d');
@@ -293,7 +353,7 @@
                 datasets: [{
                     label: 'Dépenses par année',
                     data: [{% for depense in depenses_par_annee %}{{ depense.total_depenses }},{% endfor %}],
-                    borderColor: '#3B82F6',
+                    borderColor: '#EDA10D',
                     tension: 0.1
                 }]
             },
@@ -324,4 +384,4 @@
         }
     });
 </script>
-    {% endblock %}
+{% endblock %}
