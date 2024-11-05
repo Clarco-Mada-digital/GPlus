@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'caisse',
     'simple_history',
     'django.contrib.humanize',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [

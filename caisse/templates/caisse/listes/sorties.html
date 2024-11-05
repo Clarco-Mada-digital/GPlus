@@ -29,9 +29,9 @@
     
     <!-- Filtrage sorties -->
 
-    <form method="GET" action="{% url 'caisse:listes' %}" class="p-4">
+    <form method="GET" action="{% url 'caisse:liste_sorties' %}" class="p-4">
         <div class="flex items-center space-x-4">
-            <button type="submit" class="flex items-center space-x-1 text-gray-600 font-medium px py-2 rounded-lg">
+            <button type="submit" class="flex items-center space-x-1 text-gray-600 px py-2 rounded-lg">
                 <i class="fas fa-filter"></i>
                 <span>Filtrer par</span>
             </button>
@@ -83,14 +83,14 @@
                 <div class="h-10 w-0.5 bg-gray-300"></div>
     
                 <!-- Bouton pour réinitialiser les filtres -->
-                <a href="{% url 'caisse:listes' %}" class="text-red-500 px-3 py-2 hover:text-red-700 flex items-center space-x-1">
+                <a href="{% url 'caisse:liste_sorties' %}" class="text-red-500 px-3 py-2 hover:text-red-700 flex items-center space-x-1">
                     <i class="fas fa-sync-alt"></i>
                     <span>Reset</span>
                 </a>
             </div>
         </div>
     </form>
-    <br>
+ 
 
     <!-- Tableau des opérations -->
     <form method="post" action="{% url 'caisse:generer_excel_operations_sorties' %}">
@@ -98,7 +98,7 @@
         <div class="overflow-x-auto bg-white border rounded-lg">
             <table class="w-full">
                 <thead>
-                    <tr class="bg-gray-100 text-left text-gray-700">
+                    <tr class="bg-white text-left text-gray-700">
                         <th class="px-4 py-2">
                             <input type="checkbox" id="select-all-sorties">
                         </th>
