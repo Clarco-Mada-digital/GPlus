@@ -130,7 +130,7 @@ class Beneficiaire(models.Model):
 class OperationEntrer(models.Model):
     
     description = models.CharField(max_length=255)  # Nom de l'opération
-    montant = models.DecimalField(max_digits=10, decimal_places=0, default=5000)  # Montant
+    montant = models.DecimalField(max_digits=10, decimal_places=0, default=0)  # Montant
     date = models.DateField(auto_now_add=True)  # Date de l'ajout dans l'application
     date_transaction = models.DateField(default=timezone.now) # Date de l'opération
     categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, null=True)  # Clé étrangère vers Categorie
@@ -144,7 +144,7 @@ class OperationEntrer(models.Model):
 class OperationSortir(models.Model):
     
     description = models.CharField(max_length=255)  # Nom de l'opération
-    montant = models.DecimalField(max_digits=10, decimal_places=0, default=500)  # Montant
+    montant = models.DecimalField(max_digits=10, decimal_places=0, default=0)  # Montant
     date = models.DateField(auto_now_add=True)  # Date de l'ajout dans l'application
     date_de_sortie = models.DateField(default=timezone.now)
     quantite = models.DecimalField(max_digits=10, decimal_places=0, default=1)

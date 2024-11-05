@@ -39,87 +39,61 @@ def index(request):
     first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     
     # Calcul des totaux
-    solde_actuel = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
-    solde_actuel -= OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    caisse_totale = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    caisse_totale -= OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
     
-    total_entrees = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
-    total_sorties = OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    entrees_mois = OperationEntrer.objects.filter(date_transaction__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
+    sorties_mois = OperationSortir.objects.filter(date_de_sortie__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
 
-    # Données pour le graphique Résumé du mois (12 derniers mois)
-    douze_mois_ago = today - timedelta(days=365)
-    
-    # Récupérer les entrées et sorties par mois
-    entrees_par_mois = OperationEntrer.objects.filter(date_transaction__gte=douze_mois_ago) \
+    # Données pour le graphique Résumé du mois
+    six_months_ago = today - timedelta(days=180)
+    entrees_par_mois = OperationEntrer.objects.filter(date_transaction__gte=six_months_ago) \
         .annotate(mois=TruncMonth('date_transaction')) \
         .values('mois') \
         .annotate(total=Sum('montant')) \
         .order_by('mois')
-    
-    sorties_par_mois = OperationSortir.objects.filter(date_de_sortie__gte=douze_mois_ago) \
+    sorties_par_mois = OperationSortir.objects.filter(date_de_sortie__gte=six_months_ago) \
         .annotate(mois=TruncMonth('date_de_sortie')) \
         .values('mois') \
         .annotate(total=Sum('montant')) \
         .order_by('mois')
 
-    # Calculer le solde cumulatif pour chaque mois
-    soldes_par_mois = []
-    solde_cumule = 0
-    
-    # Créer un dictionnaire des entrées et sorties par mois
-    mois_data = {}
-    
-    for entry in entrees_par_mois:
-        mois = entry['mois'].strftime("%b")
-        if mois not in mois_data:
-            mois_data[mois] = {'entrees': 0, 'sorties': 0}
-        mois_data[mois]['entrees'] = float(entry['total'])
+    labels_mois = [entry['mois'].strftime("%b") for entry in entrees_par_mois]
+    entrees_data = [entry['total'] for entry in entrees_par_mois]
+    sorties_data = [entry['total'] for entry in sorties_par_mois]
 
-    for entry in sorties_par_mois:
-        mois = entry['mois'].strftime("%b")
-        if mois not in mois_data:
-            mois_data[mois] = {'entrees': 0, 'sorties': 0}
-        mois_data[mois]['sorties'] = float(entry['total'])
-
-    # Calculer le solde cumulatif
-    for mois in mois_data:
-        solde_cumule += mois_data[mois]['entrees'] - mois_data[mois]['sorties']
-        soldes_par_mois.append({
-            'mois': mois,
-            'solde': solde_cumule
-        })
-
-    # Données pour le graphique circulaire des catégories
+    # Données pour le graphique Sorties par catégories
     sorties_categories = OperationSortir.objects.values('categorie__name') \
         .annotate(total=Sum('montant')) \
-        .order_by('-total')
+        .order_by('-total')[:5]  # Top 5 catégories
 
-    # Données pour les 4 derniers mois
+    labels_categories = [entry['categorie__name'] for entry in sorties_categories]
+    sorties_categories_data = [entry['total'] for entry in sorties_categories]
+
+    # Données pour les entrées des 4 derniers mois
     quatre_mois_ago = today - timedelta(days=120)
     entrees_4_mois = OperationEntrer.objects.filter(date_transaction__gte=quatre_mois_ago) \
-        .values('date_transaction', 'montant') \
-        .order_by('-date_transaction')[:4]
+        .annotate(mois=TruncMonth('date_transaction')) \
+        .values('mois') \
+        .annotate(montant=Sum('montant')) \
+        .order_by('-mois')[:4]
+
+    # Fonction pour convertir Decimal en float
+    def decimal_default(obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        raise TypeError
 
     context = {
-        'solde_actuel': float(solde_actuel),
-        'total_entrees': float(total_entrees),
-        'total_sorties': float(total_sorties),
-        'entrees_par_mois': json.dumps([{
-            'mois': entry['mois'].strftime("%b"),
-            'total': float(entry['total'])
-        } for entry in entrees_par_mois], default=str),
-        'sorties_par_mois': json.dumps([{
-            'mois': entry['mois'].strftime("%b"),
-            'total': float(entry['total'])
-        } for entry in sorties_par_mois], default=str),
-        'soldes_par_mois': json.dumps(soldes_par_mois, default=str),
-        'sorties_categories': json.dumps([{
-            'categorie': entry['categorie__name'],
-            'total': float(entry['total'])
-        } for entry in sorties_categories], default=str),
-        'entrees_4_mois': json.dumps([{
-            'date': entry['date_transaction'].strftime("%d/%m/%Y"),
-            'montant': float(entry['montant'])
-        } for entry in entrees_4_mois], default=str),
+        'caisse_totale': float(caisse_totale),
+        'entrees_mois': float(entrees_mois),
+        'sorties_mois': float(sorties_mois),
+        'labels_mois': json.dumps(labels_mois),
+        'entrees_data': json.dumps([float(x) for x in entrees_data], default=decimal_default),
+        'sorties_data': json.dumps([float(x) for x in sorties_data], default=decimal_default),
+        'labels_categories': json.dumps(labels_categories),
+        'sorties_categories_data': json.dumps([float(x) for x in sorties_categories_data], default=decimal_default),
+        'entrees_4_mois': [{'mois': e['mois'], 'montant': float(e['montant'])} for e in entrees_4_mois],
     }
 
     return render(request, "caisse/dashboard.html", context)
@@ -536,7 +510,7 @@ def ajouts_sortie(request):
                 quantite = int(quantites[i])
                 prix_unitaire = float(prix_unitaires[i])
                 categorie_id = int(categories_ids[i])      # Conversion en entier
-                prix_total = float(prix_total[i])
+                prix_total_ligne = float(prix_total[i])
 
 
                 # Récupérer les objets ForeignKey en utilisant .get() et gérer les exceptions
@@ -553,7 +527,7 @@ def ajouts_sortie(request):
                     description=designation,
                     beneficiaire=beneficiaire,
                     fournisseur=fournisseur,
-                    quantité=quantite,
+                    quantite=quantite,
                     montant=montant_total, # Utiliser le montant total calculé
                     categorie=categorie
                 )
@@ -579,20 +553,54 @@ def ajouts_sortie(request):
 @login_required
 @require_http_methods(["GET", "POST"])
 def modifier_entree(request, pk):
+    """
+    Modifie une opération d'entrée.
+    """
     operation = get_object_or_404(OperationEntrer, pk=pk)
 
-    if request.method == 'POST':
-        form = OperationEntrerForm(request.POST, instance=operation)
-        if form.is_valid():
-            form.save()
-            return JsonResponse({'success': True, 'message': 'Opération modifiée avec succès!'})
-        else:
-            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+    try:
+        if request.method == 'POST':
+            # Si les données sont envoyées en multipart/form-data
+            if request.content_type and 'multipart/form-data' in request.content_type:
+                data = request.POST.dict()
+            else:
+                # Si les données sont envoyées en JSON
+                data = json.loads(request.body)
 
-    else: # GET request
-        form = OperationEntrerForm(instance=operation)
-        form_data = {field_name: form[field_name].value() for field_name in form.fields}
-        return JsonResponse({'form': form_data, 'type_operation': 'entrees'})
+            # Mise à jour des champs
+            operation.description = data.get('description', operation.description)
+            operation.montant = float(data.get('montant', operation.montant))
+            operation.date = data.get('date', operation.date)
+            operation.categorie_id = data.get('categorie', operation.categorie_id)
+
+            operation.save()
+
+            return JsonResponse({
+                'success': True,
+                'operation': {
+                    'id': operation.id,
+                    'description': operation.description,
+                    'montant': operation.montant,
+                    'date': operation.date,
+                    'categorie': operation.categorie.name if operation.categorie else None,
+                }
+            })
+        else:
+            # Préparation des données pour affichage
+            form = OperationEntrerForm(instance=operation)
+            form_data = {field_name: form[field_name].value() for field_name in form.fields}
+            return JsonResponse({'form': form_data, 'type_operation': 'entrees'})
+
+    except KeyError as e:
+        return JsonResponse({
+            'success': False, 
+            'error': f"Champ requis manquant: {str(e)}"
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False, 
+            'error': str(e)
+        }, status=400)
 
 
 @login_required
@@ -1066,7 +1074,7 @@ def liste_sorties(request):
             Q(categorie__name__icontains=query) |
             Q(montant__icontains=query) | 
             Q(date_de_sortie__icontains=query)
-            )
+        )
     if categorie_id:
         sorties = sorties.filter(categorie_id=categorie_id)
     if beneficiaire_id:
