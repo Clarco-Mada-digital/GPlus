@@ -5,177 +5,237 @@
 {% block content %}
 <div
     x-data="{ operation: 'entree', maxLignes: 10, lignesEntrees: [{ date: new Date().toISOString().split('T')[0], designation: '', montant: '', categorie: '' }], lignesSorties: [{ date: new Date().toISOString().split('T')[0], designation: '', beneficiaire: '', fournisseur: '', quantite: 1, prixUnitaire: '', categorie: '', prixTotal: '' }] }"
-    class="container mx-auto bg-white rounded-lg border p-6">
+    class="container mx-auto  p-6">
 
-        <div class="flex justify-between space-x-4 mb-4">
-            <div></div>
-            <div>
-                <button x-on:click="operation = 'entree'" :class="operation === 'entree' ? 'bg-green-200 hover:bg-green-100 text-green-700 font-bold py-2 px-4 rounded' : 'bg-white text-gray-600 font-bold py-2 px-6 rounded'">Entrées</button>
-                <button x-on:click="operation = 'sortie'" :class="operation === 'sortie' ? 'bg-rose-200 hover:bg-rose-100 text-rose-500 font-bold py-2 px-4 rounded' : 'bg-white text-gray-600 font-bold py-2 px-6 rounded'">Sorties</button>
-            </div>
+    <div class="flex justify-between space-x-4 mb-10">
+        <div></div>
+        <div class="bg-white rounded-xl p-1">
+            <button x-on:click="operation = 'entree'"
+                :class="operation === 'entree' ? 'bg-green-100 hover:bg-green-100 text-green-700 font-bold py-1 px-4 rounded-xl' : 'bg-white text-gray-600 font-bold py-2 px-6 rounded-xl'">Entrées</button>
+            <button x-on:click="operation = 'sortie'"
+                :class="operation === 'sortie' ? 'bg-rose-100 hover:bg-rose-100 text-rose-500 font-bold py-1 px-4 rounded-xl' : 'bg-white text-gray-600 font-bold py-2 px-6 rounded-xl'">Sorties</button>
+        </div>
 
-            <div><a href="{% url 'caisse:listes' %}">
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Listes des Opérations</button>
+        <div><a href="{% url 'caisse:listes' %}">
+                <button
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl">Listes
+                    des Opérations</button>
             </a>
-            </div>
-        </div>
-
-        <!-- Section Entrée -->
-        <form method="POST" action="{% url 'caisse:ajouts_entree' %}" >
-        {% csrf_token %}
-        <div x-show="operation === 'entree'">
-            <template x-for="(ligne, index) in lignesEntrees" :key="index">
-                <div class="flex justify-between flex-wrap">
-                    <span class="mb-4 w-auto self-center font-bold text-gray-500">Ligne <span x-text="index + 1"></span>:</span>
-                <div
-                    class="mb-4 flex w-[15%] shadow-sm border-gray-500 border-b-2">
-                    <span
-                        class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Date:</span>
-                    <input type="date" autocomplete="off" x-model="ligne.date" name="date"
-                        class="dateInput focus:ring-0 block flex-1 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6" required>
-                </div>
-
-                <div
-                    class="mb-4 w-[45%] px-2 shadow-sm border-gray-500 border-b-2">
-                    <input type="text" x-model="ligne.designation" name="designation"
-                        placeholder="Désignation"
-                        class="block flex-1 focus:ring-0 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6" required>
-                </div>
-
-                <div class="mb-4 w-[25%] shadow-sm border-gray-500 border-b-2">
-                    <input type="number" x-model="ligne.montant" name="montant"
-                        placeholder="Montant"
-                        class="block flex-1 focus:ring-0 w-full border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
-                </div>
-
-                <div class="mb-4 w-[25%] shadow-sm border-gray-500 border-b-2">
-                    <select x-model="ligne.categorie" name="categorie" placeholder="Catégorie" 
-                        class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full focus:ring-0">
-                        <option value="Catégorie" disabled selected>Choisissez une catégorie</option>
-                        <!-- Boucle sur les catégories récupérées depuis la vue -->
-                        {% for categorie in categories_entree %}
-                        <option value="{{ categorie.id }}">{{ categorie.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-        </template>
-
-        <div class="mb-4">
-            <button type="button"
-                x-on:click="lignesEntrees.length < maxLignes && lignesEntrees.push({ date: new Date().toISOString().split('T')[0], designation: '', montant: '', categorie: '' })"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                    class="w-6 h-6 mr-2">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M12 6v12m6-6H6" />
-                </svg>
-                Ajouter une ligne
-            </button>
-        </div>
-
-        <div class="flex justify-end">
-            <button type="submit"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enregistrer</button>
-            
         </div>
     </div>
-</form>
+
+    <div class="bg-white rounded-2xl px-6 py-10">
+
+        <!-- Section Entrée -->
+        <form method="POST" action="{% url 'caisse:ajouts_entree' %}">
+            {% csrf_token %}
+            <div x-show="operation === 'entree'">
+                <template x-for="(ligne, index) in lignesEntrees" :key="index">
+                    <div class="flex justify-between flex-wrap">
+                        <span
+                            class="mb-10 w-auto self-center font-bold text-gray-500">Ligne
+                            <span x-text="index + 1"></span>:</span>
+                        <div
+                            class="mb-10 flex w-[15%] shadow-sm border-gray-300 border-b-2">
+                            <span
+                                class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Date:</span>
+                            <input type="date" autocomplete="off"
+                                x-model="ligne.date" name="date"
+                                class="dateInput focus:ring-0 block flex-1 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                                required>
+                        </div>
+
+                        <div
+                            class="mb-10 w-[45%] px-2 shadow-sm border-gray-300 border-b-2">
+                            <input type="text" x-model="ligne.designation"
+                                name="designation"
+                                placeholder="Désignation"
+                                class="block flex-1 focus:ring-0 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                                required>
+                        </div>
+
+                        <div
+                            class="mb-10 w-[25%] shadow-sm border-gray-300 border-b-2">
+                            <input type="number" x-model="ligne.montant"
+                                name="montant"
+                                placeholder="Montant"
+                                class="block flex-1 focus:ring-0 w-full border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                        </div>
+
+                        <div
+                            class="mb-10 w-[25%] shadow-sm border-gray-300 border-b-2">
+                            <select x-model="ligne.categorie" name="categorie"
+                                placeholder="Catégorie"
+                                class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full focus:ring-0">
+                                <option value="Catégorie" disabled
+                                    selected>Choisissez une catégorie</option>
+                                <!-- Boucle sur les catégories récupérées depuis la vue -->
+                                {% for categorie in categories_entree %}
+                                <option value="{{ categorie.id }}">
+                                    {{ categorie.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </template>
+
+                <div class="mb-10">
+                    <button type="button"
+                        x-on:click="lignesEntrees.length < maxLignes && lignesEntrees.push({ date: new Date().toISOString().split('T')[0], designation: '', montant: '', categorie: '' })"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl flex items-center">
+                        <svg width="20" height="20" viewBox="0 0 29 30"
+                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M19.5625 15.1125H14.5M14.5 15.1125H9.4375M14.5 15.1125V20.175M14.5 15.1125L14.5 10.05M28 15.1133C28 22.5691 21.9558 28.6133 14.5 28.6133C7.04416 28.6133 1 22.5691 1 15.1133C1 7.65744 7.04416 1.61328 14.5 1.61328C21.9558 1.61328 28 7.65744 28 15.1133Z"
+                                stroke="white" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+
+                        Ajouter une ligne
+                    </button>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl">Enregistrer</button>
+
+                </div>
+            </div>
+        </form>
         <!-- Section Sortie -->
         <form method="POST" action="{% url 'caisse:ajouts_sortie' %}">
             {% csrf_token %}
             <div x-show="operation === 'sortie'">
                 <template x-for="(ligne, index) in lignesSorties" :key="index">
                     <div class="flex justify-between flex-wrap">
-                        <span class="mb-4 w-auto self-center font-bold text-gray-500">Ligne <span x-text="index + 1"></span>:</span>
+                        <span
+                            class="mb-10 w-auto self-center font-bold text-gray-500">Ligne
+                            <span x-text="index + 1"></span>:</span>
                         <!-- Date -->
-                        <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
-                            <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Date:</span>
-                            <input type="date" name="date" x-init="ligne.date = new Date().toISOString().split('T')[0]"
-                                x-model="ligne.date" id="datenow" autocomplete="off"
+                        <div
+                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2">
+                            <span
+                                class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Date:</span>
+                            <input type="date" name="date"
+                                x-init="ligne.date = new Date().toISOString().split('T')[0]"
+                                x-model="ligne.date" id="datenow"
+                                autocomplete="off"
                                 class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
                         </div>
-        
+
                         <!-- Désignation -->
-                        <div class="mb-4 flex w-[47%] shadow-sm border-gray-500 border-b-2">
-                            <input type="text" name="designation" x-model="ligne.designation" placeholder="Désignation"
+                        <div
+                            class="mb-10 flex w-[47%] shadow-sm border-gray-300 border-b-2">
+                            <input type="text" name="designation"
+                                x-model="ligne.designation"
+                                placeholder="Désignation"
                                 class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
                         </div>
-        
+
                         <!-- Bénéficiaire -->
-                        <div class="mb-4 flex w-[25%] shadow-sm border-gray-500 border-b-2">
-                            <select name="beneficiaire" x-model="ligne.beneficiaire"
+                        <div
+                            class="mb-10 flex w-[25%] shadow-sm border-gray-300 border-b-2">
+                            <select name="beneficiaire"
+                                x-model="ligne.beneficiaire"
                                 class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
-                                <option value="" selected>Choisissez un bénéficiaire</option>
+                                <option value selected>Choisissez un
+                                    bénéficiaire</option>
                                 {% for beneficiaire in beneficiaires %}
-                                <option value="{{ beneficiaire.id }}">{{ beneficiaire }}</option>
+                                <option value="{{ beneficiaire.id }}">{{
+                                    beneficiaire }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-        
+
                         <!-- Fournisseur -->
-                        <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
-                            <select name="fournisseur" x-model="ligne.fournisseur"
+                        <div
+                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2">
+                            <select name="fournisseur"
+                                x-model="ligne.fournisseur"
                                 class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
-                                <option value="" selected>Choisissez un fournisseur</option>
+                                <option value selected>Choisissez un
+                                    fournisseur</option>
                                 {% for fournisseur in fournisseurs %}
-                                <option value="{{ fournisseur.id }}">{{ fournisseur.name }}</option>
+                                <option value="{{ fournisseur.id }}">{{
+                                    fournisseur.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-        
+
                         <!-- Quantité -->
-                        <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
-                            <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Quantité:</span>
-                            <input type="number" name="quantite" x-model="ligne.quantite" min="1" placeholder="Quantité"
-                                class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6" x-on:input="ligne.prixTotal = ligne.quantite * ligne.prixUnitaire">
+                        <div
+                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2">
+                            <span
+                                class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Quantité:</span>
+                            <input type="number" name="quantite"
+                                x-model="ligne.quantite" min="1"
+                                placeholder="Quantité"
+                                class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                                x-on:input="ligne.prixTotal = ligne.quantite * ligne.prixUnitaire">
                         </div>
-        
+
                         <!-- Prix Unitaire -->
-                        <div class="mb-4 flex w-[25%] shadow-sm border-gray-500 border-b-2">
-                            <input type="number" name="prixUnitaire" x-model="ligne.prixUnitaire" min="500" placeholder="Prix Unitaire"
-                                class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6" step="0.01" x-on:input="ligne.prixTotal = ligne.quantite * ligne.prixUnitaire">
-                                </div>
-        
+                        <div
+                            class="mb-10 flex w-[25%] shadow-sm border-gray-300 border-b-2">
+                            <input type="number" name="prixUnitaire"
+                                x-model="ligne.prixUnitaire" min="500"
+                                placeholder="Prix Unitaire"
+                                class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                                step="0.01"
+                                x-on:input="ligne.prixTotal = ligne.quantite * ligne.prixUnitaire">
+                        </div>
+
                         <!-- Catégorie -->
-                        <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
+                        <div
+                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2">
                             <select name="categorie" x-model="ligne.categorie"
                                 class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full">
-                                <option value="" selected>Choisissez une catégorie</option>
+                                <option value selected>Choisissez une
+                                    catégorie</option>
                                 {% for categorie in categories_sortie %}
-                                <option value="{{ categorie.id }}">{{ categorie.name }}</option>
+                                <option value="{{ categorie.id }}">{{
+                                    categorie.name
+                                    }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-        
+
                         <!-- Prix Total -->
-                        <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
-                            <input type="number" name="prixTotal" x-model="ligne.prixTotal" placeholder="Prix Total"
-                                class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6" readonly>
+                        <div
+                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2">
+                            <input type="number" name="prixTotal"
+                                x-model="ligne.prixTotal"
+                                placeholder="Prix Total"
+                                class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                                readonly>
                         </div>
                     </div>
                 </template>
-        
+
                 <!-- Ajouter une ligne -->
-                <div class="mb-4">
+                <div class="mb-10">
                     <button type="button"
                         x-on:click="lignesSorties.length < maxLignes && lignesSorties.push({ date: new Date().toISOString().split('T')[0], designation: '', beneficiaire: '', fournisseur: '', quantite: 1, prixUnitaire: '', categorie: '', prixTotal: '' })"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                            class="w-6 h-6 mr-2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                        class="bg-blue-500 hover:bg-blue-700 text-white space-x-2 font-bold py-2 px-4 rounded-xl flex items-center">
+                        <svg width="20" height="20" viewBox="0 0 29 30"
+                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M19.5625 15.1125H14.5M14.5 15.1125H9.4375M14.5 15.1125V20.175M14.5 15.1125L14.5 10.05M28 15.1133C28 22.5691 21.9558 28.6133 14.5 28.6133C7.04416 28.6133 1 22.5691 1 15.1133C1 7.65744 7.04416 1.61328 14.5 1.61328C21.9558 1.61328 28 7.65744 28 15.1133Z"
+                                stroke="white" stroke-width="2"
+                                stroke-linecap="round" />
                         </svg>
                         Ajouter une ligne
                     </button>
                 </div>
-        
+
                 <!-- Bouton Enregistrer -->
                 <div class="flex justify-end">
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enregistrer</button>
+                    <button type="submit"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl">Enregistrer</button>
                 </div>
             </div>
         </form>
-
+    </div>
 </div>
 {% endblock %}
