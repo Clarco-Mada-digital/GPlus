@@ -1,10 +1,11 @@
 <!-- templates/listes/index.html -->
 {% extends 'layout/layout.html' %}
+{% load humanize %}
 
 {% block title %}Liste des Opérations{% endblock %}
 
 {% block content %}
-<div class="container mx-auto bg-white rounded-lg border p-6">
+<div class="container mx-auto bg-white rounded-lg border">
 
     <!-- Navigation entre Entrées et Sorties -->
     <div class="flex justify-between space-x-4 mb-4">
@@ -74,7 +75,7 @@
             <div class="h-10 w-0.5 bg-gray-300"></div>
             <div class="flex space-x-4">
                 <!-- Sélecteur Catégories -->
-                <select name="categorie" class="px-0 py-2 border-none focus:ring-0">
+                <select name="categorie" class="px-8 py-2 border-none focus:ring-0">
                     <option value="">Catégories</option>
                     {% for categorie in categories %}
                         <option value="{{ categorie.id }}" {% if request.GET.categorie == categorie.id|stringformat:"s" %}selected{% endif %}>
@@ -137,31 +138,31 @@
         {% csrf_token %}
         <div class="container text-sm mx-auto px-4">
         <div class="overflow-x-auto">
-            <table class="min-w-full bg-white border border-gray-300">
+            <table class="table-auto min-w-full bg-white border-b border-gray-300">
                 <thead>
-                    <tr class="bg-white text-gray-600 uppercase text-sm leading-normal">
-                        <th class="px-4 py-2">
+                    <tr class="bg-white text-gray-600 uppercase text-sm">
+                        <th class="px-4 py-1 text-left">
                             <input type="checkbox" id="select-all-entrees">
                         </th>
-                        <th class="px-4 py-2">Description</th>
-                        <th class="px-4 py-2">Catégorie</th>
-                        <th class="px-4 py-2">Date</th>
-                        <th class="px-4 py-2 text-right">Montant</th>
-                        <th class="px-4 py-2 text-center">Actions</th>
+                        <th class="px-4 py-1 text-left">Description</th>
+                        <th class="px-4 py-1 text-left">Catégorie</th>
+                        <th class="px-4 py-1 text-left">Date</th>
+                        <th class="px-4 py-1 text-right">Montant</th>
+                        <th class="px-4 py-1 text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for operation in page_obj %}
                     <tr :key="{{ operation.id }}" class="{% cycle 'bg-gray-200' 'bg-white' %} border-b hover:bg-gray-50">
-                        <td class="px-4 py-2">
+                        <td class="py-1 px-4">
                             <input type="checkbox" name="selected_operations" value="{{ operation.id }}">
                         </td>
-                        <td class="px-4 py-2">{{ operation.description }}</td>
-                        <td class="px-4 py-2">{{ operation.categorie.name }}</td>
-                        <td class="px-4 py-2">{{ operation.date_transaction }}</td>
-                        <td class="px-4 py-2 text-right">{{ operation.montant }} Ar</td>
-                        <td class="px-4 py-2 text-center">
-                            <div class="flex items-center space-x-2">
+                        <td class="py-1 px-4">{{ operation.description }}</td>
+                        <td class="py-1 px-4 ">{{ operation.categorie.name }}</td>
+                        <td class="py-1 px-4">{{ operation.date_transaction }}</td>
+                        <td class="py-1 px-4 text-right">{{ operation.montant|intcomma }} Ar</td>
+                        <td class="py-1 px-4 text-center">
+                            <div class="flex justify-center space-x-2">
                                 <!-- Icône de modification (stylo) -->
                                 <a href="{% url 'caisse:modifier_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">

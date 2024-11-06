@@ -1,4 +1,5 @@
 {% extends 'layout/layout.html' %}
+{% load humanize %}
 
 {% block title %}Ajout des Opérations{% endblock %}
 
@@ -134,7 +135,7 @@
         
                         <!-- Prix Unitaire -->
                         <div class="mb-4 flex w-[25%] shadow-sm border-gray-500 border-b-2">
-                            <input type="number" name="prixUnitaire" x-model="ligne.prixUnitaire" min="500" placeholder="Prix Unitaire"
+                            <input type="number" name="prixUnitaire" x-model="ligne.prixUnitaire" min="1" placeholder="Prix Unitaire"
                                 class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6" step="0.01" x-on:input="ligne.prixTotal = ligne.quantite * ligne.prixUnitaire">
                                 </div>
         
@@ -176,6 +177,11 @@
                 </div>
             </div>
         </form>
-
 </div>
+<script>
+    function formatNumber(input) {
+        const value = input.value.replace(/\D/g, '');
+        input.value = new Intl.NumberFormat('fr-FR').format(value);
+    }
+</script>
 {% endblock %}

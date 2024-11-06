@@ -29,11 +29,21 @@ from django.urls import reverse
 from itertools import chain
 from operator import attrgetter
 from django.core.paginator import Paginator
+from .models import UserActivity
+from functools import wraps
 
 User = get_user_model()
 
 def is_admin(user):
     return user.is_staff
+
+def superuser_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return redirect('caisse:index')  # Remplacez 'index' par le nom de votre URL d'index
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
 
 # Vues principales
 
@@ -392,7 +402,8 @@ def modifier_acteur(request, type_acteur, pk):
         setattr(acteur, key, value)
     
     acteur.save()
-    
+    # Enregistrement de l'activité
+    UserActivity.objects.create(user=request.user, action='Modification', description='a modifier un acteur')
     return JsonResponse({
         'success': True,
         'acteur': {
@@ -414,7 +425,7 @@ def supprimer_acteur(request, type_acteur, pk):
         return JsonResponse({'success': False, 'error': 'Type d\'acteur invalide'}, status=400)
 
     acteur.delete()
-    
+    UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé un acteur')
     return JsonResponse({'success': True})
 
 # Gestion des catégories
@@ -444,7 +455,8 @@ def modifier_categorie(request, pk):
     categorie.type = data.get('type', categorie.type)
     
     categorie.save()
-    
+    # Enregistrement de l'activité
+    UserActivity.objects.create(user=request.user, action='Modification', description='a modifier une catégorie')
     return JsonResponse({
         'success': True,
         'categorie': {
@@ -461,6 +473,7 @@ def modifier_categorie(request, pk):
 def supprimer_categorie(request, pk):
     categorie = get_object_or_404(Categorie, pk=pk)
     categorie.delete()
+    UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé une catégorie')
     return JsonResponse({'success': True})
 
 # Gestion des opérations
@@ -589,7 +602,9 @@ def modifier_entree(request, pk):
 
         # Sauvegarder les modifications
         entree.save()
-
+        
+        # Enregistrement de l'activité
+        UserActivity.objects.create(user=request.user, action='Modification', description='a modifier une opération entrée')
         # Ajouter un message de succès
         messages.success(request, "L'opération d'entrée a été modifiée avec succès.")
 
@@ -632,7 +647,8 @@ def modifier_sortie(request, pk):
 
         # Sauvegarder les modifications
         operation.save()
-
+        # Enregistrement de l'activité
+        UserActivity.objects.create(user=request.user, action='Modification', description='a modifier une opération sortie')
         # Ajouter un message de succès
         messages.success(request, "L'opération a été modifiée avec succès.")
         # Rediriger vers la liste des sorties
@@ -659,6 +675,7 @@ def supprimer_entree(request, pk):
     operation = OperationEntrer.objects.get(pk=pk)
     
     operation.delete()
+    UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé une opération entrée')
     messages.success(request, "L'opération a été supprimée avec succès.")
     
     return redirect('caisse:listes')
@@ -673,6 +690,7 @@ def supprimer_sortie(request, pk):
     operation = OperationSortir.objects.get(pk=pk)
     
     operation.delete()
+    UserActivity.objects.create(user=request.user, action='Suprression', description='a supprimé une opération sortie')
     messages.success(request, "L'opération a été supprimée avec succès.")
     
     return redirect('caisse:listes')
@@ -868,7 +886,8 @@ def modifier_utilisateur(request, pk):
             user.photo = request.FILES['photo']
             
         user.save()
-        
+        # Enregistrement de l'activité
+        UserActivity.objects.create(user=request.user, action='Modification', description='a modifier un utilisateur')
         return JsonResponse({
             'success': True,
             'user': {
@@ -905,6 +924,7 @@ def supprimer_utilisateur(request, pk):
     
     try:
         user.delete()
+        UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé un utilisateur')
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
@@ -921,19 +941,18 @@ def editer_utilisateur(request, pk):
     
     return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
 
-def superuser_required(view_func):
-    return user_passes_test(lambda u: u.is_superuser)(view_func)
-
 @superuser_required
 def historique(request):
     """
-    Affiche l'historique des activités de tous les utilisateurs (admin ou non)
+    Affiche l'historique des activités de l'utilisateur connecté
     """
-    if request.user.is_superuser:
-        historique = OperationSortir.history.all()
-        return render(request, 'caisse/historique/historique.html', {'historique': historique})
-    else:
-        return redirect('caisse:index')
+    historique_sorties = OperationSortir.history.filter(history_user=request.user).select_related('instance__categorie')
+    historique_entrees = OperationEntrer.history.filter(history_user=request.user).select_related('instance__categorie')
+    
+    historique = list(historique_sorties) + list(historique_entrees)
+    historique.sort(key=lambda x: x.history_date, reverse=True)  # Trie par date décroissante
+
+    return render(request, 'caisse/historique/historique.html', {'historique': historique})
 
 @login_required
 def update_profile(request):
@@ -952,6 +971,7 @@ def update_profile(request):
         
         try:
             user.save()
+            UserActivity.objects.create(user=request.user, action='Modification', description='a modifié son profil')
             messages.success(request, 'Votre profil a été mis à jour avec succès.')
         except Exception as e:
             messages.error(request, f'Erreur lors de la mise à jour du profil: {str(e)}')
@@ -983,6 +1003,7 @@ def change_password(request):
         try:
             user.set_password(new_password)
             user.save()
+            UserActivity.objects.create(user=request.user, action='Modification', description='a modifié son mot de passe')
             update_session_auth_hash(request, user)  # Garde l'utilisateur connecté
             messages.success(request, 'Votre mot de passe a été modifié avec succès.')
         except Exception as e:
@@ -1092,7 +1113,7 @@ def liste_sorties(request):
     template = loader.get_template('caisse/listes/sorties.html')
 
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 10
+    lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 5
     paginator = Paginator(sorties, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -1254,3 +1275,11 @@ def generer_excel_operations_sorties(request):
     workbook.save(response)
 
     return response
+
+@superuser_required
+def historique(request):
+    """
+    Affiche l'historique des activités de l'utilisateur connecté
+    """
+    historique = UserActivity.objects.filter(user=request.user).order_by('-timestamp')
+    return render(request, 'caisse/historique/historique.html', {'historique': historique})
