@@ -364,6 +364,8 @@ def ajouter_acteur(request):
 
         if form.is_valid():
             form.save()
+            # Enregistrement de l'activité
+            UserActivity.objects.create(user=request.user, action='Création', description=f'a ajouté un {type_acteur[:-1]}')
             messages.success(request, f"{type_acteur[:-1].capitalize()} ajouté avec succès.")
             return redirect('caisse:acteurs')
         else:
@@ -379,6 +381,8 @@ def ajouter_fournisseur(request):
         form = FournisseurForm(request.POST)
         if form.is_valid():
             form.save()
+            # Enregistrement de l'activité
+            UserActivity.objects.create(user=request.user, action='Création', description='a ajouté un fournisseur')
             messages.success(request, "Fournisseur ajouté avec succès.")
             return redirect('caisse:acteurs')
         else:
@@ -439,6 +443,8 @@ def ajouter_categorie(request):
         form = CategorieForm(request.POST)
         if form.is_valid():
             form.save()
+            # Enregistrement de l'activité
+            UserActivity.objects.create(user=request.user, action='Création', description='a ajouté une catégorie')
             messages.success(request, "Catégorie ajoutée avec succès.")
             return redirect('caisse:acteurs')
     return redirect('caisse:acteurs')
@@ -504,6 +510,8 @@ def ajouts_entree(request):
                     categorie=categorie
                 )
                 operation_entree.save()
+                # Enregistrement de l'activité
+                UserActivity.objects.create(user=request.user, action='Création', description='a ajouté une opération entrée')
                 lignes_entrees.append(operation_entree)
             except (ValueError, Categorie.DoesNotExist):
                 return render(request, 'caisse/operations/entre-sortie.html', {'error': 'Données invalides', 'categories_entree': categories_entree})
@@ -564,6 +572,9 @@ def ajouts_sortie(request):
                     categorie=categorie
                 )
                 operation_sortie.save()
+                # Enregistrement de l'activité
+                UserActivity.objects.create(user=request.user, action='Création', description='a créé une opération de sortie')
+                
 
             except (ValueError, Categorie.DoesNotExist, Beneficiaire.DoesNotExist, Fournisseur.DoesNotExist) as e:
                 # Gérer les erreurs plus précisément : afficher le type d'erreur et l'index de la ligne problématique
@@ -717,7 +728,10 @@ def creer_categorie(request):
     
     if not name or not type:
         return JsonResponse({'success': False, 'error': 'Nom et type sont requis'}, status=400)
-    
+    try:
+        UserActivity.objects.create(user=request.user, action='Création', description='a créé une nouvelle catégorie')
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
     categorie = Categorie.objects.create(name=name, description=description, type=type)
     
     return JsonResponse({
@@ -746,6 +760,7 @@ def editer_acteur(request, type_acteur, pk):
         form = form_class(request.POST, request.FILES, instance=acteur)
         if form.is_valid():
             form.save()
+            UserActivity.objects.create(user=request.user, action='Modification', description=f'a modifié un {type_acteur}')
             messages.success(request, f"{type_acteur.capitalize()} modifié avec succès.")
             return redirect('caisse:acteurs')
     else:
@@ -940,19 +955,6 @@ def editer_utilisateur(request, pk):
         return render(request, 'caisse/utilisateurs/modifier_utilisateur.html', {'user': user})
     
     return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
-
-@superuser_required
-def historique(request):
-    """
-    Affiche l'historique des activités de l'utilisateur connecté
-    """
-    historique_sorties = OperationSortir.history.filter(history_user=request.user).select_related('instance__categorie')
-    historique_entrees = OperationEntrer.history.filter(history_user=request.user).select_related('instance__categorie')
-    
-    historique = list(historique_sorties) + list(historique_entrees)
-    historique.sort(key=lambda x: x.history_date, reverse=True)  # Trie par date décroissante
-
-    return render(request, 'caisse/historique/historique.html', {'historique': historique})
 
 @login_required
 def update_profile(request):
@@ -1223,6 +1225,12 @@ def generer_excel_operations_entrees(request):
     filename = f"entrees_{datetime.now().strftime('%d-%m-%Y_%H-%M')}.xlsx"
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     workbook.save(response)
+    # Enregistrer l'activité de l'utilisateur
+    UserActivity.objects.create(
+        user=request.user,
+        activity_type="EXPORT",
+        description=f"Export Excel des opérations d'entrée"
+    )
 
     return response
 
@@ -1273,13 +1281,22 @@ def generer_excel_operations_sorties(request):
     filename = f"sorties_{datetime.now().strftime('%d-%m-%Y_%H-%M')}.xlsx"
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     workbook.save(response)
+    # Enregistrer l'activité de l'utilisateur
+    UserActivity.objects.create(
+        user=request.user,
+        activity_type="EXPORT",
+        description=f"Export Excel des opérations de sortie"
+    )
 
     return response
 
-@superuser_required
+@login_required
 def historique(request):
-    """
-    Affiche l'historique des activités de l'utilisateur connecté
-    """
-    historique = UserActivity.objects.filter(user=request.user).order_by('-timestamp')
+    # Si l'utilisateur est un administrateur, afficher toutes les activités
+    if request.user.is_staff:
+        historique = UserActivity.objects.all().order_by('-timestamp')
+    else:
+        # Sinon, afficher uniquement les activités de l'utilisateur connecté
+        historique = UserActivity.objects.filter(user=request.user).order_by('-timestamp')
+    
     return render(request, 'caisse/historique/historique.html', {'historique': historique})
