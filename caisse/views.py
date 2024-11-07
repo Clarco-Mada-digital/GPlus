@@ -14,79 +14,119 @@ from django.db.models.functions import TruncYear, TruncMonth
 from django.db.models import Q
 from django.utils import timezone
 from datetime import timedelta
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import update_session_auth_hash
+from django.template import loader
+import openpyxl
+from openpyxl import Workbook
+from datetime import datetime
+from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.utils import get_column_letter
+from django.urls import reverse
+from itertools import chain
+from operator import attrgetter
+from django.core.paginator import Paginator
+from .models import UserActivity
+from functools import wraps
 
 User = get_user_model()
 
 def is_admin(user):
     return user.is_staff
 
+def superuser_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return redirect('caisse:index')  # Remplacez 'index' par le nom de votre URL d'index
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
 # Vues principales
 
-@login_required(login_url="accounts:login_user")
+@login_required
 def index(request):
-    today = timezone.now()
-    first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    
     # Calcul des totaux
-    caisse_totale = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
-    caisse_totale -= OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    total_entrees = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    total_sorties = OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    solde_actuel = total_entrees - total_sorties
+
+    # Données pour le graphique par mois
+    six_months_ago = timezone.now() - timedelta(days=180)
     
-    entrees_mois = OperationEntrer.objects.filter(date__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
-    sorties_mois = OperationSortir.objects.filter(date__gte=first_day_of_month).aggregate(Sum('montant'))['montant__sum'] or 0
+    # Données des entrées par mois
+    entrees_par_mois = list(OperationEntrer.objects.filter(
+        date_transaction__gte=six_months_ago
+    ).annotate(
+        mois=TruncMonth('date_transaction')
+    ).values('mois').annotate(
+        total=Sum('montant')
+    ).order_by('mois'))
 
-    # Données pour le graphique Résumé du mois
-    six_months_ago = today - timedelta(days=180)
-    entrees_par_mois = OperationEntrer.objects.filter(date__gte=six_months_ago) \
-        .annotate(mois=TruncMonth('date')) \
-        .values('mois') \
-        .annotate(total=Sum('montant')) \
-        .order_by('mois')
-    sorties_par_mois = OperationSortir.objects.filter(date__gte=six_months_ago) \
-        .annotate(mois=TruncMonth('date')) \
-        .values('mois') \
-        .annotate(total=Sum('montant')) \
-        .order_by('mois')
+    # Données des sorties par mois
+    sorties_par_mois = list(OperationSortir.objects.filter(
+        date_de_sortie__gte=six_months_ago
+    ).annotate(
+        mois=TruncMonth('date_de_sortie')
+    ).values('mois').annotate(
+        total=Sum('montant')
+    ).order_by('mois'))
 
-    labels_mois = [entry['mois'].strftime("%b") for entry in entrees_par_mois]
-    entrees_data = [entry['total'] for entry in entrees_par_mois]
-    sorties_data = [entry['total'] for entry in sorties_par_mois]
+    # Calcul des soldes par mois
+    soldes_par_mois = []
+    for entree in entrees_par_mois:
+        mois = entree['mois']
+        total_entree = entree['total']
+        total_sortie = next(
+            (item['total'] for item in sorties_par_mois if item['mois'] == mois),
+            0
+        )
+        soldes_par_mois.append({
+            'mois': mois.strftime('%B %Y'),
+            'solde': float(total_entree - total_sortie)
+        })
 
-    # Données pour le graphique Sorties par catégories
-    sorties_categories = OperationSortir.objects.values('categorie__name') \
-        .annotate(total=Sum('montant')) \
-        .order_by('-total')[:5]  # Top 5 catégories
+    # Données pour le graphique des catégories de sorties
+    sorties_categories = list(OperationSortir.objects.values(
+        'categorie__name'
+    ).annotate(
+        total=Sum('montant')
+    ).order_by('-total')[:5])
 
-    labels_categories = [entry['categorie__name'] for entry in sorties_categories]
-    sorties_categories_data = [entry['total'] for entry in sorties_categories]
+    # Données pour les 4 derniers mois
+    entrees_4_mois = list(OperationEntrer.objects.filter(
+        date_transaction__gte=timezone.now() - timedelta(days=120)
+    ).annotate(
+        mois=TruncMonth('date_transaction')
+    ).values('mois').annotate(
+        montant=Sum('montant')
+    ).order_by('-mois')[:4])
 
-    # Données pour les entrées des 4 derniers mois
-    quatre_mois_ago = today - timedelta(days=120)
-    entrees_4_mois = OperationEntrer.objects.filter(date__gte=quatre_mois_ago) \
-        .annotate(mois=TruncMonth('date')) \
-        .values('mois') \
-        .annotate(montant=Sum('montant')) \
-        .order_by('-mois')[:4]
-
-    # Fonction pour convertir Decimal en float
-    def decimal_default(obj):
-        if isinstance(obj, Decimal):
-            return float(obj)
-        raise TypeError
-
+    # Formater les données pour le template
     context = {
-        'caisse_totale': float(caisse_totale),
-        'entrees_mois': float(entrees_mois),
-        'sorties_mois': float(sorties_mois),
-        'labels_mois': json.dumps(labels_mois),
-        'entrees_data': json.dumps([float(x) for x in entrees_data], default=decimal_default),
-        'sorties_data': json.dumps([float(x) for x in sorties_data], default=decimal_default),
-        'labels_categories': json.dumps(labels_categories),
-        'sorties_categories_data': json.dumps([float(x) for x in sorties_categories_data], default=decimal_default),
-        'entrees_4_mois': [{'mois': e['mois'], 'montant': float(e['montant'])} for e in entrees_4_mois],
+        'solde_actuel': float(solde_actuel),
+        'total_entrees': float(total_entrees),
+        'total_sorties': float(total_sorties),
+        'entrees_par_mois': json.dumps([{
+            'mois': item['mois'].strftime('%B %Y'),
+            'total': float(item['total'])
+        } for item in entrees_par_mois]),
+        'sorties_par_mois': json.dumps([{
+            'mois': item['mois'].strftime('%B %Y'),
+            'total': float(item['total'])
+        } for item in sorties_par_mois]),
+        'soldes_par_mois': json.dumps(soldes_par_mois),
+        'sorties_categories': json.dumps([{
+            'categorie': item['categorie__name'],
+            'total': float(item['total'])
+        } for item in sorties_categories]),
+        'entrees_4_mois': json.dumps([{
+            'date': item['mois'].strftime('%B %Y'),
+            'montant': float(item['montant'])
+        } for item in entrees_4_mois])
     }
 
     return render(request, "caisse/dashboard.html", context)
@@ -128,131 +168,105 @@ def listes(request):
     """
     Affiche la liste des opérations.
     """
+    # Récupérer les filtres de recherche et de triage
+    query = request.GET.get('q')
+    categorie_id = request.GET.get('categorie')
+    beneficiaire_id = request.GET.get('beneficiaire')
+    fournisseur_id = request.GET.get('fournisseur')
+    date_min = request.GET.get('date_min')
+    date_max = request.GET.get('date_max')
+    sort_by = request.GET.get('sort', 'date')  # Par défaut, tri par date
+    ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
+
+    # Filtrer les opérations d'entrée et de sortie
+    entree = OperationEntrer.objects.all()
+    sortie = OperationSortir.objects.all()
+
+    # Appliquer les filtres
+    if query:
+        entree = entree.filter(
+            Q(description__icontains=query) |
+            Q(categorie__name__icontains=query) |
+            Q(montant__icontains=query) |
+            Q(date_transaction__icontains=query)
+        )
+        sortie = sortie.filter(
+            Q(description__icontains=query) |
+            Q(categorie__name__icontains=query) |
+            Q(montant__icontains=query) |
+            Q(date_de_sortie__icontains=query)
+        )
+    if categorie_id:
+        entree = entree.filter(categorie_id=categorie_id)
+        sortie = sortie.filter(categorie_id=categorie_id)
+
+    if beneficiaire_id:
+        sortie = sortie.filter(beneficiaire_id=beneficiaire_id)
+
+    if fournisseur_id:
+        sortie = sortie.filter(fournisseur_id=fournisseur_id)
+
+    if date_min:
+        entree = entree.filter(date_transaction__gte=date_min)
+        sortie = sortie.filter(date_de_sortie__gte=date_min)
+
+    if date_max:
+        entree = entree.filter(date_transaction__lte=date_max)
+        sortie = sortie.filter(date_de_sortie__lte=date_max)
+
+    # Récupérer le nombre de lignes par page depuis les paramètres GET
+    lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 10
+
+    # Combiner et trier par date
+    operations = sorted(
+        chain(entree, sortie),
+        key=lambda op: getattr(op, 'date_transaction', None) or getattr(op, 'date_de_sortie', None),
+        reverse=(ordre == 'desc')
+    )
+    # Pagination
+    paginator = Paginator(operations, lignes_par_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     
-    entrees = OperationEntrer.objects.all()
-    sorties = OperationSortir.objects.select_related('beneficiaire', 'fournisseur', 'categorie').all()
+    # Récupérer les catégories, bénéficiaires et fournisseurs pour les options de filtrage
     categories = Categorie.objects.all()
     beneficiaires = Beneficiaire.objects.all()
     fournisseurs = Fournisseur.objects.all()
-    sort_by = request.GET.get('sort', 'date')
 
-    # Détecter le type d'opération choisi (par défaut, affichage des entrées)
-    type_operation = request.GET.get('type', 'entrees')
-    
-    # Dictionnaire pour stocker les filtres
-    filters = {}
-
-    # Gestion des filtres (simplifiée et plus robuste)
-    for field in ['categorie', 'beneficiaire', 'fournisseur', 'sort']:
-        value = request.GET.get(field)
-        if value:
-            filters[field] = value
-
-    for field in ['montant_min', 'montant_max', 'quantite_min', 'quantite_max']:
-        value = request.GET.get(field)
-        if value:
-            try:
-                filters[field] = float(value)  # Conversion en nombre
-            except ValueError:
-                # Gérer l'erreur, par exemple afficher un message à l'utilisateur
-                # ou simplement ignorer la valeur invalide.
-                pass
-
-    for field in ['date_min', 'date_max']:
-        value = request.GET.get(field)
-        if value:
-            filters[field] = value
-
-
-    query = request.GET.get('q')
-    if query:
-        filters['query'] = query
-
-
-    # Application des filtres
-    if filters:
-        if 'query' in filters:
-            entrees = entrees.filter(
-                Q(description__icontains=filters['query']) |
-                Q(categorie__name__icontains=filters['query']) |
-                Q(montant__icontains=filters['query']) |
-                Q(date__icontains=filters['query'])
-            )
-            sorties = sorties.filter(
-                Q(description__icontains=filters['query']) |
-                Q(categorie__name__icontains=filters['query']) |
-                Q(montant__icontains=filters['query']) |
-                Q(date__icontains=filters['query'])
-            )
-
-        if 'categorie' in filters:
-            entrees = entrees.filter(categorie_id=filters['categorie'])
-            sorties = sorties.filter(categorie_id=filters['categorie'])
-
-        if 'beneficiaire' in filters:
-            sorties = sorties.filter(beneficiaire_id=filters['beneficiaire'])
-
-        if 'fournisseur' in filters:
-            sorties = sorties.filter(fournisseur_id=filters['fournisseur'])
-        
-        if 'montant_min' in filters:
-            entrees = entrees.filter(montant__gte=filters['montant_min'])
-            sorties = sorties.filter(montant__gte=filters['montant_min'])
-
-        if 'montant_max' in filters:
-            entrees = entrees.filter(montant__lte=filters['montant_max'])
-            sorties = sorties.filter(montant__lte=filters['montant_max'])
-
-        if 'quantite_min' in filters:
-            sorties = sorties.filter(quantité__gte=filters['quantite_min'])
-        if 'quantite_max' in filters:
-            sorties = sorties.filter(quantité__lte=filters['quantite_max'])
-
-
-        if 'date_min' in filters:
-            entrees = entrees.filter(date__gte=filters['date_min'])
-            sorties = sorties.filter(date__gte=filters['date_min'])
-
-        if 'date_max' in filters:
-            entrees = entrees.filter(date__lte=filters['date_max'])
-            sorties = sorties.filter(date__lte=filters['date_max'])
-    
-
-    # Filtrer les opérations de sortie qui ont des bénéficiaires valides
-    sorties = sorties.filter(Q(beneficiaire__isnull=False) | Q(beneficiaire__personnel__isnull=False) | Q(beneficiaire__name__isnull=False))
-
-    # Tri
-    entrees = entrees.order_by(sort_by)
-    sorties = sorties.order_by(sort_by)
-
+    # Contexte et rendu du template
+    template = loader.get_template('caisse/listes/listes_operations.html')
     context = {
-        'entrees': entrees,
-        'sorties': sorties,
+        'page_obj': page_obj,
         'categories': categories,
         'beneficiaires': beneficiaires,
         'fournisseurs': fournisseurs,
-        'prix': "Ar",  # Vous pouvez gérer 'Ar' dans le template
+        'prix': "Ar",
         'sort_by': sort_by,
-        'type_operation': type_operation
+        'ordre': ordre,
+        'lignes_par_page': lignes_par_page,
     }
-
-    return render(request, "caisse/listes/listes_operations.html", context)
+    return HttpResponse(template.render(context, request))
 
 @login_required
 def depenses(request):
     """
     Affiche la page des dépenses avec les opérations par employé et par catégorie.
     """
-    # Filtrage par date
-    date_debut = request.GET.get('date_debut')
-    date_fin = request.GET.get('date_fin')
-    mois_selectionne = request.GET.get('mois', 'Août 2024')  # Valeur par défaut
+    # Récupérer le mois sélectionné
+    mois_selectionne = request.GET.get('mois', timezone.now().strftime('%Y-%m'))
+    
+    try:
+        date_debut = timezone.datetime.strptime(f"{mois_selectionne}-01", '%Y-%m-%d')
+        date_fin = (date_debut + timezone.timedelta(days=32)).replace(day=1) - timezone.timedelta(days=1)
+    except ValueError:
+        date_debut = timezone.now().replace(day=1)
+        date_fin = (date_debut + timezone.timedelta(days=32)).replace(day=1) - timezone.timedelta(days=1)
 
-    operations = OperationSortir.objects.all()
-    if date_debut:
-        operations = operations.filter(date_de_sortie__gte=date_debut)
-    if date_fin:
-        operations = operations.filter(date_de_sortie__lte=date_fin)
+    # Filtrer les opérations par mois
+    operations = OperationSortir.objects.filter(
+        date_de_sortie__gte=date_debut,
+        date_de_sortie__lte=date_fin
+    )
 
     # Dépenses par employé
     depenses_par_employe = operations.values(
@@ -272,18 +286,38 @@ def depenses(request):
         nombre_depenses=Count('id')
     ).order_by('-total_depenses')
 
+    # Couleurs pour les catégories
+    colors = [
+        '#3B82F6', '#EF4444', '#F59E0B', '#10B981', '#6366F1',
+        '#EC4899', '#8B5CF6', '#14B8A6', '#F97316', '#06B6D4'
+    ]
+    
+    for i, depense in enumerate(depenses_par_categorie):
+        depense['color'] = colors[i % len(colors)]
+
     # Dépenses par année
-    depenses_par_annee = operations.annotate(
+    depenses_par_annee = OperationSortir.objects.annotate(
         year=TruncYear('date_de_sortie')
     ).values('year').annotate(
         total_depenses=Sum('montant')
     ).order_by('year')
+
+    # Générer la liste des mois
+    mois_liste = []
+    date_courante = timezone.now()
+    for i in range(12):
+        date = date_courante - timezone.timedelta(days=30*i)
+        mois_liste.append({
+            'value': date.strftime('%Y-%m'),
+            'label': date.strftime('%B %Y')
+        })
 
     context = {
         'depenses_par_employe': depenses_par_employe,
         'depenses_par_categorie': depenses_par_categorie,
         'depenses_par_annee': depenses_par_annee,
         'mois_selectionne': mois_selectionne,
+        'mois_liste': mois_liste,
     }
     return render(request, "caisse/depenses/depense.html", context)
 
@@ -326,15 +360,17 @@ def ajouter_acteur(request):
             form = CategorieForm(request.POST)
         else:
             messages.error(request, "Type d'acteur non valide.")
-            return redirect('acteurs')
+            return redirect('caisse:acteurs')
 
         if form.is_valid():
             form.save()
+            # Enregistrement de l'activité
+            UserActivity.objects.create(user=request.user, action='Création', description=f'a ajouté un {type_acteur[:-1]}')
             messages.success(request, f"{type_acteur[:-1].capitalize()} ajouté avec succès.")
-            return redirect('acteurs')
+            return redirect('caisse:acteurs')
         else:
             messages.error(request, "Erreur dans le formulaire. Veuillez vérifier les données.")
-    return redirect('acteurs')
+    return redirect('caisse:acteurs')
 
 @login_required
 def ajouter_fournisseur(request):
@@ -345,11 +381,13 @@ def ajouter_fournisseur(request):
         form = FournisseurForm(request.POST)
         if form.is_valid():
             form.save()
+            # Enregistrement de l'activité
+            UserActivity.objects.create(user=request.user, action='Création', description='a ajouté un fournisseur')
             messages.success(request, "Fournisseur ajouté avec succès.")
-            return redirect('acteurs')
+            return redirect('caisse:acteurs')
         else:
             messages.error(request, "Erreur dans le formulaire. Veuillez vérifier les données.")
-    return redirect('acteurs')
+    return redirect('caisse:acteurs')
 
 @login_required
 @require_POST
@@ -368,7 +406,8 @@ def modifier_acteur(request, type_acteur, pk):
         setattr(acteur, key, value)
     
     acteur.save()
-    
+    # Enregistrement de l'activité
+    UserActivity.objects.create(user=request.user, action='Modification', description='a modifier un acteur')
     return JsonResponse({
         'success': True,
         'acteur': {
@@ -390,7 +429,7 @@ def supprimer_acteur(request, type_acteur, pk):
         return JsonResponse({'success': False, 'error': 'Type d\'acteur invalide'}, status=400)
 
     acteur.delete()
-    
+    UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé un acteur')
     return JsonResponse({'success': True})
 
 # Gestion des catégories
@@ -404,9 +443,11 @@ def ajouter_categorie(request):
         form = CategorieForm(request.POST)
         if form.is_valid():
             form.save()
+            # Enregistrement de l'activité
+            UserActivity.objects.create(user=request.user, action='Création', description='a ajouté une catégorie')
             messages.success(request, "Catégorie ajoutée avec succès.")
-            return redirect('acteurs')
-    return redirect('acteurs')
+            return redirect('caisse:acteurs')
+    return redirect('caisse:acteurs')
 
 @login_required
 @require_POST
@@ -420,7 +461,8 @@ def modifier_categorie(request, pk):
     categorie.type = data.get('type', categorie.type)
     
     categorie.save()
-    
+    # Enregistrement de l'activité
+    UserActivity.objects.create(user=request.user, action='Modification', description='a modifier une catégorie')
     return JsonResponse({
         'success': True,
         'categorie': {
@@ -437,6 +479,7 @@ def modifier_categorie(request, pk):
 def supprimer_categorie(request, pk):
     categorie = get_object_or_404(Categorie, pk=pk)
     categorie.delete()
+    UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé une catégorie')
     return JsonResponse({'success': True})
 
 # Gestion des opérations
@@ -467,11 +510,13 @@ def ajouts_entree(request):
                     categorie=categorie
                 )
                 operation_entree.save()
+                # Enregistrement de l'activité
+                UserActivity.objects.create(user=request.user, action='Création', description='a ajouté une opération entrée')
                 lignes_entrees.append(operation_entree)
             except (ValueError, Categorie.DoesNotExist):
                 return render(request, 'caisse/operations/entre-sortie.html', {'error': 'Données invalides', 'categories_entree': categories_entree})
             
-        return redirect('listes')
+        return redirect('caisse:listes')
 
     return render(request, 'caisse/operations/entre-sortie.html', {'categories_entree': categories_entree, 'operation': 'entree',})
 
@@ -505,7 +550,7 @@ def ajouts_sortie(request):
                 quantite = int(quantites[i])
                 prix_unitaire = float(prix_unitaires[i])
                 categorie_id = int(categories_ids[i])      # Conversion en entier
-                prix_total = float(prix_total[i])
+                prix_total_ligne = float(prix_total[i])
 
 
                 # Récupérer les objets ForeignKey en utilisant .get() et gérer les exceptions
@@ -522,11 +567,14 @@ def ajouts_sortie(request):
                     description=designation,
                     beneficiaire=beneficiaire,
                     fournisseur=fournisseur,
-                    quantité=quantite,
+                    quantite=quantite,
                     montant=montant_total, # Utiliser le montant total calculé
                     categorie=categorie
                 )
                 operation_sortie.save()
+                # Enregistrement de l'activité
+                UserActivity.objects.create(user=request.user, action='Création', description='a créé une opération de sortie')
+                
 
             except (ValueError, Categorie.DoesNotExist, Beneficiaire.DoesNotExist, Fournisseur.DoesNotExist) as e:
                 # Gérer les erreurs plus précisément : afficher le type d'erreur et l'index de la ligne problématique
@@ -536,7 +584,7 @@ def ajouts_sortie(request):
                     'beneficiaires': beneficiaires,
                     'fournisseurs': fournisseurs,
                 })
-        return redirect('listes') # Rediriger après un traitement réussi
+        return redirect('caisse:listes') # Rediriger après un traitement réussi
 
     return render(request, 'caisse/operations/entre-sortie.html', {
         'categories_sortie': categories_sortie,
@@ -546,45 +594,117 @@ def ajouts_sortie(request):
     })
 
 @login_required
-def modifier_operation(request, operation_id, type_operation):
-    if type_operation == 'entrees':
-        operation = get_object_or_404(OperationEntrer, id=operation_id)
-        form_class = OperationEntrerForm
-    elif type_operation == 'sorties':  # Add an "elif" here
-        operation = get_object_or_404(OperationSortir, id=operation_id)
-        form_class = OperationSortirForm
-    else:
-        return JsonResponse({'success': False, 'error': 'Invalid type_operation'}) # Handle invalid type
+def modifier_entree(request, pk):
+    # Récupérer l'entrée existante
+    entree = get_object_or_404(OperationEntrer, id=pk)
 
     if request.method == 'POST':
-        form = form_class(request.POST, instance=operation)
-        if form.is_valid():
-            form.save()
-            return JsonResponse({'success': True})
-        else:
-            return JsonResponse({'success': False, 'errors': form.errors})
-    else:
-        form = form_class(instance=operation)
-        form_data = {}
-        for field_name, field in form.fields.items():
-            form_data[field_name] = field.initial if field.initial is not None else ''  # Handle initial data for new forms or model instances that might have blank fields.
-        return JsonResponse({'form': form_data, 'type_operation': type_operation})
+        # Récupérer les données du formulaire
+        date_transaction = request.POST.get('date')
+        description = request.POST.get('description')
+        montant = request.POST.get('montant')
+        categorie_id = request.POST.get('categorie')
 
-#Suppression des sorties
+        # Mettre à jour l'objet entrée
+        entree.date_transaction = date_transaction
+        entree.description = description
+        entree.montant = montant
+        entree.categorie_id = categorie_id
+
+        # Sauvegarder les modifications
+        entree.save()
+        
+        # Enregistrement de l'activité
+        UserActivity.objects.create(user=request.user, action='Modification', description='a modifier une opération entrée')
+        # Ajouter un message de succès
+        messages.success(request, "L'opération d'entrée a été modifiée avec succès.")
+
+        # Rediriger vers la liste des entrées
+        return redirect(reverse('caisse:liste_entrees'))
+
+    # Préparer le contexte pour le template
+    context = {
+        'entree': entree,
+        'categories_entree': Categorie.objects.filter(type='entree'),
+    }
+
+    # Rendre le template avec le contexte
+    return render(request, 'caisse/listes/modifier_entree.html', context)
+
+
 @login_required
-def supprimer_operation(request, operation_id, type_operation):
+def modifier_sortie(request, pk):
+    # Récupérer l'opération de sortie spécifique
+    operation = get_object_or_404(OperationSortir, id=pk)
+
+    if request.method == 'POST':
+        # Récupérer les données du formulaire
+        date_de_sortie = request.POST.get('date')
+        designation = request.POST.get('designation')
+        quantite = request.POST.get('quantite')
+        prix_unitaire = request.POST.get('prixUnitaire')
+        beneficiaire_id = request.POST.get('beneficiaire')
+        fournisseur_id = request.POST.get('fournisseur')
+        categorie_id = request.POST.get('categorie')
+
+        # Mettre à jour les champs de l'opération
+        operation.date_de_sortie = date_de_sortie
+        operation.description = designation
+        operation.quantite = quantite
+        operation.montant = prix_unitaire  # En supposant que 'montant' correspond au prix unitaire
+        operation.beneficiaire_id = beneficiaire_id
+        operation.fournisseur_id = fournisseur_id
+        operation.categorie_id = categorie_id
+
+        # Sauvegarder les modifications
+        operation.save()
+        # Enregistrement de l'activité
+        UserActivity.objects.create(user=request.user, action='Modification', description='a modifier une opération sortie')
+        # Ajouter un message de succès
+        messages.success(request, "L'opération a été modifiée avec succès.")
+        # Rediriger vers la liste des sorties
+        return redirect(reverse('caisse:liste_sorties'))
+
+    # Préparer le contexte pour le template avec les options de sélection
+    context = {
+        'operation': operation,
+        'beneficiaires': Beneficiaire.objects.all(),
+        'fournisseurs': Fournisseur.objects.all(),
+        'categories_sortie': Categorie.objects.filter(type='sortie'),
+    }
+
+    # Rendre le template avec le contexte
+    return render(request, 'caisse/listes/modifier_sortie.html', context)
+
+#Suppression des entrées
+@login_required
+def supprimer_entree(request, pk):
     """
     Supprime une opération d'entrée ou de sortie en fonction de son ID.
     """
-    if type_operation == 'entree':
-        operation = get_object_or_404(OperationEntrer, id=operation_id)
-    else:
-        operation = get_object_or_404(OperationSortir, id=operation_id)
+
+    operation = OperationEntrer.objects.get(pk=pk)
     
     operation.delete()
+    UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé une opération entrée')
     messages.success(request, "L'opération a été supprimée avec succès.")
     
-    return redirect('listes')
+    return redirect('caisse:listes')
+
+#Suppression des sorties
+@login_required
+def supprimer_sortie(request, pk):
+    """
+    Supprime une opération d'entrée ou de sortie en fonction de son ID.
+    """
+
+    operation = OperationSortir.objects.get(pk=pk)
+    
+    operation.delete()
+    UserActivity.objects.create(user=request.user, action='Suprression', description='a supprimé une opération sortie')
+    messages.success(request, "L'opération a été supprimée avec succès.")
+    
+    return redirect('caisse:listes')
 
 # Add this new view
 @login_required
@@ -608,7 +728,10 @@ def creer_categorie(request):
     
     if not name or not type:
         return JsonResponse({'success': False, 'error': 'Nom et type sont requis'}, status=400)
-    
+    try:
+        UserActivity.objects.create(user=request.user, action='Création', description='a créé une nouvelle catégorie')
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
     categorie = Categorie.objects.create(name=name, description=description, type=type)
     
     return JsonResponse({
@@ -631,14 +754,15 @@ def editer_acteur(request, type_acteur, pk):
         form_class = FournisseurForm
     else:
         messages.error(request, "Type d'acteur non valide.")
-        return redirect('acteurs')
+        return redirect('caisse:acteurs')
 
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES, instance=acteur)
         if form.is_valid():
             form.save()
+            UserActivity.objects.create(user=request.user, action='Modification', description=f'a modifié un {type_acteur}')
             messages.success(request, f"{type_acteur.capitalize()} modifié avec succès.")
-            return redirect('acteurs')
+            return redirect('caisse:acteurs')
     else:
         form = form_class(instance=acteur)
 
@@ -657,7 +781,7 @@ def editer_categorie(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, "Catégorie modifiée avec succès.")
-            return redirect('acteurs')
+            return redirect('caisse:acteurs')
     else:
         form = CategorieForm(instance=categorie)
     
@@ -684,7 +808,7 @@ def creer_utilisateur(request):
     Crée un nouvel utilisateur.
     """
     if request.method != 'POST':
-        return redirect('utilisateurs')
+        return redirect('caisse:utilisateurs')
     
     try:
         # Récupérer les données du formulaire
@@ -699,11 +823,11 @@ def creer_utilisateur(request):
         # Vérifier si l'utilisateur existe déjà
         if User.objects.filter(username=username).exists():
             messages.error(request, "Un utilisateur avec ce nom d'utilisateur existe déjà")
-            return redirect('utilisateurs')
+            return redirect('caisse:utilisateurs')
             
         if User.objects.filter(email=email).exists():
             messages.error(request, "Un utilisateur avec cet email existe déjà")
-            return redirect('utilisateurs')
+            return redirect('caisse:utilisateurs')
         
         # Créer l'utilisateur
         user = User.objects.create_user(
@@ -722,11 +846,11 @@ def creer_utilisateur(request):
             user.save()
         
         messages.success(request, "Utilisateur créé avec succès")
-        return redirect('utilisateurs')
+        return redirect('caisse:utilisateurs')
         
     except Exception as e:
         messages.error(request, f"Erreur lors de la création de l'utilisateur: {str(e)}")
-        return redirect('utilisateurs')
+        return redirect('caisse:utilisateurs')
 
 @login_required
 @user_passes_test(is_admin)
@@ -777,7 +901,8 @@ def modifier_utilisateur(request, pk):
             user.photo = request.FILES['photo']
             
         user.save()
-        
+        # Enregistrement de l'activité
+        UserActivity.objects.create(user=request.user, action='Modification', description='a modifier un utilisateur')
         return JsonResponse({
             'success': True,
             'user': {
@@ -814,6 +939,7 @@ def supprimer_utilisateur(request, pk):
     
     try:
         user.delete()
+        UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé un utilisateur')
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
@@ -830,18 +956,347 @@ def editer_utilisateur(request, pk):
     
     return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
 
-def superuser_required(view_func):
-    return user_passes_test(lambda u: u.is_superuser)(view_func)
+@login_required
+def update_profile(request):
+    if request.method == 'POST':
+        user = request.user
+        
+        # Mise à jour des informations de base
+        user.first_name = request.POST.get('first_name', '')
+        user.last_name = request.POST.get('last_name', '')
+        user.email = request.POST.get('email', '')
+        user.phone = request.POST.get('phone', '')
 
-@superuser_required
-def historique(request):
+        # Gestion de la photo de profil
+        if 'photo' in request.FILES:
+            user.photo = request.FILES['photo']
+        
+        try:
+            user.save()
+            UserActivity.objects.create(user=request.user, action='Modification', description='a modifié son profil')
+            messages.success(request, 'Votre profil a été mis à jour avec succès.')
+        except Exception as e:
+            messages.error(request, f'Erreur lors de la mise à jour du profil: {str(e)}')
+        
+        return redirect('caisse:parametres')
+    
+    return redirect('caisse:parametres')
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        user = request.user
+        
+        # Vérification du mot de passe actuel
+        if not user.check_password(current_password):
+            messages.error(request, 'Le mot de passe actuel est incorrect.')
+            return redirect('caisse:parametres')
+        
+        # Vérification de la correspondance des nouveaux mots de passe
+        if new_password != confirm_password:
+            messages.error(request, 'Les nouveaux mots de passe ne correspondent pas.')
+            return redirect('caisse:parametres')
+        
+        # Mise à jour du mot de passe
+        try:
+            user.set_password(new_password)
+            user.save()
+            UserActivity.objects.create(user=request.user, action='Modification', description='a modifié son mot de passe')
+            update_session_auth_hash(request, user)  # Garde l'utilisateur connecté
+            messages.success(request, 'Votre mot de passe a été modifié avec succès.')
+        except Exception as e:
+            messages.error(request, f'Erreur lors du changement de mot de passe: {str(e)}')
+        
+        return redirect('caisse:parametres')
+    
+    return redirect('caisse:parametres')
+
+@login_required
+def liste_entrees(request):
     """
-    Affiche l'historique des activités de tous les utilisateurs (admin ou non)
+    Affiche la liste des opérations d'entrée.
     """
-    if request.user.is_superuser:
-        historique = OperationSortir.history.all()
-        return render(request, 'caisse/historique/historique.html', {'historique': historique})
+    # Récupérer les filtres de recherche et de triage
+    query = request.GET.get('q')
+    categorie_id = request.GET.get('categorie')
+    date_min = request.GET.get('date_min')
+    date_max = request.GET.get('date_max')
+    sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
+
+    # Filtrer les opérations d'entrée
+    entrees = OperationEntrer.objects.all()
+
+    if query:
+        entrees = entrees.filter(
+            Q(description__icontains=query) | 
+            Q(categorie__name__icontains=query) |
+            Q(montant__icontains=query) | 
+            Q(date_transaction__icontains=query)
+        )
+    if categorie_id:
+        entrees = entrees.filter(categorie_id=categorie_id)
+    if date_min:
+        entrees = entrees.filter(date_transaction__gte=date_min)
+    if date_max:
+        entrees = entrees.filter(date_transaction__lte=date_max)
+
+    # Appliquer le triage
+    entrees = entrees.order_by(sort_by)
+
+    # Récupérer uniquement les catégories de type "entrée" pour les options de filtrage
+    categories = Categorie.objects.filter(type="entree")
+
+    # Charger le template
+    template = loader.get_template('caisse/listes/entrees.html')
+    
+    lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 5
+    paginator = Paginator(entrees, lignes_par_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Contexte à passer au template
+    context = {
+        'page_obj': page_obj,
+        'categories': categories,
+        'prix': "Ar",
+        'sort_by': sort_by,
+        'lignes_par_page': lignes_par_page,
+    }
+    return HttpResponse(template.render(context, request))
+
+@login_required
+def liste_sorties(request):
+    """
+    Affiche la liste des opérations de sortie.
+    """
+    # Récupérer les filtres de recherche et de triage
+    query = request.GET.get('q')
+    categorie_id = request.GET.get('categorie')
+    beneficiaire_id = request.GET.get('beneficiaire')
+    fournisseur_id = request.GET.get('fournisseur')
+    date_min = request.GET.get('date_min')
+    date_max = request.GET.get('date_max')
+    sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
+
+    # Filtrer les opérations de sortie
+    sorties = OperationSortir.objects.all()
+
+    if query:
+        sorties = sorties.filter(
+            Q(description__icontains=query) | 
+            Q(categorie__name__icontains=query) |
+            Q(montant__icontains=query) | 
+            Q(date_de_sortie__icontains=query)
+        )
+    if categorie_id:
+        sorties = sorties.filter(categorie_id=categorie_id)
+    if beneficiaire_id:
+        sorties = sorties.filter(beneficiaire_id=beneficiaire_id)
+    if fournisseur_id:
+        sorties = sorties.filter(fournisseur_id=fournisseur_id)
+    if date_min:
+        sorties = sorties.filter(date_de_sortie__gte=date_min)
+    if date_max:
+        sorties = sorties.filter(date_de_sortie__lte=date_max)
+
+    # Appliquer le triage
+    sorties = sorties.order_by(sort_by)
+
+    # Récupérer uniquement les catégories de type "sortie" pour les options de filtrage
+    categories = Categorie.objects.filter(type="sortie")
+    beneficiaires = Beneficiaire.objects.all()
+    fournisseurs = Fournisseur.objects.all()
+
+    # Charger le template
+    template = loader.get_template('caisse/listes/sorties.html')
+
+    # Pagination
+    lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 5
+    paginator = Paginator(sorties, lignes_par_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    # Contexte à passer au template
+    context = {
+        'page_obj': page_obj,
+        'categories': categories,
+        'beneficiaires': beneficiaires,
+        'fournisseurs': fournisseurs,
+        'prix': "Ar",
+        'sort_by': sort_by,
+        'lignes_par_page': lignes_par_page,
+    }
+    return HttpResponse(template.render(context, request))
+
+
+#Pour générer un rapport en EXCEL (.xlsx)
+def generer_excel_operations(request):
+    # Vérifie si l'utilisateur souhaite exporter toutes les opérations ou seulement celles sélectionnées
+    if request.POST.get("export_all"):
+        operations_entrer = OperationEntrer.objects.all()
+        operations_sortir = OperationSortir.objects.all()
     else:
-        return redirect('index')
+        selected_ids = request.POST.getlist("selected_operations")
+        operations_entrer = OperationEntrer.objects.filter(id__in=selected_ids)
+        operations_sortir = OperationSortir.objects.filter(id__in=selected_ids)
+
+    # Création d'un nouveau classeur Excel
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Liste des Opérations"
+
+    # En-têtes
+    headers = ["Type", "Description", "Catégorie", "Bénéficiaire", "Fournisseur", "Date", "Quantité", "Montant"]
+    sheet.append(headers)
+
+    # Style des en-têtes
+    header_font = Font(bold=True, color="FFFFFF")
+    header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+    for col_num, header in enumerate(headers, 1):
+        cell = sheet.cell(row=1, column=col_num)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    # Définir la largeur des colonnes
+    column_widths = [10, 30, 15, 25, 20, 20, 15, 15]
+    for i, width in enumerate(column_widths, 1):
+        sheet.column_dimensions[get_column_letter(i)].width = width
+
+    # Fonction pour ajouter des opérations au fichier Excel
+    def ajouter_operations(operations, type_operation, avec_beneficiaire=False):
+        for operation in operations:
+            beneficiaire = operation.beneficiaire.name if avec_beneficiaire else "N/A"
+            fournisseur = operation.fournisseur.name if avec_beneficiaire else "N/A"
+            quantite = operation.quantite if avec_beneficiaire else "N/A"
+            date_str = operation.date.strftime('%d-%m-%Y')
+            row = [type_operation, operation.description, operation.categorie.name, beneficiaire, fournisseur, date_str, quantite, operation.montant]
+            sheet.append(row)
+
+    # Ajouter les opérations d'entrée et de sortie
+    ajouter_operations(operations_entrer, "Entrée")
+    ajouter_operations(operations_sortir, "Sortie", avec_beneficiaire=True)
+
+    # Nom du fichier avec la date et l'heure actuelles
+    now = datetime.now().strftime('%d-%m-%Y_%H-%M')
+    filename = f"rapport_operations_{now}.xlsx"
+
+    # Préparer la réponse HTTP
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    workbook.save(response)
+
+    return response
+
+def generer_excel_operations_entrees(request):
+    if request.POST.get("export_all"):
+        operations_entrer = OperationEntrer.objects.all()
+    else:
+        selected_ids = request.POST.getlist("selected_operations")
+        operations_entrer = OperationEntrer.objects.filter(id__in=selected_ids)
+
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Entrées"
+
+    headers = ["Description", "Catégorie", "Date", "Montant"]
+    sheet.append(headers)
+
+    for col_num, header in enumerate(headers, 1):
+        cell = sheet.cell(row=1, column=col_num)
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+        
+    # Définir la largeur des colonnes
+    column_widths = [10, 30, 15, 25, 20, 20, 15, 15]
+    for i, width in enumerate(column_widths, 1):
+        sheet.column_dimensions[get_column_letter(i)].width = width
 
 
+    for operation in operations_entrer:
+        row = [operation.description, operation.categorie.name, operation.date_transaction, operation.montant]
+        sheet.append(row)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    filename = f"entrees_{datetime.now().strftime('%d-%m-%Y_%H-%M')}.xlsx"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    workbook.save(response)
+    # Enregistrer l'activité de l'utilisateur
+    UserActivity.objects.create(
+        user=request.user,
+        activity_type="EXPORT",
+        description=f"Export Excel des opérations d'entrée"
+    )
+
+    return response
+
+def generer_excel_operations_sorties(request):
+    # Vérifier si l'utilisateur souhaite exporter toutes les opérations ou seulement celles sélectionnées
+    if request.POST.get("export_all"):
+        operations_sortie = OperationSortir.objects.all()
+    else:
+        selected_ids = request.POST.getlist("selected_operations")
+        operations_sortie = OperationSortir.objects.filter(id__in=selected_ids)
+
+    # Créer un nouveau classeur Excel
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Sorties"
+
+    # Définir les en-têtes
+    headers = ["Description", "Catégorie", "Bénéficiaire", "Fournisseur", "Date", "Quantité", "Montant"]
+    sheet.append(headers)
+
+    # Style des en-têtes
+    for col_num, header in enumerate(headers, 1):
+        cell = sheet.cell(row=1, column=col_num)
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    # Remplir les données des opérations de sortie
+    for operation in operations_sortie:
+        row = [
+            operation.description,
+            operation.categorie.name,
+            f"{operation.beneficiaire.personnel} {operation.beneficiaire.name}",
+            operation.fournisseur.name,
+            operation.date_de_sortie.strftime('%d-%m-%Y'),
+            operation.quantite,
+            operation.montant,
+        ]
+        sheet.append(row)
+
+    # Ajuster la largeur des colonnes
+    column_widths = [30, 20, 25, 25, 20, 10, 15]  # Largeurs ajustées
+    for i, width in enumerate(column_widths, 1):
+        sheet.column_dimensions[get_column_letter(i)].width = width
+
+    # Créer la réponse HTTP pour le fichier Excel
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    filename = f"sorties_{datetime.now().strftime('%d-%m-%Y_%H-%M')}.xlsx"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    workbook.save(response)
+    # Enregistrer l'activité de l'utilisateur
+    UserActivity.objects.create(
+        user=request.user,
+        activity_type="EXPORT",
+        description=f"Export Excel des opérations de sortie"
+    )
+
+    return response
+
+@login_required
+def historique(request):
+    # Si l'utilisateur est un administrateur, afficher toutes les activités
+    if request.user.is_staff:
+        historique = UserActivity.objects.all().order_by('-timestamp')
+    else:
+        # Sinon, afficher uniquement les activités de l'utilisateur connecté
+        historique = UserActivity.objects.filter(user=request.user).order_by('-timestamp')
+    
+    return render(request, 'caisse/historique/historique.html', {'historique': historique})
