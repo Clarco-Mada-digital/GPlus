@@ -1,9 +1,10 @@
 <!-- templates/acteurs/index.html -->
 {% extends 'layout/layout.html' %}
 
-{% block title %}Acteurs{% endblock %}
+{% block title_page %}Acteurs{% endblock %}
 
 {% block content %}
+
 <div x-data="{
     acteurType: 'employes',
     showForm: false,
@@ -228,7 +229,7 @@
     </div>
 
     <!-- Formulaire d'ajout -->
-    <div x-show="showForm" class="mb-8 bg-white p-6 rounded-2xl">
+    <div x-show="showForm" class="mb-8 bg-white dark:bg-secondary text-gray-700 dark:text-white p-6 rounded-2xl">
         <h2 class="text-2xl font-bold mb-4"
             x-text="acteurType === 'employes' ? 'Ajouter un employé' : 'Ajouter un fournisseur'"></h2>
         <form x-show="acteurType === 'employes'"
@@ -242,61 +243,61 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="last_name"
-                            class="block text-sm font-medium text-gray-700">Nom</label>
+                            class="block text-sm font-medium">Nom</label>
                         <input type="text" id="last_name" name="last_name"
                             required
-                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent">
                     </div>
                     <div>
                         <label for="first_name"
-                            class="block text-sm font-medium text-gray-700">Prénom</label>
+                            class="block text-sm font-medium">Prénom</label>
                         <input type="text" id="first_name" name="first_name"
                             required
-                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent">
                     </div>
                     <div>
                         <label for="email"
-                            class="block text-sm font-medium text-gray-700">Email</label>
+                            class="block text-sm font-medium">Email</label>
                         <input type="email" id="email" name="email" required
-                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent">
                     </div>
                     <div>
                         <label for="tel"
-                            class="block text-sm font-medium text-gray-700">Numéro
+                            class="block text-sm font-medium">Numéro
                             de téléphone</label>
                         <input type="tel" id="tel" name="tel" required
-                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent">
                     </div>
                     <div>
                         <label for="sexe"
-                            class="block text-sm font-medium text-gray-700">Sexe</label>
+                            class="block text-sm font-medium">Sexe</label>
                         <select id="sexe" name="sexe" required
-                            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white dark:bg-secondary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                             <option value="Homme">Homme</option>
                             <option value="Femme">Femme</option>
                         </select>
                     </div>
                     <div>
                         <label for="date_naissance"
-                            class="block text-sm font-medium text-gray-700">Date
+                            class="block text-sm font-medium">Date
                             de naissance</label>
                         <input type="date" id="date_naissance"
                             name="date_naissance" required
-                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent">
                     </div>
                     <div>
                         <label for="adresse"
-                            class="block text-sm font-medium text-gray-700">Adresse</label>
+                            class="block text-sm font-medium">Adresse</label>
                         <input type="text" id="adresse" name="adresse"
-                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent">
                     </div>
                     <div>
                         <label for="type_personnel"
-                            class="block text-sm font-medium text-gray-700">Type
+                            class="block text-sm font-medium">Type
                             de personnel</label>
                         <select id="type_personnel" name="type_personnel"
                             required
-                            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white dark:bg-secondary rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                             <option value="Salarié">Salarié</option>
                             <option value="Bénévole">Bénévole</option>
                             <option value="Freelance">Freelance</option>
@@ -305,7 +306,7 @@
                     </div>
                     <div class="col-span-2">
                         <label for="photo"
-                            class="block text-sm font-medium text-gray-700">Photo</label>
+                            class="block text-sm font-medium">Photo</label>
                         <input type="file" id="photo" name="photo"
                             class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                     </div>
@@ -314,7 +315,7 @@
 
             <div class="mt-4 flex justify-end space-x-2">
                 <button type="button" @click="showForm = false"
-                    class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 hover:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Annuler
                 </button>
                 <button type="submit"
@@ -334,22 +335,22 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="name"
-                            class="block text-sm font-medium text-gray-700">Nom</label>
+                            class="block text-sm font-medium text-gray-700 dark:text-white">Nom</label>
                         <input type="text" id="name" name="name" required
-                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent">
                     </div>
                     <div>
                         <label for="contact"
-                            class="block text-sm font-medium text-gray-700">Contact</label>
+                            class="block text-sm font-medium text-gray-700 dark:text-white">Contact</label>
                         <input type="tel" id="contact" name="contact" required
-                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent">
                     </div>
                 </div>
             </div>
 
             <div class="mt-4 flex justify-end space-x-2">
                 <button type="button" @click="showForm = false"
-                    class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-50 hover:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Annuler
                 </button>
                 <button type="submit"
@@ -366,12 +367,12 @@
         <template x-for="acteur in personnels" :key="acteur.id">
 
             <div
-                class="bg-white rounded-2xl p-6 flex flex-col items-center">
+                class="bg-white dark:bg-secondary rounded-2xl p-6 flex flex-col items-center">
                 <img
                     :src="acteur.photo ? '/media/' + acteur.photo : '/media/photos/pdp_defaut.png'"
                     :alt="acteur.last_name"
                     class="w-24 h-24 rounded-full mb-4 object-cover">
-                <h2 class="text-xl font-semibold mb-2 text-gray-800"
+                <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white"
                     x-text="acteur.first_name + ' ' + acteur.last_name"></h2>
                 <p class="text-gray-400 mb-2" x-text="acteur.tel"></p>
                 <p class="text-gray-400" x-text="acteur.email"></p>
@@ -403,10 +404,10 @@
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <template x-for="acteur in fournisseurs" :key="acteur.id">
             <div
-                class="bg-white rounded-2xl p-6 flex flex-col items-center">
+                class="bg-white dark:bg-secondary rounded-2xl p-6 flex flex-col items-center">
                 <h2 class="text-xl font-semibold mb-2"
                     x-text="acteur.name"></h2>
-                <p class="text-gray-600 mb-2" x-text="acteur.contact"></p>
+                <p class="text-gray-600 dark:text-white mb-2" x-text="acteur.contact"></p>
                 <div class="mt-4 flex space-x-2">
                     <a
                         :href="'/caisse/acteurs/editer/fournisseur/' + acteur.id + '/'"
@@ -454,33 +455,33 @@
 
         <!-- Formulaire d'ajout de catégorie -->
         <div x-show="showCategorieForm"
-            class="my-8 bg-white p-6 rounded-2xl">
+            class="my-8 bg-white text-gray-700 dark:text-white dark:bg-secondary p-6 rounded-2xl">
             <h2 class="text-2xl font-bold mb-4"
                 x-text="editingCategorie ? 'Modifier la catégorie' : 'Ajouter une nouvelle catégorie'"></h2>
             <form @submit.prevent="submitCategorie">
                 <div class="grid grid-cols-1 gap-4">
                     <div>
                         <label for="categorie_name"
-                            class="block text-sm font-medium text-gray-700">Nom
+                            class="block text-sm font-medium ">Nom
                             de
                             la catégorie</label>
                         <input type="text" id="categorie_name"
                             x-model="categorieForm.name" required
-                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent">
                     </div>
                     <div>
                         <label for="categorie_description"
-                            class="block text-sm font-medium text-gray-700">Description</label>
+                            class="block text-sm font-medium">Description</label>
                         <textarea id="categorie_description"
                             x-model="categorieForm.description"
-                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
+                            class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent"></textarea>
                     </div>
                     <div>
                         <label for="categorie_type"
-                            class="block text-sm font-medium text-gray-700">Type</label>
+                            class="block text-sm font-medium">Type</label>
                         <select id="categorie_type" x-model="categorieForm.type"
                             required
-                            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white dark:bg-gray-500 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                             <option value="entree">Entrée</option>
                             <option value="sortie">Sortie</option>
                         </select>
@@ -488,7 +489,7 @@
                 </div>
                 <div class="mt-4 flex justify-end space-x-2">
                     <button type="button" @click="closeCategorieForm"
-                        class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 dark:text-white hover:text-black hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         Annuler
                     </button>
                     <button type="submit"
@@ -504,16 +505,16 @@
                 class=" ">
                 <h3
                     class="text-xl font-semibold mb-4 bg-white rounded-2xl p-3 w-fit">Entrées</h3>
-                <ul class="space-y-3 bg-white rounded-2xl p-6">
+                <ul class="space-y-3 bg-white dark:bg-secondary rounded-2xl p-6">
                     <template x-for="categorie in categories.entrees"
                         :key="categorie.id">
                         <li
-                            class="flex items-center justify-between bg-gray-100 rounded-md p-2 ">
+                            class="flex items-center justify-between bg-gray-100 dark:bg-gray-500 rounded-md p-2 ">
                             <span x-text="categorie.name"></span>
                             <div class="flex space-x-2">
                                 <a
                                     :href="'/caisse/categories/editer/' + categorie.id + '/'"
-                                    class="text-gray-600 hover:text-primary">
+                                    class="text-gray-600 dark:text-white hover:text-primary">
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="h-5 w-5" viewBox="0 0 20 20"
                                         fill="currentColor">
@@ -541,11 +542,11 @@
                 class=" ">
                 <h3
                     class="text-xl font-semibold mb-4 bg-white rounded-2xl p-3 w-fit">Sorties</h3>
-                <ul class="space-y-3 bg-white rounded-2xl p-6">
+                <ul class="space-y-3 bg-white dark:bg-secondary rounded-2xl p-6">
                     <template x-for="categorie in categories.sorties"
                         :key="categorie.id">
                         <li
-                            class="flex items-center justify-between bg-gray-100 p-2 rounded-md">
+                            class="flex items-center justify-between bg-gray-100 dark:bg-gray-500 p-2 rounded-md">
                             <span x-text="categorie.name"></span>
                             <div class="flex space-x-2">
                                 <a

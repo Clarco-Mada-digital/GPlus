@@ -21,12 +21,13 @@ from accounts.views import signIn
 from caisse.views import index
 from django.conf import settings
 from django.conf.urls.static import static
-
+from theme.views import change_theme
 
 
 urlpatterns = [
     path('', signIn, name='signIn'),
     path('admin/', admin.site.urls),
+    path('switch-theme/', change_theme, name='change_theme'),
     path('caisse/', include("caisse.urls")),
     path('accounts/', include("accounts.urls")),
     path("__reload__/", include("django_browser_reload.urls")),

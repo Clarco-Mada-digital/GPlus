@@ -1,15 +1,15 @@
 {% extends 'layout/layout.html' %}
 
-{% block title %}Modifier Catégorie{% endblock %}
+{% block title_page %}Modifier Catégorie{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-8">Modifier Catégorie</h1>
-    <form method="post" class="bg-white border rounded px-8 pt-6 pb-8 mb-4">
+    <form method="post" class="bg-white text-gray-700 dark:bg-secondary dark:text-white border rounded px-8 pt-6 pb-8 mb-4">
         {% csrf_token %}
         {% for field in form %}
         <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2"
+            <label class="block text-sm font-bold mb-2"
                 for="{{ field.id_for_label }}">
                 {{ field.label }}
             </label>
