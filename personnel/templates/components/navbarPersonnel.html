@@ -1,0 +1,447 @@
+<!-- Conteneur du menu -->
+<!-- Conteneur du menu petit ecran -->
+<nav id="nav" class="flex fixed top-0 w-full bg-cp_secondary gap-20 dark:bg-gray-700 z-40 xl:hidden">
+        <!-- Bouton Hamburger -->
+            <button id="hamburger-btn" class="flex p-4  focus:outline-none top-4 left-4">
+                <img src="/static/images/Employee/logo.png" alt="logo image" class="h-6 w-6">
+                <h1 class="block py-1 px-2 text-sm font-bold">G plus</h1>
+            </button>
+        
+            <!-- Menu de l'utilisateur à droite -->
+            <ul class="flex flex-col absolute right-4 top-1 items-center border border-gray/75 p-2 rounded-lg text-sm space-x-2 w-[182px]">
+                <li class=" flex items-center">
+                    <img src="{{user.photo.url}}" alt="photo de profil" class="h-6 w-6 rounded-full mr-2"> <!-- Photo de l'utilisateur -->
+                    {% comment %} <p>{{user.photo.url}}</p>  {% endcomment %}
+                    <div class="flex flex-col w-[150px] overflow-hidden" >
+                        <p class="text-sm">{{user.username}}</p>
+                        <p class="text-xs text-gray-600">{{user.employee.poste}}</p>
+                    </div>
+                    <button id="dropdown-btn">
+                        <img src="/static/images/Employee/Huge-icon/arrows/outline/direction-down 01.svg" class="h-4 w-auto" alt="down arrow">
+                    </button>
+                    
+                    <!-- Menu déroulant -->
+                    <ul id="dropdown-menu" class="absolute -right-3 mt-[115px] mr-3  w-[181px] bg-white rounded-b shadow-lg text-sm hidden duration-300 z-10">
+                        <li class="block py-2 px-6 hover:bg-gray-200 cursor-pointer">
+                            <a href="{% url 'personnel:profile' %}" class="flex gap-2">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <ellipse cx="10.0003" cy="14.5837" rx="5.83333" ry="2.91667" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
+                                    <ellipse cx="10.0003" cy="5.83333" rx="3.33333" ry="3.33333" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
+                                    </svg>
+                                My Profile</a>
+                        </li>
+                        <li class="block py-2 px-6  hover:bg-gray-200 cursor-pointer">
+                            <a href="{% url 'accounts:logout' %}" class="text-red flex gap-2">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15 11.667L15.9596 10.7074C16.3501 10.3169 16.3501 9.68374 15.9596 9.29322L15 8.33366" stroke="#F45B69" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M15.833 10L10.833 10M3.33301 14.3886V6.05527M13.333 14.3886C13.333 15.3091 12.5868 16.0553 11.6663 16.0553H8.33301M13.333 6.05527C13.333 5.1348 12.5868 4.38861 11.6663 4.38861H8.33301M4.07517 16.5501L5.74184 17.6612C6.84943 18.3996 8.33301 17.6056 8.33301 16.2744V4.16947C8.33301 2.83831 6.84943 2.04432 5.74184 2.78272L4.07517 3.89383C3.61151 4.20294 3.33301 4.72333 3.33301 5.28058V15.1633C3.33301 15.7206 3.61151 16.2409 4.07517 16.5501Z" stroke="#F45B69" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                    Déconnexion</a>
+                        </li>
+                    </ul>
+                </li>
+                
+            </ul>
+        </nav>
+
+        <!-- grand écran -->
+        <nav id="nav" class="justify-between items-center fixed top-0 w-full  bg-cp_secondary rounded-lg shadow-lg hidden dark:bg-gray-700 z-40 xl:flex">
+            <!-- liste navigation -->
+            <div class="flex items-center text-sm">
+                <a href="#" class="py-2 px-4 flex items-center text-sm">
+                    <img src="/static/images/Employee/logo.png" alt="logo image" class="h-16 w-16">
+
+                    <h1 class="block py-1 px-2 text-lg font-bold">G plus</h1>
+                </a>
+            </div>
+
+            <ul class=" flex items-center gap-2 dark:text-white">
+                <li class="flex items-center text-sm">
+                    <a href="{% url 'personnel:dashboard' %}" class="py-2 px-4 hover:bg-indigo-500 rounded flex items-center text-sm gap-3 {% if request.resolver_match.url_name == 'dashboard' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500 {% endif %}">
+                        <svg width="24" height="24" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 3.9C1 2.57452 2.07452 1.5 3.4 1.5H8.2C9.52548 1.5 10.6 2.57452 10.6 3.9V8.7C10.6 10.0255 9.52548 11.1 8.2 11.1H3.4C2.07452 11.1 1 10.0255 1 8.7V3.9Z" stroke="#16151C" stroke-width="1.5"/>
+                            <path d="M25 6.3C25 8.95097 22.851 11.1 20.2 11.1C17.549 11.1 15.4 8.95097 15.4 6.3C15.4 3.64903 17.549 1.5 20.2 1.5C22.851 1.5 25 3.64903 25 6.3Z" stroke="#16151C" stroke-width="1.5"/>
+                            <path d="M10.6 20.7C10.6 23.351 8.45097 25.5 5.8 25.5C3.14903 25.5 1 23.351 1 20.7C1 18.049 3.14903 15.9 5.8 15.9C8.45097 15.9 10.6 18.049 10.6 20.7Z" stroke="#16151C" stroke-width="1.5"/>
+                            <path d="M15.4 18.3C15.4 16.9745 16.4745 15.9 17.8 15.9H22.6C23.9255 15.9 25 16.9745 25 18.3V23.1C25 24.4255 23.9255 25.5 22.6 25.5H17.8C16.4745 25.5 15.4 24.4255 15.4 23.1V18.3Z" stroke="#16151C" stroke-width="1.5"/>
+                        </svg>
+                        Tableau de bord
+                    </a>
+                </li>                
+                <li class="flex items-center text-sm">
+                    <a href="{% url 'personnel:employee-list' %}" class="py-2 px-4 hover:bg-indigo-500 rounded flex items-center text-sm {% if request.resolver_match.url_name == 'employee-list' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
+                        <svg width="24" height="24" viewBox="0 0 24 25" fill="#7152F3" xmlns="http://www.w3.org/2000/svg" >
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.75 8.5C9.75 7.25736 10.7574 6.25 12 6.25C13.2426 6.25 14.25 7.25736 14.25 8.5C14.25 9.74264 13.2426 10.75 12 10.75C10.7574 10.75 9.75 9.74264 9.75 8.5ZM12 4.75C9.92893 4.75 8.25 6.42893 8.25 8.5C8.25 10.5711 9.92893 12.25 12 12.25C14.0711 12.25 15.75 10.5711 15.75 8.5C15.75 6.42893 14.0711 4.75 12 4.75ZM6.75 16.5C6.75 16.1087 7.08671 15.5525 8.09277 15.0495C9.05397 14.5689 10.4343 14.25 12 14.25C13.5657 14.25 14.946 14.5689 15.9072 15.0495C16.9133 15.5525 17.25 16.1087 17.25 16.5C17.25 16.8913 16.9133 17.4475 15.9072 17.9505C14.946 18.4311 13.5657 18.75 12 18.75C10.4343 18.75 9.05397 18.4311 8.09277 17.9505C7.08671 17.4475 6.75 16.8913 6.75 16.5ZM12 12.75C10.252 12.75 8.63232 13.1027 7.42195 13.7079C6.25643 14.2906 5.25 15.2345 5.25 16.5C5.25 17.7655 6.25643 18.7094 7.42195 19.2921C8.63232 19.8973 10.252 20.25 12 20.25C13.748 20.25 15.3677 19.8973 16.5781 19.2921C17.7436 18.7094 18.75 17.7655 18.75 16.5C18.75 15.2345 17.7436 14.2906 16.5781 13.7079C15.3677 13.1027 13.748 12.75 12 12.75ZM6.38165 13.519C3.91199 13.6713 2 14.7241 2 16.0001C2 17.0521 3.29949 17.9523 5.13963 18.3213C4.72843 17.7645 4.5 17.1483 4.5 16.5001C4.5 15.3567 5.21076 14.3129 6.38165 13.519ZM19.5001 16.5001C19.5001 17.1483 19.2716 17.7645 18.8604 18.3213C20.7006 17.9523 22.0001 17.0521 22.0001 16.0001C22.0001 14.7241 20.0881 13.6713 17.6184 13.519C18.7893 14.3129 19.5001 15.3567 19.5001 16.5001ZM15.7183 11.0354C16.2115 10.3134 16.5 9.44039 16.5 8.5C16.5 8.18794 16.4682 7.8833 16.4077 7.58914C16.5949 7.5312 16.7938 7.5 17 7.5C18.1045 7.5 19 8.39543 19 9.5C19 10.6046 18.1045 11.5 17 11.5C16.5123 11.5 16.0653 11.3254 15.7183 11.0354ZM7 7.5C7.20619 7.5 7.40509 7.5312 7.59223 7.58914C7.53176 7.8833 7.5 8.18794 7.5 8.5C7.5 9.44039 7.78845 10.3134 8.28171 11.0354C7.93462 11.3254 7.4877 11.5 7 11.5C5.89543 11.5 5 10.6046 5 9.5C5 8.39543 5.89543 7.5 7 7.5Z" fill="#000000"/>
+                            </svg>Tout les employés
+                    </a>
+                </li>
+                <li class="flex items-center text-sm">
+                    <a href="{% url 'personnel:schedule-list' %}" class="py-2 px-4 hover:bg-indigo-500 rounded flex items-center text-sm {% if request.resolver_match.url_name == 'schedule-list' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 2V5" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 2V5" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 7.5C3 5.29086 4.79086 3.5 7 3.5H17C19.2091 3.5 21 5.29086 21 7.5V18C21 20.2091 19.2091 22 17 22H7C4.79086 22 3 20.2091 3 18V7.5Z" stroke="#16151C" stroke-width="1.5"/>
+                            <path d="M9 15L10.7528 16.4023C11.1707 16.7366 11.7777 16.6826 12.1301 16.2799L15 13" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 9H21" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            Calendrier
+                    </a>
+                </li>
+                <li class="flex items-center text-sm">
+                    <a href="{% url 'personnel:payroll-list' %}" class="py-2 px-4 hover:bg-indigo-500 rounded flex items-center text-sm {% if request.resolver_match.url_name == 'payroll-list' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="#16151C" stroke-width="1.5"/>
+                            <path d="M14 10C14 8.89543 13.1046 8 12 8C10.8954 8 10 8.89543 10 10C10 11.1046 10.8954 12 12 12" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M12 12C13.1046 12 14 12.8954 14 14C14 15.1046 13.1046 16 12 16C10.8954 16 10 15.1046 10 14" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M12 6.5V8" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 16V17.5" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Paie
+                    </a>
+                </li>
+                <li class="flex items-center text-sm">
+                    <a href="{% url 'personnel:conge-list' %}" class="py-2 px-4 hover:bg-indigo-500 rounded flex items-center text-sm {% if request.resolver_match.url_name == 'conge-list' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 10H16M8 14H16M8 18H12M8 4C8 5.10457 8.89543 6 10 6H14C15.1046 6 16 5.10457 16 4M8 4C8 2.89543 8.89543 2 10 2H14C15.1046 2 16 2.89543 16 4M8 4H7C4.79086 4 3 5.79086 3 8V18C3 20.2091 4.79086 22 7 22H17C19.2091 22 21 20.2091 21 18V8C21 5.79086 19.2091 4 17 4H16" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            Congés
+                    </a>
+                </li>
+                <li class="flex items-center text-sm">
+                    <a href="{% url 'personnel:settings' %}" class="py-2 px-4 hover:bg-indigo-500 rounded flex items-center text-sm {% if request.resolver_match.url_name == 'settings' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20.7439 15.7206L20.1043 15.3289V15.3289L20.7439 15.7206ZM19.7894 17.2794L20.429 17.6711V17.6711L19.7894 17.2794ZM3.25609 8.27942L2.61648 7.88775H2.61648L3.25609 8.27942ZM4.21064 6.72057L4.85025 7.11223L4.21064 6.72057ZM6.81852 6.06172L7.1771 5.403L7.1771 5.403L6.81852 6.06172ZM3.95487 10.7383L3.59629 11.397H3.59629L3.95487 10.7383ZM17.1815 17.9383L16.8229 18.597L16.8229 18.597L17.1815 17.9383ZM20.0451 13.2617L19.6866 13.9204V13.9205L20.0451 13.2617ZM4.21064 17.2794L3.57103 17.6711L3.57103 17.6711L4.21064 17.2794ZM3.25609 15.7206L3.8957 15.3289L3.8957 15.3289L3.25609 15.7206ZM19.7894 6.72058L20.429 6.32892V6.32892L19.7894 6.72058ZM20.7439 8.27943L20.1043 8.67109V8.67109L20.7439 8.27943ZM20.0451 10.7383L20.4037 11.397L20.0451 10.7383ZM17.1815 6.06174L17.5401 6.72046V6.72046L17.1815 6.06174ZM3.95487 13.2617L4.31345 13.9205H4.31345L3.95487 13.2617ZM6.81851 17.9383L6.45994 17.2795L6.45993 17.2795L6.81851 17.9383ZM17.08 6.11698L16.7214 5.45825L17.08 6.11698ZM6.92 6.11697L6.56142 6.77569L6.56142 6.77569L6.92 6.11697ZM17.08 17.883L17.4386 17.2243L17.4386 17.2243L17.08 17.883ZM6.92 17.883L7.27858 18.5418L7.27858 18.5418L6.92 17.883ZM11.0455 3.75H12.9545V2.25H11.0455V3.75ZM12.9545 20.25H11.0455V21.75H12.9545V20.25ZM11.0455 20.25C10.3631 20.25 9.88635 19.7389 9.88635 19.2H8.38635C8.38635 20.6493 9.61906 21.75 11.0455 21.75V20.25ZM14.1136 19.2C14.1136 19.7389 13.6369 20.25 12.9545 20.25V21.75C14.3809 21.75 15.6136 20.6493 15.6136 19.2H14.1136ZM12.9545 3.75C13.6369 3.75 14.1136 4.26107 14.1136 4.8H15.6136C15.6136 3.35071 14.3809 2.25 12.9545 2.25V3.75ZM11.0455 2.25C9.61906 2.25 8.38635 3.35071 8.38635 4.8H9.88635C9.88635 4.26107 10.3631 3.75 11.0455 3.75V2.25ZM20.1043 15.3289L19.1498 16.8878L20.429 17.6711L21.3835 16.1122L20.1043 15.3289ZM3.8957 8.67108L4.85025 7.11223L3.57103 6.32891L2.61648 7.88775L3.8957 8.67108ZM4.85025 7.11223C5.15889 6.6082 5.88055 6.40506 6.45993 6.72045L7.1771 5.403C5.93027 4.72428 4.31676 5.11109 3.57103 6.32891L4.85025 7.11223ZM4.31345 10.0795C3.75746 9.77688 3.6043 9.14696 3.8957 8.67108L2.61648 7.88775C1.85352 9.13373 2.32606 10.7055 3.59629 11.397L4.31345 10.0795ZM19.1498 16.8878C18.8411 17.3918 18.1195 17.5949 17.5401 17.2795L16.8229 18.597C18.0697 19.2757 19.6832 18.8889 20.429 17.6711L19.1498 16.8878ZM21.3835 16.1122C22.1465 14.8663 21.6739 13.2945 20.4037 12.603L19.6866 13.9205C20.2425 14.2231 20.3957 14.853 20.1043 15.3289L21.3835 16.1122ZM4.85025 16.8878L3.8957 15.3289L2.61648 16.1122L3.57103 17.6711L4.85025 16.8878ZM19.1498 7.11225L20.1043 8.67109L21.3835 7.88777L20.429 6.32892L19.1498 7.11225ZM20.1043 8.67109C20.3957 9.14697 20.2425 9.77689 19.6866 10.0795L20.4037 11.397C21.6739 10.7055 22.1465 9.13374 21.3835 7.88777L20.1043 8.67109ZM17.5401 6.72046C18.1195 6.40507 18.8411 6.60822 19.1498 7.11225L20.429 6.32892C19.6832 5.1111 18.0697 4.72429 16.8229 5.40301L17.5401 6.72046ZM3.8957 15.3289C3.6043 14.853 3.75746 14.2231 4.31345 13.9205L3.59629 12.603C2.32606 13.2945 1.85352 14.8663 2.61648 16.1122L3.8957 15.3289ZM3.57103 17.6711C4.31675 18.8889 5.93027 19.2757 7.1771 18.597L6.45993 17.2795C5.88055 17.5949 5.15889 17.3918 4.85025 16.8878L3.57103 17.6711ZM17.4386 6.7757L17.5401 6.72046L16.8229 5.40301L16.7214 5.45825L17.4386 6.7757ZM6.45993 6.72045L6.56142 6.77569L7.27858 5.45824L7.1771 5.403L6.45993 6.72045ZM17.5401 17.2795L17.4386 17.2243L16.7214 18.5417L16.8229 18.597L17.5401 17.2795ZM6.56142 17.2243L6.45994 17.2795L7.17709 18.597L7.27858 18.5418L6.56142 17.2243ZM3.59629 11.397C4.07404 11.6571 4.07404 12.3429 3.59629 12.603L4.31345 13.9205C5.83498 13.0922 5.83498 10.9078 4.31345 10.0795L3.59629 11.397ZM7.27858 18.5418C7.77798 18.2699 8.38635 18.6314 8.38635 19.2H9.88635C9.88635 17.4934 8.06035 16.4084 6.56142 17.2243L7.27858 18.5418ZM15.6136 19.2C15.6136 18.6314 16.222 18.2699 16.7214 18.5417L17.4386 17.2243C15.9397 16.4083 14.1136 17.4934 14.1136 19.2H15.6136ZM20.4037 12.603C19.926 12.3429 19.926 11.6571 20.4037 11.397L19.6866 10.0795C18.165 10.9078 18.165 13.0922 19.6866 13.9204L20.4037 12.603ZM6.56142 6.77569C8.06035 7.59165 9.88635 6.50663 9.88635 4.8H8.38635C8.38635 5.3686 7.77798 5.7301 7.27858 5.45824L6.56142 6.77569ZM16.7214 5.45825C16.222 5.73011 15.6136 5.36861 15.6136 4.8H14.1136C14.1136 6.50663 15.9397 7.59166 17.4386 6.7757L16.7214 5.45825ZM14.25 12C14.25 13.2426 13.2426 14.25 12 14.25V15.75C14.0711 15.75 15.75 14.0711 15.75 12H14.25ZM12 14.25C10.7574 14.25 9.75001 13.2426 9.75001 12H8.25001C8.25001 14.0711 9.92894 15.75 12 15.75V14.25ZM9.75001 12C9.75001 10.7574 10.7574 9.75 12 9.75V8.25C9.92894 8.25 8.25001 9.92893 8.25001 12H9.75001ZM12 9.75C13.2426 9.75 14.25 10.7574 14.25 12H15.75C15.75 9.92893 14.0711 8.25 12 8.25V9.75Z" fill="#16151C"/>
+                            </svg>
+                            Paramètres
+                    </a>
+                </li>
+                
+                {% comment %} <li>
+                    <div id="toggle-switch" class="flex m-4 items-center text-sm -space-x-1">
+                    <!-- Bouton pour le mode clair -->
+                    <button id="light-mode_xl" class="flex p-2 pr-6 bg-cp_primary text-white rounded-md shadow-lg gap-1" >
+                        <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2.5V3.5M12 21.5V22.5M19.0711 5.42894L18.364 6.13605M5.63605 18.864L4.92894 19.5711M22 12.5H21M3 12.5H2M19.071 19.5711L18.3639 18.864M5.63605 6.13605L4.92894 5.42894M18 12.5C18 15.8137 15.3137 18.5 12 18.5C8.68629 18.5 6 15.8137 6 12.5C6 9.18629 8.68629 6.5 12 6.5C15.3137 6.5 18 9.18629 18 12.5Z" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>                            
+                        <p class="mt-1 text-sm ">
+                            Clair
+                        </p>
+                    </button>
+                    <!-- Bouton pour le mode sombre -->
+                    <button id="dark-mode_xl" class="flex p-2 bg-gray-300 rounded-md shadow-lg text-black gap-1">
+                        <svg width="24" height="24" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.67163 15.3687C10.751 15.3687 14.8687 11.251 14.8687 6.17163C14.8687 5.24246 14.7309 4.34548 14.4746 3.5C18.251 4.64461 21 8.15276 21 12.303C21 17.3824 16.8824 21.5 11.803 21.5C7.65276 21.5 4.14461 18.751 3 14.9746C3.84548 15.2309 4.74246 15.3687 5.67163 15.3687Z" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
+                            </svg>                             
+                        <p class="mt-1 text-sm">
+                            Sombre
+                        </p>
+                    </button>
+                </div>
+            </li> {% endcomment %}
+
+            <li class="flex items-center text-sm">
+                <div class="block py-2 px-4  mr-2 bg-gray-300 justify-center rounded hover:bg-indigo-500">
+                <a href="{% url 'personnel:notifications_list' %}" class="">
+                    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5.67964 9.29403C6.05382 5.99085 8.77095 3.5 12 3.5C15.2291 3.5 17.9462 5.99085 18.3204 9.29403L18.6652 12.3385C18.7509 13.095 19.0575 13.8069 19.5445 14.38C20.5779 15.5964 19.7392 17.5 18.1699 17.5H5.83014C4.26081 17.5 3.42209 15.5964 4.45549 14.38C4.94246 13.8069 5.24906 13.095 5.33476 12.3385L5.67964 9.29403Z" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
+                        <path d="M15 19.5C14.5633 20.6652 13.385 21.5 12 21.5C10.615 21.5 9.43668 20.6652 9 19.5" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                </a>
+                </div>
+            </li>
+
+            <li class="flex items-center text-sm ">
+                <div class=" block py-2 px-4 mr-2 bg-gray-300 justify-center rounded hover:bg-indigo-500">
+                    <a href="{% url 'personnel:historique_list' %}">
+                        <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16.0859 17.1875L11.7188 12.8203V5.46875H13.2812V12.1719L17.1875 16.0859L16.0859 17.1875Z" fill="#16151C"/>
+                            <path d="M12.5 1.5625C11.0429 1.56271 9.60072 1.8553 8.25877 2.42294C6.91683 2.99058 5.70243 3.82174 4.6875 4.86719V1.5625H3.125V7.8125H9.375V6.25H5.53125C6.9969 4.62132 8.9867 3.55744 11.1551 3.24313C13.3235 2.92881 15.5335 3.38392 17.4012 4.52941C19.269 5.67489 20.6766 7.4384 21.3795 9.51364C22.0824 11.5889 22.0362 13.8448 21.249 15.8895C20.4617 17.9343 18.9832 19.6387 17.0701 20.7068C15.157 21.7749 12.9303 22.1392 10.7766 21.7364C8.62284 21.3336 6.67824 20.1892 5.28047 18.5019C3.88269 16.8146 3.12005 14.691 3.125 12.5H1.5625C1.5625 14.6632 2.20397 16.7779 3.4058 18.5765C4.60763 20.3752 6.31583 21.7771 8.3144 22.6049C10.313 23.4328 12.5121 23.6494 14.6338 23.2273C16.7555 22.8053 18.7043 21.7636 20.234 20.234C21.7636 18.7043 22.8053 16.7555 23.2273 14.6338C23.6494 12.5121 23.4328 10.313 22.6049 8.3144C21.7771 6.31583 20.3752 4.60763 18.5765 3.4058C16.7779 2.20397 14.6632 1.5625 12.5 1.5625Z" fill="#16151C"/>
+                            </svg>
+                            
+                          
+                          
+                    </a>
+                </div>
+            </li>
+        </ul>
+        
+
+        <div class=" flex items-center text-sm ">
+
+            <div class="flex items-center justify-center mx-4 mr-12">
+                <a href="{% url 'change_theme' %}" id="theme-toggle" class="bg-gray-300 dark:bg-gray-900 text-black dark:text-white/50 p-2 rounded-full hover:text-white smooth-hover">
+                {% if not is_dark_theme %}
+                <svg id="dark-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+                {% else %}
+                <svg id="light-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                {% endif %}
+                </a>
+            </div>
+
+
+            <div class="flex items-center relative right-11 text-sm border rounded border-gray/75 w-[168px] ">
+            <img src="{{user.photo.url}}" alt="" class="h-10 w-10 rounded-full mr-2"> <!-- Photo de l'utilisateur -->
+
+            <div class="flex flex-col w-[118px] overflow-hidden ">
+                <p class="text-sm ">{{user.username}}</p>
+                <p class="text-xs text-gray-600">{{user.employee.poste}}</p>
+            </div>
+            <button id="dropdown-btn_xl">
+                <img src="/static/images/Employee/Huge-icon/arrows/outline/direction-down 01.svg" class="h-4 w-auto" alt="down arrow">
+            </button>               
+            </div>
+            <ul id="dropdown-menu_xl" class="absolute right-4 mt-[130px] mr-[27px]  w-[168px] bg-white rounded-b shadow-lg hidden text-sm duration-300 z-40 dark:bg-gray-600">
+                <li class="block py-2 px-6 hover:bg-gray-200 cursor-pointer">
+                    <a href="{% url 'personnel:profile' %}" class="flex gap-2">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <ellipse cx="10.0003" cy="14.5837" rx="5.83333" ry="2.91667" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
+                            <ellipse cx="10.0003" cy="5.83333" rx="3.33333" ry="3.33333" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
+                            </svg>
+                        Mon Profil
+                    </a>
+                </li>
+                <li class="block py-2 px-6  hover:bg-gray-200 cursor-pointer">
+                    <a href="{% url 'accounts:logout' %}" class="text-red flex gap-2">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 11.667L15.9596 10.7074C16.3501 10.3169 16.3501 9.68374 15.9596 9.29322L15 8.33366" stroke="#F45B69" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M15.833 10L10.833 10M3.33301 14.3886V6.05527M13.333 14.3886C13.333 15.3091 12.5868 16.0553 11.6663 16.0553H8.33301M13.333 6.05527C13.333 5.1348 12.5868 4.38861 11.6663 4.38861H8.33301M4.07517 16.5501L5.74184 17.6612C6.84943 18.3996 8.33301 17.6056 8.33301 16.2744V4.16947C8.33301 2.83831 6.84943 2.04432 5.74184 2.78272L4.07517 3.89383C3.61151 4.20294 3.33301 4.72333 3.33301 5.28058V15.1633C3.33301 15.7206 3.61151 16.2409 4.07517 16.5501Z" stroke="#F45B69" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        Déconnexion
+                    </a>
+                </li>
+            </ul>
+        </div>
+                
+       
+        
+          
+        </nav>
+
+        <!-- Menu latéral -->
+        <nav id="menu" class="fixed top-0 left-0 h-full w-64 bg-cp_secondary text-black transform -translate-x-full transition-transform duration-300 z-40 scrolling-auto">
+            <!-- Flèche de fermeture en haut à droite du menu -->
+            <button id="close-btn" class="absolute top-4 right-4 text-cp_primary focus:outline-none">
+                <svg class="w-6 h-6 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19l7-7-7-7"></path>
+                </svg>
+                    
+            </button>
+
+            <ul class="p-6 space-y-8 ">               
+                <li class="flex gap-2">
+                    <a href="{% url 'personnel:dashboard' %}" class="py-2 px-4 hover:bg-indigo-500 rounded flex items-center {% if request.resolver_match.url_name == 'dashboard' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
+                        <svg width="24" height="24" viewBox="0 0 26 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 3.9C1 2.57452 2.07452 1.5 3.4 1.5H8.2C9.52548 1.5 10.6 2.57452 10.6 3.9V8.7C10.6 10.0255 9.52548 11.1 8.2 11.1H3.4C2.07452 11.1 1 10.0255 1 8.7V3.9Z" stroke="#16151C" stroke-width="1.5"/>
+                            <path d="M25 6.3C25 8.95097 22.851 11.1 20.2 11.1C17.549 11.1 15.4 8.95097 15.4 6.3C15.4 3.64903 17.549 1.5 20.2 1.5C22.851 1.5 25 3.64903 25 6.3Z" stroke="#16151C" stroke-width="1.5"/>
+                            <path d="M10.6 20.7C10.6 23.351 8.45097 25.5 5.8 25.5C3.14903 25.5 1 23.351 1 20.7C1 18.049 3.14903 15.9 5.8 15.9C8.45097 15.9 10.6 18.049 10.6 20.7Z" stroke="#16151C" stroke-width="1.5"/>
+                            <path d="M15.4 18.3C15.4 16.9745 16.4745 15.9 17.8 15.9H22.6C23.9255 15.9 25 16.9745 25 18.3V23.1C25 24.4255 23.9255 25.5 22.6 25.5H17.8C16.4745 25.5 15.4 24.4255 15.4 23.1V18.3Z" stroke="#16151C" stroke-width="1.5"/>
+                            </svg>
+                            Tableau de bord
+                    </a>                  
+                </li>
+                <li>
+                    <a href="{% url 'personnel:employee-list' %}" class="py-2 px-4 hover:bg-indigo-500 rounded flex items-center {% if request.resolver_match.url_name == 'employee-list' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
+                        <svg width="24" height="24" viewBox="0 0 24 25" fill="#7152F3" xmlns="http://www.w3.org/2000/svg" >
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.75 8.5C9.75 7.25736 10.7574 6.25 12 6.25C13.2426 6.25 14.25 7.25736 14.25 8.5C14.25 9.74264 13.2426 10.75 12 10.75C10.7574 10.75 9.75 9.74264 9.75 8.5ZM12 4.75C9.92893 4.75 8.25 6.42893 8.25 8.5C8.25 10.5711 9.92893 12.25 12 12.25C14.0711 12.25 15.75 10.5711 15.75 8.5C15.75 6.42893 14.0711 4.75 12 4.75ZM6.75 16.5C6.75 16.1087 7.08671 15.5525 8.09277 15.0495C9.05397 14.5689 10.4343 14.25 12 14.25C13.5657 14.25 14.946 14.5689 15.9072 15.0495C16.9133 15.5525 17.25 16.1087 17.25 16.5C17.25 16.8913 16.9133 17.4475 15.9072 17.9505C14.946 18.4311 13.5657 18.75 12 18.75C10.4343 18.75 9.05397 18.4311 8.09277 17.9505C7.08671 17.4475 6.75 16.8913 6.75 16.5ZM12 12.75C10.252 12.75 8.63232 13.1027 7.42195 13.7079C6.25643 14.2906 5.25 15.2345 5.25 16.5C5.25 17.7655 6.25643 18.7094 7.42195 19.2921C8.63232 19.8973 10.252 20.25 12 20.25C13.748 20.25 15.3677 19.8973 16.5781 19.2921C17.7436 18.7094 18.75 17.7655 18.75 16.5C18.75 15.2345 17.7436 14.2906 16.5781 13.7079C15.3677 13.1027 13.748 12.75 12 12.75ZM6.38165 13.519C3.91199 13.6713 2 14.7241 2 16.0001C2 17.0521 3.29949 17.9523 5.13963 18.3213C4.72843 17.7645 4.5 17.1483 4.5 16.5001C4.5 15.3567 5.21076 14.3129 6.38165 13.519ZM19.5001 16.5001C19.5001 17.1483 19.2716 17.7645 18.8604 18.3213C20.7006 17.9523 22.0001 17.0521 22.0001 16.0001C22.0001 14.7241 20.0881 13.6713 17.6184 13.519C18.7893 14.3129 19.5001 15.3567 19.5001 16.5001ZM15.7183 11.0354C16.2115 10.3134 16.5 9.44039 16.5 8.5C16.5 8.18794 16.4682 7.8833 16.4077 7.58914C16.5949 7.5312 16.7938 7.5 17 7.5C18.1045 7.5 19 8.39543 19 9.5C19 10.6046 18.1045 11.5 17 11.5C16.5123 11.5 16.0653 11.3254 15.7183 11.0354ZM7 7.5C7.20619 7.5 7.40509 7.5312 7.59223 7.58914C7.53176 7.8833 7.5 8.18794 7.5 8.5C7.5 9.44039 7.78845 10.3134 8.28171 11.0354C7.93462 11.3254 7.4877 11.5 7 11.5C5.89543 11.5 5 10.6046 5 9.5C5 8.39543 5.89543 7.5 7 7.5Z" fill="#000000"/>
+                            </svg>Tout les employés                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'personnel:schedule-list' %}" class="py-2 px-4 hover:bg-indigo-500 rounded flex items-center {% if request.resolver_match.url_name == 'schedule-list' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 2V5" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 2V5" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 7.5C3 5.29086 4.79086 3.5 7 3.5H17C19.2091 3.5 21 5.29086 21 7.5V18C21 20.2091 19.2091 22 17 22H7C4.79086 22 3 20.2091 3 18V7.5Z" stroke="#16151C" stroke-width="1.5"/>
+                            <path d="M9 15L10.7528 16.4023C11.1707 16.7366 11.7777 16.6826 12.1301 16.2799L15 13" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 9H21" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            Calendrier                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'personnel:payroll-list' %}" class="py-2 px-4 hover:bg-indigo-500 rounded flex items-center {% if request.resolver_match.url_name == 'payroll-list' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="#16151C" stroke-width="1.5"/>
+                            <path d="M14 10C14 8.89543 13.1046 8 12 8C10.8954 8 10 8.89543 10 10C10 11.1046 10.8954 12 12 12" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M12 12C13.1046 12 14 12.8954 14 14C14 15.1046 13.1046 16 12 16C10.8954 16 10 15.1046 10 14" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M12 6.5V8" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 16V17.5" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Paie                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'personnel:conge-list' %}" class="py-2 px-4 hover:bg-indigo-500 rounded flex items-center {% if request.resolver_match.url_name == 'conge-list' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 10H16M8 14H16M8 18H12M8 4C8 5.10457 8.89543 6 10 6H14C15.1046 6 16 5.10457 16 4M8 4C8 2.89543 8.89543 2 10 2H14C15.1046 2 16 2.89543 16 4M8 4H7C4.79086 4 3 5.79086 3 8V18C3 20.2091 4.79086 22 7 22H17C19.2091 22 21 20.2091 21 18V8C21 5.79086 19.2091 4 17 4H16" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            Congés                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'personnel:settings' %}" class="py-2 px-4 hover:bg-indigo-500 rounded flex items-center {% if request.resolver_match.url_name == 'settings' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20.7439 15.7206L20.1043 15.3289V15.3289L20.7439 15.7206ZM19.7894 17.2794L20.429 17.6711V17.6711L19.7894 17.2794ZM3.25609 8.27942L2.61648 7.88775H2.61648L3.25609 8.27942ZM4.21064 6.72057L4.85025 7.11223L4.21064 6.72057ZM6.81852 6.06172L7.1771 5.403L7.1771 5.403L6.81852 6.06172ZM3.95487 10.7383L3.59629 11.397H3.59629L3.95487 10.7383ZM17.1815 17.9383L16.8229 18.597L16.8229 18.597L17.1815 17.9383ZM20.0451 13.2617L19.6866 13.9204V13.9205L20.0451 13.2617ZM4.21064 17.2794L3.57103 17.6711L3.57103 17.6711L4.21064 17.2794ZM3.25609 15.7206L3.8957 15.3289L3.8957 15.3289L3.25609 15.7206ZM19.7894 6.72058L20.429 6.32892V6.32892L19.7894 6.72058ZM20.7439 8.27943L20.1043 8.67109V8.67109L20.7439 8.27943ZM20.0451 10.7383L20.4037 11.397L20.0451 10.7383ZM17.1815 6.06174L17.5401 6.72046V6.72046L17.1815 6.06174ZM3.95487 13.2617L4.31345 13.9205H4.31345L3.95487 13.2617ZM6.81851 17.9383L6.45994 17.2795L6.45993 17.2795L6.81851 17.9383ZM17.08 6.11698L16.7214 5.45825L17.08 6.11698ZM6.92 6.11697L6.56142 6.77569L6.56142 6.77569L6.92 6.11697ZM17.08 17.883L17.4386 17.2243L17.4386 17.2243L17.08 17.883ZM6.92 17.883L7.27858 18.5418L7.27858 18.5418L6.92 17.883ZM11.0455 3.75H12.9545V2.25H11.0455V3.75ZM12.9545 20.25H11.0455V21.75H12.9545V20.25ZM11.0455 20.25C10.3631 20.25 9.88635 19.7389 9.88635 19.2H8.38635C8.38635 20.6493 9.61906 21.75 11.0455 21.75V20.25ZM14.1136 19.2C14.1136 19.7389 13.6369 20.25 12.9545 20.25V21.75C14.3809 21.75 15.6136 20.6493 15.6136 19.2H14.1136ZM12.9545 3.75C13.6369 3.75 14.1136 4.26107 14.1136 4.8H15.6136C15.6136 3.35071 14.3809 2.25 12.9545 2.25V3.75ZM11.0455 2.25C9.61906 2.25 8.38635 3.35071 8.38635 4.8H9.88635C9.88635 4.26107 10.3631 3.75 11.0455 3.75V2.25ZM20.1043 15.3289L19.1498 16.8878L20.429 17.6711L21.3835 16.1122L20.1043 15.3289ZM3.8957 8.67108L4.85025 7.11223L3.57103 6.32891L2.61648 7.88775L3.8957 8.67108ZM4.85025 7.11223C5.15889 6.6082 5.88055 6.40506 6.45993 6.72045L7.1771 5.403C5.93027 4.72428 4.31676 5.11109 3.57103 6.32891L4.85025 7.11223ZM4.31345 10.0795C3.75746 9.77688 3.6043 9.14696 3.8957 8.67108L2.61648 7.88775C1.85352 9.13373 2.32606 10.7055 3.59629 11.397L4.31345 10.0795ZM19.1498 16.8878C18.8411 17.3918 18.1195 17.5949 17.5401 17.2795L16.8229 18.597C18.0697 19.2757 19.6832 18.8889 20.429 17.6711L19.1498 16.8878ZM21.3835 16.1122C22.1465 14.8663 21.6739 13.2945 20.4037 12.603L19.6866 13.9205C20.2425 14.2231 20.3957 14.853 20.1043 15.3289L21.3835 16.1122ZM4.85025 16.8878L3.8957 15.3289L2.61648 16.1122L3.57103 17.6711L4.85025 16.8878ZM19.1498 7.11225L20.1043 8.67109L21.3835 7.88777L20.429 6.32892L19.1498 7.11225ZM20.1043 8.67109C20.3957 9.14697 20.2425 9.77689 19.6866 10.0795L20.4037 11.397C21.6739 10.7055 22.1465 9.13374 21.3835 7.88777L20.1043 8.67109ZM17.5401 6.72046C18.1195 6.40507 18.8411 6.60822 19.1498 7.11225L20.429 6.32892C19.6832 5.1111 18.0697 4.72429 16.8229 5.40301L17.5401 6.72046ZM3.8957 15.3289C3.6043 14.853 3.75746 14.2231 4.31345 13.9205L3.59629 12.603C2.32606 13.2945 1.85352 14.8663 2.61648 16.1122L3.8957 15.3289ZM3.57103 17.6711C4.31675 18.8889 5.93027 19.2757 7.1771 18.597L6.45993 17.2795C5.88055 17.5949 5.15889 17.3918 4.85025 16.8878L3.57103 17.6711ZM17.4386 6.7757L17.5401 6.72046L16.8229 5.40301L16.7214 5.45825L17.4386 6.7757ZM6.45993 6.72045L6.56142 6.77569L7.27858 5.45824L7.1771 5.403L6.45993 6.72045ZM17.5401 17.2795L17.4386 17.2243L16.7214 18.5417L16.8229 18.597L17.5401 17.2795ZM6.56142 17.2243L6.45994 17.2795L7.17709 18.597L7.27858 18.5418L6.56142 17.2243ZM3.59629 11.397C4.07404 11.6571 4.07404 12.3429 3.59629 12.603L4.31345 13.9205C5.83498 13.0922 5.83498 10.9078 4.31345 10.0795L3.59629 11.397ZM7.27858 18.5418C7.77798 18.2699 8.38635 18.6314 8.38635 19.2H9.88635C9.88635 17.4934 8.06035 16.4084 6.56142 17.2243L7.27858 18.5418ZM15.6136 19.2C15.6136 18.6314 16.222 18.2699 16.7214 18.5417L17.4386 17.2243C15.9397 16.4083 14.1136 17.4934 14.1136 19.2H15.6136ZM20.4037 12.603C19.926 12.3429 19.926 11.6571 20.4037 11.397L19.6866 10.0795C18.165 10.9078 18.165 13.0922 19.6866 13.9204L20.4037 12.603ZM6.56142 6.77569C8.06035 7.59165 9.88635 6.50663 9.88635 4.8H8.38635C8.38635 5.3686 7.77798 5.7301 7.27858 5.45824L6.56142 6.77569ZM16.7214 5.45825C16.222 5.73011 15.6136 5.36861 15.6136 4.8H14.1136C14.1136 6.50663 15.9397 7.59166 17.4386 6.7757L16.7214 5.45825ZM14.25 12C14.25 13.2426 13.2426 14.25 12 14.25V15.75C14.0711 15.75 15.75 14.0711 15.75 12H14.25ZM12 14.25C10.7574 14.25 9.75001 13.2426 9.75001 12H8.25001C8.25001 14.0711 9.92894 15.75 12 15.75V14.25ZM9.75001 12C9.75001 10.7574 10.7574 9.75 12 9.75V8.25C9.92894 8.25 8.25001 9.92893 8.25001 12H9.75001ZM12 9.75C13.2426 9.75 14.25 10.7574 14.25 12H15.75C15.75 9.92893 14.0711 8.25 12 8.25V9.75Z" fill="#16151C"/>
+                            </svg>
+                            Paramètres                    </a>
+                </li>
+                
+                <li>
+                    <a href="{% url 'personnel:historique_list' %}" class="py-2 px-4 hover:bg-indigo-500 rounded flex items-center {% if request.resolver_match.url_name == 'notifications_list' %}bg-gray-400 text-cp_primary{% else %}hover:bg-indigo-500{% endif %}">
+                        <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.67964 9.29403C6.05382 5.99085 8.77095 3.5 12 3.5C15.2291 3.5 17.9462 5.99085 18.3204 9.29403L18.6652 12.3385C18.7509 13.095 19.0575 13.8069 19.5445 14.38C20.5779 15.5964 19.7392 17.5 18.1699 17.5H5.83014C4.26081 17.5 3.42209 15.5964 4.45549 14.38C4.94246 13.8069 5.24906 13.095 5.33476 12.3385L5.67964 9.29403Z" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
+                            <path d="M15 19.5C14.5633 20.6652 13.385 21.5 12 21.5C10.615 21.5 9.43668 20.6652 9 19.5" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg> Notifications
+                    </a>
+                </li>
+                <div id="toggle-switch" class="flex m-4 items-center -space-x-1">
+                    <!-- Bouton pour le mode clair -->
+                    <button id="light-mode" class="flex p-2 pr-6 bg-cp_primary text-white rounded-md shadow-lg gap-1" >
+                        <img src="/static/images/Employee/Huge-icon/weather/outline/sun.svg" alt="Sun Icon" class="w-6 h-6">
+                        <p class="mt-1 text-sm ">
+                            Clair
+                        </p>
+                    </button>
+                    <!-- Bouton pour le mode sombre -->
+                    <button id="dark-mode" class="flex p-2 bg-gray-600 rounded-md shadow-lg text-black gap-1">
+                        <img src="/static/images/Employee/Huge-icon/weather/outline/half moon.svg" alt="Moon Icon" class="w-6 h-6"> 
+                        <p class="mt-1 text-sm">
+                            Sombre
+                        </p>
+                    </button>
+                </div>
+            </ul>
+        </nav>
+
+
+<script>
+        //Script pour gérer le menu 
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const closeBtn = document.getElementById('close-btn');
+        const menu = document.getElementById('menu');
+        const nav = document.getElementById('nav');
+
+        // Ouvrir le menu et cacher le nav
+        hamburgerBtn.addEventListener('click', function() {
+            menu.classList.remove('-translate-x-full');  // Affiche le menu
+            nav.classList.add('hidden');  // Cache le nav
+        });
+
+        // Fermer le menu et réafficher le nav
+        closeBtn.addEventListener('click', function() {
+            menu.classList.add('-translate-x-full');  // Masque le menu
+            nav.classList.remove('hidden');  // Affiche le nav
+        });
+
+         //  Fermer le menu si on clique en dehors
+        window.addEventListener('click', function(e) {
+            if (!hamburgerBtn.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.add('-translate-x-full');
+                nav.classList.remove('hidden');
+            }
+        });
+    
+
+        // Fixation du nav-bar
+        let lastScrollTop = 0;
+
+         window.addEventListener("scroll", function() {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop; // Position actuelle du défilement
+
+            // Vérifie si l'utilisateur défile vers le bas ou vers le haut
+            if (currentScroll > lastScrollTop) {
+                // Défilement vers le bas
+                nav.classList.add("hidden"); // Cache le navbar
+            } else {
+                // Défilement vers le haut
+                nav.classList.remove("hidden"); // Affiche le navbar
+            }
+
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // Mise à jour de la position de défilement précédente
+        });
+
+        // menu deroulant du profil utilisateur
+         // Récupérer le bouton et le menu
+    const dropdownBtn = document.getElementById('dropdown-btn');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+
+    // Ajouter un event listener pour gérer le clic
+    dropdownBtn.addEventListener('click', function() {
+        // Vérifier si le menu est déjà visible
+        if (dropdownMenu.classList.contains('hidden')) {
+            // Montrer le menu déroulant
+            dropdownMenu.classList.remove('hidden');
+        } else {
+            // Cacher le menu déroulant
+            dropdownMenu.classList.add('hidden');
+        }
+    });
+
+        // menu deroulant du profil utilisateur
+         // Récupérer le bouton et le menu
+         const dropdownBtn_xl = document.getElementById('dropdown-btn_xl');
+    const dropdownMenu_xl = document.getElementById('dropdown-menu_xl');
+
+    // Ajouter un event listener pour gérer le clic
+    dropdownBtn_xl.addEventListener('click', function() {
+        // Vérifier si le menu est déjà visible
+        if (dropdownMenu_xl.classList.contains('hidden')) {
+            // Montrer le menu déroulant
+            dropdownMenu_xl.classList.remove('hidden');
+        } else {
+            // Cacher le menu déroulant
+            dropdownMenu_xl.classList.add('hidden');
+        }
+    });
+
+    //  Fermer le menu si on clique en dehors
+    window.addEventListener('click', function(e) {
+        if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.add('hidden');
+        }
+    });
+    
+    //Btn switch mode
+    const lightModeButton = document.getElementById('light-mode');
+        const darkModeButton = document.getElementById('dark-mode');
+
+        lightModeButton.addEventListener('click', function() {
+            // Rendre le bouton Light actif et le bouton Dark inactif
+            lightModeButton.classList.add('bg-cp_primary', 'text-white' );
+            lightModeButton.classList.remove('bg-gray-600', 'text-black');
+
+            darkModeButton.classList.add('bg-gray-600', 'text-black');
+            darkModeButton.classList.remove('bg-cp_primary', 'text-white');
+        });
+
+        darkModeButton.addEventListener('click', function() {
+            // Rendre le bouton Dark actif et le bouton Light inactif
+            darkModeButton.classList.add('bg-cp_primary','text-white' );
+            darkModeButton.classList.remove('bg-gray-600','text-black' );
+
+            lightModeButton.classList.add('bg-gray-600', 'text-black');
+            lightModeButton.classList.remove('bg-cp_primary','text-white');
+        });
+
+         //Btn switch mode
+    const lightModeButton_xl = document.getElementById('light-mode_xl');
+        const darkModeButton_xl = document.getElementById('dark-mode_xl');
+
+        lightModeButton_xl.addEventListener('click', function() {
+            // Rendre le bouton Light actif et le bouton Dark inactif
+            lightModeButton_xl.classList.add('bg-cp_primary', 'text-white' );
+            lightModeButton_xl.classList.remove('bg-gray-300', 'text-black');
+
+            darkModeButton_xl.classList.add('bg-gray-300', 'text-black');
+            darkModeButton_xl.classList.remove('bg-cp_primary', 'text-white');
+        });
+
+        darkModeButton_xl.addEventListener('click', function() {
+            // Rendre le bouton Dark actif et le bouton Light inactif
+            darkModeButton_xl.classList.add('bg-cp_primary','text-white' );
+            darkModeButton_xl.classList.remove('bg-gray-300','text-black' );
+
+            lightModeButton_xl.classList.add('bg-gray-300', 'text-black');
+            lightModeButton_xl.classList.remove('bg-cp_primary','text-white');
+        });
+
+    </script>

@@ -1,0 +1,247 @@
+{% extends "base_primary_employee.html" %}
+
+{% block title %} Liste des Congés {% endblock %}
+
+{% block body %}
+
+<!-- Barre de recherche et bouton de filtrage -->
+<div class="flex justify-between w-screen items-center mt-14">
+    <div class="flex flex-row z-0 w-screen mb-4 ml-1">
+        <input type="text" id="search-conge" name="search-conge"
+            class="text-sm p-4 mt-8 w-full px-3 py-2 bg-cp_secondary border rounded-md focus:border-indigo-500"
+            placeholder="🔍 Recherche de congé" />
+    </div>
+    <div class="flex items-center justify-between mt-4">
+        <button onclick="togglePopup()"
+            class="flex gap-2 py-2 px-4 m-4 bg-white text-black text-xs rounded-md border-2 border-gray-200 duration-300 hover:scale-110">
+            <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3.5 6H10.5" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M3.5 12H12.5" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M19.5 12H21.5" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M14.5 6L21.5 6" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M13.5 18H20.5" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M3.5 18H6.5" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <circle cx="8.5" cy="18" r="2" stroke="#16151C" stroke-width="1.5" />
+                <circle cx="17.5" cy="12" r="2" stroke="#16151C" stroke-width="1.5" />
+                <circle cx="12.5" cy="6" r="2" stroke="#16151C" stroke-width="1.5" />
+            </svg>
+            <p class="mt-1 hidden md:block">Filtrer</p>
+        </button>
+    </div>
+</div>
+
+<!-- Table des congés -->
+<div class="bg-white shadow-md rounded-lg ">
+    <table class="table-auto w-full">
+        <thead class=" border-b">
+            <tr class="text-sm ">
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"></th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nom et prenom</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Poste</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Département</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Durée</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Responsable des rapports</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for conge in conges %}
+            <tr class="bg-white border-b" style="font-size: 0.83rem; font-weight: 500;">
+                <td class="px-6 py-4">
+                    <img src="{{ conge.employee.photo.url }}" alt="{{ conge.employee.pseudo }}" class="rounded-full w-10 h-8">
+                </td>
+
+                <td class="px-6 py-4 whitespace-nowrap">{{ conge.employee.nom }} {{ conge.employee.prenom }}  </td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ conge.employee.poste }} </td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ conge.employee.departement }} </td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ conge.date_debut|date:"j F" }} - {{ conge.date_fin|date:"j F" }} </td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ conge.responsable }} </td>
+                {% if conge.statut == 'accepte' %}
+                <td class="flex px-3 py-2 whitespace-nowrap ">
+                    <p class="bg-green-100 px-2 py-1 rounded-lg text-green-700  text-sm font-bold items-center jutify-center">Accepté</p>
+                </td>
+                {% endif %}
+
+                {% if conge.statut == 'refuse' %}
+                <td class="flex px-3 py-2 whitespace-nowrap ">
+                    <p class="bg-red/10 px-2 py-1 rounded-lg text-red/70 text-sm font-bold items-center jutify-center">Refusé</p>
+                </td>
+                {% endif %}
+
+               
+                {% if conge.statut == 'en_attente' %}
+                <td class="flex px-3 py-2 whitespace-nowrap ">
+                    <p class="bg-yellow-100 px-2 py-1 rounded-lg text-yellow-700 text-sm font-bold items-center jutify-center">En attente</p>
+                </td>
+               
+                {% endif %}
+
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+
+        <tfoot>
+            <tr>
+                <td colspan="7" class="px-6 py-4 text-xs ">
+                    <div class="flex justify-between ">
+                        <div class="flex">
+                            <p class="mt-1">
+                                Affichage 
+                            </p>
+                
+                            <p class=" ml-2 border-2 text-xs p-2 -mt-1 rounded-lg">
+                                10
+                            </p>
+                        </div>
+                        <span class="text-gray-700 mt-1">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }} avec {{ total_conges }} congés enregistrés.</span>
+                        <div class="flex justify-center">
+                            <!-- Première page -->
+                            <a href="?page=1" class="mx-2">
+                                <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 2v20l8-4h6V2H6z"></path>
+                                  </svg>
+                                  
+                            </a>
+                            
+                            <!-- Lien vers la page précédente (affiché seulement s'il y a une page précédente) -->
+                            {% if page_obj.has_previous %}
+                                <a href="?page={{ page_obj.previous_page_number }}" class="mx-2 hover:text-indigo hover:text-xl ">
+                                    <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                      </svg>
+                                  
+                                      
+                                </a>
+                            {% endif %}
+                    
+                            <!-- Lien vers la page suivante (affiché seulement s'il y a une page suivante) -->
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}" class="mx-2">
+                                   
+                                    <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19l7-7-7-7"></path>
+                                      </svg>
+                                      
+                                      
+                                </a>
+                            {% endif %}
+                            
+                            <!-- Dernière page -->
+                            <a href="?page={{ paginator.num_pages }}" class="mx-2">
+                                
+                                <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 2v20l-8-4H6V2h12z"></path>
+                                  </svg>
+                                  
+                            </a>
+                            
+                        </div>
+                    </div>
+                </td>
+            </tr>
+           </tfoot>
+
+    </table>
+</div>
+
+<!-- Pop-up de filtrage -->
+<div id="filter-popup" class="hidden fixed inset-0 backdrop-blur-sm bg-black bg-opacity-50 z-40 flex justify-center items-center">
+    <div class="bg-white p-4 rounded-md shadow-lg w-96">
+        <h2 class="text-lg font-bold mb-2">Filtrer les congés</h2>
+
+        <form id="filter-form" method="GET">
+            <!-- Type de congé -->
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Type de congé</label>
+                <div class="grid grid-cols-3 gap-2">
+                    {% for choice in types_conge %}
+                    <label class="flex items-center text-xs">
+                        <input type="checkbox" name="type" value="{{ choice.0 }}"
+                            class="form-checkbox text-purple-600 rounded-md mr-2"> {{ choice.1 }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Statut du congé -->
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Statut</label>
+                <div class="grid grid-cols-3 gap-2">
+                    {% for statut in statuts %}
+                    <label class="flex items-center text-xs">
+                        <input type="checkbox" name="statut" value="{{ statut.0 }}"
+                            class="form-checkbox text-purple-600 rounded-md mr-2"> {{ statut.1 }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Poste de l'employé -->
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Poste</label>
+                <div class="grid grid-cols-2 gap-2">
+                    {% for poste in postes %}
+                    <label class="flex items-center text-xs">
+                        <input type="checkbox" name="departement" value="{{ poste.id }}" class="form-checkbox text-purple-600 rounded-md mr-2">
+                        {{ poste.nom }}
+                    </label>                        
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Département de l'employé -->
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Département</label>
+                <div class="grid grid-cols-2 gap-2">
+                    {% for departement in departements %}
+                    <label class="flex items-center text-xs">
+                        <input type="checkbox" name="departement" value="{{ departement.id }}" class="form-checkbox text-purple-600 rounded-md mr-2">
+                        {{ departement.nom }}
+                    </label>                        
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Employé -->
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Employé</label>
+                <select name="employee" class="border border-gray-300 rounded-md p-2 w-full">
+                    <option value="">Sélectionnez un employé</option>
+                    {% for employee in employees %}
+                    <option value="{{ employee.id }}">{{ employee.nom }} {{ employee.prenom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            
+
+            <div class="flex justify-between font-medium">
+                <button type="button" onclick="togglePopup()"
+                    class="mr-2 bg-gray-200 text-black px-10 p-2 rounded-lg border">Retour</button>
+                <button type="submit" class="bg-cp_primary text-white px-10 p-2 rounded-lg border">Appliquer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    // Fonction pour basculer l'affichage du pop-up de filtrage
+    function togglePopup() {
+        const popup = document.getElementById('filter-popup');
+        popup.classList.toggle('hidden');
+    }
+
+
+
+   
+</script>
+
+{% endblock %}

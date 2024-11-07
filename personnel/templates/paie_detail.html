@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+    {% load static tailwind_tags %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiche de paie</title>
+    {% tailwind_css %}
+</head>
+<body class="bg-gray-100 py-10">
+    <div class="max-w-3xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
+        <!-- Header -->
+        <div class="bg-orange-400 text-white p-5">
+            <h1 class="text-2xl font-semibold">Fiche de Paie</h1>
+            <p class="text-sm">{{ paie.date_debut|date:"F Y" }}</p>
+        </div>
+        
+        <!-- Informations employé -->
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex justify-between"><h2 class="text-xl font-semibold mb-4">Informations Employé</h2> <p class="font-semibold"> ID: {{ paie.employee.id|stringformat:"05d" }}</p></div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex col-span-2 justify-between">
+                    <p class="font-medium">Nom :</p>
+                    <div><p class="font-bold text-lg border-b border-black">{{ paie.employee.nom }} {{ paie.employee.prenom }}</p>  
+                        <p class="font-semibold text-xs"> {{ paie.employee.poste}} </p></div>
+                </div>
+                
+                <div>
+                    <p class="font-medium">Date début :</p>
+                    <p>{{ paie.date_debut }}</p>
+                </div>
+                <div>
+                    <p class="font-medium">Date fin :</p>
+                    <p>{{ paie.date_fin }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Salaire et Indemnités -->
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-xl font-semibold mb-4">Détails de la Paie</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="font-medium">Salaire de base :</p>
+                    <p>{{ paie.salaire_base|floatformat:2 }} MGA</p>
+                </div>
+                <div>
+                    <p class="font-medium">Indemnité Transport :</p>
+                    <p>{{ paie.indemnite_transport|floatformat:2 }} MGA</p>
+                </div>
+                <div>
+                    <p class="font-medium">Indemnité Communication :</p>
+                    <p>{{ paie.indemnite_communication|floatformat:2 }} MGA</p>
+                </div>
+                <div>
+                    <p class="font-medium">Indemnité Stage :</p>
+                    <p>{{ paie.indemnite_stage|floatformat:2 }} MGA</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Primes -->
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-xl font-semibold mb-4">Primes</h2>
+            <table class="w-full text-left table-auto border-collapse jus">
+                <thead>
+                    <tr>
+                        <th class="border-b py-2">Nom</th>
+                        <th class="border-b py-2 ml-12">Montant (MGA)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prime in paie.primes.all %}
+                        <tr>
+                            <td class="border-b py-2">{{ prime.nom }}</td>
+                            <td class="border-b py-2 ml-12">{{ prime.montant|floatformat:2 }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center py-2">Aucune prime reçus.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Résumé des Montants -->
+        <div class="p-6 border-t border-gray-200 bg-gray-50">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+
+                </div>
+                <div class="flex items-center gap-6">
+                    <p class="font-medium">Net à Payer :</p>
+                    <p class="text-lg font-bold text-green-600">{{ paie.net_a_payer|floatformat:2 }} MGA</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="p-6 border-t border-gray-200 bg-gray-50">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="font-medium">Le Directeur :</p>
+                    <p class="mt-2 border-b border-black w-2/3">Date :  </p>
+                    <p class="mt-12 border-black w-2/3">Signature :  </p>
+                </div>
+                <div>
+                    <p class="font-medium">Le salaraié :</p>
+                    <p class="mt-2 border-b border-black w-2/3">Date :  </p>
+                    <p class="mt-12 border-black w-2/3">Signature :  </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-6 bg-gray-50 flex justify-between ">
+            <p class="text-sm text-gray-500 ">Cette fiche de paie a été générée le {{ paie.date_creation|date:"d/m/Y" }}.</p>
+            <div>
+                <img class="-mt-20 w-32 h-24 " src="/static/images/Employee/mada.png" alt="logo entreprise">
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

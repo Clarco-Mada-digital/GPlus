@@ -1,0 +1,458 @@
+{% extends "base_primary_employee.html" %}
+
+{% block title %} Profile {{employee.user.username}} {% endblock %}
+
+{% block body %}
+
+<div class="max-w-screen mx-auto p-6 bg-white mt-12 rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold mb-4 mt-4">
+        {{ employee.nom }} {{ employee.prenom }}
+    </h2>
+        <p class="text-gray-600 mb-6 flex itesm-center gap-1">
+            Toutes les salariés
+            <svg width="16" height="16" class="mt-1" viewBox="0 0 57 57" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.5625 14.25L36.8125 28.5L22.5625 42.75" stroke="gray" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>{{ employee.nom }} {{ employee.prenom }}
+        </p>
+
+    
+    
+            <div class=" min-h-screen bg-white rounded-lg shadow-md max-w-full mx-auto p-6 border-2 border-gray500">
+                
+                <div class="flex justify-between items-center">
+
+                    <div class="flex gap-4">
+                        <div>
+                            <img src="{{ employee.photo.url }}" alt="{{ employee.username }}" class="h-24 w-36 rounded-lg">
+                        </div>
+                        <div class=" flex flex-col gap-1">
+                            <span class="font-bold">{{ employee.nom }} {{ employee.prenom }}</span>
+                            <span class="text-sm text-gray-700">{{ employee.poste }} </span>
+                            <span class="text-sm text-gray-700">{{ employee.email }}</span>
+                        </div>
+
+                    </div>
+                    <!-- Modifier Profile -->
+                    <div class="block">
+                        <a href="{% url 'personnel:personel-update' employee.id %}" class="flex bg-cp_primary text-white p-2 rounded-lg border-2 border-indigo-400">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 21H21M13.7844 5.31171C13.7844 5.31171 13.7844 6.94634 15.419 8.58096C17.0537 10.2156 18.6883 10.2156 18.6883 10.2156M7.31963 17.9881L10.7523 17.4977C11.2475 17.4269 11.7064 17.1975 12.06 16.8438L20.3229 8.58096C21.2257 7.67818 21.2257 6.21449 20.3229 5.31171L18.6883 3.67708C17.7855 2.77431 16.3218 2.77431 15.419 3.67708L7.15616 11.94C6.80248 12.2936 6.57305 12.7525 6.50231 13.2477L6.01193 16.6804C5.90295 17.4432 6.5568 18.097 7.31963 17.9881Z" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg> 
+                            Modifier le profile
+                            </a>
+                    </div>
+                </div>
+
+                <div class="flex border-t-4 mt-4 ">
+
+                   <!-- Profile  -->
+                    <div class="block bg-white max-w-6xl mx-auto p-8 ">
+              
+                        <div class="flex space-x-8 mb-4">
+                        <button id="step1Nav" class="text-gray-600 font-semibold flex gap-2 text-center justify-between" >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11ZM12 21C15.866 21 19 19.2091 19 17C19 14.7909 15.866 13 12 13C8.13401 13 5 14.7909 5 17C5 19.2091 8.13401 21 12 21Z" fill="#000000"/>
+                                </svg>
+                                
+                            <p class="mt-1"> Informations personnelles </p>
+                        </button>
+                        
+                        <button id="step2Nav" class="text-gray-600 font-semibold flex gap-2 text-center justify-between" >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8 6V5C8 3.34315 9.34315 2 11 2H13C14.6569 2 16 3.34315 16 5V6M2 10.3475C2 10.3475 5.11804 12.4244 9.97767 12.9109M22 10.3475C22 10.3475 18.882 12.4244 14.0223 12.9109M6 22H18C20.2091 22 22 20.2091 22 18V10C22 7.79086 20.2091 6 18 6H6C3.79086 6 2 7.79086 2 10V18C2 20.2091 3.79086 22 6 22Z" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M14 12.1602V13.1602C14 13.1702 14 13.1702 14 13.1802C14 14.2702 13.99 15.1602 12 15.1602C10.02 15.1602 10 14.2802 10 13.1902V12.1602C10 11.1602 10 11.1602 11 11.1602H13C14 11.1602 14 11.1602 14 12.1602Z" stroke="#16151C" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                
+                                
+                            <p class="mt-1"> Informations professionnelles </p>
+                        </button>
+        
+                        <button id="step3Nav" class="text-gray-600 font-semibold flex gap-2 text-center justify-between"">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 6C4 3.79086 5.79086 2 8 2H15.3431C16.404 2 17.4214 2.42143 18.1716 3.17157L20.8284 5.82843C21.5786 6.57857 22 7.59599 22 8.65685V18C22 20.2091 20.2091 22 18 22H8C5.79086 22 4 20.2091 4 18V6Z" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
+                                <path d="M9 7L17 7" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M9 12H17" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M9 17H13" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                <p class="mt-1">Documents </p>
+        
+                        </button>
+                        <button id="step4Nav" class="text-gray-600 font-semibold flex gap-2 text-center justify-between"">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 8H8M16 8C18.2091 8 20 9.79086 20 12V18C20 20.2091 18.2091 22 16 22H8C5.79086 22 4 20.2091 4 18V12C4 9.79086 5.79086 8 8 8M16 8V6C16 3.79086 14.2091 2 12 2C9.79086 2 8 3.79086 8 6V8M14 15C14 16.1046 13.1046 17 12 17C10.8954 17 10 16.1046 10 15C10 13.8954 10.8954 13 12 13C13.1046 13 14 13.8954 14 15Z" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <p class="mt-1">Accès au compte </p>
+                        </button>
+                      </div>
+
+                                    <div class="block grid grid-cols-2 gap-6 mt-10" id="step1">
+                                
+                                    <!-- Nom -->
+                                    <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Nom
+                                        </p>
+                                        <p>
+                                            {{ employee.nom }}
+                                        </p>
+                                    </div>
+                            
+                                    <!-- Prénom -->
+                                    <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Prénom
+                                        </p>
+                                        <p>
+                                            {{ employee.prenom }}
+                                        </p>
+                                    </div>
+        
+                                    <!-- Numéro de téléphone -->
+                                    <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Numéro de téléphone
+                                        </p>
+                                        <p>
+                                            {{ employee.numero_telephone }}
+                                        </p>
+                                    </div>
+        
+                                    <!-- Email -->
+                                    <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Adresse Email
+                                        </p>
+                                        <p>
+                                            {{ employee.email }}
+                                        </p>
+                                    </div>
+        
+                                    <!-- Date de naissance -->
+                                    <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Date de naissance
+                                        </p>
+                                        <p>
+                                            {{ employee.date_naissance }}
+                                        </p>
+                                    </div>
+                                    
+        
+                                    <!-- etat civil -->
+                                    <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Etat civil
+                                        </p>
+                                        <p>
+                                            {{ employee.statut_matrimonial }}
+                                        </p>
+                                    </div>
+        
+                                    <!-- sexe -->
+                                    <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Sexe
+                                        </p>
+                                        <p>
+                                            {{ employee.sexe }}
+                                        </p>
+                                    </div>
+                            
+                                    
+        
+                                    <!-- Nationalité -->
+                                    <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Natianalité
+                                        </p>
+                                        <p>
+                                            {{ employee.nationalite }}
+                                        </p>
+                                    </div>
+                            
+                                    <!-- Adresse -->
+                                    <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Adresse
+                                        </p>
+                                        <p>
+                                            {{ employee.adresse }}
+                                        </p>
+                                    </div>
+        
+                                    <!-- Ville -->
+                                    <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Ville
+                                        </p>
+                                        <p>
+                                            {{ employee.ville }}
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Pays -->
+                                    <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Pays
+                                        </p>
+                                        <p>
+                                            {{ employee.pays }}
+                                        </p>
+                                    </div>
+        
+                                    <!-- Code postale -->
+                                    <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Code postal
+                                        </p>
+                                        <p>
+                                            {{ employee.code_postal }}
+                                        </p>
+                                    </div>
+        
+        
+                                      <!-- Champs à ajouter -->
+                                      <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Maladie
+                                        </p>
+                                        <p>
+                                            
+                                        </p>
+                                    </div>
+
+                                    <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                        <p class="text-gray-400">
+                                            Groupe Sanguin
+                                        </p>
+                                        <p>
+                                           
+                                        </p>
+                                    </div>
+                                </div>
+        
+                                
+                    <div class="hidden grid grid-cols-2 gap-6" id="step2">
+                                 <!-- Type de salarié -->
+                                 <div class="flex flex-col mb-4 gap-2 border-b-2">
+                                    <p class="text-gray-400">
+                                        Type de salarié
+                                    </p>
+                                    <p>
+                                        {{ employee.get_type_salarie_display }}
+                                    </p>
+                                </div>
+                        
+                        <!-- Département -->
+                        <div class="flex flex-col mb-4 gap-2 border-b-2">
+                            <p class="text-gray-400">
+                                Département
+                            </p>
+                            <p>
+                                {{ employee.departement }}
+                            </p>
+                        </div>
+                       
+                         <!-- Contrat -->
+                         <div class="flex flex-col mb-4 gap-2 border-b-2">
+                            <p class="text-gray-400">
+                                Contrat
+                            </p>
+                            <p>
+                                {{ employee.type_contrat }}
+                            </p>
+                        </div>
+        
+                         <!-- Poste -->
+                         <div class="flex flex-col mb-4 gap-2 border-b-2">
+                            <p class="text-gray-400">
+                                Poste
+                            </p>
+                            <p>
+                                {{ employee.poste }}
+                            </p>
+                        </div>
+                  
+                        <!-- Date d'embauche -->
+                        <div class="flex flex-col mb-4 gap-2 border-b-2">
+                            <p class="text-gray-400">
+                                Date d'embauche
+                            </p>
+                            <p>
+                                {{ employee.date_embauche }}
+                            </p>
+                        </div>
+                  
+                        <!-- Compétence -->
+                        <div class="flex flex-col mb-4 gap-2 border-b-2">
+                            <p class="text-gray-400">
+                                Compétence
+                            </p>
+                            <p>
+                                {{ employee.competence }}
+                            </p>
+                        </div>
+
+                        <!-- Salaire de base -->
+                        <div class="flex flex-col mb-4 gap-2 border-b-2">
+                            <p class="text-gray-400">
+                                Salaire de base
+                            </p>
+                            <p>
+                                {{ employee.salaire_base }}
+                            </p>
+                        </div>
+                    </div>
+                       
+                          
+                    <div class="hidden grid grid-cols-2 gap-6" id="step3">
+                        
+                            <!-- Upload CV -->
+                            <div class="flex m-2 gap-2 items-center justify-between rounded-lg border-2">
+                                <p class="m-2 ml-4">
+                                    Curriculum vitae
+                                </p>
+                                {% if employee.curriculum_vitae %}
+                                <a href="{{ employee.curriculum_vitae.url }}" download="">
+                                    <svg class="mr-4" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.46967 11.5303C7.17677 11.2374 7.17678 10.7626 7.46967 10.4697C7.76257 10.1768 8.23744 10.1768 8.53033 10.4697L11.25 13.1893L11.25 1C11.25 0.585786 11.5858 0.25 12 0.25C12.4142 0.25 12.75 0.585786 12.75 1V13.1894L15.4697 10.4697C15.7626 10.1768 16.2374 10.1768 16.5303 10.4697C16.8232 10.7626 16.8232 11.2374 16.5303 11.5303L12.5303 15.5303C12.3896 15.671 12.1989 15.75 12 15.75C11.801 15.75 11.6103 15.671 11.4696 15.5303L7.46967 11.5303ZM6.33981 8.46913C6.59889 8.14594 6.54692 7.67392 6.22373 7.41484C5.90054 7.15576 5.42852 7.20774 5.16944 7.53093C3.96871 9.02878 3.25 10.9315 3.25 13C3.25 17.8325 7.16751 21.75 12 21.75C16.8325 21.75 20.75 17.8325 20.75 13C20.75 10.9315 20.0313 9.02878 18.8306 7.53093C18.5715 7.20774 18.0995 7.15576 17.7763 7.41484C17.4531 7.67392 17.4011 8.14594 17.6602 8.46913C18.6553 9.71047 19.25 11.2848 19.25 13C19.25 17.0041 16.0041 20.25 12 20.25C7.99594 20.25 4.75 17.0041 4.75 13C4.75 11.2848 5.34472 9.71047 6.33981 8.46913Z" fill="#16151C"/>
+                                        </svg>
+                                </a>
+                                {% else %}
+                                <a href="#" download="">
+                                    <p class="m-2 ml-4 text-gray-400">
+                                        Non disponible
+                                    </p>
+                                    
+                                </a>                                
+                                {% endif %}
+                            </div>
+                        
+                            <!-- Upload Lettre Introduction -->
+                            <div class="flex m-2 gap-2 items-center justify-between rounded-lg border-2">
+                                <p class="m-2 ml-4">
+                                    Lettre d'introduction
+                                </p>
+                                {% if employee.lettre_introduction %}
+                                <a href="{{ employee.curriculum_vitae.url }}" download="">
+                                    <svg class="mr-4" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.46967 11.5303C7.17677 11.2374 7.17678 10.7626 7.46967 10.4697C7.76257 10.1768 8.23744 10.1768 8.53033 10.4697L11.25 13.1893L11.25 1C11.25 0.585786 11.5858 0.25 12 0.25C12.4142 0.25 12.75 0.585786 12.75 1V13.1894L15.4697 10.4697C15.7626 10.1768 16.2374 10.1768 16.5303 10.4697C16.8232 10.7626 16.8232 11.2374 16.5303 11.5303L12.5303 15.5303C12.3896 15.671 12.1989 15.75 12 15.75C11.801 15.75 11.6103 15.671 11.4696 15.5303L7.46967 11.5303ZM6.33981 8.46913C6.59889 8.14594 6.54692 7.67392 6.22373 7.41484C5.90054 7.15576 5.42852 7.20774 5.16944 7.53093C3.96871 9.02878 3.25 10.9315 3.25 13C3.25 17.8325 7.16751 21.75 12 21.75C16.8325 21.75 20.75 17.8325 20.75 13C20.75 10.9315 20.0313 9.02878 18.8306 7.53093C18.5715 7.20774 18.0995 7.15576 17.7763 7.41484C17.4531 7.67392 17.4011 8.14594 17.6602 8.46913C18.6553 9.71047 19.25 11.2848 19.25 13C19.25 17.0041 16.0041 20.25 12 20.25C7.99594 20.25 4.75 17.0041 4.75 13C4.75 11.2848 5.34472 9.71047 6.33981 8.46913Z" fill="#16151C"/>
+                                        </svg>
+                                </a>
+                                {% else %}
+                                <a href="#" download="">
+                                    <p class="m-2 ml-4 text-gray-400">
+                                        Non disponible
+                                    </p>
+                                    
+                                </a>                                
+                                {% endif %}
+                            </div>
+                        
+                          
+                        
+                            <!-- Upload Bulletin Salaire -->
+                            <div class="flex m-2 gap-2 items-center justify-between rounded-lg border-2">
+                                <p class="m-2 ml-4">
+                                    Bulletin de Salaire
+                                </p>
+                                {% if employee.bulletin_salaire %}
+                                <a href="{{ employee.bulletin_salaire.url }}" download="">
+                                    <svg class="mr-4" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.46967 11.5303C7.17677 11.2374 7.17678 10.7626 7.46967 10.4697C7.76257 10.1768 8.23744 10.1768 8.53033 10.4697L11.25 13.1893L11.25 1C11.25 0.585786 11.5858 0.25 12 0.25C12.4142 0.25 12.75 0.585786 12.75 1V13.1894L15.4697 10.4697C15.7626 10.1768 16.2374 10.1768 16.5303 10.4697C16.8232 10.7626 16.8232 11.2374 16.5303 11.5303L12.5303 15.5303C12.3896 15.671 12.1989 15.75 12 15.75C11.801 15.75 11.6103 15.671 11.4696 15.5303L7.46967 11.5303ZM6.33981 8.46913C6.59889 8.14594 6.54692 7.67392 6.22373 7.41484C5.90054 7.15576 5.42852 7.20774 5.16944 7.53093C3.96871 9.02878 3.25 10.9315 3.25 13C3.25 17.8325 7.16751 21.75 12 21.75C16.8325 21.75 20.75 17.8325 20.75 13C20.75 10.9315 20.0313 9.02878 18.8306 7.53093C18.5715 7.20774 18.0995 7.15576 17.7763 7.41484C17.4531 7.67392 17.4011 8.14594 17.6602 8.46913C18.6553 9.71047 19.25 11.2848 19.25 13C19.25 17.0041 16.0041 20.25 12 20.25C7.99594 20.25 4.75 17.0041 4.75 13C4.75 11.2848 5.34472 9.71047 6.33981 8.46913Z" fill="#16151C"/>
+                                        </svg>
+                                </a>
+                                {% else %}
+                                <a href="#" download="">
+                                    <p class="m-2 ml-4 text-gray-400">
+                                        Non disponible
+                                    </p>
+                                    
+                                </a>                                {% endif %}
+                            </div>
+                        
+                        
+                            <!-- Upload Lettre Motivation -->
+                            <div class="flex m-2 gap-2 items-center justify-between rounded-lg border-2">
+                                <p class="m-2 ml-4">
+                                    Lette de Motivation
+                                </p>
+                                {% if employee.lettre_introduction %}
+                                <a href="{{ employee.lettre_introduction.url }}" download="">
+                                    <svg class="mr-4" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.46967 11.5303C7.17677 11.2374 7.17678 10.7626 7.46967 10.4697C7.76257 10.1768 8.23744 10.1768 8.53033 10.4697L11.25 13.1893L11.25 1C11.25 0.585786 11.5858 0.25 12 0.25C12.4142 0.25 12.75 0.585786 12.75 1V13.1894L15.4697 10.4697C15.7626 10.1768 16.2374 10.1768 16.5303 10.4697C16.8232 10.7626 16.8232 11.2374 16.5303 11.5303L12.5303 15.5303C12.3896 15.671 12.1989 15.75 12 15.75C11.801 15.75 11.6103 15.671 11.4696 15.5303L7.46967 11.5303ZM6.33981 8.46913C6.59889 8.14594 6.54692 7.67392 6.22373 7.41484C5.90054 7.15576 5.42852 7.20774 5.16944 7.53093C3.96871 9.02878 3.25 10.9315 3.25 13C3.25 17.8325 7.16751 21.75 12 21.75C16.8325 21.75 20.75 17.8325 20.75 13C20.75 10.9315 20.0313 9.02878 18.8306 7.53093C18.5715 7.20774 18.0995 7.15576 17.7763 7.41484C17.4531 7.67392 17.4011 8.14594 17.6602 8.46913C18.6553 9.71047 19.25 11.2848 19.25 13C19.25 17.0041 16.0041 20.25 12 20.25C7.99594 20.25 4.75 17.0041 4.75 13C4.75 11.2848 5.34472 9.71047 6.33981 8.46913Z" fill="#16151C"/>
+                                        </svg>
+                                </a>
+                                {% else %}
+                                <a href="#" download="">
+                                    <p class="m-2 ml-4 text-gray-400">
+                                        Non disponible
+                                    </p>
+                                    
+                                </a>                                {% endif %}
+                            </div>
+                                         
+                    </div>
+        
+        
+                    <div class="hidden grid grid-cols-2 gap-6" id="step4">               
+                       
+                            
+                        <!-- id_github -->
+                        <div class="flex flex-col mb-4 gap-2 border-b-2">
+                            <p class="text-gray-400">
+                                ID GitHub
+                            </p>
+                            <p>
+                                {{ employee.id_github }}
+                            </p>
+                        </div>
+
+                        <!-- id_linkedln -->
+                         <div class="flex flex-col mb-4 gap-2 border-b-2">
+                            <p class="text-gray-400">
+                                ID Linkedln
+                            </p>
+                            <p>
+                                {{ employee.id_linkedln }}
+                            </p>
+                        </div>                         
+                    </div>
+                    
+                </div>
+                  
+            </div>
+    </div>
+
+</div>
+
+
+{% endblock %}
+
+
+{% block script %}
+<script>
+    
+    // JavaScript pour gérer la navigation entre les étapes
+    const steps = document.querySelectorAll('div[id^="step"]');
+    const nextButtons = document.querySelectorAll('.btn-next');
+    const prevButtons = document.querySelectorAll('.btn-prev');
+    const navButtons = document.querySelectorAll('button[id^="step"]');
+    
+    let currentStep = 0;
+    
+    function showStep(stepIndex) {
+    steps.forEach((step, index) => {
+        step.classList.toggle('hidden', index !== stepIndex);
+        step.classList.toggle('block', index === stepIndex);
+    });
+    }
+    navButtons.forEach((button, index) => {
+                button.addEventListener('click', () => {
+                    currentStep = index; // Aller directement à l'étape correspondante
+                    showStep(currentStep);
+                    updateNavButtons();
+                });
+            });
+        </script>
+{% endblock %}

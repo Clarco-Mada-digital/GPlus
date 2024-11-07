@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+    {% load static tailwind_tags %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}G plus {% endblock %}</title>
+    {% tailwind_css %}
+
+    {% block extra_head %}{% endblock %}
+
+</head>
+<body class="flex items-center justify-center h-screen bg-cp_primary">
+     
+    <!-- Conteneur du switch en haut à droite -->
+<div id="toggle-switch" class="absolute top-0 right-0 m-4 flex items-center -space-x-1">
+    <!-- Bouton pour le mode clair -->
+    <button id="light-mode" class="flex p-2 pr-6 bg-blue-800 text-white rounded-md shadow-lg gap-1" >
+        <img src="/static/images/Employee/Huge-icon/weather/outline/sun.svg" alt="Sun Icon" class="w-6 h-6">
+        <p class="mt-1 text-sm ">
+            Clair
+        </p>
+    </button>
+    <!-- Bouton pour le mode sombre -->
+    <button id="dark-mode" class="flex p-2 bg-gray-300 rounded-md shadow-lg text-black gap-1">
+        <img src="/static/images/Employee/Huge-icon/weather/outline/half moon.svg" alt="Moon Icon" class="w-6 h-6"> 
+        <p class="mt-1 text-sm">
+            Sombre
+        </p>
+    </button>
+</div>
+
+
+    <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm space-y-3">
+
+        {% block body %} {% endblock %}
+
+    </div>
+
+    <!-- Script pour gérer le switch -->
+    <script>
+        const lightModeButton = document.getElementById('light-mode');
+        const darkModeButton = document.getElementById('dark-mode');
+
+        lightModeButton.addEventListener('click', function() {
+            // Rendre le bouton Light actif et le bouton Dark inactif
+            lightModeButton.classList.add('bg-blue-800', 'text-white' );
+            lightModeButton.classList.remove('bg-gray-300', 'text-black');
+
+            darkModeButton.classList.add('bg-gray-300', 'text-black');
+            darkModeButton.classList.remove('bg-blue-800', 'text-white');
+        });
+
+        darkModeButton.addEventListener('click', function() {
+            // Rendre le bouton Dark actif et le bouton Light inactif
+            darkModeButton.classList.add('bg-blue-800','text-white' );
+            darkModeButton.classList.remove('bg-gray-300','text-black' );
+
+            lightModeButton.classList.add('bg-gray-300', 'text-black');
+            lightModeButton.classList.remove('bg-blue-800','text-white');
+        });
+
+
+
+    </script>
+            {% block script %} {% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiche de paie</title>
+</head>
+<body class="bg-gray-100 py-10">
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Fiche de Paie</h1>
+            <p>{{ paie.date_debut|date:"F Y" }}</p>
+        </div>
+        
+        <!-- Informations employé -->
+        <div class="section">
+            <div class="flex"><h2 class="section-title">Informations Employé</h2> <p class="font-bold">ID: {{ paie.employee.id|stringformat:"05d" }}</p></div>
+            <div class="grid-2">
+                <div class="flex">
+                    <p class="font-medium">Nom :</p>
+                    <div>
+                        <p class="font-bold text-lg border-b">{{ paie.employee.nom }} {{ paie.employee.prenom }}</p>  
+                        <p class="font-medium">{{ paie.employee.poste }}</p>
+                    </div>
+                </div>
+                <div>
+                    <p class="font-medium">Date début :</p>
+                    <p>{{ paie.date_debut }}</p>
+                </div>
+                <div>
+                    <p class="font-medium">Date fin :</p>
+                    <p>{{ paie.date_fin }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Salaire et Indemnités -->
+        <div class="section">
+            <h2 class="section-title">Détails de la Paie</h2>
+            <div class="grid-2">
+                <div>
+                    <p class="font-medium">Salaire de base :</p>
+                    <p>{{ paie.salaire_base|floatformat:2 }} MGA</p>
+                </div>
+                <div>
+                    <p class="font-medium">Indemnité Transport :</p>
+                    <p>{{ paie.indemnite_transport|floatformat:2 }} MGA</p>
+                </div>
+                <div>
+                    <p class="font-medium">Indemnité Communication :</p>
+                    <p>{{ paie.indemnite_communication|floatformat:2 }} MGA</p>
+                </div>
+                <div>
+                    <p class="font-medium">Indemnité Stage :</p>
+                    <p>{{ paie.indemnite_stage|floatformat:2 }} MGA</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Primes -->
+        <div class="section">
+            <h2 class="section-title">Primes</h2>
+            <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="border-bottom: 1px solid black; padding: 0.5rem;">Nom</th>
+                        <th style="border-bottom: 1px solid black; padding: 0.5rem;">Montant (MGA)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prime in paie.primes.all %}
+                        <tr>
+                            <td style="border-bottom: 1px solid black; padding: 0.5rem;">{{ prime.nom }}</td>
+                            <td style="border-bottom: 1px solid black; padding: 0.5rem;">{{ prime.montant|floatformat:2 }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="2" style="text-align: center; padding: 0.5rem;">Aucune prime reçue.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Résumé des Montants -->
+        <div class="section summary-section">
+            <div class="flex">
+                <p class="font-medium">Net à Payer :</p>
+                <p class="text-lg font-bold text-green">{{ paie.net_a_payer|floatformat:2 }} MGA</p>
+            </div>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="section signature-section">
+            <div class="grid-2">
+                <div>
+                    <p class="font-medium">Le Directeur :</p>
+                    <p class="border-b" style="width: 60%;">Date :</p>
+                    <p class="border-b" style="width: 60%; margin-top: 2rem;">Signature :</p>
+                </div>
+                <div>
+                    <p class="font-medium">Le salarié :</p>
+                    <p class="border-b" style="width: 60%;">Date :</p>
+                    <p class="border-b" style="width: 60%; margin-top: 2rem;">Signature :</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p class="footer-text">Cette fiche de paie a été générée le {{ paie.date_creation|date:"d/m/Y" }}.</p>
+            <div>
+                <img src="{{ image_data }}" alt="logo entreprise">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

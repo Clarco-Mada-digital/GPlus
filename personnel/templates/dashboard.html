@@ -1,0 +1,318 @@
+{% extends "base_primary_employee.html" %} 
+
+{% block title %}
+
+Dashboard
+
+{% endblock %} 
+
+{% block style %}
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+{% endblock %}
+
+
+{% block body %} 
+
+        <!-- Main Content -->
+        <div class="md:flex bg-white-100 mt-16 p-6">
+   
+                <!-- Stats Cards -->
+            <div class="xl:mt-10 ">
+                <h1 class="text-xl font-bold mb-6 xl:mb-2">Bonjour, {{ user.username }} 👋         
+                </h1>
+                <div class="md:flex justify-between md:w-screen md:gap-6">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 md:w-3/4">
+
+                    <div class="bg-white dark:bg-gray-800 p-6 border rounded-lg shadow md:mb-24">
+                        <div class="flex items-center ">
+                            <div class="bg-gray-100 rounded-lg p-4 text-purple-600 dark:text-purple-400 ">
+                                <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M9.75 8.5C9.75 7.25736 10.7574 6.25 12 6.25C13.2426 6.25 14.25 7.25736 14.25 8.5C14.25 9.74264 13.2426 10.75 12 10.75C10.7574 10.75 9.75 9.74264 9.75 8.5ZM12 4.75C9.92893 4.75 8.25 6.42893 8.25 8.5C8.25 10.5711 9.92893 12.25 12 12.25C14.0711 12.25 15.75 10.5711 15.75 8.5C15.75 6.42893 14.0711 4.75 12 4.75ZM6.75 16.5C6.75 16.1087 7.08671 15.5525 8.09277 15.0495C9.05397 14.5689 10.4343 14.25 12 14.25C13.5657 14.25 14.946 14.5689 15.9072 15.0495C16.9133 15.5525 17.25 16.1087 17.25 16.5C17.25 16.8913 16.9133 17.4475 15.9072 17.9505C14.946 18.4311 13.5657 18.75 12 18.75C10.4343 18.75 9.05397 18.4311 8.09277 17.9505C7.08671 17.4475 6.75 16.8913 6.75 16.5ZM12 12.75C10.252 12.75 8.63232 13.1027 7.42195 13.7079C6.25643 14.2906 5.25 15.2345 5.25 16.5C5.25 17.7655 6.25643 18.7094 7.42195 19.2921C8.63232 19.8973 10.252 20.25 12 20.25C13.748 20.25 15.3677 19.8973 16.5781 19.2921C17.7436 18.7094 18.75 17.7655 18.75 16.5C18.75 15.2345 17.7436 14.2906 16.5781 13.7079C15.3677 13.1027 13.748 12.75 12 12.75ZM6.38165 13.519C3.91199 13.6713 2 14.7241 2 16.0001C2 17.0521 3.29949 17.9523 5.13963 18.3213C4.72843 17.7645 4.5 17.1483 4.5 16.5001C4.5 15.3567 5.21076 14.3129 6.38165 13.519ZM19.5001 16.5001C19.5001 17.1483 19.2716 17.7645 18.8604 18.3213C20.7006 17.9523 22.0001 17.0521 22.0001 16.0001C22.0001 14.7241 20.0881 13.6713 17.6184 13.519C18.7893 14.3129 19.5001 15.3567 19.5001 16.5001ZM15.7183 11.0354C16.2115 10.3134 16.5 9.44039 16.5 8.5C16.5 8.18794 16.4682 7.8833 16.4077 7.58914C16.5949 7.5312 16.7938 7.5 17 7.5C18.1045 7.5 19 8.39543 19 9.5C19 10.6046 18.1045 11.5 17 11.5C16.5123 11.5 16.0653 11.3254 15.7183 11.0354ZM7 7.5C7.20619 7.5 7.40509 7.5312 7.59223 7.58914C7.53176 7.8833 7.5 8.18794 7.5 8.5C7.5 9.44039 7.78845 10.3134 8.28171 11.0354C7.93462 11.3254 7.4877 11.5 7 11.5C5.89543 11.5 5 10.6046 5 9.5C5 8.39543 5.89543 7.5 7 7.5Z" fill="#7152F3"/>
+                                </svg>
+                
+                            </div>
+                            <h3 class="text-sm font-semibold ml-4">Total salariés</h3>
+                        </div>
+                        <div class="flex mt-4 justify-between mb-2">
+                            <p class="text-3xl font-bold">{{ total_salaries }}</p>
+                        <div class="bg-green-100 rounded-md pl-2 pr-2"> 
+                                <p class="mt-2 text-green-500 text-sm">+12%</p> 
+                            </div>
+                        </div>
+                        <div class="flex -ml-6 -mr-6 border-t border-gray-200 text-sm text-gray-400 dark:text-gray-400">
+                            <p class="ml-6 mt-2 -mb-10"> Mise à jour : </p> <p id="date1" class="ml-6 mt-2 -mb-10"> </p>
+                        </div>
+                    </div>
+                   
+                    <div class="bg-white dark:bg-gray-800 p-6 border rounded-lg shadow md:mb-24">
+                        <div class="flex items-center ">
+                            <div class="bg-gray-100 rounded-lg p-4 text-purple-600 dark:text-purple-400 ">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke="#7152F3" d="M8 6V5C8 3.34315 9.34315 2 11 2H13C14.6569 2 16 3.34315 16 5V6M2 10.3475C2 10.3475 5.11804 12.4244 9.97767 12.9109M22 10.3475C22 10.3475 18.882 12.4244 14.0223 12.9109M6 22H18C20.2091 22 22 20.2091 22 18V10C22 7.79086 20.2091 6 18 6H6C3.79086 6 2 7.79086 2 10V18C2 20.2091 3.79086 22 6 22Z" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                                    <path stroke="#7152F3" d="M14 12.1602V13.1602C14 13.1702 14 13.1702 14 13.1802C14 14.2702 13.99 15.1602 12 15.1602C10.02 15.1602 10 14.2802 10 13.1902V12.1602C10 11.1602 10 11.1602 11 11.1602H13C14 11.1602 14 11.1602 14 12.1602Z" stroke="#16151C" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-sm font-semibold ml-4">Total salariés disponibles</h3>
+                        </div>
+                        <div class="flex mt-4 justify-between mb-2">
+                            <p class="text-3xl font-bold">{{ salaries_disponibles }}</p>
+                        <div class="bg-green-100 rounded-md pl-2 pr-2"> 
+                                <p class="mt-2 text-green-500 text-sm">+5%</p> 
+                            </div>
+                        </div>
+                        <div class="flex -ml-6 -mr-6 border-t border-gray-200 text-sm text-gray-400 dark:text-gray-400">
+                            <p class="ml-6 mt-2 -mb-10"> Mise à jour : </p> <p id="date2" class="ml-6 mt-2 -mb-10"> </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-6 border rounded-lg shadow md:-mt-24 md:mb-24">
+                        <div class="flex items-center ">
+                            <div class="bg-gray-100 rounded-lg p-4 text-purple-600 dark:text-purple-400 ">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke="#7152F3" d="M8 10H16M8 14H16M8 18H12M8 4C8 5.10457 8.89543 6 10 6H14C15.1046 6 16 5.10457 16 4M8 4C8 2.89543 8.89543 2 10 2H14C15.1046 2 16 2.89543 16 4M8 4H7C4.79086 4 3 5.79086 3 8V18C3 20.2091 4.79086 22 7 22H17C19.2091 22 21 20.2091 21 18V8C21 5.79086 19.2091 4 17 4H16" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-sm font-semibold ml-4">Nombre de salariés en congés</h3>
+                        </div>
+                        <div class="flex mt-4 justify-between mb-2">
+                            <p class="text-3xl font-bold">{{ salaries_en_conge }}</p>
+                        <div class="bg-red/30 rounded-md pl-2 pr-2"> 
+                                <p class="mt-2 text-red text-sm">-8%</p> 
+                            </div>
+                        </div>
+                        <div class="flex -ml-6 -mr-6 border-t border-gray-200 text-sm text-gray-400 dark:text-gray-400">
+                           <p class="ml-6 mt-2 -mb-10"> Mise à jour : </p> <p id="date3" class="ml-6 mt-2 -mb-10"> </p>
+                        </div>
+                    </div>
+                </div>
+            
+
+            <!-- Calendar -->
+            <div class="bg-white border-2 flex-grow gap-4 p-4 rounded-lg shadow-lg md:w-80 w-full mt-4 md:ml-8 mr-12">
+                <!-- Conteneur du calendrier -->
+                <h3 class="text-lg font-semibold">Calendrier</h3>
+
+                <div class="flex justify-between items-center mb-4 mt-4">
+                    <button id="prevMonth" class="text-white bg-cp_primary p-2 rounded-md duration-300 hover:scale-110">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button id="backToDay"><h2 id="monthYear" class="text-lg font-bold duration-300 hover:scale-110"></h2></button>
+                    <button id="nextMonth" class="text-white bg-cp_primary p-2 rounded-md duration-300 hover:scale-110">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            
+                
+                <!-- En-têtes des jours de la semaine -->
+                <div class="grid grid-cols-7 text-center font-bold text-gray-500 mb-2">
+                    <div>Dim</div>
+                    <div>Lun</div>
+                    <div>Mar</div>
+                    <div>Mer</div>
+                    <div>Jeu</div>
+                    <div>Ven</div>
+                    <div>Sam</div>
+                </div>
+            
+                <!-- Conteneur des jours -->
+                <div id="daysContainer" class="grid grid-cols-7 gap-2 text-center ">
+                    <!-- Les jours seront générés ici dynamiquement -->
+                </div>
+                <div class="border-b mt-2 ">
+
+                </div>
+                <!-- Events Section -->
+                <div class="">
+                    <div id="event-container" class="bg-white dark:bg-gray-800 p-3   ">
+                        <div class="mb-4 border-b-2 mt-2">
+                            <p id="date" class="text-gray-500 dark:text-gray-400 mb-2"></p>
+                            {% for event in today_events %}
+                            <div class="flex justify-between pb-2">
+                                <div class="flex"><p class="font-bold mr-4"> {{ event.start_time }} </p> <p class=" text-gray-600 font-semibold"> {{ event.title }}</p></div>
+                                <div><p class="font-bold">{{ event.description }}</p></div>
+                            </div>
+                            {% empty %}
+                            
+                            <div class="flex justify-between">
+                                <p>Aucun événement aujourd'hui</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+            
+                        <div>
+                            <p id="tomorrow-date" class="text-gray-500 dark:text-gray-400 mb-2"></p>
+                            {% for event in tomorrow_events %}
+                            <div class="flex justify-between pb-2">
+                                <div class="flex"><p class="font-bold mr-4"> {{ event.start_time }} </p> <p class=" text-gray-600 font-semibold"> {{ event.title }}</p></div>
+                                <div><p class="font-bold">{{ event.description }}</p></div>
+                            </div>
+                            {% empty %}
+                            
+                            <div class="flex justify-between">
+                                <p>Aucun événement demain</p>
+                            </div>
+                            {% endfor %}
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        </div>
+    </div>
+
+            
+                        
+
+
+    
+{% endblock %}
+
+{% block script %}
+
+<script>
+    // Variables globales pour gérer la date
+    const currentDate = new Date();
+    let currentMonth = currentDate.getMonth();
+    let currentYear = currentDate.getFullYear();
+
+    // Fonction pour mettre à jour le calendrier
+    function renderCalendar(month, year) {
+        const daysContainer = document.getElementById("daysContainer");
+        const monthYearText = document.getElementById("monthYear");
+
+        // Mois et année affichés
+        const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+        monthYearText.textContent = `${monthNames[month]} ${year}`;
+
+        // Nombre de jours dans le mois
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+
+        // Vider les jours précédents
+        daysContainer.innerHTML = "";
+
+        // Remplir les blancs au début du mois
+        for (let i = 0; i < firstDay; i++) {
+            const emptyDiv = document.createElement("div");
+            emptyDiv.classList.add("text-gray-400");
+            daysContainer.appendChild(emptyDiv);
+        }
+
+        // Ajouter les jours du mois
+        for (let day = 1; day <= lastDate; day++) {
+            const dayDiv = document.createElement("div");
+            dayDiv.textContent = day;
+
+            // Mettre en surbrillance le jour actuel
+            if (day === currentDate.getDate() && month === currentDate.getMonth() && year === currentDate.getFullYear()) {
+                dayDiv.classList.add("bg-cp_primary", "text-white", "rounded-full");
+            }
+
+            daysContainer.appendChild(dayDiv);
+        }
+    }
+
+    // Navigation entre les mois
+    document.getElementById("prevMonth").addEventListener("click", () => {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        renderCalendar(currentMonth, currentYear);
+    });
+
+    document.getElementById("nextMonth").addEventListener("click", () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        renderCalendar(currentMonth, currentYear);
+    });
+    
+    document.getElementById("backToDay").addEventListener("click", () => {
+        currentMonth = currentDate.getMonth();
+        currentYear = currentDate.getFullYear()
+        renderCalendar(currentMonth, currentYear);
+    });
+    // Initialiser le calendrier au mois en cours
+    renderCalendar(currentMonth, currentYear);
+
+     // Fonction pour générer la date d'aujourd'hui
+  function getCurrentDate() {
+    const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+
+    // Obtenir la date actuelle
+    const today = new Date();
+    
+    // Extraire les informations nécessaires
+    const dayName = days[today.getDay()];  // Nom du jour de la semaine
+    const day = String(today.getDate()).padStart(2, '0');  // Jour du mois (avec deux chiffres)
+    const month = months[today.getMonth()];  // Mois
+    const year = today.getFullYear();  // Année
+
+    // Retourner la chaîne formatée
+    return `${dayName} ${day} ${month} ${year}`;
+  }
+
+
+  // Fonction pour générer la date de demain
+  function getTomorrowDate() {
+    const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+
+    // Obtenir la date actuelle
+    const today = new Date();
+    
+    // Ajouter un jour à la date actuelle
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    
+    // Extraire les informations nécessaires pour la date de demain
+    const dayName = days[tomorrow.getDay()];  // Nom du jour de la semaine
+    const day = String(tomorrow.getDate()).padStart(2, '0');  // Jour du mois (avec deux chiffres)
+    const month = months[tomorrow.getMonth()];  // Mois
+    const year = tomorrow.getFullYear();  // Année
+
+    // Retourner la chaîne formatée
+    return `${dayName} ${day} ${month} ${year}`;
+  }
+
+    // Fonction pour générer la date d'aujourd'hui
+  function getDateUpdate() {
+    const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+
+    // Obtenir la date actuelle
+    const today = new Date();
+    
+    // Extraire les informations nécessaires
+    const day = String(today.getDate()).padStart(2, '0');  // Jour du mois (avec deux chiffres)
+    const month = months[today.getMonth()];  // Mois
+    const year = today.getFullYear();  // Année
+
+    // Retourner la chaîne formatée
+    return `${day} ${month} ${year}`;
+  }
+
+    // Injecter la date de demain dans l'élément HTML avec l'id "tomorrow-date"
+     document.getElementById('tomorrow-date').textContent = getTomorrowDate();
+
+    // Injecter la date dans l'élément HTML avec l'id "date"
+    document.getElementById('date').textContent = getCurrentDate();
+    document.getElementById('date1').textContent = getDateUpdate();
+    document.getElementById('date2').textContent = getDateUpdate();
+    document.getElementById('date3').textContent = getDateUpdate();
+</script>
+{% endblock %}
