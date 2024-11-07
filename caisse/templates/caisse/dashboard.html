@@ -319,9 +319,13 @@ new Chart(document.getElementById('resumeMoisChart'), {
     // Remplir le tableau des 4 derniers mois
     const tableBody = document.getElementById('entrees4mois');
     entrees4Mois.forEach(entree => {
+        const date = new Date(entree.date);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = date.toLocaleDateString('fr-FR', options);
+
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${entree.date}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formattedDate}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">Ar ${entree.montant.toLocaleString('fr-FR')}</td>
         `;
         tableBody.appendChild(row);
