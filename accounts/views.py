@@ -16,7 +16,7 @@ def signIn(request):
             user = CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist:
             messages.error(request, "L'email ou le mot de passe est incorrect.")
-            return redirect('accounts:signIn')
+            return redirect('accounts:login_user')
 
         # Authentifier l'utilisateur avec l'email et le mot de passe
         user = authenticate(request, username=user.username, password=password)

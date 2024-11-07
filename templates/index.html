@@ -6,184 +6,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>G+</title>
     {% tailwind_css %}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
-      rel="stylesheet">
-
   </head>
-
-  <style>
-    body {
-        font-family: 'Noto Sans', sans-serif;
-    
-    }
-    </style>
   <body>
-    <div
-      class="w-ful h-svh flex flex-col-reverse md:flex-row items-center justify-around bg-[url('/static/images/bg-image.png')] bg-no-repeat bg-cover">
+    <div class="w-ful h-svh flex flex-col-reverse md:flex-row items-center justify-around bg-[url('/static/images/bg-image.png')] bg-no-repeat bg-cover">
       <div class="relative p-4 w-full md:w-6/12 h-full md:h-auto">
         <div class="relative bg-white rounded-lg shadow w-full min-h-64">
           <div class="p-5 flex flex-col items-center justify-center">
-            <!-- <h3 class="text-2xl mb-0.5 font-medium"> </h3>
-                <p class="mb-4 text-sm font-normal text-gray-800"> </p> -->
+            
             <div class="mb-7 text-center w-9/12 py-5">
-              <p class="mb-3 text-2xl font-semibold leading-5 text-slate-900">
-                Connectez-vous à votre compte
-              </p>
-              <p class="mt-2 text-sm leading-4 text-slate-600">
-                Accédez à du contenu exclusif et gérez facilement votre compte.
-                Veuillez entrer votre address e-mail et votre mot de passe pour
-                vous connecter.
-              </p>
+              <p class="mb-3 text-2xl font-semibold leading-5 text-slate-900">Connectez-vous à votre compte</p>
+              <p class="mt-2 text-sm leading-4 text-slate-600">Accédez à du contenu exclusif et gérez facilement votre compte. Veuillez entrer votre address e-mail et votre mot de passe pour vous connecter.</p>
             </div>
-            <div
-              class="flex flex-col-reverse md:flex-row-reverse w-full min-h-80">
+            <div class="flex flex-col-reverse md:flex-row-reverse w-full min-h-80">
               <div class="flex my-auto w-full flex-col gap-2">
-                <button
-                  class="inline-flex h-10 w-full items-center justify-center gap-2 rounded border border-slate-300 bg-white p-2 text-sm font-medium text-black outline-none focus:ring-2 focus:ring-[#333] focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60">
-                  <svg
-                    class="h-[18px] w-[18px]"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 98 96">
-                    <path
-                      fill-rule="evenodd"
-                      d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362l-.08-9.127c-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126l-.08 13.526c0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"
-                      fill="#24292f"></path>
-                  </svg>
-                  Continue with GitHub
+                <button class="inline-flex h-10 w-full items-center justify-center gap-2 rounded border border-slate-300 bg-white p-2 text-sm font-medium text-black outline-none focus:ring-2 focus:ring-[#333] focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60">
+                  <svg class="h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 98 96">
+                    <path fill-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362l-.08-9.127c-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126l-.08 13.526c0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" fill="#24292f"></path>
+                  </svg>Continue with GitHub
                 </button>
-                <button
-                  class="inline-flex h-10 w-full items-center justify-center gap-2 rounded border border-slate-300 bg-white p-2 text-sm font-medium text-black outline-none focus:ring-2 focus:ring-[#333] focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 90 92"
-                    fill="none"
-                    class="h-[18px] w-[18px]">
-                    <path
-                      d="M90 47.1c0-3.1-.3-6.3-.8-9.3H45.9v17.7h24.8c-1 5.7-4.3 10.7-9.2 13.9l14.8 11.5C85 72.8 90 61 90 47.1z"
-                      fill="#4280ef"></path>
-                    <path
-                      d="M45.9 91.9c12.4 0 22.8-4.1 30.4-11.1L61.5 69.4c-4.1 2.8-9.4 4.4-15.6 4.4-12 0-22.1-8.1-25.8-18.9L4.9 66.6c7.8 15.5 23.6 25.3 41 25.3z"
-                      fill="#34a353"></path>
-                    <path
-                      d="M20.1 54.8c-1.9-5.7-1.9-11.9 0-17.6L4.9 25.4c-6.5 13-6.5 28.3 0 41.2l15.2-11.8z"
-                      fill="#f6b704"></path>
-                    <path
-                      d="M45.9 18.3c6.5-.1 12.9 2.4 17.6 6.9L76.6 12C68.3 4.2 57.3 0 45.9.1c-17.4 0-33.2 9.8-41 25.3l15.2 11.8c3.7-10.9 13.8-18.9 25.8-18.9z"
-                      fill="#e54335"></path>
-                  </svg>
-                  Continue with Google
+                <button class="inline-flex h-10 w-full items-center justify-center gap-2 rounded border border-slate-300 bg-white p-2 text-sm font-medium text-black outline-none focus:ring-2 focus:ring-[#333] focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 92" fill="none" class="h-[18px] w-[18px]">
+                    <path d="M90 47.1c0-3.1-.3-6.3-.8-9.3H45.9v17.7h24.8c-1 5.7-4.3 10.7-9.2 13.9l14.8 11.5C85 72.8 90 61 90 47.1z" fill="#4280ef"></path>
+                    <path d="M45.9 91.9c12.4 0 22.8-4.1 30.4-11.1L61.5 69.4c-4.1 2.8-9.4 4.4-15.6 4.4-12 0-22.1-8.1-25.8-18.9L4.9 66.6c7.8 15.5 23.6 25.3 41 25.3z" fill="#34a353"></path>
+                    <path d="M20.1 54.8c-1.9-5.7-1.9-11.9 0-17.6L4.9 25.4c-6.5 13-6.5 28.3 0 41.2l15.2-11.8z" fill="#f6b704"></path>
+                    <path d="M45.9 18.3c6.5-.1 12.9 2.4 17.6 6.9L76.6 12C68.3 4.2 57.3 0 45.9.1c-17.4 0-33.2 9.8-41 25.3l15.2 11.8c3.7-10.9 13.8-18.9 25.8-18.9z" fill="#e54335"></path>
+                  </svg>Continue with Google
                 </button>
-                <button
-                  class="inline-flex h-10 w-full items-center justify-center gap-2 rounded border border-slate-300 bg-white p-2 text-sm font-medium text-black outline-none focus:ring-2 focus:ring-[#333] focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-[18px] w-[18px]"
-                    x="0px"
-                    y="0px"
-                    width="100"
-                    height="100"
-                    viewBox="0,0,256,256">
-                    <g
-                      transform="translate(-26.66667,-26.66667) scale(1.20833,1.20833)">
-                      <g
-                        fill="none"
-                        fill-rule="nonzero"
-                        stroke="none"
-                        stroke-width="1"
-                        stroke-linecap="butt"
-                        stroke-linejoin="miter"
-                        stroke-miterlimit="10"
-                        stroke-dasharray
-                        stroke-dashoffset="0"
-                        font-family="none"
-                        font-weight="none"
-                        font-size="none"
-                        text-anchor="none"
-                        style="mix-blend-mode: normal">
+                <button class="inline-flex h-10 w-full items-center justify-center gap-2 rounded border border-slate-300 bg-white p-2 text-sm font-medium text-black outline-none focus:ring-2 focus:ring-[#333] focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" x="0px" y="0px" width="100" height="100" viewBox="0,0,256,256">
+                    <g transform="translate(-26.66667,-26.66667) scale(1.20833,1.20833)">
+                      <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
                         <g transform="scale(5.33333,5.33333)">
-                          <path
-                            d="M42,37c0,2.762 -2.238,5 -5,5h-26c-2.761,0 -5,-2.238 -5,-5v-26c0,-2.762 2.239,-5 5,-5h26c2.762,0 5,2.238 5,5z"
-                            fill="#0288d1"></path>
-                          <path
-                            d="M12,19h5v17h-5zM14.485,17h-0.028c-1.492,0 -2.457,-1.112 -2.457,-2.501c0,-1.419 0.995,-2.499 2.514,-2.499c1.521,0 2.458,1.08 2.486,2.499c0,1.388 -0.965,2.501 -2.515,2.501zM36,36h-5v-9.099c0,-2.198 -1.225,-3.698 -3.192,-3.698c-1.501,0 -2.313,1.012 -2.707,1.99c-0.144,0.35 -0.101,1.318 -0.101,1.807v9h-5v-17h5v2.616c0.721,-1.116 1.85,-2.616 4.738,-2.616c3.578,0 6.261,2.25 6.261,7.274l0.001,9.726z"
-                            fill="#ffffff"></path>
+                          <path d="M42,37c0,2.762 -2.238,5 -5,5h-26c-2.761,0 -5,-2.238 -5,-5v-26c0,-2.762 2.239,-5 5,-5h26c2.762,0 5,2.238 5,5z" fill="#0288d1"></path>
+                          <path d="M12,19h5v17h-5zM14.485,17h-0.028c-1.492,0 -2.457,-1.112 -2.457,-2.501c0,-1.419 0.995,-2.499 2.514,-2.499c1.521,0 2.458,1.08 2.486,2.499c0,1.388 -0.965,2.501 -2.515,2.501zM36,36h-5v-9.099c0,-2.198 -1.225,-3.698 -3.192,-3.698c-1.501,0 -2.313,1.012 -2.707,1.99c-0.144,0.35 -0.101,1.318 -0.101,1.807v9h-5v-17h5v2.616c0.721,-1.116 1.85,-2.616 4.738,-2.616c3.578,0 6.261,2.25 6.261,7.274l0.001,9.726z" fill="#ffffff"></path>
                         </g>
                       </g>
                     </g>
-                  </svg>
-                  Continue with LinkedIn
+                  </svg>Continue with LinkedIn
                 </button>
               </div>
-              <div
-                class="flex md:flex-col w-full md:w-40 items-center gap-2 py-6 text-sm text-slate-600">
-                <div class="h-px w-full md:h-full md:w-px bg-slate-400"></div>
-                OR
-                <div class="h-px w-full md:h-full md:w-px bg-slate-400"></div>
+              <div class="flex md:flex-col w-full md:w-40 items-center gap-2 py-6 text-sm text-slate-600">
+                <div class="h-px w-full md:h-full md:w-px bg-slate-400"></div>OR<div class="h-px w-full md:h-full md:w-px bg-slate-400"></div>
               </div>
-              <form action="{% url 'accounts:signIn' %}" method="POST"
-                class="w-full my-auto"> {% csrf_token %}
+              <form action="{% url 'accounts:login_user' %}" method="POST" class="w-full my-auto">
+                {% csrf_token %}
                 <div class="w-full mx-auto">
-                  <div class="relative mt-6">
-                    <input
-                      type="email"
-                      name="email"
-                      id="email"
-                      placeholder="Email Address"
-                      class="peer mt-2 w-full bg-transparent border-b-2 border-gray-300 px-0 py-1 placeholder:text-transparent focus:border-gray-500 focus:outline-none"
-                      autocomplete="NA" />
-                    <label
-                      for="email"
-                      class="pointer-events-none absolute top-0 left-0 origin-left -translate-y-1/2 bg-transparent transform text-sm text-primary opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-primary peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-primary">Email</label>
+                  {% comment %}Alert{% endcomment %}
+                  {% if message %}
+                    <div class="bg-red/30 border border-red rounded text-red text-sm p-4 flex justify-between">
+                      <div>
+                        <div class="flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                          </svg>
+                          <p>
+                            <span class="font-bold">Info:</span>
+                            {{ message }}
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </div>
+                    </div>
+                  {% endif %}
+
+                  <div class="relative mt-6 border-b-2 border-gray-400">
+                    <input type="email" name="email" id="email" placeholder="Email Address" class="peer mt-2 w-full bg-transparent border-none focus:outline-0 focus:ring-0 px-0 py-1 placeholder:text-transparent" autocomplete="NA" />
+                    <label for="email" class="pointer-events-none absolute top-0 left-0 origin-left -translate-y-1/2 bg-transparent transform text-sm text-primary opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-primary peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-primary">Email</label>
                   </div>
-                  <div class="relative mt-6">
-                    <input
-                      type="password"
-                      name="password"
-                      id="password"
-                      placeholder="Password"
-                      class="peer peer mt-2 w-full bg-transparent border-b-2 border-gray-300 px-0 py-1 placeholder:text-transparent focus:border-gray-500 focus:outline-none" />
-                    <label
-                      for="password"
-                      class="pointer-events-none absolute top-0 left-0 origin-left -translate-y-1/2 transform text-sm text-primary opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-primary peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-primary">Mot
-                      de passe</label>
+                  <div class="relative mt-6 border-b-2 border-gray-400">
+                    <input type="password" name="password" id="password" placeholder="Password" class="peer mt-2 w-full bg-transparent border-none focus:outline-0 focus:ring-0 px-0 py-1 placeholder:text-transparent" />
+                    <label for="password" class="pointer-events-none absolute top-0 left-0 origin-left -translate-y-1/2 transform text-sm text-primary opacity-75 transition-all duration-100 ease-in-out peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-primary peer-focus:top-0 peer-focus:pl-0 peer-focus:text-sm peer-focus:text-primary">Mot de passe</label>
                   </div>
                 </div>
-                <!-- <label for="email" class="sr-only">Email</label>
-                        <input name="email" type="email" autocomplete="email" required=""
-                            class="block w-full rounded-lg border-b-2 border-gray-300 px-3 py-2 shadow-sm outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-black focus:ring-offset-1"
-                            placeholder="Email Address" value="">
-                        <label for="password" class="sr-only">Mot de passe</label>
-                        <input name="password" type="password" autocomplete="current-password" required=""
-                            class="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-black focus:ring-offset-1"
-                            placeholder="Password" value=""> -->
-
                 <p class="mb-3 mt-2 text-sm text-gray-500 py-4">
-                  <a
-                    href="/forgot-password"
-                    class="text-blue-800 hover:text-blue-600">Mot de passe
-                    oublier ?</a>
+                  <a href="/forgot-password" class="text-blue-800 hover:text-blue-600">Mot de passe oublier ?</a>
                 </p>
-                <button
-                  type="submit"
-                  class="inline-flex w-full items-center justify-center rounded-lg bg-primary p-2 py-3 text-sm font-medium text-white outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-1 disabled:bg-gray-400">
-                  Continue
-                </button>
+                <button type="submit" class="inline-flex w-full items-center justify-center rounded-lg bg-primary p-2 py-3 text-sm font-medium text-white outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-1 disabled:bg-gray-400">Continue</button>
               </form>
-            </div>
+            </div>                
             <div class="mt-6 text-center text-sm text-slate-600">
-              Vous n'avez pas de compte ?
-              <a href="/signup" class="font-medium text-[#4285f4]">
-                S'inscrire</a>
+              <div x-data="{ open: false }">
+                <!-- Open modal button -->
+                Vous n'avez pas de compte ?
+                <!-- <a href="/signup" class=">S'inscrire</a> -->
+                <button x-on:click="open = true" class="font-medium text-primary"> S'inscrire</button>
+                <div x-show="open" class="fixed inset-0 px-2 z-10 overflow-hidden flex items-center justify-center">
+                  <div x-show="open" x-transition:enter="transition-opacity ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                  <!-- Modal Content -->
+                  <div x-show="open" x-transition:enter="transition-transform ease-out duration-300" x-transition:enter-start="transform scale-75" x-transition:enter-end="transform scale-100" x-transition:leave="transition-transform ease-in duration-300" x-transition:leave-start="transform scale-100" x-transition:leave-end="transform scale-75" class="bg-white rounded-md shadow-xl overflow-hidden max-w-md w-full sm:w-96 md:w-1/2 lg:w-2/3 xl:w-1/3 z-50">
+                    <!-- Modal Header -->
+                    <div class="bg-primary text-white px-4 py-2 flex justify-between">
+                      <h2 class="text-lg font-semibold">Inscription non disponible</h2>
+                    </div>
+                    <!-- Modal Body -->
+                    <div class="p-4">
+                      <p>Désolé, l'inscription n'est pas disponible pour le moment. Veuillez contacter l'administrateur pour plus d'informations.</p>
+                    </div>
+                    <!-- Modal Footer -->
+                    <div class="border-t px-4 py-2 flex justify-end">
+                      <button x-on:click="open = false" class="px-3 py-1 bg-primary text-white  rounded-md w-full sm:w-auto"> OK </button>
+                    </div>
+                  </div>
+                </div>
+              </div>              
             </div>
           </div>
         </div>
       </div>
       <div class="w-1/4">
-        <img src="/static/images/Frame 273.png" alt="logo image" />
+        <img src="/static/images/Logo mada-digital.png" alt="logo image" />
       </div>
     </div>
   </body>
+  <!-- Include Alpine.js -->
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
 </html>
