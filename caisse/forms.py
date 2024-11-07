@@ -28,4 +28,8 @@ class OperationEntrerForm(forms.ModelForm):
 class OperationSortirForm(forms.ModelForm):
     class Meta:
         model = OperationSortir
-        fields = ['description', 'montant', 'categorie', 'beneficiaire', 'fournisseur', 'date_de_sortie', 'quantite']
+        fields = ['date_de_sortie', 'description', 'beneficiaire', 'fournisseur', 'quantite', 'montant', 'categorie']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['date_de_sortie'].widget = forms.DateInput(attrs={'type': 'date'})

@@ -1,0 +1,88 @@
+{% extends 'layout/layout.html' %}
+
+{% block title %}Modifier l'Opération de Sortie{% endblock %}
+
+{% block content %}
+<div class="container mx-auto bg-white rounded-lg border p-6">
+    <!-- Afficher les messages -->
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    <span class="block sm:inline">{{ message }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="pl-[82%]"><a href="{% url 'caisse:liste_sorties' %}">
+        <button class="bg-rose-100 hover:bg-rose-300 text-red font-bold py-2 px-4 rounded">Annuler la modification</button>
+    </a>
+    </div> <br><br>
+
+    <form method="POST" action="{% url 'caisse:modifier_sortie' operation.id %}">
+        {% csrf_token %}
+        <div class="flex justify-between flex-wrap">
+        <!-- Date -->
+        <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
+            <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Date:</span>
+            <input type="date" name="date" value="{{ operation.date_de_sortie|date:'Y-m-d' }}"
+                    class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+        </div>
+
+        <!-- Désignation -->
+        <div class="mb-4 flex w-[47%] shadow-sm border-gray-500 border-b-2">
+            <input type="text" name="designation" value="{{ operation.description }}" placeholder="Désignation"
+                    class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+        </div>
+
+        <!-- Bénéficiaire -->
+        <div class="mb-4 flex w-[25%] shadow-sm border-gray-500 border-b-2">
+            <select name="beneficiaire" class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                <option value="" selected>Choisissez un bénéficiaire</option>
+                {% for beneficiaire in beneficiaires %}
+                <option value="{{ beneficiaire.id }}" {% if beneficiaire.id == operation.beneficiaire_id %}selected{% endif %}>{{ beneficiaire }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Fournisseur -->
+        <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
+            <select name="fournisseur" class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                <option value="" selected>Choisissez un fournisseur</option>
+                {% for fournisseur in fournisseurs %}
+                <option value="{{ fournisseur.id }}" {% if fournisseur.id == operation.fournisseur_id %}selected{% endif %}>{{ fournisseur.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Quantité -->
+        <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
+            <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Quantité:</span>
+            <input type="number" name="quantite" value="{{ operation.quantite }}" min="1" placeholder="Quantité"
+                    class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+        </div>
+
+        <!-- Prix Unitaire -->
+        <div class="mb-4 flex w-[25%] shadow-sm border-gray-500 border-b-2">
+            <input type="number" name="prixUnitaire" value="{{ operation.montant }}" placeholder="Prix Unitaire"
+                    class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6" step="0.01">
+        </div>
+
+        <!-- Catégorie -->
+        <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
+            <select name="categorie" class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full">
+                <option value="" selected>Choisissez une catégorie</option>
+                {% for categorie in categories_sortie %}
+                <option value="{{ categorie.id }}" {% if categorie.id == operation.categorie_id %}selected{% endif %}>{{ categorie.name }}</option>
+                {% endfor %}
+            </select>
+        </div><br>
+    </div>
+        <!-- Bouton de soumission -->
+        <div class="flex justify-end">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enregistrer les modifications</button>
+        </div>
+    
+    </form>
+</div>
+{% endblock %}

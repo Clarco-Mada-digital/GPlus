@@ -5,6 +5,8 @@ from django.utils import timezone
 from django.db import models
 import json
 from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib.auth.models import User
+from django.conf import settings
 from simple_history.models import HistoricalRecords
 
 # Create your models here.
@@ -165,3 +167,18 @@ class Caisse(models.Model):
 
     def __str__(self):
         return f"Caisse {self.id} - Montant: {self.montant}"
+    
+class UserActivity(models.Model):
+    ACTION_CHOICES = [
+        ('login', 'Login'),
+        ('logout', 'Logout'),
+        ('create', 'Create'),
+        ('read', 'Read'),
+        ('update', 'Update'),
+        ('delete', 'Delete'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    action = models.CharField(max_length=50, choices=ACTION_CHOICES)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(null=True, blank=True)

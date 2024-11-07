@@ -14,5 +14,6 @@
   "editor.quickSuggestions": {
     "comments": "on",
     "strings": "inline"
-  }
+  },
+  "python.analysis.typeCheckingMode": "basic"
 }

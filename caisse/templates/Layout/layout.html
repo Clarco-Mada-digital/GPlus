@@ -48,10 +48,10 @@
     </style>
 
     <body>
-        <div class="flex h-screen ">
+        <div class="flex h-screen bg-gray-50 dark:bg-[#323D4E]">
             <!-- Sidebar (hidden on small screens) -->
             <aside id="sidebar"
-                class="w-64 p-3 bg-white  fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out sm:translate-x-0 sm:relative sm:flex-shrink-0">
+                class="w-64 p-3 bg-white dark:bg-secondary border fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out sm:translate-x-0 sm:relative sm:flex-shrink-0">
                 <button id="sidebarClose"
                     class="text-gray-500 focus:outline-none sm:hidden">
                     <svg class="w-6 h-6" fill="none"
@@ -148,6 +148,7 @@
                         </svg>
                         <span class="ml-3">Acteurs</span>
                     </a>
+                    {% if request.user.is_staff %}
                     <!-- Nouvel élément pour les utilisateurs -->
                     <a href="{% url 'caisse:utilisateurs' %}"
                         class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/utilisateurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
@@ -159,6 +160,7 @@
                         </svg>
                         <span class="ml-3">Utilisateurs</span>
                     </a>
+                    {% endif %}
                     <a href="{% url 'caisse:historique' %}"
                         class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/historique/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
                         <svg width="25" height="25" viewBox="0 0 25 25"
@@ -175,7 +177,7 @@
                         </svg>
                         <span class="ml-3">Historique</span>
                     </a>
-
+                    
                     <a href="{% url 'caisse:parametres' %}"
                         class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/parametres/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"

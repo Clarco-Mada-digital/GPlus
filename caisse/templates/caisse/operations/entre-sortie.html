@@ -1,4 +1,5 @@
 {% extends 'layout/layout.html' %}
+{% load humanize %}
 
 {% block title %}Ajout des Opérations{% endblock %}
 
@@ -177,7 +178,7 @@
 
                         <!-- Prix Unitaire -->
                         <div
-                            class="mb-10 flex w-[25%] shadow-sm border-gray-300 border-b-2">
+                            class="mb-4 flex w-[25%] shadow-sm border-gray-500 border-b-2">
                             <input type="number" name="prixUnitaire"
                                 x-model="ligne.prixUnitaire" min="500"
                                 placeholder="Prix Unitaire"
@@ -236,6 +237,12 @@
                 </div>
             </div>
         </form>
+
     </div>
-</div>
-{% endblock %}
+    <script>
+    function formatNumber(input) {
+        const value = input.value.replace(/\D/g, '');
+        input.value = new Intl.NumberFormat('fr-FR').format(value);
+    }
+</script>
+    {% endblock %}
