@@ -31,6 +31,7 @@ from operator import attrgetter
 from django.core.paginator import Paginator
 from .models import UserActivity
 from functools import wraps
+from babel.dates import format_date
 
 User = get_user_model()
 
@@ -85,7 +86,7 @@ def index(request):
             0
         )
         soldes_par_mois.append({
-            'mois': mois.strftime('%B %Y'),
+            'mois': format_date(mois, format='MMMM yyyy', locale='fr_FR'),
             'solde': float(total_entree - total_sortie)
         })
 
@@ -111,11 +112,11 @@ def index(request):
         'total_entrees': float(total_entrees),
         'total_sorties': float(total_sorties),
         'entrees_par_mois': json.dumps([{
-            'mois': item['mois'].strftime('%B %Y'),
+            'mois': format_date(item['mois'], format='MMMM yyyy', locale='fr_FR'),
             'total': float(item['total'])
         } for item in entrees_par_mois]),
         'sorties_par_mois': json.dumps([{
-            'mois': item['mois'].strftime('%B %Y'),
+            'mois': format_date(item['mois'], format='MMMM yyyy', locale='fr_FR'),
             'total': float(item['total'])
         } for item in sorties_par_mois]),
         'soldes_par_mois': json.dumps(soldes_par_mois),
@@ -124,7 +125,7 @@ def index(request):
             'total': float(item['total'])
         } for item in sorties_categories]),
         'entrees_4_mois': json.dumps([{
-            'date': item['mois'].strftime('%B %Y'),
+            'date': format_date(item['mois'], format='MMMM yyyy', locale='fr_FR'),
             'montant': float(item['montant'])
         } for item in entrees_4_mois])
     }
@@ -309,7 +310,7 @@ def depenses(request):
         date = date_courante - timezone.timedelta(days=30*i)
         mois_liste.append({
             'value': date.strftime('%Y-%m'),
-            'label': date.strftime('%B %Y')
+            'label': format_date(date, format='MMMM yyyy', locale='fr_FR')
         })
 
     context = {

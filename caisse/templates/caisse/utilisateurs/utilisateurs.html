@@ -1,7 +1,7 @@
 {% extends 'layout/layout.html' %}
 {% load custom_filters %}
 
-{% block title %}Utilisateurs{% endblock %}
+{% block title_page %}Utilisateurs{% endblock %}
 
 {% block content %}
 <div x-data="{
@@ -33,7 +33,7 @@
     <!-- En-tête avec onglets -->
     <div class=" mb-8">
         <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold text-gray-900">Gestion des
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gestion des
                 Utilisateurs</h1>
         </div>
         <nav class=" flex border rounded-lg p-2 bg-white max-w-fit">

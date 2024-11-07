@@ -1,7 +1,7 @@
 {% load tailwind_tags %}
 {% load static %}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="{% if is_dark_theme %}dark{% endif %}">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -89,17 +89,17 @@
 
                 <nav class="mt-6">
                     <a href="{% url 'caisse:index' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/' %}text-blue-600 bg-blue-100  rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-100 rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path
                                 d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                         </svg>
-                        <span class="ml-3 text-zinc-600">Tableau de bord</span>
+                        <span class="ml-3">Tableau de bord</span>
                     </a>
                     <a href="{% url 'caisse:operation' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/operations/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/operations/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-100 rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-5 w-5 mr-2"
                             viewBox="0 0 24 24"
@@ -114,7 +114,7 @@
                         <span class="ml-3">Opérations</span>
                     </a>
                     <a href="{% url 'caisse:listes' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/listes/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/listes/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-100 rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                             fill="currentColor">
@@ -126,7 +126,7 @@
                         <span class="ml-3">Listes</span>
                     </a>
                     <a href="{% url 'caisse:depenses' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/depenses/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/depenses/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-100 rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                             fill="currentColor">
@@ -139,7 +139,7 @@
                         <span class="ml-3">Dépenses</span>
                     </a>
                     <a href="{% url 'caisse:acteurs' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/acteurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/acteurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-100 rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                             fill="currentColor">
@@ -151,7 +151,7 @@
                     {% if request.user.is_staff %}
                     <!-- Nouvel élément pour les utilisateurs -->
                     <a href="{% url 'caisse:utilisateurs' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/utilisateurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/utilisateurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-100 rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                             fill="currentColor">
@@ -162,24 +162,24 @@
                     </a>
                     {% endif %}
                     <a href="{% url 'caisse:historique' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/historique/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/historique/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-100 rounded-lg{% endif %}">
                         <svg width="25" height="25" viewBox="0 0 25 25"
                             fill="none" xmlns="http://www.w3.org/2000/svg">
 
                             <path
                                 d="M16.0859 17.1875L11.7188 12.8203V5.46875H13.2812V12.1719L17.1875 16.0859L16.0859 17.1875Z"
-                                fill="#16151C" />
+                                fill="currentColor" />
 
                             <path
                                 d="M12.5 1.5625C11.0429 1.56271 9.60072 1.8553 8.25877 2.42294C6.91683 2.99058 5.70243 3.82174 4.6875 4.86719V1.5625H3.125V7.8125H9.375V6.25H5.53125C6.9969 4.62132 8.9867 3.55744 11.1551 3.24313C13.3235 2.92881 15.5335 3.38392 17.4012 4.52941C19.269 5.67489 20.6766 7.4384 21.3795 9.51364C22.0824 11.5889 22.0362 13.8448 21.249 15.8895C20.4617 17.9343 18.9832 19.6387 17.0701 20.7068C15.157 21.7749 12.9303 22.1392 10.7766 21.7364C8.62284 21.3336 6.67824 20.1892 5.28047 18.5019C3.88269 16.8146 3.12005 14.691 3.125 12.5H1.5625C1.5625 14.6632 2.20397 16.7779 3.4058 18.5765C4.60763 20.3752 6.31583 21.7771 8.3144 22.6049C10.313 23.4328 12.5121 23.6494 14.6338 23.2273C16.7555 22.8053 18.7043 21.7636 20.234 20.234C21.7636 18.7043 22.8053 16.7555 23.2273 14.6338C23.6494 12.5121 23.4328 10.313 22.6049 8.3144C21.7771 6.31583 20.3752 4.60763 18.5765 3.4058C16.7779 2.20397 14.6632 1.5625 12.5 1.5625Z"
-                                fill="#16151C" />
+                                fill="currentColor" />
 
                         </svg>
                         <span class="ml-3">Historique</span>
                     </a>
                     
                     <a href="{% url 'caisse:parametres' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/parametres/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 hover:bg-blue-100 rounded-lg{% endif %}">
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/parametres/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-100 rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                             fill="currentColor">
@@ -195,7 +195,7 @@
             <div class="flex-1 flex flex-col">
                 <!-- Header with button to toggle sidebar -->
                 <header
-                    class="flex items-center justify-between px-6 py-4 bg-white ">
+                    class="flex items-center justify-between px-6 py-4 bg-white dark:bg-secondary">
                     <button id="sidebarToggle"
                         class="text-gray-500 focus:outline-none sm:hidden">
                         <svg class="w-6 h-6" fill="none"
@@ -208,15 +208,19 @@
                                 d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
                     </button>
-                    <div class></div>
+                    <div class="font-bold text-2xl dark:text-white"> 
+                    {% block title_page %}
+                        
+                    {% endblock title_page %}
+                    </div>
                     <div class="flex items-center">
                         <!-- Button to toggle sidebar -->
 
                         <!-- Button to close sidebar (visible only on small screens) -->
 
-                        <div class="relative">
+                        <div class="flex items-center border mx-5 border-gray-500 bg-gray-50 dark:bg-secondary rounded-full px-4 group group-focus:border-blue-500 group:focus:ring-blue-500 transition-colors duration-200">
                             <div
-                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                class="flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20" fill="currentColor">
@@ -226,11 +230,33 @@
                                 </svg>
                             </div>
                             <input type="text"
-                                class="w-64 p-12 pr-4 py-2 ml-4  border-none focus:outline-none rounded-full bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-200"
+                                class="py-2 border-none focus:outline-none rounded-full bg-transparent focus:ring-0 dark:text-white"
                                 placeholder="Entrer votre recherche ici">
                         </div>
+                        <a href="{% url 'change_theme' %}" id="theme-toggle">
+                            <div class="flex items-center justify-center border rounded-full overflow-hidden cursor-pointer">
+                                <div class="w-2/4 {% if not is_dark_theme %} bg-primary {% endif %} h-full p-2">
+                                    <svg width="19" height="18" viewBox="0 0 19 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9.20017 5.02319C7.00709 5.02319 5.22339 6.80689 5.22339 8.99996C5.22339 11.193 7.00709 12.9767 9.20017 12.9767C11.3932 12.9767 13.177 11.193 13.177 8.99996C13.177 6.80689 11.3932 5.02319 9.20017 5.02319ZM9.20017 11.6609C7.73812 11.6609 6.53924 10.462 6.53924 8.99996C6.53924 7.53791 7.73812 6.33903 9.20017 6.33903C10.6622 6.33903 11.8611 7.53791 11.8611 8.99996C11.8611 10.462 10.6622 11.6609 9.20017 11.6609Z" fill="white"/>
+                                    <path d="M9.20001 2.94713C9.5509 2.94713 9.87255 2.65472 9.87255 2.27459V0.812541C9.87255 0.46165 9.58014 0.139999 9.20001 0.139999C8.84912 0.139999 8.52747 0.432409 8.52747 0.812541V2.30383C8.55671 2.65472 8.84912 2.94713 9.20001 2.94713Z" fill="white"/>
+                                    <path d="M9.20001 15.0529C8.84912 15.0529 8.52747 15.3453 8.52747 15.7254V17.1875C8.52747 17.5384 8.81988 17.86 9.20001 17.86C9.5509 17.86 9.87255 17.5676 9.87255 17.1875V15.6962C9.87255 15.3453 9.5509 15.0529 9.20001 15.0529Z" fill="white"/>
+                                    <path d="M13.9664 4.90619C14.1419 4.90619 14.3173 4.84771 14.4343 4.7015L15.37 3.76579C15.6332 3.50262 15.6332 3.09325 15.37 2.83008C15.1068 2.56691 14.6975 2.56691 14.4343 2.83008L13.4986 3.76579C13.2354 4.02896 13.2354 4.43833 13.4986 4.7015C13.6155 4.84771 13.791 4.90619 13.9664 4.90619Z" fill="white"/>
+                                    <path d="M3.99509 13.2984L3.05938 14.2049C2.79621 14.468 2.79621 14.8774 3.05938 15.1406C3.17634 15.2575 3.35179 15.3453 3.52723 15.3453C3.70268 15.3453 3.87813 15.2868 3.99509 15.1406L4.9308 14.2049C5.19397 13.9417 5.19397 13.5323 4.9308 13.2691C4.66763 13.0352 4.22902 13.0352 3.99509 13.2984Z" fill="white"/>
+                                    <path d="M17.3874 8.35678H15.8961C15.5452 8.35678 15.2236 8.64919 15.2236 9.02932C15.2236 9.38021 15.516 9.70186 15.8961 9.70186H17.3874C17.7383 9.70186 18.06 9.40945 18.06 9.02932C18.06 8.64919 17.7383 8.35678 17.3874 8.35678Z" fill="white"/>
+                                    <path d="M3.14711 8.99999C3.14711 8.6491 2.8547 8.32745 2.47456 8.32745H1.01251C0.661617 8.32745 0.339966 8.61986 0.339966 8.99999C0.339966 9.35089 0.632376 9.67254 1.01251 9.67254H2.5038C2.8547 9.67254 3.14711 9.35089 3.14711 8.99999Z" fill="white"/>
+                                    <path d="M14.405 13.2984C14.1418 13.0352 13.7325 13.0352 13.4693 13.2984C13.2061 13.5615 13.2061 13.9709 13.4693 14.2341L14.405 15.1698C14.522 15.2868 14.6974 15.3745 14.8729 15.3745C15.0483 15.3745 15.2238 15.316 15.3407 15.1698C15.6039 14.9066 15.6039 14.4973 15.3407 14.2341L14.405 13.2984Z" fill="white"/>
+                                    <path d="M3.99509 2.85941C3.73192 2.59624 3.32255 2.59624 3.05938 2.85941C2.79621 3.12258 2.79621 3.53195 3.05938 3.79512L3.99509 4.73083C4.11205 4.84779 4.2875 4.93552 4.46295 4.93552C4.63839 4.93552 4.81384 4.87703 4.9308 4.73083C5.19397 4.46766 5.19397 4.05829 4.9308 3.79512L3.99509 2.85941Z" fill="white"/>
+                                    </svg>
+                                </div>
+                                <div class="p-2 w-2/4 h-full {% if  is_dark_theme %} text-primary dark:text-white bg-primary {% endif %}"> 
+                                    <svg width="13" height="18" viewBox="0 0 13 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7.47795 0.882302C7.01812 0.737515 6.55828 0.621684 6.0714 0.534812C5.71976 0.476896 5.34108 0.679599 5.20583 1.02709C5.04354 1.37458 5.12469 1.80894 5.39518 2.04061C7.31566 3.95181 8.01893 6.76069 7.23451 9.39583C6.36894 12.3205 3.82633 14.3765 0.877989 14.4634C0.499303 14.4634 0.201764 14.724 0.0935677 15.1005C-0.0146284 15.4769 0.147666 15.8823 0.445205 16.085C1.12143 16.5194 1.79766 16.8669 2.47388 17.0985C3.2583 17.3592 4.06977 17.475 4.88124 17.475C6.26074 17.475 7.6132 17.0985 8.8304 16.3746C10.7509 15.2453 12.1033 13.4209 12.6984 11.2202C13.8615 6.87652 11.5624 2.33018 7.47795 0.882302ZM11.5353 10.8437C11.0484 12.726 9.85826 14.2607 8.26237 15.2163C6.58533 16.2009 4.66485 16.4036 2.85257 15.8244C2.66322 15.7665 2.44683 15.6796 2.25749 15.5928C5.12469 14.9846 7.505 12.7839 8.39762 9.77228C9.18204 7.10818 8.69516 4.2993 7.09926 2.09852C10.5615 3.3437 12.5091 7.19506 11.5353 10.8437Z" fill="currentcolor"/>
+                                    </svg>          
+                                </div>
+                            </div>
+                        </a>
                         <!-- Dropdown menu -->
-                        <div class="relative ml-4" x-data="{ open: false }">
+                        <div class="relative mx-4" x-data="{ open: false }">
                             <button @click="open = !open"
                                 class="flex items-center focus:outline-none">
                                 {% if request.user.photo %}
@@ -253,10 +279,10 @@
                             <!-- Dropdown content -->
                             <div x-show="open"
                                 @click.away="open = false"
-                                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1"
+                                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 rounded-md shadow-lg py-1"
                                 style="display: none;">
                                 <a href="{% url 'caisse:parametres' %}"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-500">
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="h-5 w-5 inline-block mr-2"
                                         viewBox="0 0 24 24"
@@ -266,8 +292,8 @@
                                     </svg>
                                     Profil
                                 </a>
-                                <a href="{% url 'accounts:logout' %}"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <a href="{% url 'accounts:logout_user' %}"
+                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-500">
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="h-5 w-5 inline-block mr-2"
                                         viewBox="0 0 20 20" fill="currentColor">
@@ -279,6 +305,7 @@
                                 </a>
                             </div>
                         </div>
+                        
                     </div>
                 </header>
 

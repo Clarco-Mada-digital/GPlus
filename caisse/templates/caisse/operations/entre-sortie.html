@@ -1,12 +1,12 @@
 {% extends 'layout/layout.html' %}
 {% load humanize %}
 
-{% block title %}Ajout des Opérations{% endblock %}
+{% block title_page %}Ajout des Opérations{% endblock %}
 
 {% block content %}
 <div
     x-data="{ operation: 'entree', maxLignes: 10, lignesEntrees: [{ date: new Date().toISOString().split('T')[0], designation: '', montant: '', categorie: '' }], lignesSorties: [{ date: new Date().toISOString().split('T')[0], designation: '', beneficiaire: '', fournisseur: '', quantite: 1, prixUnitaire: '', categorie: '', prixTotal: '' }] }"
-    class="container mx-auto  p-6">
+    class="container mx-auto bg-white rounded-lg border p-6">
 
     <div class="flex justify-between space-x-4 mb-10">
         <div></div>

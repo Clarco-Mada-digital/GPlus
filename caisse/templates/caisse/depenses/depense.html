@@ -1,32 +1,30 @@
 {% extends 'layout/layout.html' %}
 {% load static %}
 
-{% block title %}Détails des Dépenses{% endblock %}
+{% block title_page %}Détails des Dépenses{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-gray-500  mb-8">Détails des
-        Dépenses</h1>
+    <h1 class="text-3xl font-bold mb-8">Détails des Dépenses</h1>
 
     <!-- Dépenses par Employés -->
-    <div class="flex justify-start gap-4 items-center p-4 mt-16">
-        <h2 class="text-xl font-semibold text-gray-700 ">Détails des
-            Dépenses par
-            Employés</h2>
-        <select id="moisSelect" class="rounded-xl px-12 py-2 border-none"
-            onchange="updateMonth(this.value)">
-            {% for mois in mois_liste %}
-            <option value="{{ mois.value }}"
-                {% if mois.value == mois_selectionne %}selected{% endif %}>
-                {{ mois.label }}
-            </option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class=" bg-white rounded-2xl overflow-hidden mb-8">
 
-        <table class="min-w-full divide-y divide-gray-200 text-center">
-            <thead class>
+    <div class="bg-white rounded-2xl overflow-hidden mb-8">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h2 class="text-xl font-semibold">Détails des Dépenses par
+                Employés</h2>
+            <select id="moisSelect" class="border rounded px-12 py-1"
+                onchange="updateMonth(this.value)">
+                {% for mois in mois_liste %}
+                <option value="{{ mois.value }}"
+                    {% if mois.value == mois_selectionne %}selected{% endif %}>
+                    {{ mois.label }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-primary/70">
                 <tr>
                     <th
                         class="px-6 py-3 text-left text-md font-medium text-gray-500  tracking-wider">Employé</th>
@@ -73,21 +71,22 @@
         Dépenses
         par
         Catégories</h2>
-    <div class="bg-white rounded-2xl overflow-hidden mb-8">
+    <div class="bg-white dark:bg-gray-600 rounded-2xl overflow-hidden mb-8">
 
-        <table class="min-w-full divide-y divide-gray-200 py-4">
+        <table
+            class="min-w-full divide-y divide-gray-200 py-4 text-gray-800 dark:text-white">
             <thead class="text-center">
                 <tr>
                     <th
-                        class="px-6 py-3 text-left text-md font-medium text-gray-500  tracking-wider">Catégorie</th>
+                        class="px-6 py-3 text-left text-md font-medium text-gray-800  tracking-wider">Catégorie</th>
                     <th
-                        class="px-6 py-3 text-left text-md font-medium text-gray-500  tracking-wider">Total
+                        class="px-6 py-3 text-left text-md font-medium text-gray-800  tracking-wider">Total
                         des dépenses</th>
                     <th
-                        class="px-6 py-3 text-left text-md font-medium text-gray-500  tracking-wider">Nombre
+                        class="px-6 py-3 text-left text-md font-medium text-gray-800  tracking-wider">Nombre
                         total des dépenses</th>
                     <th
-                        class="px-6 py-3 text-left text-md font-medium text-gray-500  tracking-wider">Actions</th>
+                        class="px-6 py-3 text-left text-md font-medium text-gray-800  tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white text-center divide-y divide-gray-200">
@@ -127,16 +126,16 @@
                     <option value="annuel">Annuel</option>
                 </select>
             </div>
-            <div class="bg-white rounded-2xl p-4" style="height: 400px;">
+            <div class="bg-white dark:bg-secondary rounded-2xl p-4"
+                style="height: 400px;">
                 <canvas id="categoryChart"></canvas>
             </div>
         </div>
 
         <!-- Graphique Dépenses par année -->
         <div>
-            <h2 class="text-xl font-semibold text-gray-700  mb-4">Dépenses
-                par année</h2>
-            <div class="bg-white rounded-2xl p-4" style="height: 300px;">
+            <h2 class="text-xl font-semibold mb-4">Dépenses par année</h2>
+            <div class="bg-white rounded-2xl p-4" style="height: 400px;">
                 <canvas id="yearlyExpensesChart"></canvas>
             </div>
         </div>
