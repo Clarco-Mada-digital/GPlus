@@ -47,24 +47,46 @@ class DashboardAPIView(APIView):
     permission_classes = [IsAuthenticated]  # Exige que l'utilisateur soit authentifié
 
     def get(self, request, *args, **kwargs):
-        # Récupérer les informations pour le tableau de bord
+        # Récupération des statistiques des employés
         total_salaries = Employee.objects.count()
         salaries_en_conge = Employee.objects.filter(statut='C').count()
         salaries_disponibles = Employee.objects.filter(statut='T').count()
-        unread_notifications = UserNotification.objects.filter(user_affected=request.user, is_read=False).select_related('notification').values('notification__user__username', 'notification__message', 'notification__date_created')
+
+        # Récupération des notifications non lues
+        unread_notifications = UserNotification.objects.filter(
+            user_affected=request.user,
+            is_read=False
+        ).select_related('notification').values(
+            'notification__user__username',
+            'notification__message',
+            'notification__date_created'
+        )
+
+        # Calcul des dates pour les événements
         today = timezone.now().date()
         tomorrow = today + timezone.timedelta(days=1)
 
-        today_events = AgendaEvent.objects.filter(start_date__date=today).values('description',
-                                                                                 'title',
-                                                                                 'start_time',
-                                                                                 'start_date')
-        tomorrow_events = AgendaEvent.objects.filter(start_date__date=tomorrow).values('description',
-                                                                                       'title',
-                                                                                        'start_time',
-                                                                                         'start_date')
+        # Récupération des événements d'aujourd'hui
+        today_events = AgendaEvent.objects.filter(
+            start_date__date=today
+        ).values(
+            'description',
+            'title',
+            'start_time',
+            'start_date'
+        )
 
-        # Créer le contexte
+        # Récupération des événements de demain
+        tomorrow_events = AgendaEvent.objects.filter(
+            start_date__date=tomorrow
+        ).values(
+            'description',
+            'title',
+            'start_time',
+            'start_date'
+        )
+
+        # Préparation du contexte pour le template
         context = {
             'total_salaries': total_salaries,
             'salaries_en_conge': salaries_en_conge,
@@ -74,7 +96,7 @@ class DashboardAPIView(APIView):
             'tomorrow_events': list(tomorrow_events),
         }
 
-        # Utiliser la fonction render pour rendre le template HTML
+        # Rendu du template avec le contexte
         return render(request, 'dashboard.html', context)
 
 #Les classes pour gérer les permissions
@@ -347,6 +369,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 
     # Mise à jour d'un employé
     def perform_update(self, serializer):
+        # Sauvegarder les modifications de l'employé
         employee = serializer.save()
 
         # Créer une notification pour la modification d'un employé
@@ -378,19 +401,13 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         email = employee_data.get('email')
         pays = employee_data.get('pays')
         code_postal = employee_data.get('code_postal')
-        photo = employee_data.get('photo')
-
-
-
         nom = employee_data.get('nom')
         prenom = employee_data.get('prenom')
         sexe = employee_data.get('sexe')
         statut_matrimonial = employee_data.get('statut_matrimonial')
-        date_naissance = employee_data.get('date_naissance')
         type_contrat = employee_data.get('type_contrat')
         departement_id = employee_data.get('departement')
         poste_id = employee_data.get('poste')
-
 
         # Créer un nouvel employé après vérification des champs
         new_employee = Employee(
@@ -403,7 +420,6 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             type_contrat=type_contrat,
             departement_id=departement_id,
             poste_id=poste_id,
-
         )
 
         try:
@@ -446,6 +462,9 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 ########################################
 
 class EmployeeCreateAPIView(APIView):
+    """
+    Vue pour la création d'un nouvel employé.
+    """
     def get(self, request, *args, **kwargs):
         # Récupérer toutes les données nécessaires pour le formulaire
         departements = Departement.objects.all()
@@ -943,9 +962,10 @@ class CongeUpdateView(APIView):
         return render(request, 'conges_update.html', {'conge': conge})
 
     def post(self, request, pk):
+        # Récupération de l'objet congé existant
         conge = get_object_or_404(Conge, pk=pk)
 
-        # Récupération des données mises à jour
+        # Récupération des données mises à jour depuis le formulaire
         type_conge = request.POST.get('type_conge')
         date_debut = request.POST.get('date_debut')
         date_fin = request.POST.get('date_fin')
@@ -959,6 +979,7 @@ class CongeUpdateView(APIView):
         except ValueError:
             return render(request, 'conges_update.html', {'conge': conge, 'error': "Dates invalides."})
 
+        # Calcul du nombre de jours de congé
         jours_utilises = (date_fin - date_debut).days + 1
 
         # Vérification du nombre maximum de jours pour le type de congé
@@ -976,7 +997,7 @@ class CongeUpdateView(APIView):
         conge.piece_justificatif = piece_justificatif
         conge.save()
 
-        return redirect('personnel:conge_create') # Redirection après mise à jour
+        return redirect('personnel:conge_create')  # Redirection après mise à jour
 
 class CongeDetailAPIView(APIView):
     def get(self, request, conge_id, *args, **kwargs):
@@ -1170,9 +1191,11 @@ def profile_view(request):
         return render(request, 'profile.html', context)  # Rendre le template du profil avec le contexte
     return redirect('personnel:login')  # Rediriger vers la page de connexion si non authentifié
 
-
 # Pour mettre à jour le profil
 class ProfileAPIView(APIView):
+    """
+    APIView pour gérer la mise à jour du profil de l'utilisateur connecté.
+    """
     permission_classes = [IsAuthenticated]
 
     def put(self, request):
@@ -1225,9 +1248,13 @@ class ProfileAPIView(APIView):
 
 
 class CustomPasswordChangeView(APIView):
+    """
+    APIView pour gérer le changement de mot de passe de l'utilisateur.
+    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
+        # Récupération des mots de passe depuis la requête
         old_password = request.data.get('old_password')
         new_password = request.data.get('new_password')
 
@@ -1242,7 +1269,7 @@ class CustomPasswordChangeView(APIView):
         request.user.save()
         update_session_auth_hash(request, request.user)
 
-        # Enregistrer l'historique
+        # Enregistrer l'historique du changement de mot de passe
         Historique.objects.create(
             utilisateur=request.user,
             action='update',
@@ -1252,9 +1279,10 @@ class CustomPasswordChangeView(APIView):
             date_action=timezone.now(),
         )
 
+        # Retourner une réponse de succès
         return render(request, 'settings.html', {
             'success': 'Mot de passe mis à jour avec succès.'
-        }, status=200) # Par exemple, rediriger vers la page des paramètres après succès
+        }, status=200)
 
     def get(self, request, *args, **kwargs):
         # Si l'utilisateur accède à cette vue avec GET, on redirige vers la page des paramètres

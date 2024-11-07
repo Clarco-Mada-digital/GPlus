@@ -305,7 +305,7 @@ class UserSettings(models.Model):
         ('dark', 'Sombre'),
     ]
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    language = models.CharField(max_length=5, choices=settings.LANGUAGES, default='fr')
+    language = models.CharField(max_length=10, choices=settings.LANGUAGES, default='fr')
     theme = models.CharField(max_length=5, choices=THEME_CHOICES, default='light')
     receive_desktop_notifications = models.BooleanField(default=True)
     receive_email_notifications = models.BooleanField(default=True)
