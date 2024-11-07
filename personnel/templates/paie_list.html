@@ -15,11 +15,11 @@ Fiche de Paye
             class="text-sm p-4 mt-8 w-full px-3 py-2 bg-cp_secondary border rounded-md focus:border-indigo-500" placeholder="🔍 Recherche" />
     </div>
     <div class="flex items-center justify-between mt-4">
-        <a href="{% url 'paie-creates' %}" class="flex gap-2 py-2 px-4 ml-4 bg-cp_primary text-white text-xs whitespace-nowrap overflow-hidden text-ellipsis rounded-md duration-300 hover:scale-110">
+        <a href="{% url 'personnel:create_paie' %}" class="flex gap-2 py-2 px-4 ml-4 bg-cp_primary text-white text-xs whitespace-nowrap overflow-hidden text-ellipsis rounded-md duration-300 hover:scale-110">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill="FFFFFF" d="M12 8V16M16 12H8M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <p class="mt-1 hidden md:block">Crée un nouveau fiche de paie</p>
+            <p class="mt-1 hidden md:block">Création de fichier de paie</p>
         </a>
         <button onclick="togglePopup()" class="flex gap-2 py-2 px-4 m-4 bg-white text-black text-xs rounded-md border-2 border-gray-200 duration-300 hover:scale-110">
             <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -39,35 +39,37 @@ Fiche de Paye
 </div>
 
 <!-- Pop-up de filtrage -->
-<div id="filter-popup" class="hidden fixed inset-0 backdrop-blur-sm bg-black bg-opacity-50 flex justify-center items-center ">
+<div id="filter-popup" class="hidden fixed inset-0 backdrop-blur-sm bg-black bg-opacity-50 flex justify-center items-center">
     <div class="bg-white p-4 rounded-md shadow-lg w-96">
         <h2 class="text-lg font-bold mb-2">Filtrer les fiches de paies</h2>
         <form id="filter-form" method="GET">
             <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-2">Lot</label>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Statut</label>
                 <div class="grid grid-cols-2 gap-2">
-                    {% for departement in departements %}
+                    {% for type in types_paie %}
                     <label class="flex items-center text-xs">
-                        <input type="checkbox" name="departement" value="{{ departement.id }}" class="form-checkbox text-purple-600 rounded-md mr-2">
-                        {{ departement.nom }}
+                        <input type="checkbox" name="statut" value="{{ type.0 }}" class="form-checkbox text-purple-600 rounded-md mr-2">
+                        {{ type.1 }}
                     </label>                        
                     {% endfor %}
                 </div>
             </div>
-        
+
+            
             <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-2">Statut</label>
-                <div class="grid grid-cols-2 gap-2">
-                    {% for competence in competences %}
-                    <label class="flex items-center text-xs">
-                        <input type="checkbox" name="competence" value="{{ competence.id }}" class="form-checkbox text-purple-600 rounded-md mr-2">
-                        {{ competence.nom }}
-                    </label>
-                    {% endfor %}
-                </div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Date</label>
+                <input type="date" name="date" class="border border-gray-300 rounded-md p-2 w-full">
             </div>
-        
-          
+
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Employé</label>
+                <select name="employee" class="border border-gray-300 rounded-md p-2 w-full">
+                    <option value="">Sélectionnez un employé</option>
+                    {% for employee in employees %}
+                    <option value="{{ employee.id }}">{{ employee.nom }} {{ employee.prenom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
             <div class="flex justify-between font-medium ">
                 <button type="button" onclick="togglePopup()" class="mr-2 bg-gray-200 text-black px-10 p-2 rounded-lg border">Retour</button>
@@ -76,6 +78,7 @@ Fiche de Paye
         </form>
     </div>
 </div>
+
 
 <div class="bg-white shadow-md rounded-lg">
     <table class="table-auto w-full">
@@ -99,8 +102,8 @@ Fiche de Paye
                 <td class="px-6 py-4 whitespace-nowrap">{{ paie.exercice }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ paie.net_a_payer }} MGA</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ paie.salaire_base }} MGA</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ paie.lot|date:"F Y"  }}</td>
-                {% if paie.statut == 'Payé' %}
+                <td class="px-6 py-4 whitespace-nowrap">{{ paie.date_debut|date:"F Y"  }}</td>
+                {% if paie.statut == 'P' %}
                 <td class="px-3 py-2 whitespace-nowrap text-cp_primary ">
                     <p class="bg-green-100 px-2 py-1 rounded-lg text-green-700 ">Complété</p>
                 </td>
@@ -111,7 +114,7 @@ Fiche de Paye
                 {% endif %}
 
                  <td class="px-6 py-4 whitespace-nowrap flex gap-2">
-                    <a href="#" class="text-indigo-600 duration-300 hover:scale-150">
+                    <a href="{% url 'personnel:view_paie' paie.id %}" class="text-indigo-600 duration-300 hover:scale-150">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M21.1303 9.8531C22.2899 11.0732 22.2899 12.9268 21.1303 14.1469C19.1745 16.2047 15.8155 19 12 19C8.18448 19 4.82549 16.2047 2.86971 14.1469C1.7101 12.9268 1.7101 11.0732 2.86971 9.8531C4.82549 7.79533 8.18448 5 12 5C15.8155 5 19.1745 7.79533 21.1303 9.8531Z" stroke="#16151C" stroke-width="1.5"/>
                             <circle cx="12" cy="12" r="3" stroke="#16151C" stroke-width="1.5"/>
@@ -119,7 +122,7 @@ Fiche de Paye
                                                         
                     </a>
 
-                    <a href="#" class="text-indigo-600 duration-300 hover:scale-150">
+                    <a href="{% url 'personnel:export_fiche_de_paie_pdf' paie.id %}" class="text-indigo-600 duration-300 hover:scale-150">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M7.46967 11.5303C7.17677 11.2374 7.17678 10.7626 7.46967 10.4697C7.76257 10.1768 8.23744 10.1768 8.53033 10.4697L11.25 13.1893L11.25 1C11.25 0.585786 11.5858 0.25 12 0.25C12.4142 0.25 12.75 0.585786 12.75 1V13.1894L15.4697 10.4697C15.7626 10.1768 16.2374 10.1768 16.5303 10.4697C16.8232 10.7626 16.8232 11.2374 16.5303 11.5303L12.5303 15.5303C12.3896 15.671 12.1989 15.75 12 15.75C11.801 15.75 11.6103 15.671 11.4696 15.5303L7.46967 11.5303ZM6.33981 8.46913C6.59889 8.14594 6.54692 7.67392 6.22373 7.41484C5.90054 7.15576 5.42852 7.20774 5.16944 7.53093C3.96871 9.02878 3.25 10.9315 3.25 13C3.25 17.8325 7.16751 21.75 12 21.75C16.8325 21.75 20.75 17.8325 20.75 13C20.75 10.9315 20.0313 9.02878 18.8306 7.53093C18.5715 7.20774 18.0995 7.15576 17.7763 7.41484C17.4531 7.67392 17.4011 8.14594 17.6602 8.46913C18.6553 9.71047 19.25 11.2848 19.25 13C19.25 17.0041 16.0041 20.25 12 20.25C7.99594 20.25 4.75 17.0041 4.75 13C4.75 11.2848 5.34472 9.71047 6.33981 8.46913Z" fill="#16151C"/>
                             </svg>
@@ -127,17 +130,23 @@ Fiche de Paye
                                                         
                     </a>
 
-                    <a href="#" class="text-indigo-600 duration-300 hover:scale-150">
+                    <a href="{% url 'personnel:update_paie' paie.id %}" class="text-indigo-600 duration-300 hover:scale-150">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M3 21H21M13.7844 5.31171C13.7844 5.31171 13.7844 6.94634 15.419 8.58096C17.0537 10.2156 18.6883 10.2156 18.6883 10.2156M7.31963 17.9881L10.7523 17.4977C11.2475 17.4269 11.7064 17.1975 12.06 16.8438L20.3229 8.58096C21.2257 7.67818 21.2257 6.21449 20.3229 5.31171L18.6883 3.67708C17.7855 2.77431 16.3218 2.77431 15.419 3.67708L7.15616 11.94C6.80248 12.2936 6.57305 12.7525 6.50231 13.2477L6.01193 16.6804C5.90295 17.4432 6.5568 18.097 7.31963 17.9881Z" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
                             </svg>                                
                     </a>
-                    <a href="#" class="hover:text-indigo-600 duration-300 hover:scale-150">
+                    <a href="{% url 'personnel:delete_paie' paie.id %}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette fiche de paie ?');" class="hover:text-indigo-600 duration-300 hover:scale-150" onclick="event.preventDefault(); document.getElementById('delete-form-{{ paie.id }}').submit();">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M19 9L18.2841 18.3068C18.1238 20.3908 16.386 22 14.2959 22H9.70412C7.61398 22 5.87621 20.3908 5.71591 18.3068L5 9M21 7C18.4021 5.73398 15.3137 5 12 5C8.68635 5 5.59792 5.73398 3 7M10 5V4C10 2.89543 10.8954 2 12 2C13.1046 2 14 2.89543 14 4V5M10 11V17M14 11V17" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
                             </svg>
-                            
-                    </a>
+                        </a>
+                            <a href="{% url 'personnel:duplicate_paie' paie.id %}" class="text-indigo-600 duration-300 hover:scale-150">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M16 8V4H4V16H8M8 8H20V20H8V8Z" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                                
+                        
                 </td>
             </tr>
             {% endfor %}
@@ -145,82 +154,57 @@ Fiche de Paye
 
         <tfoot>
             <tr>
-                <td colspan="8" class="px-6 py-4 text-xs ">
-                    <div class="flex justify-between ">
-                        <div class="flex">
-                            <p class="mt-1">
-                                Affichage 
-                            </p>
                 
-                            <p class=" ml-2 border-2 text-xs p-2 -mt-1 rounded-lg">
-                                5
+                <td colspan="8" class="px-6 py-4 text-xs">
+                    <div class="flex justify-between">
+                        <div class="flex">
+                            <p class="mt-1">Affichage</p>
+                            <p class="ml-2 border-2 text-xs p-2 -mt-1 rounded-lg">
+                                {{ page_obj.paginator.per_page }}  <!-- Affiche le nombre d'éléments par page -->
                             </p>
                         </div>
-                        <span class="text-gray-700 mt-1">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }} avec {{ total_employees }} employés enregistrés.</span>
-                        <div class="flex justify-center">
+                        <span class="text-gray-700 mt-1">
+                            Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }} avec {{ total_fiche }} fiches de paie enregistrées.
+                        </span>
+                        <div class="flex pr-12">
                             <!-- Première page -->
                             <a href="?page=1" class="mx-2">
                                 <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 2v20l8-4h6V2H6z"></path>
-                                  </svg>
-                                  
+                                </svg>
                             </a>
-                            
-                            <!-- Lien vers la page précédente (affiché seulement s'il y a une page précédente) -->
+                            <!-- Lien vers la page précédente -->
                             {% if page_obj.has_previous %}
-                                <a href="?page={{ page_obj.previous_page_number }}" class="mx-2 hover:text-indigo hover:text-xl ">
+                                <a href="?page={{ page_obj.previous_page_number }}" class="mx-2 hover:text-indigo hover:text-xl">
                                     <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                                      </svg>
-                                  
-                                      
+                                    </svg>
                                 </a>
                             {% endif %}
-                    
-                            <!-- Lien vers la page suivante (affiché seulement s'il y a une page suivante) -->
+                            <!-- Lien vers la page suivante -->
                             {% if page_obj.has_next %}
                                 <a href="?page={{ page_obj.next_page_number }}" class="mx-2">
-                                   
                                     <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19l7-7-7-7"></path>
-                                      </svg>
-                                      
-                                      
+                                    </svg>
                                 </a>
                             {% endif %}
-                            
                             <!-- Dernière page -->
-                            <a href="?page={{ paginator.num_pages }}" class="mx-2">
-                                
+                            <a href="?page={{ page_obj.paginator.num_pages }}" class="mx-2">
                                 <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 2v20l-8-4H6V2h12z"></path>
-                                  </svg>
-                                  
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"  d="M18 2v20l-8-4H6V2h12z"></path>
+                                </svg>
                             </a>
-                            
                         </div>
                     </div>
                 </td>
+                
+                
             </tr>
            </tfoot>
     </table>
 </div>
 
-
-<!-- Pagination -->
-<div class="mt-4">
-    {% if paies.has_previous %}
-        <a href="?page=1" class="text-blue-500 hover:underline">« Première</a>
-        <a href="?page={{ paies.previous_page_number }}" class="text-blue-500 hover:underline">« Précédente</a>
-    {% endif %}
-
-    <span>Page {{ paies.number }} sur {{ paies.paginator.num_pages }}</span>
-
-    {% if paies.has_next %}
-        <a href="?page={{ paies.next_page_number }}" class="text-blue-500 hover:underline">Suivante »</a>
-        <a href="?page={{ paies.paginator.num_pages }}" class="text-blue-500 hover:underline">Dernière »</a>
-    {% endif %}
-</div>
 
 
 
@@ -228,8 +212,37 @@ Fiche de Paye
 
 {% block script %}
 <script>
+    // filtre
     function togglePopup() {
         document.getElementById('filter-popup').classList.toggle('hidden');
     }
+
+    // confirme delete
+    function confirmDelete(paieId) {
+        const confirmation = confirm("Êtes-vous sûr de vouloir supprimer cette fiche de paie ?");
+        if (confirmation) {
+            // Envoyer la requête de suppression
+            fetch(`personnel/paie/delete/${paieId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}', // En-tête CSRF pour Django
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Fiche de paie supprimée avec succès.');
+                    location.reload(); // Recharge la page pour voir les changements
+                } else {
+                    alert('Une erreur s\'est produite lors de la suppression.');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur s\'est produite.');
+            });
+        }
+    }
+
 </script>
 {% endblock %}

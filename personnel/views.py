@@ -1,3 +1,4 @@
+import base64
 import os
 import subprocess
 from django.conf import settings
@@ -21,7 +22,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.views import APIView
 from xhtml2pdf import pisa
 from .models import Employee, Conge, Notification, Historique, Schedule, UserSettings, AgendaEvent, Paie, \
-    UserNotification, Poste, Departement, Competence
+    UserNotification, Poste, Departement, Competence, Prime
 from .serializers import RefusCongeSerializer, EmployeeSerializer, CongeSerializer, CongesDetailSerializer, \
     NotificationSerializer, ScheduleSerializer, SettingsSerializer, AgendaEventSerializer, HistoriqueSerializer, \
     ScheduleListSerializer, PaieSerializer, LoginSerializer, UserNotificationSerializer
@@ -30,6 +31,14 @@ from rest_framework.decorators import action
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 from django.template.response import TemplateResponse
+from rest_framework.pagination import PageNumberPagination
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from weasyprint import HTML, CSS
+from django.db.models.functions import TruncMonth
+from django.db.models import F
+from weasyprint.text.fonts import FontConfiguration
+from django.contrib.staticfiles import finders
+from django.template.loader import get_template
 
 
 CustomUser = get_user_model()
@@ -227,8 +236,9 @@ class ExportPaiePermission(permissions.BasePermission):
 
 # Pagination personnalisée
 class CustomPageNumberPagination(PageNumberPagination):
-    page_size_query_param = 'page_size'  # Permet à l'utilisateur de choisir le nombre d'éléments par page
-    max_page_size = 100  # Limite maximale d'employés par page
+    page_size = 10  # Nombre d'éléments par page
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 #Les vues
 class EmployeeViewSet(viewsets.ModelViewSet):
@@ -293,7 +303,6 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(date_embauche=date_embauche_filter)  # Filtrer par date d'embauche exacte
         if departement_filter:
             queryset = queryset.filter(departement__id__in=departement_filter)
-
         if competence_filter:
             queryset = queryset.filter(competence__id__in=competence_filter).distinct()
 
@@ -335,7 +344,6 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             'postes': postes,
         })
 
-    # Création d'un employé
 
     # Mise à jour d'un employé
     def perform_update(self, serializer):
@@ -383,6 +391,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         departement_id = employee_data.get('departement')
         poste_id = employee_data.get('poste')
 
+
         # Créer un nouvel employé après vérification des champs
         new_employee = Employee(
             photo=photo,
@@ -419,7 +428,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             )
 
             # Rediriger après succès
-            return redirect('employee-list')
+            return redirect('personnel:employee-list')
 
         except Exception as e:
             # Gestion d'erreur en cas de problème lors de la sauvegarde
@@ -434,23 +443,264 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             'message': f"L'employé {employee['nom']} {employee['prenom']} a été modifié avec succès."
         }, status=status.HTTP_200_OK)
 
+########################################
+
+class EmployeeCreateAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Récupérer toutes les données nécessaires pour le formulaire
+        departements = Departement.objects.all()
+        postes = Poste.objects.all()
+        type_choices = Employee.TYPE_CHOICES
+        contrat_choices = Employee.CONTRAT_CHOICES
+        statut_matrimonials = Employee.STATUT_CHOICES
+        sexes = Employee.SEXE_CHOICES
+        competences = Competence.objects.all()
+
+        # Créer un dictionnaire de contexte pour envoyer ces données au template
+        context = {
+            'departements': departements,
+            'postes': postes,
+            'type_choices': type_choices,
+            'contrat_choices': contrat_choices,
+            'statut_matrimonials': statut_matrimonials,
+            'sexes': sexes,
+            'competences': competences
+        }
+
+        # Afficher le formulaire HTML pour créer un employé avec les contextes
+        return render(request, 'employee_cree.html', context)
+
+    def post(self, request, *args, **kwargs):
+        # Récupérer les données du formulaire POST
+        employee_data = request.data
+        employee_files = request.FILES  # Pour gérer les fichiers uploadés
+
+        # Valider les données du formulaire
+        nom = employee_data.get('nom')
+        prenom = employee_data.get('prenom')
+        sexe = employee_data.get('sexe')
+        statut_matrimonial = employee_data.get('statut_matrimonial')
+        date_naissance = employee_data.get('date_naissance')
+        type_contrat = employee_data.get('type_contrat')
+        departement_id = employee_data.get('departement')
+        poste_id = employee_data.get('poste')
+        type_salarie = employee_data.get('type_salarie')
+        email = employee_data.get('email')
+        numero_telephone = employee_data.get('numero_telephone')
+        ville = employee_data.get('ville')
+        adresse = employee_data.get('adresse')
+        nationalite = employee_data.get('nationalite')
+        pays = employee_data.get('pays')
+        code_postal = employee_data.get('code_postal')
+        maladie = employee_data.get('maladie')
+        groupe_sanguin = employee_data.get('groupe_sanguin')
+        date_embauche = employee_data.get('date_embauche')
+        competence_id = employee_data.get('competence')
+        salaire_base = employee_data.get('salaire_base')
+
+        # Fichiers téléchargés
+        photo = employee_files.get('photo')
+        lettre_motivation = employee_files.get('lettre_motivation')
+        lettre_introduction = employee_files.get('lettre_introduction')
+        bulletin_salaire = employee_files.get('bulletin_salaire')
+        curriculum_vitae = employee_files.get('curriculum_vitae')
+
+        # Identifiants sociaux
+        id_github = employee_data.get('id_github')
+        id_linkedln = employee_data.get('id_linkedln')
+
+        try:
+            # Créer un nouvel employé après validation des champs
+            new_employee = Employee(
+                nom=nom,
+                prenom=prenom,
+                sexe=sexe,
+                statut_matrimonial=statut_matrimonial,
+                date_naissance=date_naissance,
+                type_contrat=type_contrat,
+                type_salarie=type_salarie,
+                departement_id=departement_id,
+                poste_id=poste_id,
+                email=email,
+                numero_telephone=numero_telephone,
+                ville=ville,
+                adresse=adresse,
+                nationalite=nationalite,
+                pays=pays,
+                code_postal=code_postal,
+                groupe_sanguin=groupe_sanguin,
+                maladie=maladie,
+                date_embauche=date_embauche,
+                competence_id=competence_id,
+                salaire_base=salaire_base,
+                photo=photo if photo else "photos/pdp_defaut.png",
+                lettre_motivation=lettre_motivation,
+                lettre_introduction=lettre_introduction,
+                bulletin_salaire=bulletin_salaire,
+                curriculum_vitae=curriculum_vitae,
+                id_github=id_github,
+                id_linkedln=id_linkedln,
+            )
+
+            # Enregistrer le nouvel employé dans la base de données
+            new_employee.save()
+
+            # Créer une notification pour l'ajout de l'employé
+            create_notification(
+                user_action=request.user,
+                type='employee_create',
+                message=f"Un nouvel employé {new_employee.nom} {new_employee.prenom} a été ajouté.",
+                user_affected=new_employee.user
+            )
+
+            # Créer un historique de l'ajout de l'employé
+            Historique.objects.create(
+                utilisateur=request.user,
+                action='create',
+                consequence=f"Ajout d'un nouvel employé : {new_employee.nom} {new_employee.prenom}",
+                utilisateur_affecte=new_employee,
+                categorie='employe',
+                date_action=timezone.now(),
+            )
+
+            # Rediriger après succès
+            return redirect('personnel:employee-list')
+
+        except Exception as e:
+            # Gestion d'erreur en cas de problème lors de la sauvegarde
+            return Response({'error': str(e)}, status=400)
+
+
+class EmployeeUpdateAPIView(APIView):
+    def get(self, request, employee_id, *args, **kwargs):
+        try:
+            # Récupérer l'employé par son ID
+            employee = Employee.objects.get(id=employee_id)
+
+            # Récupérer les données contextuelles comme dans la création
+            departements = Departement.objects.all()
+            postes = Poste.objects.all()
+            type_choices = Employee.TYPE_CHOICES
+            contrat_choices = Employee.CONTRAT_CHOICES
+            statut_matrimonials = Employee.STATUT_CHOICES
+            sexes = Employee.SEXE_CHOICES
+            competences = Competence.objects.all()
+
+            # Préparer les données pour pré-remplir le formulaire
+            context = {
+                'employee': employee,
+                'departements': departements,
+                'postes': postes,
+                'type_choices': type_choices,
+                'contrat_choices': contrat_choices,
+                'statut_matrimonials': statut_matrimonials,
+                'sexes': sexes,
+                'competences': competences,
+            }
+
+            # Rendre le formulaire avec les données pré-remplies
+            return render(request, 'employee_update.html', context)
+
+        except Employee.DoesNotExist:
+            return Response({'error': 'Employé non trouvé'}, status=404)
+
+    def post(self, request, employee_id, *args, **kwargs):
+        try:
+            # Récupérer l'employé par son ID
+            employee = Employee.objects.get(id=employee_id)
+
+            # Récupérer les données du formulaire POST
+            employee_data = request.data
+            employee_files = request.FILES
+
+            # Mettre à jour les champs avec les nouvelles données
+            employee.nom = employee_data.get('nom')
+            employee.prenom = employee_data.get('prenom')
+            employee.sexe = employee_data.get('sexe')
+            employee.statut_matrimonial = employee_data.get('statut_matrimonial')
+            employee.date_naissance = employee_data.get('date_naissance')
+            employee.type_contrat = employee_data.get('type_contrat')
+            employee.type_salarie = employee_data.get('type_salarie')
+            employee.departement_id = employee_data.get('departement')
+            employee.poste_id = employee_data.get('poste')
+            employee.email = employee_data.get('email')
+            employee.numero_telephone = employee_data.get('numero_telephone')
+            employee.ville = employee_data.get('ville')
+            employee.adresse = employee_data.get('adresse')
+            employee.nationalite = employee_data.get('nationalite')
+            employee.pays = employee_data.get('pays')
+            employee.code_postal = employee_data.get('code_postal')
+            employee.groupe_sanguin = employee_data.get('groupe_sanguin')
+            employee.maladie = employee_data.get('maladie')
+            employee.date_embauche = employee_data.get('date_embauche')
+            employee.competence_id = employee_data.get('competence')
+            employee.salaire_base = employee_data.get('salaire_base')
+
+            # Mettre à jour les fichiers si présents
+            if employee_files.get('photo'):
+                employee.photo = employee_files.get('photo')
+            if employee_files.get('lettre_motivation'):
+                employee.lettre_motivation = employee_files.get('lettre_motivation')
+            if employee_files.get('lettre_introduction'):
+                employee.lettre_introduction = employee_files.get('lettre_introduction')
+            if employee_files.get('bulletin_salaire'):
+                employee.bulletin_salaire = employee_files.get('bulletin_salaire')
+            if employee_files.get('curriculum_vitae'):
+                employee.curriculum_vitae = employee_files.get('curriculum_vitae')
+
+            # Sauvegarder les modifications
+            employee.save()
+
+            # Créer un historique de la modification de l'employé
+            Historique.objects.create(
+                utilisateur=request.user,
+                action='update',
+                consequence=f"Modification de l'employé : {employee.nom} {employee.prenom}",
+                utilisateur_affecte=employee,
+                categorie='employe',
+                date_action=timezone.now(),
+            )
+
+            # Rediriger après succès
+            return redirect('personnel:employee-list')
+
+        except Employee.DoesNotExist:
+            return Response({'error': 'Employé non trouvé'}, status=404)
+
+        except Exception as e:
+            # Gestion d'erreur
+            return Response({'error': str(e)}, status=400)
+
+
+class EmployeeDetailAPIView(APIView):
+    def get(self, request, employee_id, *args, **kwargs):
+        try:
+            # Récupérer l'employé via son ID
+            employee = Employee.objects.get(id=employee_id)
+            # Préparer les données à afficher
+            context = {
+                'employee': employee,
+            }
+
+            # Rendre le template avec les informations de l'employé
+            return render(request, 'employee_detail.html', context)
+
+        except Employee.DoesNotExist:
+            return Response({'error': 'Employé non trouvé'}, status=404)
+
+
 class CongeViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet pour la gestion des Congés.
-    Permet de créer, consulter, modifier, et supprimer des congés.
-    """
     queryset = Conge.objects.all()
     serializer_class = CongeSerializer
-    permission_classes = [IsAuthenticated]  # Exige que l'utilisateur soit authentifié et a les permission spécifique
-
-    # Rendu du formulaire de création d'employé
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         """
-
+        Filtre les congés en fonction des paramètres du GET, incluant
+        l’employé, le type de congé, le statut, le poste et le département.
         """
-
-        return Conge.objects.all()
+        queryset = super().get_queryset()
+        return queryset
 
     # Lister les congés pour un employé spécifique
     def get_conges_for_employee(self, request, employee_id):
@@ -460,12 +710,53 @@ class CongeViewSet(viewsets.ModelViewSet):
 
     # Lister les congés (GET)
     def list(self, request, *args, **kwargs):
+        """
+        Affiche une liste de congés avec des options de filtrage similaires à PaieViewSet,
+        incluant le type de congé, le statut de congé, le poste et le département de l'employé.
+        """
         queryset = self.get_queryset()
-        # Créer le contexte à passer au template
-        context = {
-            'conges': queryset  # Tu passes directement les objets ici
-        }
 
+        # Groupement des congés par mois pour créer les lots
+
+        # Récupération des filtres depuis les paramètres GET
+        statut_filter = request.GET.getlist('statut', None)
+        date_filter = request.GET.get('date', None)
+        employee_filter = request.GET.get('employee', None)
+        conge_type_filter = request.GET.get('conge_type', None)
+        employee_poste_filter = request.GET.get('employee_poste', None)
+        employee_departement_filter = request.GET.get('employee_departement', None)
+
+        # Application des filtres
+        if statut_filter:
+            queryset = queryset.filter(statut__in=statut_filter)
+        if date_filter:
+            queryset = queryset.filter(date_debut__date=date_filter)
+        if employee_filter:
+            queryset = queryset.filter(employee__id=employee_filter)
+        if conge_type_filter:
+            queryset = queryset.filter(type=conge_type_filter)
+        if employee_poste_filter:
+            queryset = queryset.filter(employee__poste=employee_poste_filter)
+        if employee_departement_filter:
+            queryset = queryset.filter(employee__departement=employee_departement_filter)
+
+        # Pagination
+        paginator = Paginator(queryset, 10)  # 10 congés par page
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        # Rendre le template HTML avec les données paginées et les filtres appliqués
+        return render(request, 'conges_list.html', {
+            'conges': page_obj,
+            'total_conges': queryset.count(),
+            'paginator': paginator,
+            'page_obj': page_obj,
+            'employees': Employee.objects.all(),  # Récupérer tous les employés pour le filtre
+            'statuts': Conge.STATUTS,
+            'types_conge': Conge.TYPE_CHOICES,  # Fournir le type de congé pour le filtre
+            'postes': Poste.objects.all(),  # Récupérer tous les postes uniques
+            'departements': Departement.objects.all(),            # Récupérer tous les départements uniques
+        })
         # Renvoyer la réponse avec le template 'conge_list.html' et le contexte
         return TemplateResponse(request, 'conges_list.html', context)
     # Créer un nouveau congé (POST)
@@ -550,18 +841,214 @@ class CongeViewSet(viewsets.ModelViewSet):
             'errors': serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
 
+
+class CongeCreateView(APIView):
+    """
+    Vue pour la création d'un congé sans serializer. Utilise le template HTML `conges_create.html`.
+    """
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            employee = None
+            conges = None
+            employees = Employee.objects.all()
+            types_conges = Conge.TYPE_CHOICES  # Récupère les choix de types de congés
+
+            if hasattr(request.user, 'employee'):
+                employee = request.user.employee
+                all_conges = employee.conge_set.all()
+
+                # Pagination des congés
+                paginator = Paginator(all_conges, 10)  # 5 congés par page
+                page = request.GET.get('page', 1)
+
+                try:
+                    conges = paginator.page(page)
+                except PageNotAnInteger:
+                    conges = paginator.page(1)
+                except EmptyPage:
+                    conges = paginator.page(paginator.num_pages)
+
+        return render(request, 'conges_create.html', {
+            'username': request.user.username,
+            'employee': employee,
+            'conges': conges,
+            'employees': employees,
+            'types_conges': types_conges,
+            'page_obj': conges,  # On transmet l'objet de pagination
+        })
+
+    def post(self, request):
+        # Récupération des données du formulaire
+        type_conge = request.POST.get('type_conge')
+        date_debut = request.POST.get('date_debut')
+        date_fin = request.POST.get('date_fin')
+        raison = request.POST.get('raison', "")
+        piece_justificatif = request.FILES.get('piece_justificatif')
+        employee_id = request.POST.get('employee_id')
+
+        # Récupération de l'employé concerné
+        employee = get_object_or_404(Employee, id=employee_id)
+
+        # Validation et calcul des jours demandés
+        try:
+            date_debut = timezone.datetime.strptime(date_debut, "%Y-%m-%d").date()
+            date_fin = timezone.datetime.strptime(date_fin, "%Y-%m-%d").date()
+        except ValueError:
+            return render(request, 'conges_create.html', {'error': "Les dates de début et de fin sont invalides."})
+
+        jours_utilises = (date_fin - date_debut).days + 1
+
+        # Vérification du nombre de jours maximum pour le type de congé
+        max_jours = {
+            'ANN': 15, 'FOR': 12, 'MAT': 105, 'PAT': 3, 'EXC': 10, 'OBL': 15
+        }
+        if jours_utilises > max_jours.get(type_conge, 0):
+            return render(request, 'conges_create.html', {'error': "Le nombre de jours dépasse le maximum autorisé."})
+
+        # Vérification des jours restants de l'employé
+        jours_disponibles = {
+            'ANN': employee.jours_conge_annuels,
+            'FOR': employee.jours_conge_formation,
+            'MAT': employee.jours_conge_maternite,
+            'PAT': employee.jours_conge_paternite,
+            'EXC': employee.jours_conge_exceptionnel,
+            'OBL': employee.jours_conge_obligatoire,
+        }
+        jours_restants = jours_disponibles.get(type_conge) - jours_utilises
+        if jours_restants < 0:
+            return render(request, 'conges_create.html', {'error': "Pas assez de jours restants pour ce congé."})
+
+        # Création du congé
+        Conge.objects.create(
+            employee=employee,
+            type_conge=type_conge,
+            date_debut=date_debut,
+            date_fin=date_fin,
+            raison=raison,
+            piece_justificatif=piece_justificatif,
+            date_demande=timezone.now()
+        )
+        return redirect('personnel:conge_create')  # Redirection après création
+
+
+class CongeUpdateView(APIView):
+    """
+    Vue pour la mise à jour d'un congé sans serializer. Utilise le template HTML `conges_update.html`.
+    """
+
+    def get(self, request, pk):
+        # Chargement du congé et affichage du formulaire de mise à jour
+        conge = get_object_or_404(Conge, pk=pk)
+        return render(request, 'conges_update.html', {'conge': conge})
+
+    def post(self, request, pk):
+        conge = get_object_or_404(Conge, pk=pk)
+
+        # Récupération des données mises à jour
+        type_conge = request.POST.get('type_conge')
+        date_debut = request.POST.get('date_debut')
+        date_fin = request.POST.get('date_fin')
+        raison = request.POST.get('raison', "")
+        piece_justificatif = request.FILES.get('piece_justificatif', conge.piece_justificatif)
+
+        # Validation des dates
+        try:
+            date_debut = timezone.datetime.strptime(date_debut, "%Y-%m-%d").date()
+            date_fin = timezone.datetime.strptime(date_fin, "%Y-%m-%d").date()
+        except ValueError:
+            return render(request, 'conges_update.html', {'conge': conge, 'error': "Dates invalides."})
+
+        jours_utilises = (date_fin - date_debut).days + 1
+
+        # Vérification du nombre maximum de jours pour le type de congé
+        max_jours = {
+            'ANN': 15, 'FOR': 12, 'MAT': 105, 'PAT': 3, 'EXC': 10, 'OBL': 15
+        }
+        if jours_utilises > max_jours.get(type_conge, 0):
+            return render(request, 'conges_update.html', {'conge': conge, 'error': "Nombre de jours trop élevé."})
+
+        # Mise à jour des informations du congé
+        conge.type_conge = type_conge
+        conge.date_debut = date_debut
+        conge.date_fin = date_fin
+        conge.raison = raison
+        conge.piece_justificatif = piece_justificatif
+        conge.save()
+
+        return redirect('personnel:conge_create') # Redirection après mise à jour
+
+class CongeDetailAPIView(APIView):
+    def get(self, request, conge_id, *args, **kwargs):
+        try:
+            # Récupérer l'employé via son ID
+            conge = Conge.objects.get(id=conge_id)
+            employee = request.user.employee
+
+            # Préparer les données à afficher
+            context = {
+                'conge': conge,
+                'employee': employee
+            }
+
+            # Rendre le template avec les informations de l'employé
+            return render(request, 'conges_detail.html', context)
+
+        except Conge.DoesNotExist:
+            return Response({'error': 'Congé non trouvé'}, status=404)
+
+class CongeDeleteView(APIView):
+    """
+    Vue pour la suppression d'un congé sans serializer.
+    """
+
+    def post(self, request, pk):
+        conge = get_object_or_404(Conge, pk=pk)
+        conge.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class ApprouverCongeView(APIView):
     permission_classes = [IsAuthenticated]  # Exige que l'utilisateur soit authentifié et a les permission spécifique
 
+    def get(self, request):
+        if request.user.is_authenticated:
+            employee = None
+            conges = None
+            employees = Employee.objects.all()
+            types_conges = Conge.TYPE_CHOICES  # Récupère les choix de types de salarié
+            if hasattr(request.user, 'employee'):
+                employee = request.user.employee
+                # Filtrer les congés en attente pour l'employé courant
+                all_conges = employee.conge_set.filter(statut='en_attente')
+
+                # Pagination des congés
+                paginator = Paginator(all_conges, 10)  # 10 congés par page
+                page = request.GET.get('page', 1)
+
+                try:
+                    conges = paginator.page(page)
+                except PageNotAnInteger:
+                    conges = paginator.page(1)
+                except EmptyPage:
+                    conges = paginator.page(paginator.num_pages)
+
+        return render(request, 'conges_manage.html', {
+            'username': request.user.username,
+            'employee': employee,
+            'conges': conges,
+            'employees': employees,
+            'types_conges': types_conges
+        })
     def post(self, request, conge_id, action):
 
-        if not request.user.has_perm(
+        '''if not request.user.has_perm(
                 'personnel.manage_conge'):  # Vérifier si l'utilisateur a la permission 'accept_conge' pour accepter un congé
 
             return Response({
                 'status': 'error',
                 'message': "Vous n'avez pas la permission d'accepter ce congé."
-            }, status=status.HTTP_403_FORBIDDEN)
+            }, status=status.HTTP_403_FORBIDDEN)'''
         conge = get_object_or_404(Conge, id=conge_id)
 
         if action == 'accepter':
@@ -595,11 +1082,8 @@ class ApprouverCongeView(APIView):
                 date_action=timezone.now(),
             )
 
-            return Response({
-                'status': 'success',
-                'message': f"Le congé de {conge.employee.nom} a été accepté."
-            }, status=status.HTTP_200_OK)
-
+            messages.success(request, f"Le congé de {conge.employee.nom} a été accepté.")
+            return redirect('personnel:conge_manage')
         elif action == 'refuser':
             serializer = RefusCongeSerializer(data=request.data)
             if serializer.is_valid():
@@ -611,6 +1095,7 @@ class ApprouverCongeView(APIView):
 
                 create_notification(
                     user_action=request.user,
+                    type='conge_refuse',
                     message=f"Le congé de {conge.employee.nom} a été refusé car {conge.raison_refus}.",
                     user_affected=conge.employee.user
                 )
@@ -625,10 +1110,8 @@ class ApprouverCongeView(APIView):
                     date_action=timezone.now(),
                 )
 
-                return Response({
-                    'status': 'success',
-                    'message': f"Le congé de {conge.employee.nom} a été refusé."
-                }, status=status.HTTP_200_OK)
+                messages.success(request, f"Le congé de {conge.employee.nom} a été refusé.")
+                return redirect('personnel:conge_manage')
             else:
                 return Response({
                     'status': 'error',
@@ -685,7 +1168,7 @@ def profile_view(request):
             'types_conges': types_conges
         }
         return render(request, 'profile.html', context)  # Rendre le template du profil avec le contexte
-    return redirect('login')  # Rediriger vers la page de connexion si non authentifié
+    return redirect('personnel:login')  # Rediriger vers la page de connexion si non authentifié
 
 
 # Pour mettre à jour le profil
@@ -797,9 +1280,10 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 
         # Pour les requêtes GET, on récupère les choix pour les départements et les postes
         employees = Employee.objects.all()
-
+        days = Schedule.DAY_CHOICES
         return Response({
             'employees': employees,
+            'days': days,
         }, template_name='calendrier_create.html')
 
     def perform_create(self, serializer):
@@ -846,9 +1330,36 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         )
 
     def list(self, request, *args, **kwargs):
-        """Récupérer et retourner la liste des emplois du temps en JSON."""
-        # Obtenir tous les horaires
+        """Récupérer et retourner la liste des emplois du temps en JSON avec filtrage."""
+        # Récupérer tous les horaires
         queryset = Schedule.objects.select_related('employee')
+
+        # Appliquer les filtres
+        employee_department = request.GET.getlist('departement')
+        employee_type = request.GET.getlist('type_salarie')
+        employee_poste = request.GET.getlist('poste')
+        location = request.GET.getlist('schedule')
+        day = request.GET.get('day')
+
+        # Filtrer par département
+        if employee_department:
+            queryset = queryset.filter(employee__department__id__in=employee_department)
+
+        # Filtrer par type d'employé
+        if employee_type:
+            queryset = queryset.filter(employee__type__in=employee_type)
+
+        # Filtrer par poste
+        if employee_poste:
+            queryset = queryset.filter(employee__poste__id__in=employee_poste)
+
+        # Filtrer par lieu
+        if location:
+            queryset = queryset.filter(location__id__in=location)
+
+        # Filtrer par jour
+        if day:
+            queryset = queryset.filter(jour_debut__icontains=day)  # Vous pouvez ajuster cela selon votre logique
 
         # Sérialiser les horaires
         serializer = ScheduleListSerializer(queryset, many=True)
@@ -882,31 +1393,48 @@ class ScheduleViewSet(viewsets.ModelViewSet):
                 'jour_fin': schedule['jour_fin'],
                 'location': schedule['location']
             })
-        num_pages = paginator.page.paginator.num_pages if paginator.page else None
 
+        num_pages = paginator.page.paginator.num_pages if paginator.page else None
 
         return render(request, 'calendrier_list.html', {
             'schedules': schedules_dict,
             'num_pages': num_pages,
             'paginator': paginator,
             'page_obj': paginator.page,
-            'total_emploiedutemps' : total_emploiedutemps,
+            'total_emploiedutemps': total_emploiedutemps,
         })
+
 
 class MarkNotificationAsReadView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, notification_id):
+    def get(self, request, pk):
         # Récupérer la notification pour l'utilisateur connecté
-        user_notification = get_object_or_404(UserNotification, notification_id=notification_id,
-                                              user_affected=request.user)
+        user_notification = get_object_or_404(UserNotification, pk=pk,
+                                            user_affected=request.user)
 
         # Marquer la notification comme lue
         user_notification.is_read = True
         user_notification.save()
 
-        return Response({'success': True, 'message': 'Notification marquée comme lue.'}, status=status.HTTP_200_OK)
+        # Rediriger vers la page des notifications
+        return redirect('personnel:notifications_list')
 
+    def post(self, request, pk):
+        # Même logique que pour GET
+        user_notification = get_object_or_404(UserNotification, pk=pk,
+                                            user_affected=request.user)
+
+        user_notification.is_read = True
+        user_notification.save()
+
+        # Vérifier si c'est une requête AJAX
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return Response({'success': True, 'message': 'Notification marquée comme lue.'},
+                          status=status.HTTP_200_OK)
+
+        # Sinon, rediriger vers la page des notifications
+        return redirect('personnel:notifications_list')
 
 class SettingsView(LoginRequiredMixin, View):
     """Affichage et mise à jour des paramètres de l'utilisateur."""
@@ -957,7 +1485,7 @@ class SettingsView(LoginRequiredMixin, View):
         messages.success(request, 'Paramètres mis à jour avec succès !')
 
         # Retourner à la page des paramètres après mise à jour
-        return redirect('settings')  # Remplacez 'settings' par le nom de votre URL
+        return redirect('personnel:settings')  # Remplacez 'settings' par le nom de votre URL
 
 class AgendaEventViewSet(viewsets.ModelViewSet):
     queryset = AgendaEvent.objects.all()
@@ -1019,57 +1547,88 @@ class ManageEmployeePermissionsView(APIView):
         users = CustomUser.objects.all()  # Utilise CustomUser ici
         permissions = Permission.objects.all()  # Récupère toutes les permissions
 
-        # Préparez les données des utilisateurs pour la réponse JSON
+        # Préparez les données des utilisateurs pour le rendu du template
         user_data = [{
             'id': user.id,
             'username': user.username,
             'permissions': list(user.user_permissions.values_list('id', flat=True)),  # Liste des ID des permissions
         } for user in users]
 
-        return Response({
+        # Rendre le template avec les données nécessaires
+        return render(request, 'profile_manage_perm.html', {
             'users': user_data,
-            'permissions': list(permissions.values()),  # Liste des permissions
-        }, status=status.HTTP_200_OK)
+            'permissions': permissions,  # Liste des permissions
+        })
 
     def post(self, request):
         # Récupérer tous les utilisateurs personnalisés
         for user in CustomUser.objects.all():
             # Utiliser get pour récupérer les permissions de la requête
-            user_permissions = request.data.get(f'permissions_{user.id}', [])  # Récupère les permissions ou une liste vide
+            user_permissions = request.POST.getlist(f'permissions_{user.id}', [])  # Récupère les permissions ou une liste vide
             user.user_permissions.set(user_permissions)  # Met à jour les permissions
         return Response({'success': True, 'message': 'Permissions mises à jour avec succès.'},
                         status=status.HTTP_200_OK)
 
-class PaiePagination(PageNumberPagination):
-    page_size = 10  # Nombre de fiches de paie par page
-
 class PaieViewSet(viewsets.ModelViewSet):
     queryset = Paie.objects.order_by('-date_creation')
-    serializer_class = PaieSerializer
-    pagination_class = PaiePagination
     permission_classes = [PaiePermission]
 
     @action(detail=False, methods=['GET', 'POST'], renderer_classes=[TemplateHTMLRenderer])
     def create_paie_form(self, request, *args, **kwargs):
-
-        # Pour les requêtes GET, on récupère les choix pour les départements et les postes
         employees = Employee.objects.all()
+        types_paie = Paie.TYPE_CHOICES
 
-        # Retourner les employés dans un template HTML avec la pagination
         return render(request, 'paie_create.html', {
-            'employees': employees
+            'employees': employees,
+            'types_paie': types_paie
         })
 
     def list(self, request, *args, **kwargs):
         """Liste paginée des fiches de paie."""
         queryset = self.get_queryset()
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return render(request, 'paie_list.html', {'paies': page, 'messages': messages.get_messages(request)})
 
-        serializer = self.get_serializer(queryset, many=True)
-        return render(request, 'paie_list.html', {'paies': queryset, 'messages': messages.get_messages(request)})
+        available_lots = (
+            queryset
+            .annotate(month=TruncMonth('date_creation'))  # TruncMonth pour regrouper par mois
+            .values(lot=F('month'))  # Alias pour 'lot' basé sur 'month'
+            .distinct()
+            .order_by('date_debut')  # Ordre chronologique
+        )
+
+        # Filtrage
+        lot_filter = request.GET.getlist('lots', None)  # Corrigé pour correspondre au nom du champ
+        statut_filter = request.GET.getlist('statut', None)
+        date_filter = request.GET.get('date', None)
+        employee_filter = request.GET.get('employee', None)
+
+        if statut_filter:
+            queryset = queryset.filter(statut__in=statut_filter)
+        if lot_filter:
+            # Filtrer par lot (mois et année)
+            queryset = queryset.filter(date_creation__month__in=[date_debut.month.month for date_debut in available_lots],
+                                       date_creation__year__in=[date_debut.month.year for date_debut in available_lots]).distinct()
+        if date_filter:
+            queryset = queryset.filter(date_creation__date=date_filter)
+        if employee_filter:
+            queryset = queryset.filter(employee__id=employee_filter)
+
+        # Pagination
+        paginator = Paginator(queryset, 10)  # 10 fiches par page
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        # Rendre le template HTML avec les données paginées
+        return render(request, 'paie_list.html', {
+            'paies': page_obj,
+            'types_paie': Paie.TYPE_CHOICES,
+            'total_fiche': queryset.count(),
+            'messages': messages.get_messages(request),
+            'paginator': paginator,
+            'page_obj': page_obj,
+            'competences': Competence.objects.all(),  # Assurez-vous d'importer Competence
+            'employees': Employee.objects.all(),  # Récupérer tous les employés pour le filtre
+            'available_lots': available_lots,
+        })
 
     def retrieve(self, request, pk=None):
         """Récupérer le détail d'une fiche de paie."""
@@ -1082,16 +1641,18 @@ class PaieViewSet(viewsets.ModelViewSet):
 
         # Récupérer les données directement depuis request.POST
         employee_id = request.POST.get('employee')
-        periode_debut = request.POST.get('periode_debut')
-        periode_fin = request.POST.get('periode_fin')
-        numero_matricule = request.POST.get('numero_matricule')
+        date_debut = request.POST.get('periode_debut')
+        date_fin = request.POST.get('periode_fin')
+        salaire_base = request.POST.get('salaire_base')
         lot = request.POST.get('lot')
-        contrat = request.POST.get('contrat')
-        heures_travail = request.POST.get('heures_travail')
+        primes = request.POST.get('primes')
+        statut = request.POST.get('statut')
+        indemnites = request.POST.get('indemnites')
+        indice_anciennete = request.POST.get('indice_anciennete')
 
         # Vérifier que tous les champs nécessaires sont fournis
         if not (
-                employee_id and periode_debut and periode_fin and numero_matricule and lot and contrat and heures_travail):
+                employee_id and date_debut and date_fin and indice_anciennete and lot and indemnites and primes and statut and salaire_base):
             # Rendre un template HTML avec un message d'erreur
             return render(request, 'paie_create.html', {
                 'success': False,
@@ -1099,15 +1660,19 @@ class PaieViewSet(viewsets.ModelViewSet):
             })
 
         try:
+            employee = get_object_or_404(Employee, pk=employee_id)
+
             # Créer une nouvelle fiche de paie
             nouvelle_fiche = Paie.objects.create(
-                employee_id=employee_id,
-                periode_debut=periode_debut,
-                periode_fin=periode_fin,
-                numero_matricule=numero_matricule,
+                employee=employee,
+                date_debut=date_debut,
+                date_fin=date_fin,
+                indice_anciennete=indice_anciennete,
                 lot=lot,
-                contrat=contrat,
-                heures_travail=heures_travail
+                statut=statut,
+                primes=primes,
+                salaire_base=salaire_base,
+                indemnites=indemnites
             )
 
             # Créer la notification pour l'utilisateur de l'employé
@@ -1172,28 +1737,598 @@ class PaieViewSet(viewsets.ModelViewSet):
 
         return Response({'success': False, 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+############################## vue pour la fiche de paie séparer #######################
+class CreatePaieView(APIView):
+    def get(self, request):
+        employees = Employee.objects.all()
+        types_paie = Paie.TYPE_CHOICES
+        return render(request, 'paie_create.html', {
+            'employees': employees,
+            'types_paie': types_paie
+        })
+
+    def post(self, request):
+        # Création de la fiche de paie
+        try:
+            # Récupération des données de la requête POST
+            employee_id = request.POST.get('employee_id')
+            salaire_base = request.POST.get('salaire_base')
+            date_debut = request.POST.get('date_debut')
+            date_fin = request.POST.get('date_fin')
+            indemnite_transport = request.POST.get('indemnite_transport', 0)
+            indemnite_communication = request.POST.get('indemnite_communication', 0)
+            indemnite_stage = request.POST.get('indemnite_stage', 0)
+            net_a_payer = request.POST.get('net_a_payer', 0)
+            statut = request.POST.get('statut', 'En attente')
+
+            # Validation des champs nécessaires
+            if not all([employee_id, salaire_base, date_debut, date_fin]):
+                return Response({'success': False, 'message': 'Tous les champs sont obligatoires.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            # Récupération de l'employé
+            employee = get_object_or_404(Employee, pk=employee_id)
+
+            paie = Paie(
+                employee=employee,
+                salaire_base=salaire_base,
+                indemnite_transport=indemnite_transport,
+                indemnite_communication=indemnite_communication,
+                indemnite_stage=indemnite_stage,
+                date_debut=date_debut,
+                date_fin=date_fin,
+                statut=statut,
+                net_a_payer=net_a_payer
+            )
+
+            # Enregistrer l'instance pour obtenir un ID (clé primaire)
+            paie.save()  # Assurez-vous que cette ligne est exécutée avant d'essayer de créer des Prime
+            print("hello")  # Pour le débogage
+
+            # Ajouter des primes associées à l'instance de Paie
+            primes_nom = request.POST.getlist('prime_nom[]')  # Récupération des noms des primes
+            primes_montant = request.POST.getlist('prime_montant[]')  # Récupération des montants des primes
+
+            # Boucle pour créer chaque prime
+            for nom, montant in zip(primes_nom, primes_montant):
+                if nom and montant:  # Vérification que les noms et montants ne sont pas vides
+                    Prime.objects.create(paie=paie, nom=nom, montant=montant)
+
+            # Créer une notification pour la création de la fiche de paie
+            create_notification(
+                user_action=request.user,
+                type='paie_create',
+                message=f"La fiche de paie de {paie.employee.nom} {paie.employee.prenom} a été créée.",
+                user_affected=paie.employee.user
+            )
+            Historique.objects.create(
+                utilisateur=request.user,
+                action='update',
+                consequence=f"La fiche de paie a été mise à jour par: {request.user} pour {paie.employee.nom} {paie.employee.prenom}",
+                utilisateur_affecte=paie.employee.user,
+                categorie='paie',
+                date_action=timezone.now(),
+            )
+
+            # Rediriger vers la liste des fiches de paie
+            return redirect('personnel:payroll-list')
+
+        except Exception as e:
+            return Response({'success': False, 'message': str(e)},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UpdatePaieView(APIView):
+    def get(self, request, pk):
+        # Récupérer la fiche de paie à mettre à jour
+        paie = get_object_or_404(Paie, pk=pk)
+        employees = Employee.objects.all()
+        types_paie = Paie.TYPE_CHOICES
+
+        return render(request, 'paie_update.html', {
+            'paie': paie,
+            'employees': employees,
+            'types_paie': types_paie
+        })
+
+    def post(self, request, pk):
+        # Récupérer la fiche de paie à mettre à jour
+        paie = get_object_or_404(Paie, pk=pk)
+
+        try:
+            # Récupération des données de la requête POST
+            employee_id = request.POST.get('employee_id', paie.employee.id)
+            salaire_base = request.POST.get('salaire_base', paie.salaire_base)
+            date_debut = request.POST.get('date_debut', paie.date_debut)
+            date_fin = request.POST.get('date_fin', paie.date_fin)
+            indemnite_transport = request.POST.get('indemnite_transport', paie.indemnite_transport)
+            indemnite_communication = request.POST.get('indemnite_communication', paie.indemnite_communication)
+            indemnite_stage = request.POST.get('indemnite_stage', paie.indemnite_stage)
+            statut = request.POST.get('statut', paie.statut)
+            net_a_payer = request.POST.get('net_a_payer', paie.net_a_payer)
+            # Validation des champs nécessaires
+            if not all([employee_id, salaire_base, date_debut, date_fin]):
+                return Response({'success': False, 'message': 'Tous les champs sont obligatoires.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            # Récupération de l'employé
+            employee = get_object_or_404(Employee, pk=employee_id)
+
+            # Mettre à jour l'instance de Paie
+            paie.employee = employee
+            paie.salaire_base = salaire_base
+            paie.indemnite_transport = indemnite_transport
+            paie.indemnite_communication = indemnite_communication
+            paie.indemnite_stage = indemnite_stage
+            paie.date_debut = date_debut
+            paie.date_fin = date_fin
+            paie.statut = statut
+            paie.net_a_payer = net_a_payer
+            # Enregistrer les modifications
+            paie.save()
+
+            # Supprimer les anciennes primes si nécessaire
+            paie.primes.all().delete()
+
+            # Ajouter des primes associées à l'instance de Paie
+            primes_nom = request.POST.getlist('prime_nom[]')  # Récupération des noms des primes
+            primes_montant = request.POST.getlist('prime_montant[]')  # Récupération des montants des primes
+
+            # Boucle pour créer chaque prime
+            for nom, montant in zip(primes_nom, primes_montant):
+                if nom and montant:  # Vérification que les noms et montants ne sont pas vides
+                    Prime.objects.create(paie=paie, nom=nom, montant=montant)
+
+            # Créer une notification pour la mise à jour de la fiche de paie
+            create_notification(
+                user_action=request.user,
+                type='paie_update',
+                message=f"La fiche de paie de {paie.employee.nom} {paie.employee.prenom} a été mise à jour.",
+                user_affected=paie.employee.user
+            )
+            Historique.objects.create(
+                utilisateur=request.user,
+                action='update',
+                consequence=f"La fiche de paie a été mise à jour par: {request.user} pour {paie.employee.nom} {paie.employee.prenom}",
+                utilisateur_affecte=paie.employee.user,
+                categorie='paie',
+                date_action=timezone.now(),
+            )
+
+            # Rediriger vers la liste des fiches de paie
+            return redirect('personnel:payroll-list')
+
+        except Exception as e:
+            return Response({'success': False, 'message': str(e)},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ViewPaieView(APIView):
+    def get(self, request, pk):
+        # Récupérer la fiche de paie à mettre à jour
+        paie = get_object_or_404(Paie, pk=pk)
+
+        return render(request, 'paie_detail.html', {
+            'paie': paie,
+        })
+
+
+class DeletePaieView(APIView):
+    def get(self, request, pk):
+        paie = get_object_or_404(Paie, pk=pk)
+        employee_name = f"{paie.employee.nom} {paie.employee.prenom}"
+
+        # Supprimer la fiche de paie
+        paie.delete()
+
+        # Création de la notification et de l'historique (tu peux les adapter comme tu veux)
+        create_notification(
+            user_action=request.user,
+            type='paie_delete',
+            message=f"La fiche de paie de {employee_name} a été supprimée.",
+            user_affected=paie.employee.user
+        )
+
+        Historique.objects.create(
+            utilisateur=request.user,
+            action='delete',
+            consequence=f"La fiche de paie a été supprimée par: {request.user} pour {employee_name}",
+            utilisateur_affecte=paie.employee.user,
+            categorie='paie',
+            date_action=timezone.now(),
+        )
+
+        # Rediriger vers la liste des fiches de paie après suppression
+        return redirect('personnel:payroll-list')  # Adapte cette ligne selon ton nom de route
+
+class DupliquerFicheDePaieAPIView(APIView):
+    """
+    Vue pour dupliquer une fiche de paie et créer une nouvelle instance .
+
+    """
+
+    def get(self, request, pk):
+        # Récupérer la fiche de paie à mettre à jour
+        paie = get_object_or_404(Paie, pk=pk)
+        employees = Employee.objects.all()
+        types_paie = Paie.TYPE_CHOICES
+
+        return render(request, 'paie_create.html', {
+            'paie': paie,
+            'employees': employees,
+            'types_paie': types_paie
+        })
+
+    def post(self, request, pk):
+        # La logique de création de fiche de paie avec un pk spécifié
+        try:
+            # Récupération des données de la requête POST
+            employee_id = request.POST.get('employee_id')
+            salaire_base = request.POST.get('salaire_base')
+            date_debut = request.POST.get('date_debut')
+            date_fin = request.POST.get('date_fin')
+            indemnite_transport = request.POST.get('indemnite_transport', 0)
+            indemnite_communication = request.POST.get('indemnite_communication', 0)
+            indemnite_stage = request.POST.get('indemnite_stage', 0)
+            net_a_payer = request.POST.get('net_a_payer', 0)
+            statut = request.POST.get('statut', 'En attente')
+
+            # Validation des champs nécessaires
+            if not all([employee_id, salaire_base, date_debut, date_fin]):
+                return Response({'success': False, 'message': 'Tous les champs sont obligatoires.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            # Récupération de l'employé
+            employee = get_object_or_404(Employee, pk=employee_id)
+
+            # Récupérer la fiche de paie à dupliquer
+            paie_to_duplicate = get_object_or_404(Paie, pk=pk)
+
+            paie = Paie(
+                employee=employee,
+                salaire_base=salaire_base,
+                indemnite_transport=indemnite_transport,
+                indemnite_communication=indemnite_communication,
+                indemnite_stage=indemnite_stage,
+                date_debut=date_debut,
+                date_fin=date_fin,
+                statut=statut,
+                net_a_payer=net_a_payer
+            )
+
+            # Enregistrer l'instance pour obtenir un ID (clé primaire)
+            paie.save()  # Assurez-vous que cette ligne est exécutée avant d'essayer de créer des Prime
+
+            # Ajouter des primes associées à l'instance de Paie
+            primes_nom = request.POST.getlist('prime_nom[]')  # Récupération des noms des primes
+            primes_montant = request.POST.getlist('prime_montant[]')  # Récupération des montants des primes
+
+            # Boucle pour créer chaque prime
+            for nom, montant in zip(primes_nom, primes_montant):
+                if nom and montant:  # Vérification que les noms et montants ne sont pas vides
+                    Prime.objects.create(paie=paie, nom=nom, montant=montant)
+
+            # Créer une notification pour la création de la fiche de paie
+            create_notification(
+                user_action=request.user,
+                type='paie_create',
+                message=f"La fiche de paie de {paie.employee.nom} {paie.employee.prenom} a été créée.",
+                user_affected=paie.employee.user
+            )
+            Historique.objects.create(
+                utilisateur=request.user,
+                action='update',
+                consequence=f"La fiche de paie a été mise à jour par: {request.user} pour {paie.employee.nom} {paie.employee.prenom}",
+                utilisateur_affecte=paie.employee.user,
+                categorie='paie',
+                date_action=timezone.now(),
+            )
+
+            # Rediriger vers la liste des fiches de paie
+            return redirect('personnel:payroll-list')
+
+        except Exception as e:
+            return Response({'success': False, 'message': str(e)},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 class ExportFicheDePaiePDFView(APIView):
-    permission_classes = [ExportPaiePermission]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, id):
         """Exporter la fiche de paie en PDF."""
         fiche = get_object_or_404(Paie, id=id)
 
         try:
-            # Rendre le template HTML avec les données de la fiche de paie
-            html = render_to_string('payroll/fiche_de_paie.html', {'fiche': fiche})
+            # Obtenir le template HTML
+            template = get_template('paie_export_pdf.html')
+            image_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'Employee', 'mada.png')
+            with open(image_path, 'rb') as image_file:
+                image_data = base64.b64encode(image_file.read()).decode('utf-8')
 
+            # Rendre le template HTML avec les données de la fiche de paie
+                # ... (début du code identique)
+
+                html = f""" 
+                        <!DOCTYPE html>
+                        <html lang="fr">
+                        <head>
+                            <meta charset="UTF-8">
+                            <title>Fiche de paie</title>
+                        </head>
+                        <body>
+                            <div class="container">
+                                <div class="header">
+                                    <h1>Fiche de Paie - {fiche.date_debut.strftime("%B %Y")}</h1>
+                                </div>
+
+                                <div class="main-content">
+                                    <div class="info-section">
+                                        <div class="employee-header">
+                                            <h2>Informations Employé</h2>
+                                            <p class="employee-id">ID: {fiche.employee.id:05d}</p>
+                                        </div>
+                                        <div class="employee-details">
+                                            <div class="name-section">
+                                                <span class="label">Nom :</span>
+                                                <span class="value">{fiche.employee.nom} {fiche.employee.prenom}</span>
+                                                <div class="poste">{fiche.employee.poste}</div>
+                                            </div>
+                                            <div class="dates">
+                                                <div>
+                                                    <span class="label">Période du</span>
+                                                    <span class="value">{fiche.date_debut.strftime("%d/%m/%Y")}</span>
+                                                </div>
+                                                <div>
+                                                    <span class="label">au</span>
+                                                    <span class="value">{fiche.date_fin.strftime("%d/%m/%Y")}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="pay-details">
+                                        <h2>Détails de la Paie</h2>
+                                        <div class="pay-grid">
+                                            <div class="pay-item">
+                                                <span class="label">Salaire de base</span>
+                                                <span class="amount">{fiche.salaire_base:,.2f} MGA</span>
+                                            </div>
+                                            <div class="pay-item">
+                                                <span class="label">Indemnité Transport</span>
+                                                <span class="amount">{fiche.indemnite_transport:,.2f} MGA</span>
+                                            </div>
+                                            <div class="pay-item">
+                                                <span class="label">Indemnité Communication</span>
+                                                <span class="amount">{fiche.indemnite_communication:,.2f} MGA</span>
+                                            </div>
+                                            <div class="pay-item">
+                                                <span class="label">Indemnité Stage</span>
+                                                <span class="amount">{fiche.indemnite_stage:,.2f} MGA</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="primes-section">
+                                        <h2>Primes</h2>
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Désignation</th>
+                                                    <th>Montant (MGA)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {''.join([f"""
+                                                    <tr>
+                                                        <td>{prime.nom}</td>
+                                                        <td class="amount">{prime.montant:,.2f}</td>
+                                                    </tr>
+                                                """ for prime in fiche.primes.all()]) if fiche.primes.exists() else
+                '<tr><td colspan="2" class="no-prime">Aucune prime</td></tr>'}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="total-section">
+                                        <span class="label">Net à Payer :</span>
+                                        <span class="total-amount">{fiche.net_a_payer:,.2f} MGA</span>
+                                    </div>
+
+                                    <div class="signature-section">
+                                        <div class="signature-box">
+                                            <p>Le Directeur</p>
+                                            <div class="signature-line">Date et Signature</div>
+                                        </div>
+                                        <div class="signature-box">
+                                            <p>Le Salarié</p>
+                                            <div class="signature-line">Date et Signature</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="footer">
+                                    <img src="data:image/png;base64,{image_data}" alt="logo">
+                                    <p>Ce fiche de payé a été généré le { fiche.date_creation.strftime("%d/%m/%Y")}</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+                        """
+
+                css = CSS(string='''
+                            @page {
+                                size: A4;
+                                margin: 1.5cm;
+                            }
+
+                            body {
+                                font-family: Arial, sans-serif;
+                                margin: 0;
+                                padding: 0;
+                                font-size: 10pt;
+                            }
+
+                            .container {
+                                background: white;
+                            }
+
+                            .header {
+                                background: #FB923C;
+                                color: white;
+                                padding: 15px;
+                                margin-bottom: 20px;
+                            }
+
+                            .header h1 {
+                                margin: 0;
+                                font-size: 16pt;
+                                text-align: center;
+                            }
+
+                            .main-content {
+                                padding: 0 15px;
+                            }
+
+                            .info-section {
+                                margin-bottom: 20px;
+                            }
+
+                            .employee-header {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                border-bottom: 2px solid #1a237e;
+                                margin-bottom: 10px;
+                            }
+
+                            .employee-header h2 {
+                                margin: 0;
+                                font-size: 12pt;
+                                color: #1a237e;
+                            }
+
+                            .employee-details {
+                                display: grid;
+                                grid-template-columns: 1fr 1fr;
+                                gap: 20px;
+                            }
+
+                            .name-section .value {
+                                font-weight: bold;
+                                font-size: 11pt;
+                            }
+
+                            .poste {
+                                color: #666;
+                                font-size: 9pt;
+                                margin-top: 3px;
+                            }
+
+                            .pay-details {
+                                margin: 20px 0;
+                            }
+
+                            .pay-grid {
+                                display: grid;
+                                grid-template-columns: repeat(2, 1fr);
+                                gap: 10px;
+                            }
+
+                            .pay-item {
+                                display: flex;
+                                justify-content: space-between;
+                                padding: 5px 0;
+                                border-bottom: 1px solid #eee;
+                            }
+
+                            .amount {
+                                font-weight: bold;
+                                text-align: right;
+                            }
+
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin: 10px 0;
+                            }
+
+                            th, td {
+                                padding: 8px;
+                                border: 1px solid #ddd;
+                                text-align: left;
+                            }
+
+                            th {
+                                background: #f5f5f5;
+                            }
+
+                            .total-section {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin: 20px 0;
+                                padding: 10px;
+                                background: #f8f9fa;
+                                border-radius: 4px;
+                            }
+
+                            .total-amount {
+                                font-size: 14pt;
+                                font-weight: bold;
+                                color: #1a237e;
+                            }
+
+                            .signature-section {
+                                display: grid;
+                                grid-template-columns: 1fr 1fr;
+                                gap: 40px;
+                                margin: 20px 0;
+                            }
+
+                            .signature-box {
+                                text-align: center;
+                            }
+
+                            .signature-line {
+                                margin-top: 40px;
+                                border-top: 1px solid #000;
+                                padding-top: 5px;
+                            }
+
+                        
+.footer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    text-align: right;
+    padding: 10px;
+}
+
+.footer img {
+    height: 80px;
+    width: auto;
+    display: block;
+    margin-left: auto;  /* Aligne l'image à droite */
+}
+
+.footer p {
+    margin: 5px 0 0;
+    font-size: 8pt;
+    color: #666;
+}
+''')
             # Initialiser la réponse HTTP avec le type de contenu PDF
             response = HttpResponse(content_type='application/pdf')
             response['Content-Disposition'] = (
-                f'attachment; filename="fiche_de_paie_de_{fiche.employee.nom}_{fiche.employee.prenom}_{fiche.mois}.pdf"'
+                f'attachment; filename="fiche_de_paie_de_{fiche.employee.nom}_{fiche.employee.prenom}_{fiche.exercice}.pdf"'
             )
 
-            # Générer le PDF depuis le contenu HTML
-            pisa_status = pisa.CreatePDF(html, dest=response)
-
-            # Vérifier si une erreur est survenue lors de la génération du PDF
-            if pisa_status.err:
-                raise Exception(f'Erreur lors de la génération du PDF : {pisa_status.err}')
+            
+            # Générer le PDF à partir du contenu HTML avec WeasyPrint
+            HTML(string=html).write_pdf(
+                response,
+                stylesheets=[css]
+                  )
 
             # Enregistrer l'action dans l'historique
             Historique.objects.create(

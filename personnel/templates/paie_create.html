@@ -2,116 +2,379 @@
 
 {% block title %} Nouvelle fiche de paie {% endblock %}
 
+{% block style %}
 
+
+{% endblock %}
 
 {% block body %}  
     <div class="container mx-auto mt-20">
         <div class="">
 
-            <h2 class="text-2xl font-bold mt-20 ">Ajouter une nouvelle fiche de paie</h2>
-            <p class="text-xs font-semibold text-gray-400">Tout les fiches de paie > Ajouter une nouvelle fiche de paie</p>
+            <h2 class="text-2xl font-bold mt-20 ">Fiche de Paie</h2>
+            <p class="text-xs font-semibold text-gray-400">Nouvelle fiche de paie</p>
           
+                    {% if messages %}
+            <div>
+            <ul>
+                {% for message in messages %}
+                    <li class="text-sm text-red">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+            
           </div>        
-        <!-- Formulaire de création de nouvelle fiche de paie -->
-        <section class="container mx-auto mt-8 bg-white p-8 border rounded-lg shadow-md">
-            <h1 class="text-2xl font-bold mb-4">Fiche de Paie</h1>
-            <p class="text-gray-600 mb-8">Nouvelle fiche de paie</p>
-    
-            <div class="grid grid-cols-2 gap-6">
-                <!-- Employé -->
-                <div class="space-y-2">
-                    <label class="block text-gray-700 font-semibold">Employé :</label>
-                    <select class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option>Employé</option>
-                    </select>
+      <form id="paie-form" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        <div class="grid grid-cols-2 w-full">
+
+            <!-- Employé -->
+            <div>
+                <label for="employee" class="block text-gray-700 font-semibold">Employé:</label>
+                <select id="employee" name="employee_id" class="mt-1 block w-1/2 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500" onchange="remplirSalaire()">
+                    <option value="" disabled {% if not paie %}selected{% endif %}>-------------</option>
+                    {% for employee in employees %}
+                    <option value="{{ employee.id }}" data-salaire="{{ employee.salaire_base }}" {% if paie and paie.employee_id == employee.id %}selected{% endif %}>
+                        {{ employee.nom }} {{ employee.prenom }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+           <!-- Période -->
+           <div class="flex space-x-4">
+            <div class="flex-1">
+                <label for="start_date" class="block text-gray-700 font-semibold">Date de Début:</label>
+                <input type="date" id="start_date" name="date_debut" 
+                       class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500" 
+                       required 
+                       value="{% if paie.date_debut %}{{ paie.date_debut|date:'Y-m-d' }}{% endif %}">
+            </div>
+            <span class="text-gray-700 flex items-center mt-6">à</span>
+            <div class="flex-1">
+                <label for="end_date" class="block text-gray-700 font-semibold">Date de Fin:</label>
+                <input type="date" id="end_date" name="date_fin" 
+                       class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500" 
+                       required 
+                       value="{% if paie.date_fin %}{{ paie.date_fin|date:'Y-m-d' }}{% endif %}">
+            </div>
+        </div>
+
+            <!-- Statut -->
+            <div class="">
+                <label for="statut" class="block text-gray-700 font-semibold">Statut:</label>
+                <select id="statut" name="statut" class="mt-1 block w-1/2 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                    <option value="" disabled {% if not paie %}selected{% endif %}>-------------</option>
+                    <option value="P" {% if paie and paie.statut == 'P' %}selected{% endif %}>Payé</option>
+                    <option value="E" {% if paie and paie.statut == 'E' %}selected{% endif %}>En attente</option>
+                </select>
+            </div>
+
+            <!-- Salaire de base -->
+            <div class="mt-8 space-y-6 col-span-2">
+                <div class="flex items-center justify-between space-x-4">
+                    <label for="salaire_base" class="block text-gray-700 font-semibold">Salaire de base :</label>
+                    <input type="number" id="salaire_base" name="salaire_base" class="w-2/3 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" readonly required value="{{ paie.salaire_base|default:'' }}">
                 </div>
-    
-                <!-- Période -->
-                <div class="flex space-x-4">
-                    <div class="w-full space-y-2">
-                        <label class="block text-gray-700 font-semibold">Période :</label>
-                        <input type="date" class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+
+            <!-- Indemnités -->
+            <div id="indemnites-container" class="mt-6 space-y-4 col-span-2">
+                    {% if paie.indemnite_stage %}
+                    <div class="flex items-center justify-between space-x-4 indemnity-confirmed mt-2">  
+                        <label for="indemnite_stage" class="block text-gray-700 font-semibold">Indemnité Stage :</label>
+                        <input type="number" id="indemnite_stage" name="indemnite_stage" class="w-1/2 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" required value="{{ paie.indemnite_stage }}">
+                  
+                        <button type="button" class="bg-red/75 text-white px-4 py-2 rounded-full" onclick="removeIndemnite(this)">Supprimer</button>
                     </div>
-                    <span class="text-gray-500 flex items-center">à</span>
-                    <div class="w-full space-y-2">
-                        <label class="block text-gray-700 font-semibold"> </label>
-                        <input type="date" class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        {% endif %}
+                        {% if paie.indemnite_transport %}
+                    <div class="flex items-center justify-between space-x-4 indemnity-confirmed mt-2">  
+                        <label for="indemnite_transport" class="block text-gray-700 font-semibold">Indemnité de Transport :</label>
+                        <input type="number" id="indemnite_transport" name="indemnite_transport" class="w-1/2 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" required value="{{ paie.indemnite_transport }}">
+                  
+                        <button type="button" class="bg-red/75 text-white px-4 py-2 rounded-full" onclick="removeIndemnite(this)">Supprimer</button>
                     </div>
-                </div>
-    
-                <!-- Numéro matricule -->
-                <div class="space-y-2">
-                    <label class="block text-gray-700 font-semibold">Numéro matricule :</label>
-                    <input type="text" class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-    
-                <!-- Lot -->
-                <div class="space-y-2">
-                    <label class="block text-gray-700 font-semibold">Lot :</label>
-                    <select class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option>Choisir un lot</option>
-                    </select>
-                </div>
-    
-                <!-- Contrat -->
-                <div class="space-y-2">
-                    <label class="block text-gray-700 font-semibold">Contrat :</label>
-                    <select class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option>Type de contrat</option>
-                    </select>
-                </div>
-    
-                <!-- Heure de travail -->
-                <div class="space-y-2">
-                    <label class="block text-gray-700 font-semibold">Heure de travail :</label>
-                    <input type="text" class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
+                        {% endif %}
+                        {% if paie.indemnite_communication %}
+                    <div class="flex items-center justify-between space-x-4 indemnity-confirmed mt-2">  
+                        <label for="indemnite_communication" class="block text-gray-700 font-semibold">Indemnité de Communication :</label>
+                        <input type="number" id="indemnite_communication" name="indemnite_communication" class="w-1/2 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" required value="{{ paie.indemnite_communication }}">
+                  
+                        <button type="button" class="bg-red/75 text-white px-4 py-2 rounded-full" onclick="removeIndemnite(this)">Supprimer</button>
+                    </div>
+                        {% endif %}
+            
             </div>
-    
-            <!-- Détails, Montants -->
-            <div class="mt-8 space-y-6">
-                <div class="flex items-center justify-between space-x-4">
-                    <select class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option>Salaire de base</option>
-                    </select>
-                    <input type="text" class="w-1/3 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" value="1 000 000,00 MGA" readonly>
-                </div>
-    
-                <div class="flex items-center justify-between space-x-4">
-                    <select class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option>Prime de projet</option>
-                    </select>
-                    <input type="text" class="w-1/3 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" value="200 000,00 MGA" readonly>
-                </div>
-    
-                <div class="flex items-center justify-between space-x-4">
-                    <select class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option>CNAPS</option>
-                    </select>
-                    <input type="text" class="w-1/3 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500 text-red-500" value="-10 000,00 MGA" readonly>
-                </div>
+
+
+            <!-- Bouton pour ajouter une indemnité -->
+            <div class="col-span-2">
+                <button type="button" class="mt-2 bg-blue-500 text-white p-2 rounded-full" onclick="ajouterIndemnite()">Ajouter une Indemnité</button>
             </div>
-    
-            <!-- Ajouter une ligne -->
-            <div class="mt-6">
-                <button class="bg-purple-500 text-white p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500">
-                    +
-                </button>
+
+            <!-- Primes -->
+            <div id="primes-container" class="mt-4 col-span-2">
+                {% for prime in paie.primes.all %}
+                <div class="prime-item flex items-center space-x-8 ">
+                    <label for="prime_nom_{{ forloop.counter }}" class="block text-gray-700 font-semibold">Nom de la Prime :</label>
+                    <input type="text" id="prime_nom_{{ forloop.counter }}" name="prime_nom[]" class="w-1/3 border border-gray-300 rounded-lg p-2" required value="{{ prime.nom }}">
+                    <label for="prime_montant_{{ forloop.counter }}" class="block text-gray-700 font-semibold">Montant :</label>
+                    <input type="number" step="0.01" id="prime_montant_{{ forloop.counter }}" name="prime_montant[]" class="w-2/3 border border-gray-300 rounded-lg p-2 text-right" required value="{{ prime.montant }}">
+                    <button type="button" class="bg-red/75 text-white px-4 py-2 rounded-full" onclick="removePrime(this)">Supprimer</button>
+                </div>
+                {% empty %}
+                <!-- Si aucune prime initiale, ajoute un bloc vide -->
+                <div class="prime-item flex items-center space-x-8">
+                    <label for="prime_nom_1" class="block text-gray-700 font-semibold">Nom de la Prime :</label>
+                    <input type="text" id="prime_nom_1" name="prime_nom[]" class="w-1/3 border border-gray-300 rounded-lg p-2" required>
+                    <label for="prime_montant_1" class="block text-gray-700 font-semibold">Montant :</label>
+                    <input type="number" step="0.01" id="prime_montant_1" name="prime_montant[]" class="w-2/3 border border-gray-300 rounded-lg p-2 text-right" required>
+                    <button type="button" class="bg-red/75 text-white px-4 py-2 rounded-full" onclick="removePrime(this)">Supprimer</button>
+                </div>
+                {% endfor %}
             </div>
-    
-            <!-- Total, Validation -->
-            <div class="mt-8 flex justify-between items-center">
-                <div class="text-xl font-bold">Salaire net : 1 190 000,00 MGA</div>
+
+            <div class="col-span-2">
+                <button type="button" class="mt-2 bg-blue-500 text-white p-2 rounded-full" onclick="addPrime()">Ajouter une Prime</button>
+            </div>
+
+            <!-- Salaire net -->
+            <div class="flex items-center gap-2">
+                <p class="text-xl font-bold">Salaire net :</p>
+                <input type="number" id="net_a_payer" name="net_a_payer" class="w-2/3 border border-gray-300 rounded-lg p-2 text-black focus:outline-none focus:ring-2 focus:ring-purple-500" required value="{{ paie.net_a_payer|default:'' }}">
+                <p class="text-xl font-bold text-gray-400 pl-4 pr-4 pt-2 pb-2"> MGA</p>
+            </div>
+
+            <!-- Validation -->
+            <div class="mt-8 col-span-2 flex justify-end items-center">
                 <div class="space-x-4">
-                    <button class="bg-gray-300 px-4 py-2 rounded-lg">Annuler</button>
-                    <button class="bg-purple-500 text-white px-4 py-2 rounded-lg">Valider</button>
+                    <a href="javascript:history.back()" class="bg-gray-300 px-4 py-2 rounded-lg">Annuler</a>
+                    <button type="submit" class="bg-purple-500 text-white px-4 py-2 rounded-lg">
+                      Créer
+                    </button>
                 </div>
             </div>
-        </section>
+        </div>
+    </form>
+                    
 {% endblock %}
 
 
-
 {% block script %}
+
+<script>
+    // Gestion dynamique des primes
+    let primeCount = 1; // Compteur pour les primes
+
+    // Variable pour les indemnités ajoutées
+    let indemnitesDejaAjoutees = [];
+
+    function calculerSalaireNet() {
+    // Récupérer les valeurs des champs
+    let salaire_base = parseFloat(document.getElementById("salaire_base").value) || 0;
+    let indemnite_transport = parseFloat(document.getElementById("indemnite_transport") ? document.getElementById("indemnite_transport").value : 0) || 0;
+    let indemnite_communication = parseFloat(document.getElementById("indemnite_communication") ? document.getElementById("indemnite_communication").value : 0) || 0;
+    let indemnite_stage = parseFloat(document.getElementById("indemnite_stage") ? document.getElementById("indemnite_stage").value : 0) || 0;
+
+    // Calculer le salaire brut
+    let salaire_brut = salaire_base + indemnite_transport + indemnite_communication + indemnite_stage;
+
+    // Récupérer et ajouter les montants des primes
+    let primeMontants = document.querySelectorAll("input[name='prime_montant[]']");
+    let totalPrimes = 0;
+    primeMontants.forEach(function(input) {
+        totalPrimes += parseFloat(input.value) || 0;
+    });
+
+    // Ajouter les primes au salaire brut
+    salaire_brut += totalPrimes;
+
+    // Calculer le salaire net (ajoute ici tes cotisations si nécessaire)
+    let salaire_net = salaire_brut;
+
+    // Injecter la valeur du salaire net dans l'input "net_a_payer"
+    let netAPayerInput = document.getElementById("net_a_payer");
+    console.log(netAPayerInput); // Ajout d'un log pour voir si l'élément existe
+    if (netAPayerInput) {
+        netAPayerInput.value = salaire_net.toFixed(2); // Assigne la valeur avec 2 décimales
+        console.log("Valeur du salaire net injectée: " + netAPayerInput.value);
+    } else {
+        console.log("L'input 'net_a_payer' n'a pas été trouvé");
+    }
+}
+
+
+// Écouter les changements sur les champs de salaire et indemnités
+function ajouterEventListeners() {
+    const fieldsToWatch = [
+        "salaire_base",
+        "indemnite_transport",
+        "indemnite_communication",
+        "indemnite_stage",
+        "indice_anciennete"
+    ];
+
+    fieldsToWatch.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener("input", calculerSalaireNet);
+        }
+    });
+
+    // Écouter également les changements sur les champs des primes
+    document.addEventListener("input", function(event) {
+        if (event.target && event.target.matches("input[name='prime_montant[]']")) {
+            calculerSalaireNet();
+        }
+    });
+}
+
+// Appeler ajouterEventListeners pour mettre en place les écouteurs d'événements
+document.addEventListener("DOMContentLoaded", function() {
+    setTimeout(() => {
+        calculerSalaireNet(); // Attendre 1 seconde pour s'assurer que l'élément est chargé
+    }, 1000);
+});
+
+    // Fonction pour ajouter une nouvelle prime
+    function addPrime() {
+        primeCount++;
+        const container = document.getElementById('primes-container');
+
+        const primeItem = document.createElement('div');
+        primeItem.className = 'prime-item flex items-center space-x-4 mt-2';
+        
+        primeItem.innerHTML = `
+            <label for="prime_nom_${primeCount}" class="block text-gray-700 font-semibold">Nom de la Prime :</label>
+            <input type="text" id="prime_nom_${primeCount}" name="prime_nom[]" class="w-1/3 border border-gray-300 rounded-lg p-2" required>
+            <label for="prime_montant_${primeCount}" class="block text-gray-700 font-semibold">Montant :</label>
+            <input type="number" step="0.01" id="prime_montant_${primeCount}" name="prime_montant[]" class="w-2/3 border border-gray-300 rounded-lg p-2 text-right" required>
+            <button type="button" class="bg-red/75 text-white px-4 py-2 rounded-full" onclick="removePrime(this)">Supprimer</button>
+        `;
+        
+        container.appendChild(primeItem);
+    }
+
+    // Fonction pour supprimer une prime
+function removePrime(button) {
+    const primeItem = button.closest('.prime-item');
+    primeItem.remove();
+    calculerSalaireNet(); // Recalculer le salaire net après suppression
+}
+
+
+    // Fonction pour remplir le salaire de base
+    function remplirSalaire() {
+        let selectEmployee = document.getElementById("employee");
+        let selectedOption = selectEmployee.options[selectEmployee.selectedIndex];
+        let salaireBase = selectedOption.getAttribute("data-salaire");
+
+        document.getElementById("salaire_base").value = salaireBase;
+        document.getElementById("salaire_base").setAttribute("readonly", true);
+        calculerSalaireNet(); // Recalculer le salaire net après remplissage
+    }
+
+    // Fonction pour ajouter une indemnité
+    function ajouterIndemnite() {
+        if (indemnitesDejaAjoutees.length >= 3) {
+            alert("Vous avez déjà ajouté toutes les indemnités.");
+            return;
+        }
+
+        let choixIndemnite = `
+            <div class="flex items-center justify-between space-x-4 indemnity-item mt-4">
+                <label for="choix_indemnite" class="block text-gray-700 font-semibold">Choisir une indemnité :</label>
+                <select id="choix_indemnite" class="w-1/2 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <option value="" disabled selected>-------------</option>
+                    ${!indemnitesDejaAjoutees.includes('transport') ? '<option value="transport">Indemnité Transport</option>' : ''}
+                    ${!indemnitesDejaAjoutees.includes('communication') ? '<option value="communication">Indemnité Communication</option>' : ''}
+                    ${!indemnitesDejaAjoutees.includes('stage') ? '<option value="stage">Indemnité Stage</option>' : ''}
+                </select>
+                <button type="button" class="bg-green-500 text-white px-4 py-2 rounded-full" onclick="validerIndemnite(this)">Valider</button>
+            </div>
+        `;
+
+        document.getElementById('indemnites-container').insertAdjacentHTML('beforeend', choixIndemnite);
+    }
+
+    // Fonction pour valider une indemnité
+function validerIndemnite(button) {
+    let container = button.parentElement;
+    let select = container.querySelector('select');
+    let indemniteChoisie = select.value;
+
+    if (!indemniteChoisie) {
+        alert("Veuillez choisir une indemnité.");
+        return;
+    }
+
+    indemnitesDejaAjoutees.push(indemniteChoisie);
+    let inputHTML = '';
+
+    if (indemniteChoisie === 'transport') {
+        inputHTML = `<label for="indemnite_transport" class="block text-gray-700 font-semibold">Indemnité Transport :</label>
+            <input type="number" id="indemnite_transport" name="indemnite_transport" class="w-1/2 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" required>`;
+    } else if (indemniteChoisie === 'communication') {
+        inputHTML = `<label for="indemnite_communication" class="block text-gray-700 font-semibold">Indemnité Communication :</label>
+            <input type="number" id="indemnite_communication" name="indemnite_communication" class="w-2/3 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" required>`;
+    } else if (indemniteChoisie === 'stage') {
+        inputHTML = `<label for="indemnite_stage" class="block text-gray-700 font-semibold">Indemnité Stage :</label>
+            <input type="number" id="indemnite_stage" name="indemnite_stage" class="w-1/2 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" required>`;
+    }
+    // Insérer le champ de l'indemnité et ajouter un bouton de suppression
+    container.insertAdjacentHTML('afterend', `
+        <div class="flex items-center justify-between space-x-4 indemnity-confirmed mt-2">
+            ${inputHTML}
+            <button type="button" class="bg-red/75 text-white px-4 py-2 rounded-full" onclick="removeIndemnite(this)">Supprimer</button>
+        </div>
+    `);
+
+    // Ajouter l'événement input au nouveau champ d'indemnité
+    let newIndemniteInput = container.nextElementSibling.querySelector('input');
+    newIndemniteInput.addEventListener("input", calculerSalaireNet);
+
+    // Supprimer le choix d'indemnité
+    container.remove();
+    calculerSalaireNet(); // Recalculer après ajout de l'indemnité
+}
+
+    // Fonction pour supprimer une indemnité
+    function removeIndemnite(button) {
+    const indemnityConfirmedItem = button.parentElement; // Remonter un seul niveau
+    const indemniteChoisie = indemnityConfirmedItem.querySelector('input').id.replace('indemnite_', '');
+
+    // Retirer l'indemnité de la liste
+    indemnitesDejaAjoutees = indemnitesDejaAjoutees.filter(item => item !== indemniteChoisie);
+    indemnityConfirmedItem.remove();
+    calculerSalaireNet(); // Recalculer après suppression
+}
+
+    // Initialisation
+    document.addEventListener("DOMContentLoaded", function() {
+        ajouterEventListeners();
+    });
+
+    // pour gerer le lot
+     document.getElementById('paieForm').addEventListener('submit', function(event) {
+        // Récupérer la valeur du champ type "month"
+        const lotInput = document.getElementById('lot');
+        let moisAnnee = lotInput.value.trim(); // format AAAA-MM
+
+        // Nettoyer les espaces non imprimables si présents
+        moisAnnee = moisAnnee.replace(/\xa0/g, '');  // Supprimer les espaces insécables
+
+        if (moisAnnee) {
+            // Ajouter le jour "01" pour rendre la date complète
+            const dateComplete = moisAnnee + "-01";
+            // Remplacer la valeur du champ avec la date complète
+            lotInput.value = dateComplete;
+        }
+    });
+</script>
+
+
 
 {% endblock %}

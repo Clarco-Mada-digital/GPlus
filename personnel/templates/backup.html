@@ -1,0 +1,62 @@
+{% if conges %}
+<div class="overflow-x-auto bg-white shadow rounded-lg">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-800 text-white">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nom de l'employé</th>
+                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Type de congé</th>
+                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Date de début</th>
+                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Date de fin</th>
+                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Statut</th>
+                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% for conge in conges %}
+                <tr class="hover:bg-gray-50 transition ease-in-out duration-200">
+                    <td class="px-6 py-4 whitespace-nowrap">{{ conge.employee.nom }} {{ conge.employee.prenom }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ conge.get_type_display }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ conge.date_debut }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ conge.date_fin }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ conge.statut }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap flex space-x-2">
+                        <form method="post" action="{% url 'approuver_conge' conge.id 'accepter' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition transform hover:scale-105">Accepter</button>
+                        </form>
+                        <button type="button" onclick="ouvrirModal({{ conge.id }})" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded transition transform hover:scale-105">
+                            Refuser
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-4 flex justify-center space-x-4">
+    {% if conges.has_previous %}
+        <a href="?page={{ conges.previous_page_number }}" class="text-blue-500 font-medium hover:text-blue-600 transition">Précédent</a>
+    {% endif %}
+    <span>Page {{ conges.number }} de {{ conges.paginator.num_pages }}</span>
+    {% if conges.has_next %}
+        <a href="?page={{ conges.next_page_number }}" class="text-blue-500 font-medium hover:text-blue-600 transition">Suivant</a>
+    {% endif %}
+</div>
+
+<!-- Modal pour le refus de congé -->
+<div id="modalRefus" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full">
+        <span class="text-gray-400 hover:text-gray-600 float-right cursor-pointer" onclick="fermerModal()">&times;</span>
+        <h2 class="text-2xl font-semibold mb-4">Motif de refus</h2>
+        <form id="refusForm" method="post" action="">
+            {% csrf_token %}
+            <textarea name="reason" placeholder="Indiquez la raison du refus" class="w-full border border-gray-300 rounded p-2 mb-4" required></textarea>
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition transform hover:scale-105">Envoyer</button>
+        </form>
+    </div>
+</div>
+
+{% else %}
+<p class="text-center text-gray-500">Aucun congé en attente.</p>
+{% endif %}

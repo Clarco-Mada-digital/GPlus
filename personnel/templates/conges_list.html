@@ -37,7 +37,7 @@
 </div>
 
 <!-- Table des congés -->
-<div class="bg-white shadow-md rounded-lg mt-8">
+<div class="bg-white shadow-md rounded-lg ">
     <table class="table-auto w-full">
         <thead class=" border-b">
             <tr class="text-sm ">
@@ -45,7 +45,7 @@
                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nom et prenom</th>
                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Poste</th>
                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Département</th>
-                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Duré</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Durée</th>
                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Responsable des rapports</th>
                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
             </tr>
@@ -54,21 +54,33 @@
         <tbody>
             {% for conge in conges %}
             <tr class="bg-white border-b" style="font-size: 0.83rem; font-weight: 500;">
-                <td class="px-6 py-4"> <img src="{{ conge.employee.photo.url }}" alt="{{ conge.employee.pseudo }} " class="rounded-full w-10 h-8"> </td>
+                <td class="px-6 py-4">
+                    <img src="{{ conge.employee.photo.url }}" alt="{{ conge.employee.pseudo }}" class="rounded-full w-10 h-8">
+                </td>
 
                 <td class="px-6 py-4 whitespace-nowrap">{{ conge.employee.nom }} {{ conge.employee.prenom }}  </td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ conge.employee.poste }} </td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ conge.employee.departement }} </td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ conge.date_debut|date:"j F" }} - {{ conge.date_fin|date:"j F" }} </td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ conge.responsable }} </td>
-                {% if paie.statut == 'Payé' %}
-                <td class="px-3 py-2 whitespace-nowrap text-cp_primary ">
-                    <p class="bg-green-100 px-2 py-1 rounded-lg text-green-700 ">Complété</p>
+                {% if conge.statut == 'accepte' %}
+                <td class="flex px-3 py-2 whitespace-nowrap ">
+                    <p class="bg-green-100 px-2 py-1 rounded-lg text-green-700  text-sm font-bold items-center jutify-center">Accepté</p>
                 </td>
-                {% else %}
-                <td class="px-3 py-2 whitespace-nowrap">
-                    <p class="bg-yellow-100 px-2 py-1 rounded-lg text-yellow-700">En attente</p>
+                {% endif %}
+
+                {% if conge.statut == 'refuse' %}
+                <td class="flex px-3 py-2 whitespace-nowrap ">
+                    <p class="bg-red/10 px-2 py-1 rounded-lg text-red/70 text-sm font-bold items-center jutify-center">Refusé</p>
                 </td>
+                {% endif %}
+
+               
+                {% if conge.statut == 'en_attente' %}
+                <td class="flex px-3 py-2 whitespace-nowrap ">
+                    <p class="bg-yellow-100 px-2 py-1 rounded-lg text-yellow-700 text-sm font-bold items-center jutify-center">En attente</p>
+                </td>
+               
                 {% endif %}
 
                 
@@ -86,10 +98,10 @@
                             </p>
                 
                             <p class=" ml-2 border-2 text-xs p-2 -mt-1 rounded-lg">
-                                5
+                                10
                             </p>
                         </div>
-                        <span class="text-gray-700 mt-1">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }} avec {{ total_employees }} employés enregistrés.</span>
+                        <span class="text-gray-700 mt-1">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }} avec {{ total_conges }} congés enregistrés.</span>
                         <div class="flex justify-center">
                             <!-- Première page -->
                             <a href="?page=1" class="mx-2">
@@ -141,29 +153,74 @@
 </div>
 
 <!-- Pop-up de filtrage -->
-<div id="filter-popup" class="hidden fixed inset-0 backdrop-blur-sm bg-black bg-opacity-50 flex justify-center items-center">
+<div id="filter-popup" class="hidden fixed inset-0 backdrop-blur-sm bg-black bg-opacity-50 z-40 flex justify-center items-center">
     <div class="bg-white p-4 rounded-md shadow-lg w-96">
         <h2 class="text-lg font-bold mb-2">Filtrer les congés</h2>
 
         <form id="filter-form" method="GET">
+            <!-- Type de congé -->
             <div class="mb-4">
                 <label class="block text-sm font-bold text-gray-700 mb-2">Type de congé</label>
-                <div class="grid grid-cols-2 gap-2">
-
+                <div class="grid grid-cols-3 gap-2">
+                    {% for choice in types_conge %}
                     <label class="flex items-center text-xs">
-                        <input type="checkbox" name="type" value="annuel"
-                            class="form-checkbox text-purple-600 rounded-md mr-2"> Annuel
+                        <input type="checkbox" name="type" value="{{ choice.0 }}"
+                            class="form-checkbox text-purple-600 rounded-md mr-2"> {{ choice.1 }}
                     </label>
-                    <label class="flex items-center text-xs">
-                        <input type="checkbox" name="type" value="formation"
-                            class="form-checkbox text-purple-600 rounded-md mr-2"> Formation
-                    </label>
-                    <label class="flex items-center text-xs">
-                        <input type="checkbox" name="type" value="maternité"
-                            class="form-checkbox text-purple-600 rounded-md mr-2"> Maternité
-                    </label>
+                    {% endfor %}
                 </div>
             </div>
+
+            <!-- Statut du congé -->
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Statut</label>
+                <div class="grid grid-cols-3 gap-2">
+                    {% for statut in statuts %}
+                    <label class="flex items-center text-xs">
+                        <input type="checkbox" name="statut" value="{{ statut.0 }}"
+                            class="form-checkbox text-purple-600 rounded-md mr-2"> {{ statut.1 }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Poste de l'employé -->
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Poste</label>
+                <div class="grid grid-cols-2 gap-2">
+                    {% for poste in postes %}
+                    <label class="flex items-center text-xs">
+                        <input type="checkbox" name="departement" value="{{ poste.id }}" class="form-checkbox text-purple-600 rounded-md mr-2">
+                        {{ poste.nom }}
+                    </label>                        
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Département de l'employé -->
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Département</label>
+                <div class="grid grid-cols-2 gap-2">
+                    {% for departement in departements %}
+                    <label class="flex items-center text-xs">
+                        <input type="checkbox" name="departement" value="{{ departement.id }}" class="form-checkbox text-purple-600 rounded-md mr-2">
+                        {{ departement.nom }}
+                    </label>                        
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Employé -->
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Employé</label>
+                <select name="employee" class="border border-gray-300 rounded-md p-2 w-full">
+                    <option value="">Sélectionnez un employé</option>
+                    {% for employee in employees %}
+                    <option value="{{ employee.id }}">{{ employee.nom }} {{ employee.prenom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            
 
             <div class="flex justify-between font-medium">
                 <button type="button" onclick="togglePopup()"
@@ -173,6 +230,7 @@
         </form>
     </div>
 </div>
+
 
 <script>
     // Fonction pour basculer l'affichage du pop-up de filtrage

@@ -1,0 +1,283 @@
+{% extends "base_primary_employee.html" %}
+
+{% block title %} Profile {{users.username}} {% endblock %}
+
+{% block body %}
+
+ 
+     <!-- Modal pour le refus de congé -->
+     <div id="modalRefus" class="hidden fixed inset-0 backdrop-blur-sm bg-black bg-opacity-50 flex justify-center items-center z-40">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full">
+            <span class="text-gray-400 hover:text-gray-600 float-right cursor-pointer" onclick="fermerModal()">&times;</span>
+            <h2 class="text-2xl font-semibold mb-4">Motif de refus</h2>
+            <form id="refusForm" method="post" action="">
+                {% csrf_token %}
+                <textarea name="raison_refus" placeholder="Indiquez la raison du refus" class="w-full border border-gray-300 rounded p-2 mb-4" required></textarea>
+                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition transform hover:scale-105">Envoyer</button>
+            </form>
+        </div>
+    </div>
+
+<div class="max-w-screen mx-auto p-6 bg-white mt-12 rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold mb-4 mt-4">
+        {{ employee.nom }} {{ employee.prenom }}
+    </h2>
+        <p class="text-gray-600 mb-6 flex itesm-center gap-1">
+            Toutes les salariés
+            <svg width="16" height="16" class="mt-1" viewBox="0 0 57 57" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.5625 14.25L36.8125 28.5L22.5625 42.75" stroke="gray" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>{{ employee.nom }} {{ employee.prenom }}
+        </p>
+
+    
+    
+            <div class=" min-h-screen bg-white rounded-lg shadow-md max-w-full mx-auto p-6 border-2 border-gray500">
+                
+                <div class="flex justify-between items-center">
+
+                    <div class="flex gap-4">
+                        <div>
+                            <img src="{{ employee.photo.url }}" alt="{{ employee.username }}" class="h-24 w-36 rounded-lg">
+                        </div>
+                        <div class=" flex flex-col gap-1">
+                            <span class="font-bold">{{ employee.nom }} {{ employee.prenom }}</span>
+                            <span class="text-sm text-gray-700">{{ employee.poste }} </span>
+                            <span class="text-sm text-gray-700">{{ employee.email }}</span>
+                        </div>
+
+                    </div>
+               
+
+        
+
+                     <!-- Accepter tout les congés -->
+                     <div class=" " id="btnsetap4">
+                        <button class="flex bg-cp_primary text-white p-2 rounded-lg border-2 border-indigo-400 justify-between gap-2 items center flex">
+                            <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="m-1">
+                                <path d="M6.66178 11.0365L2.31803 6.69271L0.838867 8.16146L6.66178 13.9844L19.1618 1.48437L17.693 0.015625L6.66178 11.0365Z" fill="white"/>
+                                </svg>
+                           Tout accepter
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="flex border-t-4 mt-4 ">
+                    <!-- Boutton nav -->
+                    <div class="flex flex-col h-full border-2 rounded-lg m-4 ">
+                        <a href="{% url 'personnel:profile' %}" id="etap1Nav" class="flex border p-2 gap-4">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <ellipse cx="12" cy="17.5" rx="7" ry="3.5" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
+                                <circle cx="12" cy="7" r="4" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
+                                </svg>
+                                
+                                Profile
+                            </a>
+                        <a href="{% url 'personnel:conge_create' %}"  id="etap2Nav" class="flex border p-2 gap-4">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8 10H16M8 14H16M8 18H12M8 4C8 5.10457 8.89543 6 10 6H14C15.1046 6 16 5.10457 16 4M8 4C8 2.89543 8.89543 2 10 2H14C15.1046 2 16 2.89543 16 4M8 4H7C4.79086 4 3 5.79086 3 8V18C3 20.2091 4.79086 22 7 22H17C19.2091 22 21 20.2091 21 18V8C21 5.79086 19.2091 4 17 4H16" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            Congés
+                            </a>
+                         <a href="{% url 'personnel:manage_employee_permissions' %}" id="etap3Nav" class="flex border p-2 gap-4">
+                                <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12.5413 21.8643C12.199 21.899 11.8518 21.9163 11.4997 21.9163C5.74655 21.9163 1.08301 17.2528 1.08301 11.4997C1.08301 5.74655 5.74655 1.08301 11.4997 1.08301C17.2528 1.08301 21.9163 5.74655 21.9163 11.4997C21.9163 11.8518 21.899 12.199 21.8643 12.5413" stroke="#16151C" stroke-width="1.5625" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M6.8125 16.7077C8.27292 15.1775 10.4802 14.5244 12.5417 14.8264M14.099 8.89518C14.099 10.3327 12.9323 11.4994 11.4917 11.4994C11.1493 11.4999 10.8102 11.4329 10.4938 11.3023C10.1774 11.1717 9.88981 10.98 9.64755 10.7381C9.40529 10.4962 9.21309 10.2089 9.08196 9.89272C8.95083 9.57649 8.88333 9.23752 8.88333 8.89518C8.88333 7.45768 10.05 6.29102 11.4917 6.29102C11.8339 6.29061 12.1729 6.35766 12.4892 6.48835C12.8055 6.61904 13.093 6.81079 13.3351 7.05265C13.5773 7.29451 13.7694 7.58173 13.9004 7.89789C14.0315 8.21405 14.099 8.55294 14.099 8.89518Z" stroke="#16151C" stroke-width="1.5625" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M18.2708 21.9167C20.2844 21.9167 21.9167 20.2844 21.9167 18.2708C21.9167 16.2573 20.2844 14.625 18.2708 14.625C16.2573 14.625 14.625 16.2573 14.625 18.2708C14.625 20.2844 16.2573 21.9167 18.2708 21.9167Z" stroke="#16151C" stroke-width="1.5625" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    Privilèges
+                                </a>
+                        <a href="{% url 'personnel:conge_manage' %}" id="etap4Nav" class="flex border p-2 gap-4">
+                            <svg width="20" height="23" viewBox="0 0 20 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3.8125 0.5625C4.0197 0.5625 4.21841 0.64481 4.36493 0.791323C4.51144 0.937836 4.59375 1.13655 4.59375 1.34375V2.125H7.71875V1.34375C7.71875 1.13655 7.80106 0.937836 7.94757 0.791323C8.09409 0.64481 8.2928 0.5625 8.5 0.5625C8.7072 0.5625 8.90592 0.64481 9.05243 0.791323C9.19894 0.937836 9.28125 1.13655 9.28125 1.34375V2.125H12.4062V1.34375C12.4062 1.13655 12.4886 0.937836 12.6351 0.791323C12.7816 0.64481 12.9803 0.5625 13.1875 0.5625C13.3947 0.5625 13.5934 0.64481 13.7399 0.791323C13.8864 0.937836 13.9688 1.13655 13.9688 1.34375V2.125C14.5904 2.125 15.1865 2.37193 15.626 2.81147C16.0656 3.25101 16.3125 3.84715 16.3125 4.46875V8.43125C15.7524 8.5288 15.2196 8.74511 14.75 9.06563V4.46875C14.75 4.26155 14.6677 4.06284 14.5212 3.91632C14.3747 3.76981 14.176 3.6875 13.9688 3.6875H3.03125C2.82405 3.6875 2.62534 3.76981 2.47882 3.91632C2.33231 4.06284 2.25 4.26155 2.25 4.46875V20.0938C2.25 20.301 2.33231 20.4997 2.47882 20.6462C2.62534 20.7927 2.82405 20.875 3.03125 20.875H5.44844V20.8781C5.31628 21.3959 5.35352 21.9424 5.55469 22.4375H3.03125C2.40965 22.4375 1.81351 22.1906 1.37397 21.751C0.93443 21.3115 0.6875 20.7154 0.6875 20.0938V4.46875C0.6875 3.84715 0.93443 3.25101 1.37397 2.81147C1.81351 2.37193 2.40965 2.125 3.03125 2.125V1.34375C3.03125 1.13655 3.11356 0.937836 3.26007 0.791323C3.40659 0.64481 3.6053 0.5625 3.8125 0.5625ZM11.625 11.5C11.7922 11.5 11.9469 11.5531 12.075 11.6422L10.6531 13.0625H5.375C5.1678 13.0625 4.96909 12.9802 4.82257 12.8337C4.67606 12.6872 4.59375 12.4885 4.59375 12.2812C4.59375 12.074 4.67606 11.8753 4.82257 11.7288C4.96909 11.5823 5.1678 11.5 5.375 11.5H11.625ZM6.93125 16.8672C6.90659 16.6791 6.81436 16.5065 6.67176 16.3814C6.52915 16.2563 6.34592 16.1874 6.15625 16.1875H5.375C5.1678 16.1875 4.96909 16.2698 4.82257 16.4163C4.67606 16.5628 4.59375 16.7615 4.59375 16.9688C4.59375 17.176 4.67606 17.3747 4.82257 17.5212C4.96909 17.6677 5.1678 17.75 5.375 17.75H6.15625C6.23958 17.7501 6.3224 17.737 6.40156 17.7109C6.55365 17.4151 6.73021 17.1339 6.93125 16.8672ZM5.375 6.8125C5.1678 6.8125 4.96909 6.89481 4.82257 7.04132C4.67606 7.18784 4.59375 7.38655 4.59375 7.59375C4.59375 7.80095 4.67606 7.99966 4.82257 8.14618C4.96909 8.29269 5.1678 8.375 5.375 8.375H11.625C11.8322 8.375 12.0309 8.29269 12.1774 8.14618C12.3239 7.99966 12.4062 7.80095 12.4062 7.59375C12.4062 7.38655 12.3239 7.18784 12.1774 7.04132C12.0309 6.89481 11.8322 6.8125 11.625 6.8125H5.375ZM15.2781 10.6484C15.7354 10.1911 16.3556 9.93424 17.0023 9.93424C17.6491 9.93424 18.2693 10.1911 18.7266 10.6484C19.1839 11.1057 19.4408 11.7259 19.4408 12.3727C19.4408 13.0194 19.1839 13.6396 18.7266 14.0969L12.025 20.7969C11.468 21.3518 10.7717 21.7464 10.0094 21.9391L8.11719 22.4125C7.95744 22.4525 7.79005 22.4505 7.63132 22.4066C7.4726 22.3627 7.32796 22.2784 7.2115 22.1619C7.09505 22.0455 7.01076 21.9008 6.96685 21.7421C6.92294 21.5834 6.9209 21.416 6.96094 21.2563L7.43594 19.3656C7.62656 18.6016 8.02031 17.9047 8.57656 17.35L15.2781 10.6484Z" fill="#16151C"/>
+                                </svg>
+                                Demande de congés
+                            </a>
+
+                    </div>
+
+                    <!-- Les Demandes de congés -->
+                <div class=" bg-white w-full mx-auto p-8 " id="etap4">
+
+                    {% if conges %}
+                    <div class="overflow-x-auto bg-white shadow rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class=" text-gray-700 ">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Nom de l'employé</th>
+                                    <th class="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Type de congé</th>
+                                    <th class="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Date de début</th>
+                                    <th class="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Date de fin</th>
+                                    <th class="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Statut</th>
+                                    <th class="px-6 py-3 text-left text-sm font-bold uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for conge in conges %}
+                                    <tr class="hover:bg-gray-50 transition ease-in-out duration-200">
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ conge.employee.nom }} {{ conge.employee.prenom }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ conge.get_type_conge_display }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ conge.date_debut }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ conge.date_fin }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ conge.get_statut_display }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap flex space-x-2 items-center gap-2">
+                                            <a href="{% url 'personnel:conge-details' conge.id %}" class="text-indigo-600 duration-300 hover:scale-150">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M21.1303 9.8531C22.2899 11.0732 22.2899 12.9268 21.1303 14.1469C19.1745 16.2047 15.8155 19 12 19C8.18448 19 4.82549 16.2047 2.86971 14.1469C1.7101 12.9268 1.7101 11.0732 2.86971 9.8531C4.82549 7.79533 8.18448 5 12 5C15.8155 5 19.1745 7.79533 21.1303 9.8531Z" stroke="#16151C" stroke-width="1.5"/>
+                                                    <circle cx="12" cy="12" r="3" stroke="#16151C" stroke-width="1.5"/>
+                                                    </svg>
+                                                                                   
+                                            </a>
+                                            <form method="post" action="{% url 'personnel:approuver_conge' conge.id 'accepter' %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition transform hover:scale-105">Accepter</button>
+                                            </form>
+                                            <button type="button" onclick="ouvrirModal({{ conge.id }})" class="bg-red/50 hover:bg-red/60 text-white py-2 px-4 rounded transition transform hover:scale-105">
+                                                Refuser
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+            
+                    <div class="mt-4 flex justify-center space-x-4">
+                        {% if conges.has_previous %}
+                            <a href="?page={{ conges.previous_page_number }}" class="text-blue-500 font-medium hover:text-blue-600 transition">Précédent</a>
+                        {% endif %}
+                        <span>Page {{ conges.number }} de {{ conges.paginator.num_pages }}</span>
+                        {% if conges.has_next %}
+                            <a href="?page={{ conges.next_page_number }}" class="text-blue-500 font-medium hover:text-blue-600 transition">Suivant</a>
+                        {% endif %}
+                    </div>
+            
+                   
+                    
+                {% else %}
+                    <p class="text-center text-gray-500">Aucun congé en attente.</p>
+                {% endif %}
+                
+                </div>
+   
+
+    
+
+
+    </div>
+   
+
+</div>
+
+
+{% endblock %}
+
+
+{% block script %}
+<script>
+    
+    // JavaScript pour gérer la navigation entre les étapes
+    const steps = document.querySelectorAll('div[id^="step"]');
+    const nextButtons = document.querySelectorAll('.btn-next');
+    const prevButtons = document.querySelectorAll('.btn-prev');
+    const navButtons = document.querySelectorAll('button[id^="step"]');
+    
+    let currentStep = 0;
+    
+    function showStep(stepIndex) {
+    steps.forEach((step, index) => {
+        step.classList.toggle('hidden', index !== stepIndex);
+        step.classList.toggle('block', index === stepIndex);
+    });
+    }
+    navButtons.forEach((button, index) => {
+                button.addEventListener('click', () => {
+                    currentStep = index; // Aller directement à l'étape correspondante
+                    showStep(currentStep);
+                });
+            });
+
+            
+            // pop-up filtrer
+            function togglePopup() {
+            document.getElementById('filter-popup').classList.toggle('hidden');
+        }
+
+             // pop-up Demande de congés
+             function congePopup1() {
+                document.getElementById('conge-liste').classList.remove('block');
+                document.getElementById('demande_conge-popup').classList.remove('hidden');
+            document.getElementById('demande_conge-popup').classList.add('block');
+            document.getElementById('conge-liste').classList.add('hidden');
+        }
+         function congePopup2() {
+            document.getElementById('demande_conge-popup').classList.remove('block');
+            document.getElementById('conge-liste').classList.remove('hidden');
+            document.getElementById('demande_conge-popup').classList.add('hidden');
+            document.getElementById('conge-liste').classList.add('block');
+
+        }
+
+        //Pour gérer nav2
+        const etapButtons = document.querySelectorAll('button[id^="etap"]');
+        const etaps = document.querySelectorAll('div[id^="etap"]');
+        const btns = document.querySelectorAll('div[id^="btnsetap"]');
+
+        let currentEtap = 0;
+
+        function showEtap(etapIndex) {
+        etaps.forEach((etap, index) => {
+        etap.classList.toggle('hidden', index !== etapIndex);
+        etap.classList.toggle('block', index === etapIndex);
+       
+    });
+    }
+       
+    function showBtnEtap(etapIndex) {
+        btns.forEach((btns_etap, index) => {
+        btns_etap.classList.toggle('hidden', index !== etapIndex);
+        btns_etap.classList.toggle('block', index === etapIndex);
+
+    });
+    }
+        etapButtons.forEach((button, index) => {
+                button.addEventListener('click', () => {
+                    currentEtap = index; // Aller directement à l'étape correspondante
+                    showEtap(currentEtap);
+                    showBtnEtap(currentEtap);
+                });
+            });
+
+            document.querySelectorAll('.upload-container').forEach(container => {
+        const input = container.querySelector('input[type="file"]');
+        const fileNameLabel = container.querySelector('.file-name span');
+        const closeIcon = container.querySelector('.close-icon');
+
+        input.addEventListener('change', function() {
+            const fileName = input.files[0] ? input.files[0].name : "Formats supportés: PDF, DOCX";
+            fileNameLabel.textContent = fileName;
+            closeIcon.classList.remove('hidden');
+        });
+
+        closeIcon.addEventListener('click', function() {
+            input.value = null;
+            fileNameLabel.textContent = "Formats supportés: PDF, DOCX";
+            closeIcon.classList.add('hidden');
+        });
+    });
+
+    ///pour repondre au conges
+        // Script pour ouvrir le modal avec l'ID du congé en question
+        function ouvrirModal(congeId) {
+            document.getElementById('modalRefus').classList.remove('hidden');
+
+
+            const form = document.getElementById('refusForm');
+            form.action = `{% url 'personnel:approuver_conge' 0 'refuser' %}`.replace('/0/', '/' + congeId + '/');
+        }
+
+        function fermerModal() {
+            document.getElementById('modalRefus').classList.add('hidden');
+        }
+        </script>
+{% endblock %}

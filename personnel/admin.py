@@ -12,7 +12,7 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 @admin.register(Paie)
 class PayrollAdmin(admin.ModelAdmin):
-    list_display = ('statut', 'lot', 'employee__nom', 'employee__prenom')
+    list_display = ('statut',  'employee__nom', 'employee__prenom')
     search_fields = ('employee__nom', 'employee__prenom')
 
 class PosteAdmin(admin.ModelAdmin):

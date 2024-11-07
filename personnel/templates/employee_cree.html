@@ -56,7 +56,7 @@
 
 
 
-              <form action="{% url 'employee-list' %}" method="POST" enctype="multipart/form-data" class="space-y-6">
+              <form action="{% url 'personnel:personel-create' %}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 {% csrf_token %}
                     
                             <div class="block grid grid-cols-2 gap-6" id="step1">
@@ -91,13 +91,13 @@
                                     </div>
                                 </div>
 
-                                <div>
-
+                                <div class="text-sm text-gray-500 mt-2Q4">
+                                    Les champs marqués d'un <span class=" text-2xl text-red">*</span> sont obligatoires
                                 </div>
                         
                             <!-- Nom -->
                             <div class="mb-4">
-                                <input type="text" name="nom" placeholder="Nom" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="nom" placeholder="Nom *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
                     
                             <!-- Prénom -->
@@ -107,12 +107,12 @@
 
                             <!-- Numéro de téléphone -->
                             <div class="mb-4">
-                                <input type="text" name="numero_telephone" placeholder="Numéro de téléphone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="numero_telephone" placeholder="Numéro de téléphone *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
 
                             <!-- Email -->
                             <div class="mb-4">
-                                <input type="email" name="email" placeholder="Adresse Email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <input type="email" name="email" placeholder="Adresse Email *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
 
                             </div>
 
@@ -121,15 +121,15 @@
                                 <input type="date" id="date_naissance" name="date_naissance" 
                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer" 
                                        required>
-                                       <span id="datePlaceholder" class="absolute t-1 left-4 top-2 ">Date de naissance</span>
+                                       <span id="datePlaceholder" class="absolute t-1 left-4 top-2 ">Date de naissance <span class="text-red-500">*</span></span>
                             </div>
                             
 
                             <!-- etat civil -->
                             <div class="mb-4">
-                                <select name="statut_matrimonial" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="" disabled selected>Etat civil</option>
-                                    {% for etat in statut_matrimonial %}
+                                <select name="statut_matrimonial" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                    <option value="" disabled selected>Etat civil *</option>
+                                    {% for etat in statut_matrimonials %}
                                     <option value="{{ etat.0 }}">{{ etat.1 }}</option>
                                     {% endfor %}
                                 </select>
@@ -138,8 +138,8 @@
                             <!-- sexe -->
                             <div class="mb-4">
                                 <select name="sexe" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="" disabled selected> Sexe </option>
-                                    {% for sex in sexe %}
+                                    <option value="" disabled selected> Sexe * </option>
+                                    {% for sex in sexes %}
                                     <option value="{{ sex.0 }}">{{ sex.1 }}</option>
                                     {% endfor %}
                                 </select>
@@ -150,28 +150,38 @@
 
                             <!-- Nationalité -->
                             <div class="mb-4">
-                                <input type="text" name="nationalite" placeholder="Nationalité" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="nationalite" placeholder="Nationalité *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
                     
                             <!-- Adresse -->
                             <div class="mb-4">
-                                <input type="text" name="adresse" placeholder="Adresse" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="adresse" placeholder="Adresse *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
                     
 
                             <!-- Ville -->
                             <div class="mb-4">
-                                <input type="text" name="ville" placeholder="Ville" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="ville" placeholder="Ville *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
                             
                             <!-- Pays -->
                             <div class="mb-4">
-                                <input type="text" name="pays" placeholder="Pays" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="pays" placeholder="Pays *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
 
                             <!-- Code postale -->
                             <div class="mb-4">
-                                <input type="text" name="code_postal" placeholder="Code postale" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="code_postal" placeholder="Code postale *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+
+                             <!-- Maladie -->
+                             <div class="mb-4">
+                                <input type="text" name="maladie" placeholder="Maladie" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+
+                            <!-- Groupe Sanguin -->
+                            <div class="mb-4">
+                                <input type="text" name="groupe_sanguin" placeholder="Groupe Sanguin" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
 
 
@@ -189,8 +199,8 @@
             <div class="hidden grid grid-cols-2 gap-6" id="step2">
                          <!-- Type de salarié -->
                 <div class="mb-4">
-                    <select name="type_salarie" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="" disabled selected>Sélectionner le type de salarié</option>
+                    <select name="type_salarie" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <option value="" disabled selected>Sélectionner le type de salarié *</option>
                         {% for type in type_choices %}
                         <option value="{{ type.0 }}">{{ type.1 }}</option>
                         {% endfor %}
@@ -200,7 +210,7 @@
                 <!-- Département -->
                 <div class="mb-4">
                     <select name="departement" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="" disabled selected>Sélectionner un département</option>
+                        <option value="" disabled selected>Sélectionner un département *</option>
                         {% for departement in departements %}
                         <option value="{{ departement.id }}">{{ departement.nom }}</option>
                         {% endfor %}
@@ -210,7 +220,7 @@
                  <!-- Contrat -->
                  <div class="mb-4">
                     <select name="type_contrat" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="" disabled selected>Sélectionner le type de contrat</option>
+                        <option value="" disabled selected>Sélectionner le type de contrat *</option>
                         {% for contrat in contrat_choices %}
                         <option value="{{ contrat.0 }}">{{ contrat.1 }}</option>
                         {% endfor %}
@@ -220,7 +230,7 @@
                  <!-- Poste -->
                  <div class="mb-4">
                     <select name="poste" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="" disabled selected>Sélectionner un poste</option>
+                        <option value="" disabled selected>Sélectionner un poste *</option>
                         {% for poste in postes %}
                         <option value="{{ poste.id }}">{{ poste.nom }}</option>
                         {% endfor %}
@@ -232,21 +242,30 @@
                     <input type="date" id="date_embauche" name="date_embauche" 
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer" 
                            required>
-                           <span id="datePlaceholder2" class="absolute t-1 left-4 top-2 ">Date d'embauche</span>
+                           <span id="datePlaceholder2" class="absolute t-1 left-4 top-2 ">Date d'embauche *</span>
                 </div>
           
                 <!-- Compétence -->
                 <div class="mb-4">
                     <select name="competence" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="" disabled selected>Sélectionner un compétence</option>
+                        <option value="" disabled selected>Sélectionner un compétence *</option>
                         {% for competence in competences %}
                         <option value="{{ competence.id }}">{{ competence.nom }}</option>
                         {% endfor %}
                     </select>
                 </div>
+
+               
+
+                <div class="mb-4">
+                    <input type="number" id="salaire_base" name="salaire_base" placeholder="Salaire de base" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="0">
+                </div>
                   <!-- Bouton de soumission -->
                   <div>
                                 
+                  </div>
+                  <div>
+                    
                   </div>
 
                   <div class="flex justify-end gap-6">
@@ -364,16 +383,7 @@
 
 
             <div class="hidden grid grid-cols-2 gap-6" id="step4">               
-                <!-- id_facebook -->
-                <div class="mb-4">
-                    <input type="text" name="id_facebook" placeholder="Entrer l'ID facebook" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                    
-                <!-- id_skype -->
-                <div class="mb-4">
-                    <input type="text" name="id_skype" placeholder="Entrer l'ID Skype" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                    
+               
                 <!-- id_github -->
                 <div class="mb-4">
                     <input type="text" name="id_github" placeholder="Entrer l'ID GitHub" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">

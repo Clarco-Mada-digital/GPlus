@@ -18,34 +18,37 @@
     
             <div class="bg-white rounded-lg shadow-md max-w-screen mx-auto p-4 border-2 border-gray500">
 
-        {% for notification in notifications %}
+                {% for notification in notifications %}
+                <div class="flex items-center justify-between p-4">
+                {% csrf_token %}
+                <div class="flex items-center space-x-4">
+                    {% if not notification.is_read %}
+                    <form action="{% url 'personnel:mark_notification_as_read' pk=notification.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-cp_primary text-white px-4 py-2 rounded">
+                            Marquer comme lue
+                        </button>
+                    </form>
+                    {% endif %}
+                    <div class="bg-purple-500 text-white p-3 rounded-full">
+                        <img src="{{ notification_user.url }}" alt="">
+                    </div>
+                    <div>
+                        <h3 class="font-bold">{{ notification.notification_type }}</h3>
+                        <p class="text-gray-600">{{ notification.notification_message }}</p>
+                    </div>
+                </div>
+                <small class="text-gray-300" id="notification-{{ notification.id }}-time" data-timestamp="{{ notification.notification_date_created }}">
+                    <!-- La date sera insérée dynamiquement ici -->
+                </small>
+                </div>
+                    {% endfor %}
 
-        <form id="notification" class="flex items-center justify-between p-4">
-            {% csrf_token %}
-            <div class="flex items-center space-x-4">
-                {% if not notification.is_read %}
-                <button id="read-btn-{{ notification.id }}" onclick="markAsRead('{{ notification.id }}')" class="bg-cp_primary text-white px-4 py-2 rounded">
-                    Marquer comme lue
-                </button>
-                {% endif %}
-                <div class="bg-purple-500 text-white p-3 rounded-full">
-                    <img src="{{ notification.notification_user.url }}" alt="">
-                </div>
-                <div>
-                    <h3 class="font-bold">{{ notification.notification_type }}</h3>
-                    <p class="text-gray-600">{{ notification.notification_message }}</p>
-                </div>
+
             </div>
-            <small class="text-gray-300" id="notification-{{ notification.id }}-time" data-timestamp="{{ notification.notification_date_created }}">
-                <!-- La date sera insérée dynamiquement ici -->
-            </small>
-        </form>
-                  {% endfor %}
-
-
         </div>
-      </div>
-    </div>
+        </div>
+
 {% endblock %}
 
 {% block script %}

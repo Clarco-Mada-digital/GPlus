@@ -21,6 +21,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from accounts.views import home
+from theme.views import change_theme
 
 
 urlpatterns = [
@@ -30,6 +31,7 @@ urlpatterns = [
     path('caisse/', include("caisse.urls")),
     path('personnel/', include('personnel.urls')),
     path("__reload__/", include("django_browser_reload.urls")),
+    path('switch-theme/', change_theme, name='change_theme'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

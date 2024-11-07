@@ -33,7 +33,7 @@ class UserNotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserNotification
-        fields = ['notification_user', 'user_affected', 'notification_type', 'notification_message', 'notification_date_created', 'is_read']
+        fields = ['id', 'notification_user', 'user_affected', 'notification_type', 'notification_message', 'notification_date_created', 'is_read']
 
 class HistoriqueSerializer(serializers.ModelSerializer):
     class Meta:

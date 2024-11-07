@@ -13,6 +13,7 @@ from django.utils import timezone
 from .models import CustomUser
 
 
+
 # Create your views here.
 def signIn(request):
     if request.method == 'POST':
@@ -25,7 +26,7 @@ def signIn(request):
             user = CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist:
             messages.error(request, "L'email ou le mot de passe est incorrect.")
-            return redirect('signIn')
+            return redirect('accounts:signIn')
 
         # Authentifier l'utilisateur avec l'email et le mot de passe
         user = authenticate(request, username=user.username, password=password)
@@ -36,7 +37,7 @@ def signIn(request):
             if remember_me:  # Si la case est cochée
                 request.session.set_expiry(1209600)  # 2 semaines
 
-            return redirect('home')  # Rediriger vers la page d'accueil après la connexion
+            return redirect('accounts:home')  # Rediriger vers la page d'accueil après la connexion
         else:
             messages.error(request, "L'email ou le mot de passe est incorrect.")
 
@@ -44,12 +45,12 @@ def signIn(request):
 
 def logout_user(request):
     logout(request)  # Déconnexion de l'utilisateur
-    return redirect('signIn')  # Redirection vers la page de connexion après déconnexion
+    return redirect('accounts:signIn')  # Redirection vers la page de connexion après déconnexion
 
 
 @login_required(login_url='signIn')
 def home(request):
-    return redirect('dashboard')
+    return redirect('personnel:dashboard')
 
 def send_otp(request):
     if request.method == "POST":
@@ -60,7 +61,7 @@ def send_otp(request):
             user = CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist:
             messages.error(request, "Cet email n'est pas enregistré.")
-            return redirect('password_reset')  # Redirige vers la page de récupération
+            return redirect('accounts:password_reset')  # Redirige vers la page de récupération
 
         # Générer un OTP
         otp_code = get_random_string(5, allowed_chars='0123456789')
@@ -75,7 +76,7 @@ def send_otp(request):
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
 
         messages.success(request, "Un code OTP a été envoyé à votre adresse email.")
-        return redirect('verify_otp')  # Redirige vers la page de vérification de l'OTP
+        return redirect('accounts:verify_otp')  # Redirige vers la page de vérification de l'OTP
 
     return render(request, 'login_forget_password.html')  # Template pour le formulaire
 
@@ -94,13 +95,13 @@ def verify_otp(request):
             otp_sent_time = timezone.datetime.fromisoformat(otp_sent_at)
             if timezone.now() > otp_sent_time + timedelta(minutes=5):
                 messages.error(request, "Le code OTP a expiré. Veuillez en demander un nouveau.")
-                return redirect('password_reset')  # Redirige vers la page de récupération
+                return redirect('accounts:password_reset')  # Redirige vers la page de récupération
 
         # Vérifier si l'OTP correspond
         if otp_input == otp_code:
             # Réinitialiser le compteur d'essai
             request.session['otp_attempts'] = 0
-            return redirect('change_password')
+            return redirect('accounts:change_password')
         else:
             attempts += 1
             request.session['otp_attempts'] = attempts
@@ -109,9 +110,9 @@ def verify_otp(request):
             # Vérifier si le nombre maximum de tentatives est atteint
             if attempts >= 5:  # Limitez à 5 tentatives
                 messages.error(request, "Nombre maximum de tentatives atteint. Veuillez demander un nouveau code OTP.")
-                return redirect('password_reset')
+                return redirect('accounts:password_reset')
 
-            return redirect('verify_otp')
+            return redirect('accounts:verify_otp')
 
     return render(request, 'login_confirme_otp.html')  # Template pour la vérification de l'OTP
 
@@ -124,7 +125,7 @@ def change_password(request):
             user = CustomUser.objects.get(email=email)  # Récupérer l'utilisateur par email
         except CustomUser.DoesNotExist:
             messages.error(request, "L'utilisateur associé à cet email n'existe pas.")
-            return redirect('password_reset')  # Redirige vers la page de récupération
+            return redirect('accounts:password_reset')  # Redirige vers la page de récupération
 
         # Crée une instance du formulaire de changement de mot de passe
         form = SetPasswordForm(user=user, data={'new_password1': password, 'new_password2': password})
@@ -132,7 +133,7 @@ def change_password(request):
         if form.is_valid():
             form.save()  # Sauvegarde le nouveau mot de passe
             messages.success(request, 'Votre mot de passe a été mis à jour avec succès!')
-            return redirect('update_password_success')  # Redirige vers une page de succès
+            return redirect('accounts:update_password_success')  # Redirige vers une page de succès
         else:
             messages.error(request, 'Il y a eu une erreur lors de la mise à jour de votre mot de passe.')
     else:

@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from django.db import models
 from django.utils import timezone
-from datetime import date
+from datetime import date, datetime
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group
 from django.core.exceptions import ValidationError
@@ -71,10 +71,10 @@ class Employee(models.Model): #Model employée
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,  related_name='employee', blank=True, null=True)
     nom = models.CharField(max_length=100)
-    prenom = models.CharField(max_length=100)
-    photo = models.ImageField(upload_to='photos/', null=True, blank=True , default="photos/pdp_defaut.png")
+    prenom = models.CharField(max_length=100, null=True)
+    photo = models.ImageField(upload_to='photos/', null=True, blank=True)
     email = models.EmailField(max_length=100, unique=True)
-    numero_telephone = models.CharField(max_length=15)
+    numero_telephone = models.CharField(max_length=15, null=True)
     date_naissance = models.DateField()
     sexe = models.CharField(max_length=10, choices=SEXE_CHOICES)
     ville = models.CharField(max_length=100)
@@ -83,8 +83,8 @@ class Employee(models.Model): #Model employée
     nationalite = models.CharField(max_length=100)
     pays = models.CharField(max_length=100)
     code_postal = models.CharField(max_length=10)
-    groupe_sanguin = models.CharField(max_length=3, null=True)
-    maladie = models.CharField(max_length=200,  null=True)
+    groupe_sanguin = models.CharField(max_length=3, null=True, blank=True)
+    maladie = models.CharField(max_length=200,  null=True,blank=True)
     date_embauche = models.DateField(default=timezone.now)
     poste = models.ForeignKey(Poste, on_delete=models.SET_NULL, null=True)
     type_salarie = models.CharField(max_length=20, choices=TYPE_CHOICES)
@@ -96,10 +96,8 @@ class Employee(models.Model): #Model employée
     lettre_introduction = models.FileField( upload_to='fichier/', null=True, blank=True)
     bulletin_salaire = models.FileField( upload_to='fichier/', null=True, blank=True)
     curriculum_vitae = models.FileField( upload_to='fichier/', null=True, blank=True)
-    id_facebook = models.CharField(max_length=150, null=True)
-    id_skype = models.CharField(max_length=150, null=True)
-    id_github = models.CharField(max_length=150, null=True)
-    id_linkedln = models.CharField(max_length=150, null=True)
+    id_github = models.CharField(max_length=150, null=True, blank=True)
+    id_linkedln = models.CharField(max_length=150, null=True, blank=True)
     groupe = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True,blank=True)
     jours_conge_annuels = models.PositiveIntegerField(default=15)  # Jours de congé annuels
     jours_conge_formation = models.PositiveIntegerField(default=12)  # Jours de congé pour formation
@@ -107,6 +105,7 @@ class Employee(models.Model): #Model employée
     jours_conge_paternite = models.PositiveIntegerField(default=3)  # Jours de congé pour paternité
     jours_conge_exceptionnel = models.PositiveIntegerField(default=10)  # Jours de congé exceptionel
     jours_conge_obligatoire = models.PositiveIntegerField(default=15)  # Jours de congé obligatoire
+    salaire_base = models.IntegerField(default=0, blank=True)
 
     def clean(self):
         # Validation du numéro de téléphone
@@ -147,42 +146,40 @@ class Conge(models.Model):
     type_conge = models.CharField(max_length=3, choices=TYPE_CHOICES)
     date_debut = models.DateField()
     date_fin = models.DateField()
-    jours_utilises = models.PositiveIntegerField()
     statut = models.CharField(max_length=20, choices=STATUTS, default='en_attente')
     raison = models.TextField(blank=True, null=True)
     piece_justificatif = models.FileField(upload_to='fichier/', null=True, blank=True)
     date_demande = models.DateTimeField(default=timezone.now)
     raison_refus = models.TextField(null=True, blank=True)
-    responsable = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, related_name='conges_responsables')  # Lien avec l'employé qui répond au congé
+    responsable = models.ForeignKey(
+        'Employee',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='conges_responsables'
+    )  # Lien avec l'employé qui répond au congé
 
     def jours_utilises(self):
-        """" Calcule le nombre de jours utilisé"""
-        return self.date_fin - self.date_debut
+        """Calcule le nombre de jours de congé utilisés."""
+        return (self.date_fin - self.date_debut).days + 1  # +1 pour inclure le dernier jour
 
     def jours_maximum(self):
         """Renvoie le nombre maximum de jours autorisés pour le type de congé."""
-        if self.type_conge == 'ANN':
-            return 15
-        elif self.type_conge == 'FOR':
-            return 12
-        elif self.type_conge == 'MAT':
-            return 105
-        elif self.type_conge == 'PAT':
-            return 3
-        elif self.type_conge == 'EXC':
-            return 10
-        elif self.type_conge == 'OBL':
-            return 15
-        return 0
+        max_jours = {
+            'ANN': 15,
+            'FOR': 12,
+            'MAT': 105,
+            'PAT': 3,
+            'EXC': 10,
+            'OBL': 15,
+        }
+        return max_jours.get(self.type_conge, 0)
 
     def verifier_jours_restants(self):
         """Calcule les jours restants pour le type de congé spécifique."""
-
-        # Assure-toi que l'employé est bien associé au congé
         if self.employee is None:
             raise ValueError("L'employé associé au congé est indéfini.")
 
-        # On récupère les jours de congé disponibles
         jours_disponibles = {
             'ANN': self.employee.jours_conge_annuels,
             'FOR': self.employee.jours_conge_formation,
@@ -192,39 +189,39 @@ class Conge(models.Model):
             'OBL': self.employee.jours_conge_obligatoire,
         }
 
-        # Vérifie si le type de congé est valide
-        if self.type_conge not in jours_disponibles:
+        jours_disponibles_type = jours_disponibles.get(self.type_conge)
+        if jours_disponibles_type is None:
             raise ValueError(f"Type de congé '{self.type_conge}' non valide.")
 
-        # Calcul des jours restants
-        jours_restants = jours_disponibles[self.type_conge] - self.jours_utilises()
-
-        # Si jours_restants est négatif, retourne 0
-        return max(jours_restants, 0)
+        return max(jours_disponibles_type - self.jours_utilises(), 0)
 
     def save(self, *args, **kwargs):
-        # Vérifier si les jours utilisés dépassent le maximum autorisé pour le type de congé
-        if self.verifier_jours_restants() > self.jours_maximum():
-            raise ValueError("Le nombre de jours utilisés dépasse le maximum autorisé pour ce type de congé.")
+        # Vérifie si le nombre de jours demandés est supérieur au maximum autorisé
+        if self.jours_utilises() > self.jours_maximum():
+            raise ValueError("Le nombre de jours demandés dépasse le maximum autorisé pour ce type de congé.")
 
-        # Vérifier les jours de congé restants pour l'employé
-        if self.verifier_jours_restants() < 0:
-            raise ValueError("Le nombre de jours restants pour cet employé est insuffisant.")
+        # Vérifie si l'employé a assez de jours restants
+        if self.verifier_jours_restants() <= 0:
+            raise ValueError("Le nombre de jours restants pour ce type de congé est insuffisant pour l'employé.")
 
-        self.jours_utilises = self.jours_utilises()
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.employee} - {self.type_conge} du {self.date_debut} au {self.date_fin} - {self.statut}'
 
-#Model Notification
+
+    #Model Notification
 class Notification(models.Model):
     TYPES = [
+        ('employee_create','Création d un nouveau employée réussi'),
         ('conge_termine', 'Congé terminé'),
         ('rappel_mise_a_jour', 'Rappel de mise à jour'),
         ('conge_approuve', 'Congé approuvé'),
         ('conge_refuse', 'Congé refusé'),
-        ('fiche_de_paie_prete', 'Fiche de paie prête'),
+        ('paie_create', 'Fiche de paie crée'),
+        ('paie_delete', 'Fiche de paie a été suprimer'),
+        ('paie_update', 'Fiche de paie a été crée'),
+        ('paie_ready', 'Fiche de paie prête'),
         ('mise_a_jour_document', 'Mise à jour de document'),
         ('avis_de_conge', 'Avis de congé'),
         ('demande_conge_recue', 'Demande de congé reçue'),
@@ -326,29 +323,26 @@ class AgendaEvent(models.Model):
     def __str__(self):
         return self.title
 
+
+
 class Paie(models.Model):
     TYPE_CHOICES = [
-        ('Payé', 'Payé'),
-        ('En attente', 'En attente')
+        ('P', 'Payé'),
+        ('E', 'En attente')
     ]
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    salaire_base = models.DecimalField(max_digits=10, decimal_places=2)
-    primes = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    indemnites = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # Indemnité
-    indice_anciennete = models.DecimalField(max_digits=5, decimal_places=2, default=1.00)  # Indice d'ancienneté
-    cotisations_salariales = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    cotisations_patronales = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    net_imposable = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    salaire_base = models.IntegerField(null=True, default=0)
+    indemnite_transport = models.IntegerField(default=0)  # Indemnité
+    indemnite_communication = models.IntegerField(default=0)  # Indemnité
+    indemnite_stage = models.IntegerField(default=0)  # Indemnité
+    statut = models.CharField(max_length=2,choices=TYPE_CHOICES, null=True)
     net_a_payer = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    date_paie = models.DateField()
-    statut = models.CharField(max_length=20, choices=TYPE_CHOICES, null=True)
 
     # Champs pour la date de début et de fin d'exercice
     date_debut = models.DateField(help_text="Début de la période d'exercice")
     date_fin = models.DateField(help_text="Fin de la période d'exercice")
 
     # Champ lot (mois et année, ex: Janvier 2024)
-    lot = models.DateField(help_text="Sélectionner mois et année")
 
     # Date de création automatiquement générée
     date_creation = models.DateTimeField(auto_now_add=True)
@@ -357,53 +351,47 @@ class Paie(models.Model):
     exercice = models.CharField(max_length=50, editable=False)
 
     # Constantes pour les taux de cotisations à Madagascar
-    TAUX_CNAPS_EMPLOYEUR = 0.13
-    TAUX_CNAPS_EMPLOYE = 0.01
-    TAUX_SMIDS_EMPLOYEUR = 0.05
-    TAUX_SMIDS_EMPLOYE = 0.01
+
 
     # Calcul du salaire brut en tenant compte de l'indemnité et de l'indice d'ancienneté
     def calcul_salaire_brut(self):
-        salaire_base_anciennete = self.salaire_base * self.indice_anciennete
-        return salaire_base_anciennete + self.primes + self.indemnites
+        total_primes = sum(Decimal(prime.montant) for prime in self.primes.all())
+        salaire_base_anciennete = Decimal(self.salaire_base)
+        return salaire_base_anciennete + total_primes + Decimal(self.indemnite_stage) + Decimal(
+            self.indemnite_communication) + Decimal(self.indemnite_transport)
 
-    # Calcul des cotisations salariales (CNAPS + SMIDS)
-    def calcul_cotisations_salariales(self):
-        salaire_brut = self.calcul_salaire_brut()
-        cnaps = salaire_brut * Decimal(self.TAUX_CNAPS_EMPLOYE)
-        smids = salaire_brut * Decimal(self.TAUX_SMIDS_EMPLOYE)
-        return cnaps + smids
 
-    # Calcul des cotisations patronales (CNAPS + SMIDS)
-    def calcul_cotisations_patronales(self):
-        salaire_brut = self.calcul_salaire_brut()
-        cnaps = salaire_brut * Decimal(self.TAUX_CNAPS_EMPLOYEUR)
-        smids = salaire_brut * Decimal(self.TAUX_SMIDS_EMPLOYEUR)
-        return cnaps + smids
 
-    # Calcul du net imposable
-    def calcul_net_imposable(self):
-        salaire_brut = self.calcul_salaire_brut()
-        cotisations_salariales = self.calcul_cotisations_salariales()
-        return salaire_brut - cotisations_salariales
 
-    # Calcul du net à payer
-    def calcul_net_a_payer(self):
-        return self.calcul_net_imposable()
 
     # Méthode save pour automatiser les calculs lors de la sauvegarde
     def save(self, *args, **kwargs):
-        # On calcule les montants automatiquement avant de sauvegarder
-        self.cotisations_salariales = self.calcul_cotisations_salariales()
-        self.cotisations_patronales = self.calcul_cotisations_patronales()
-        self.net_imposable = self.calcul_net_imposable()
-        self.net_a_payer = self.calcul_net_a_payer()
+        # Sauvegarder l'instance pour générer une clé primaire
+        if self.pk is None:  # Vérifiez que la paie n'a pas encore de clé primaire
+            super(Paie, self).save(*args, **kwargs)
+
+        self.salaire_brut = self.calcul_salaire_brut()
+
+        # Si le lot est fourni sans jour, on ajoute le 1er jour du mois
+        if isinstance(self.date_debut, str):
+            self.date_debut = datetime.strptime(self.date_debut, '%Y-%m-%d').date()
+        if isinstance(self.date_fin, str):
+            self.date_fin = datetime.strptime(self.date_fin, '%Y-%m-%d').date()
 
         # Génération automatique du champ "exercice"
         self.exercice = f"{self.date_debut.strftime('%d %b')} - {self.date_fin.strftime('%d %b')}"
 
+        # Puis sauvegarder à nouveau avec les calculs mis à jour
         super(Paie, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"Fiche de paie de {self.employee.prenom} {self.employee.nom} pour {self.lot}"
 
+class Prime(models.Model):
+
+    nom = models.CharField(max_length=100)
+    paie = models.ForeignKey(Paie, on_delete=models.CASCADE, related_name='primes')
+    montant = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.nom} - {self.montant} MGA"

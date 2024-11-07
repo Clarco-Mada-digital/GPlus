@@ -5,6 +5,8 @@ from personnel.views import DashboardAPIView
 from django.conf.urls.static import static
 from django.conf import settings
 
+app_name = 'accounts'
+
 
 """
 Définit le modèle d'URL pour la vue de l'application accounts.
