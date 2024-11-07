@@ -5,6 +5,8 @@ from django.utils import timezone
 from django.db import models
 import json
 from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib.auth.models import User
+from django.conf import settings
 from simple_history.models import HistoricalRecords
 
 # Create your models here.
@@ -130,7 +132,7 @@ class Beneficiaire(models.Model):
 class OperationEntrer(models.Model):
     
     description = models.CharField(max_length=255)  # Nom de l'opération
-    montant = models.DecimalField(max_digits=10, decimal_places=0, default=5000)  # Montant
+    montant = models.DecimalField(max_digits=10, decimal_places=0, default=0)  # Montant
     date = models.DateField(auto_now_add=True)  # Date de l'ajout dans l'application
     date_transaction = models.DateField(default=timezone.now) # Date de l'opération
     categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, null=True)  # Clé étrangère vers Categorie
@@ -144,10 +146,10 @@ class OperationEntrer(models.Model):
 class OperationSortir(models.Model):
     
     description = models.CharField(max_length=255)  # Nom de l'opération
-    montant = models.DecimalField(max_digits=10, decimal_places=0, default=500)  # Montant
+    montant = models.DecimalField(max_digits=10, decimal_places=0, default=0)  # Montant
     date = models.DateField(auto_now_add=True)  # Date de l'ajout dans l'application
     date_de_sortie = models.DateField(default=timezone.now)
-    quantité = models.DecimalField(max_digits=10, decimal_places=0, default=1)
+    quantite = models.DecimalField(max_digits=10, decimal_places=0, default=1)
     categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, null=False)  # Clé étrangère vers Categorie
     beneficiaire = models.ForeignKey(Beneficiaire, on_delete=models.PROTECT, null=False) #clé étrangère vers Personnel
     fournisseur = models.ForeignKey(Fournisseur, on_delete=models.PROTECT, null=False) #clé étrangère vers Fournisseur
@@ -165,3 +167,18 @@ class Caisse(models.Model):
 
     def __str__(self):
         return f"Caisse {self.id} - Montant: {self.montant}"
+    
+class UserActivity(models.Model):
+    ACTION_CHOICES = [
+        ('login', 'Login'),
+        ('logout', 'Logout'),
+        ('create', 'Create'),
+        ('read', 'Read'),
+        ('update', 'Update'),
+        ('delete', 'Delete'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    action = models.CharField(max_length=50, choices=ACTION_CHOICES)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(null=True, blank=True)
