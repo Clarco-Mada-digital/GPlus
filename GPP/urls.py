@@ -24,6 +24,7 @@ from django.conf.urls.static import static
 from theme.views import change_theme
 
 
+
 urlpatterns = [
     path('', signIn, name='signIn'),
     path('admin/', admin.site.urls),

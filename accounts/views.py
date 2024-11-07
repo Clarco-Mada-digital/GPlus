@@ -31,8 +31,8 @@ def signIn(request):
 
 def logout_user(request):
   logout(request)  # Déconnexion de l'utilisateur
-  return redirect('accounts:signIn')  # Redirection vers la page de connexion après déconnexion
+  return redirect('accounts:login_user')  # Redirection vers la page de connexion après déconnexion
 
-@login_required(login_url='accounts:signIn')
+@login_required(login_url='accounts:login_user')
 def home(request):
     return render(request, 'home.html')
