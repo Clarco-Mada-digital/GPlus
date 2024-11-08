@@ -50,14 +50,16 @@ def superuser_required(view_func):
 
 @login_required
 def index(request):
-    # Calcul des totaux
+    """Vue du tableau de bord"""
+    # Calcul des totaux globaux
     total_entrees = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
     total_sorties = OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
     solde_actuel = total_entrees - total_sorties
 
-    # Données pour le graphique par mois
-    six_months_ago = timezone.now() - timedelta(days=180)
-    
+    # Obtenir les 6 derniers mois
+    today = timezone.now()
+    six_months_ago = today - timedelta(days=180)
+
     # Données des entrées par mois
     entrees_par_mois = list(OperationEntrer.objects.filter(
         date_transaction__gte=six_months_ago
@@ -67,7 +69,7 @@ def index(request):
         total=Sum('montant')
     ).order_by('mois'))
 
-    # Données des sorties par mois
+    # Données des sorties par mois 
     sorties_par_mois = list(OperationSortir.objects.filter(
         date_de_sortie__gte=six_months_ago
     ).annotate(
@@ -76,20 +78,6 @@ def index(request):
         total=Sum('montant')
     ).order_by('mois'))
 
-    # Calcul des soldes par mois
-    soldes_par_mois = []
-    for entree in entrees_par_mois:
-        mois = entree['mois']
-        total_entree = entree['total']
-        total_sortie = next(
-            (item['total'] for item in sorties_par_mois if item['mois'] == mois),
-            0
-        )
-        soldes_par_mois.append({
-            'mois': format_date(mois, format='MMMM yyyy', locale='fr_FR'),
-            'solde': float(total_entree - total_sortie)
-        })
-
     # Données pour le graphique des catégories de sorties
     sorties_categories = list(OperationSortir.objects.values(
         'categorie__name'
@@ -97,37 +85,58 @@ def index(request):
         total=Sum('montant')
     ).order_by('-total')[:5])
 
-    # Données pour les 4 derniers mois
-    entrees_4_mois = list(OperationEntrer.objects.filter(
-        date_transaction__gte=timezone.now() - timedelta(days=120)
-    ).annotate(
-        mois=TruncMonth('date_transaction')
-    ).values('mois').annotate(
-        montant=Sum('montant')
-    ).order_by('-mois')[:4])
+    # Créer un dictionnaire pour faciliter l'accès aux totaux par mois
+    entrees_dict = {item['mois'].strftime('%Y-%m'): item['total'] for item in entrees_par_mois}
+    sorties_dict = {item['mois'].strftime('%Y-%m'): item['total'] for item in sorties_par_mois}
+
+    # Obtenir tous les mois uniques
+    all_months = sorted(set(entrees_dict.keys()) | set(sorties_dict.keys()))
+
+    # Calculer les soldes cumulatifs
+    solde_cumule = 0
+    soldes_par_mois = []
+    formatted_entrees = []
+    formatted_sorties = []
+    
+    for mois_str in all_months:
+        entree_mois = float(entrees_dict.get(mois_str, 0) or 0)
+        sortie_mois = float(sorties_dict.get(mois_str, 0) or 0)
+        solde_mois = entree_mois - sortie_mois
+        solde_cumule += solde_mois
+        
+        # Convertir la chaîne de date en objet datetime pour le formatage
+        mois_date = datetime.strptime(mois_str, '%Y-%m')
+        mois_format = format_date(mois_date, format='MMMM yyyy', locale='fr_FR')
+        
+        soldes_par_mois.append({
+            'mois': mois_format,
+            'solde': solde_cumule
+        })
+        formatted_entrees.append({
+            'mois': mois_format,
+            'total': entree_mois
+        })
+        formatted_sorties.append({
+            'mois': mois_format,
+            'total': sortie_mois
+        })
+
+    # Formater les données des catégories
+    formatted_categories = [{
+        'categorie': item['categorie__name'],
+        'total': float(item['total'])
+    } for item in sorties_categories]
 
     # Formater les données pour le template
     context = {
         'solde_actuel': float(solde_actuel),
         'total_entrees': float(total_entrees),
         'total_sorties': float(total_sorties),
-        'entrees_par_mois': json.dumps([{
-            'mois': format_date(item['mois'], format='MMMM yyyy', locale='fr_FR'),
-            'total': float(item['total'])
-        } for item in entrees_par_mois]),
-        'sorties_par_mois': json.dumps([{
-            'mois': format_date(item['mois'], format='MMMM yyyy', locale='fr_FR'),
-            'total': float(item['total'])
-        } for item in sorties_par_mois]),
+        'entrees_par_mois': json.dumps(formatted_entrees),
+        'sorties_par_mois': json.dumps(formatted_sorties),
         'soldes_par_mois': json.dumps(soldes_par_mois),
-        'sorties_categories': json.dumps([{
-            'categorie': item['categorie__name'],
-            'total': float(item['total'])
-        } for item in sorties_categories]),
-        'entrees_4_mois': json.dumps([{
-            'date': format_date(item['mois'], format='MMMM yyyy', locale='fr_FR'),
-            'montant': float(item['montant'])
-        } for item in entrees_4_mois])
+        'sorties_categories': json.dumps(formatted_categories),
+        'entrees_4_mois': json.dumps(formatted_entrees[-4:]) if formatted_entrees else json.dumps([]),
     }
 
     return render(request, "caisse/dashboard.html", context)

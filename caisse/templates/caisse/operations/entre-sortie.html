@@ -6,15 +6,15 @@
 {% block content %}
 <div
     x-data="{ operation: 'entree', maxLignes: 10, lignesEntrees: [{ date: new Date().toISOString().split('T')[0], designation: '', montant: '', categorie: '' }], lignesSorties: [{ date: new Date().toISOString().split('T')[0], designation: '', beneficiaire: '', fournisseur: '', quantite: 1, prixUnitaire: '', categorie: '', prixTotal: '' }] }"
-    class="container mx-auto bg-white rounded-lg border p-6">
+    class="container mx-auto p-6">
 
     <div class="flex justify-between space-x-4 mb-10">
         <div></div>
-        <div class="bg-white rounded-xl p-1">
+        <div class="bg-white dark:bg-secondary rounded-xl p-1">
             <button x-on:click="operation = 'entree'"
-                :class="operation === 'entree' ? 'bg-green-100 hover:bg-green-100 text-green-700 font-bold py-1 px-4 rounded-xl' : 'bg-white text-gray-600 font-bold py-2 px-6 rounded-xl'">Entrées</button>
+                :class="operation === 'entree' ? 'bg-green-100 hover:bg-green-100 text-green-700 font-bold py-1 px-4 rounded-xl' : 'bg-white dark:bg-secondary text-gray-600 dark:text-white font-bold py-2 px-6 rounded-xl'">Entrées</button>
             <button x-on:click="operation = 'sortie'"
-                :class="operation === 'sortie' ? 'bg-rose-100 hover:bg-rose-100 text-rose-500 font-bold py-1 px-4 rounded-xl' : 'bg-white text-gray-600 font-bold py-2 px-6 rounded-xl'">Sorties</button>
+                :class="operation === 'sortie' ? 'bg-rose-100 hover:bg-rose-100 text-rose-500 font-bold py-1 px-4 rounded-xl' : 'bg-white dark:bg-secondary text-gray-600 dark:text-white font-bold py-2 px-6 rounded-xl'">Sorties</button>
         </div>
 
         <div><a href="{% url 'caisse:listes' %}">
@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl px-6 py-10">
+    <div class="bg-white dark:bg-secondary rounded-2xl px-6 py-10">
 
         <!-- Section Entrée -->
         <form method="POST" action="{% url 'caisse:ajouts_entree' %}">
@@ -34,10 +34,10 @@
                 <template x-for="(ligne, index) in lignesEntrees" :key="index">
                     <div class="flex justify-between flex-wrap">
                         <span
-                            class="mb-10 w-auto self-center font-bold text-gray-500">Ligne
+                            class="mb-10 w-auto self-center font-bold dark:text-white">Ligne
                             <span x-text="index + 1"></span>:</span>
                         <div
-                            class="mb-10 flex w-[15%] shadow-sm border-gray-300 border-b-2">
+                            class="mb-10 flex w-[15%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <span
                                 class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Date:</span>
                             <input type="date" autocomplete="off"
@@ -47,7 +47,7 @@
                         </div>
 
                         <div
-                            class="mb-10 w-[45%] px-2 shadow-sm border-gray-300 border-b-2">
+                            class="mb-10 w-[45%] px-2 shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <input type="text" x-model="ligne.designation"
                                 name="designation"
                                 placeholder="Désignation"
@@ -56,7 +56,7 @@
                         </div>
 
                         <div
-                            class="mb-10 w-[25%] shadow-sm border-gray-300 border-b-2">
+                            class="mb-10 w-[25%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <input type="number" x-model="ligne.montant"
                                 name="montant"
                                 placeholder="Montant"
@@ -64,7 +64,7 @@
                         </div>
 
                         <div
-                            class="mb-10 w-[25%] shadow-sm border-gray-300 border-b-2">
+                            class="mb-10 w-[25%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <select x-model="ligne.categorie" name="categorie"
                                 placeholder="Catégorie"
                                 class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full focus:ring-0">
@@ -115,7 +115,7 @@
                             <span x-text="index + 1"></span>:</span>
                         <!-- Date -->
                         <div
-                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2">
+                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <span
                                 class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Date:</span>
                             <input type="date" name="date"
@@ -127,7 +127,7 @@
 
                         <!-- Désignation -->
                         <div
-                            class="mb-10 flex w-[47%] shadow-sm border-gray-300 border-b-2">
+                            class="mb-10 flex w-[47%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <input type="text" name="designation"
                                 x-model="ligne.designation"
                                 placeholder="Désignation"
@@ -136,37 +136,39 @@
 
                         <!-- Bénéficiaire -->
                         <div
-                            class="mb-10 flex w-[25%] shadow-sm border-gray-300 border-b-2">
+                            class="mb-10 flex w-[25%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <select name="beneficiaire"
                                 x-model="ligne.beneficiaire"
                                 class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
                                 <option value selected>Choisissez un
                                     bénéficiaire</option>
                                 {% for beneficiaire in beneficiaires %}
-                                <option value="{{ beneficiaire.id }}">{{
-                                    beneficiaire }}</option>
+                                <option value="{{ beneficiaire.id }}">
+                                    {{ beneficiaire }}
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>
 
                         <!-- Fournisseur -->
                         <div
-                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2">
+                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <select name="fournisseur"
                                 x-model="ligne.fournisseur"
                                 class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
                                 <option value selected>Choisissez un
                                     fournisseur</option>
                                 {% for fournisseur in fournisseurs %}
-                                <option value="{{ fournisseur.id }}">{{
-                                    fournisseur.name }}</option>
+                                <option value="{{ fournisseur.id }}">
+                                    {{ fournisseur.name }}
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>
 
                         <!-- Quantité -->
                         <div
-                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2">
+                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <span
                                 class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Quantité:</span>
                             <input type="number" name="quantite"
@@ -178,7 +180,7 @@
 
                         <!-- Prix Unitaire -->
                         <div
-                            class="mb-4 flex w-[25%] shadow-sm border-gray-500 border-b-2">
+                            class="mb-4 flex w-[25%] shadow-sm border-gray-500 border-b-2 dark:border-gray-700">
                             <input type="number" name="prixUnitaire"
                                 x-model="ligne.prixUnitaire" min="500"
                                 placeholder="Prix Unitaire"
@@ -189,22 +191,22 @@
 
                         <!-- Catégorie -->
                         <div
-                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2">
+                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <select name="categorie" x-model="ligne.categorie"
                                 class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full">
                                 <option value selected>Choisissez une
                                     catégorie</option>
                                 {% for categorie in categories_sortie %}
-                                <option value="{{ categorie.id }}">{{
-                                    categorie.name
-                                    }}</option>
+                                <option value="{{ categorie.id }}">
+                                    {{ categorie.name }}
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>
 
                         <!-- Prix Total -->
                         <div
-                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2">
+                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <input type="number" name="prixTotal"
                                 x-model="ligne.prixTotal"
                                 placeholder="Prix Total"

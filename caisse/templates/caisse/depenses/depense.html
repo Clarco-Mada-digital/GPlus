@@ -5,13 +5,11 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Détails des Dépenses</h1>
 
-    <!-- Dépenses par Employés -->
-
-    <div class="bg-white rounded-2xl overflow-hidden mb-8">
-        <div class="flex justify-between items-center p-4 border-b">
-            <h2 class="text-xl font-semibold">Détails des Dépenses par
+    <div class=" overflow-hidden mb-8">
+        <div class="flex justify-between items-center p-4">
+            <h2 class="text-xl font-semibold dark:text-white">Détails des
+                Dépenses par
                 Employés</h2>
             <select id="moisSelect" class="border rounded px-12 py-1"
                 onchange="updateMonth(this.value)">
@@ -23,51 +21,57 @@
                 {% endfor %}
             </select>
         </div>
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-primary/70">
-                <tr>
-                    <th
-                        class="px-6 py-3 text-left text-md font-medium text-gray-500  tracking-wider">Employé</th>
-                    <th
-                        class="px-6 py-3 text-left text-md font-medium text-gray-500  tracking-wider">Total
-                        des dépenses</th>
-                    <th
-                        class="px-6 py-3 text-left text-md font-medium text-gray-500  tracking-wider">Catégorie
-                        la plus dépensée</th>
-                    <th
-                        class="px-6 py-3 text-left text-md font-medium text-gray-500  tracking-wider">Nombre
-                        total des dépenses</th>
-                    <th
-                        class="px-6 py-3 text-left text-md font-medium text-gray-500  tracking-wider">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                {% for depense in depenses_par_employe %}
-                <tr>
-                    <td class=" text-gray-600   py-4 whitespace-nowrap">
-                        {{ depense.beneficiaire__personnel__first_name }}
-                    </td>
-                    <td class=" text-gray-600   py-4 whitespace-nowrap">
-                        {{ depense.total_depenses }} Ar
-                    </td>
-                    <td class=" text-gray-600   py-4 whitespace-nowrap">
-                        {{ depense.categorie_plus_depensee }}
-                    </td>
-                    <td class=" text-gray-600   py-4 whitespace-nowrap">
-                        {{ depense.nombre_depenses }}
-                    </td>
-                    <td class=" text-gray-600   py-4 whitespace-nowrap">
-                        <button
-                            class="text-primary hover:text-primary">•••</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="bg-white dark:bg-secondary rounded-2xl p-4">
+            <table
+                class=" divide-gray-200 dark:divide-gray-600 text-gray-800 dark:text-gray-400 text-center">
+                <thead class>
+                    <tr>
+                        <th
+                            class="px-6 py-3 text-left text-md font-medium text-gray-500 dark:text-white tracking-wider">Employé</th>
+                        <th
+                            class="px-6 py-3 text-left text-md font-medium text-gray-500 dark:text-white tracking-wider">Total
+                            des dépenses</th>
+                        <th
+                            class="px-6 py-3 text-left text-md font-medium text-gray-500 dark:text-white                                                                                 tracking-wider">Catégorie
+                            la plus dépensée</th>
+                        <th
+                            class="px-6 py-3 text-left text-md font-medium text-gray-500 dark:text-white tracking-wider">Nombre
+                            total des dépenses</th>
+                        <th
+                            class="px-6 py-3 text-left text-md font-medium text-gray-500 dark:text-white tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody
+                    class="bg-white dark:bg-secondary divide-y divide-gray-200 dark:divide-gray-600 p-4">
+                    {% for depense in depenses_par_employe %}
+                    <tr>
+                        <td class="    py-4 whitespace-nowrap">
+                            {{ depense.beneficiaire__personnel__first_name }}
+                        </td>
+                        <td class="    py-4 whitespace-nowrap">
+                            {{ depense.total_depenses }} Ar
+                        </td>
+                        <td class="    py-4 whitespace-nowrap">
+                            {{ depense.categorie_plus_depensee }}
+                        </td>
+                        <td class="    py-4 whitespace-nowrap">
+                            {{ depense.nombre_depenses }}
+                        </td>
+                        <td class="    py-4 whitespace-nowrap">
+                            <button
+                                class="text-primary hover:text-primary">•••</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Dépenses par Catégories -->
-    <h2 class="text-xl font-semibold text-gray-700 mt-16  mb-3">Détails des
+    <h2
+        class="text-xl font-semibold text-gray-700 dark:text-white mt-16  mb-3">Détails
+        des
         Dépenses
         par
         Catégories</h2>
@@ -89,7 +93,8 @@
                         class="px-6 py-3 text-left text-md font-medium text-gray-800  tracking-wider">Actions</th>
                 </tr>
             </thead>
-            <tbody class="bg-white text-center divide-y divide-gray-200">
+            <tbody
+                class="bg-white dark:bg-secondary text-center divide-y divide-gray-200">
                 {% for depense in depenses_par_categorie %}
                 <tr>
                     <td class=" text-gray-600  py-4 ">

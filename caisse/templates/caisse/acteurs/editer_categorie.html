@@ -4,18 +4,19 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Modifier Catégorie</h1>
-    <form method="post" class="bg-white text-gray-700 dark:bg-secondary dark:text-white border rounded px-8 pt-6 pb-8 mb-4">
+
+    <form method="post"
+        class="bg-white text-gray-700 dark:bg-secondary dark:text-white  rounded-2xl px-8 pt-6 pb-8 mb-4">
         {% csrf_token %}
         {% for field in form %}
         <div class="mb-4">
-            <label class="block text-sm font-bold mb-2"
+            <label class="block text-sm font-bold mb-2 dark:text-white"
                 for="{{ field.id_for_label }}">
                 {{ field.label }}
             </label>
             {% if field.field.widget.input_type == 'select' %}
             <select name="{{ field.name }}" id="{{ field.id_for_label }}"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-white dark:bg-secondary leading-tight focus:outline-none focus:shadow-outline">
                 {% for choice in field.field.choices %}
                 <option value="{{ choice.0 }}"
                     {% if choice.0 == field.value %}selected{% endif %}>
@@ -28,11 +29,12 @@
                 name="{{ field.name }}"
                 id="{{ field.id_for_label }}"
                 value="{{ field.value|default:'' }}"
-                class="border-gray-300 appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                class="border-gray-300 dark:border-gray-600 appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-white dark:bg-secondary leading-tight focus:outline-none focus:shadow-outline"
                 {% if field.field.required %}required{% endif %}>
             {% endif %}
             {% if field.help_text %}
-            <p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>
+            <p class="text-gray-600 dark:text-gray-400 text-xs italic">{{
+                field.help_text }}</p>
             {% endif %}
             {% for error in field.errors %}
             <p class="text-red-500 text-xs italic">{{ error }}</p>
@@ -45,7 +47,7 @@
                 Enregistrer les modifications
             </button>
             <a href="{% url 'caisse:acteurs' %}"
-                class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                 Annuler
             </a>
         </div>

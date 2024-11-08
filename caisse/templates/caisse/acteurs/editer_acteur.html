@@ -4,13 +4,13 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Modifier {{ type_acteur|capfirst }}</h1>
+
     <form method="post" enctype="multipart/form-data"
         class="bg-white text-gray-700 dark:text-white dark:bg-secondary rounded-2xl px-8 pt-6 pb-8 mb-4">
         {% csrf_token %}
         {% for field in form %}
         <div class="mb-4">
-            <label class="block text-sm font-bold mb-2"
+            <label class="block text-sm font-bold mb-2 dark:text-white"
                 for="{{ field.id_for_label }}">
                 {{ field.label }}
             </label>
@@ -18,10 +18,10 @@
             <input type="checkbox" name="{{ field.name }}"
                 id="{{ field.id_for_label }}"
                 {% if field.value %}checked{% endif %}
-                class="mr-2 leading-tight border-gray-300">
+                class="mr-2 leading-tight border-gray-300 dark:border-gray-600 bg-transparent dark:bg-secondary">
             {% elif field.field.widget.input_type == 'select' %}
             <select name="{{ field.name }}" id="{{ field.id_for_label }}"
-                class=" appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:-outline">
+                class="appearance-none border border-gray-300 dark:border-gray-600 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent dark:bg-secondary">
                 {% for choice in field.field.choices %}
                 <option value="{{ choice.0 }}"
                     {% if choice.0 == field.value %}selected{% endif %}>
@@ -34,11 +34,12 @@
                 name="{{ field.name }}"
                 id="{{ field.id_for_label }}"
                 value="{{ field.value|default:'' }}"
-                class=" appearance-none border border-gray-300  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:-outline"
+                class="appearance-none border border-gray-300 dark:border-gray-600 rounded w-full py-2 px-3 text-gray-700 dark:text-white leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent dark:bg-secondary"
                 {% if field.field.required %}required{% endif %}>
             {% endif %}
             {% if field.help_text %}
-            <p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>
+            <p class="text-gray-600 dark:text-gray-400 text-xs italic">{{
+                field.help_text }}</p>
             {% endif %}
             {% for error in field.errors %}
             <p class="text-red-500 text-xs italic">{{ error }}</p>
@@ -47,11 +48,11 @@
         {% endfor %}
         <div class="flex items-center justify-between">
             <button type="submit"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:-outline">
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
                 Enregistrer les modifications
             </button>
             <a href="{% url 'caisse:acteurs' %}"
-                class="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded">
+                class="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white font-semibold py-2 px-4 rounded">
                 Annuler
             </a>
         </div>
