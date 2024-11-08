@@ -1,0 +1,52 @@
+{% extends 'layout/layout.html' %}
+
+{% block title_page %}Modifier le bénéficiaire{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-2xl font-bold mb-8 dark:text-white">Modifier le
+            bénéficiaire</h1>
+
+        <form method="POST" class="bg-white dark:bg-secondary rounded-2xl p-6">
+            {% csrf_token %}
+
+            <div class="mb-6">
+                <label
+                    class="block text-sm font-medium mb-2 dark:text-white">Type
+                    de bénéficiaire</label>
+                <select name="personnel"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value>Bénéficiaire externe</option>
+                    {% for personnel in personnels %}
+                    <option value="{{ personnel.id }}"
+                        {% if beneficiaire.personnel_id == personnel.id%}selected{% endif %}>
+                        {{ personnel.first_name }} {{ personnel.last_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-6">
+                <label
+                    class="block text-sm font-medium mb-2 dark:text-white">Nom
+                    du bénéficiaire</label>
+                <input type="text" name="name"
+                    value="{{ beneficiaire.name|default:'' }}"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <a href="{% url 'caisse:beneficiaires' %}"
+                    class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+                    Annuler
+                </a>
+                <button type="submit"
+                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700">
+                    Enregistrer les modifications
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
