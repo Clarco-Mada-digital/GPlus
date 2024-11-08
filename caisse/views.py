@@ -51,13 +51,31 @@ def superuser_required(view_func):
 @login_required
 def index(request):
     """Vue du tableau de bord"""
-    # Calcul des totaux globaux
-    total_entrees = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
-    total_sorties = OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
-    solde_actuel = total_entrees - total_sorties
-
-    # Obtenir les 6 derniers mois
+    # Obtenir le premier et dernier jour du mois actuel
     today = timezone.now()
+    first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    if today.month == 12:
+        last_day_of_month = today.replace(year=today.year + 1, month=1, day=1, hour=23, minute=59, second=59) - timedelta(days=1)
+    else:
+        last_day_of_month = today.replace(month=today.month + 1, day=1, hour=23, minute=59, second=59) - timedelta(days=1)
+
+    # Calcul des totaux pour le mois actuel uniquement
+    total_entrees_mois = OperationEntrer.objects.filter(
+        date_transaction__gte=first_day_of_month,
+        date_transaction__lte=last_day_of_month
+    ).aggregate(Sum('montant'))['montant__sum'] or 0
+
+    total_sorties_mois = OperationSortir.objects.filter(
+        date_de_sortie__gte=first_day_of_month,
+        date_de_sortie__lte=last_day_of_month
+    ).aggregate(Sum('montant'))['montant__sum'] or 0
+
+    # Calcul du solde total (toutes les opérations)
+    total_entrees_all = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    total_sorties_all = OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
+    solde_actuel = total_entrees_all - total_sorties_all
+
+    # Le reste du code reste inchangé...
     six_months_ago = today - timedelta(days=180)
 
     # Données des entrées par mois
@@ -130,8 +148,8 @@ def index(request):
     # Formater les données pour le template
     context = {
         'solde_actuel': float(solde_actuel),
-        'total_entrees': float(total_entrees),
-        'total_sorties': float(total_sorties),
+        'total_entrees': float(total_entrees_mois),  # Total des entrées du mois
+        'total_sorties': float(total_sorties_mois),  # Total des sorties du mois
         'entrees_par_mois': json.dumps(formatted_entrees),
         'sorties_par_mois': json.dumps(formatted_sorties),
         'soldes_par_mois': json.dumps(soldes_par_mois),
