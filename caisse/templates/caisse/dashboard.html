@@ -211,7 +211,8 @@
                         font: {
                             size: 12,
                             weight: 'bold'
-                        }
+                        },
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#374151'
                     },
                     grid: {
                         color: 'rgba(200, 200, 200, 0.3)'
@@ -225,7 +226,8 @@
                         font: {
                             size: 12,
                             weight: 'bold'
-                        }
+                        },
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#374151'
                     }
                 }
             },
@@ -239,6 +241,7 @@
                         font: {
                             size: 12
                         },
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#374151',
                         usePointStyle: true
                     },
                     position: 'top',
@@ -260,15 +263,15 @@
                     '#FF82AC',    // Rose
                     '#FFB800',    // Orange
                 ],
-                borderWidth: 0,   // Supprime les bordures
-                borderRadius: 10,  // Pas d'arrondi
-                spacing: 2        // Petit espacement entre les segments
+                borderWidth: 0,
+                borderRadius: 10,
+                spacing: 2
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '75%',       // Augmente la taille du trou central
+            cutout: '75%',
             plugins: {
                 legend: {
                     position: 'left',
@@ -276,8 +279,9 @@
                         usePointStyle: false,
                         padding: 15,
                         font: {
-                            size: 15
+                            size: 15,
                         },
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#374151',
                         generateLabels: function(chart) {
                             const data = chart.data;
                             if (data.labels.length && data.datasets.length) {
@@ -289,7 +293,8 @@
                                     return {
                                         text: `${label} ${percentage}%`,
                                         fillStyle: data.datasets[0].backgroundColor[i],
-                                        index: i
+                                        index: i,
+                                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#374151'
                                     };
                                 });
                             }
@@ -305,10 +310,20 @@
                             const percentage = ((value / total) * 100).toFixed(1);
                             return `${context.label}: ${percentage}%`;
                         }
-                    }
+                    },
+                    titleColor: document.documentElement.classList.contains('dark') ? '#fff' : '#374151',
+                    bodyColor: document.documentElement.classList.contains('dark') ? '#fff' : '#374151',
+                    backgroundColor: document.documentElement.classList.contains('dark') ? '#1f2937' : '#fff',
+                    borderColor: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
                 }
             }
         }
+    });
+
+    // Ajouter un écouteur pour mettre à jour les couleurs lors du changement de thème
+    document.addEventListener('dark-mode', function() {
+        // Forcer la mise à jour du graphique
+        sortiesCategoriesChart.update();
     });
 
     // Remplir le tableau des 4 derniers mois
