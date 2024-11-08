@@ -33,18 +33,18 @@
     <!-- En-tête avec onglets -->
     <div class=" mb-8">
         <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gestion des
-                Utilisateurs</h1>
+
         </div>
-        <nav class=" flex border rounded-lg p-2 bg-white max-w-fit">
+        <nav
+            class=" flex  rounded-xl p-2 bg-white dark:text-white dark:bg-secondary  max-w-fit">
             <button @click="activeTab = 'list'"
                 class="py-3 px-4  font-medium text-sm"
-                :class="activeTab === 'list' ? 'bg-primary text-white rounded-lg px-4' : 'border-transparent text-gray-500 '">
+                :class="activeTab === 'list' ? 'bg-primary text-white rounded-xl px-4' : 'border-transparent text-gray-500 '">
                 Liste des utilisateurs
             </button>
             <button @click="activeTab = 'create'"
                 class="py-3 px-4  font-medium text-sm"
-                :class="activeTab === 'create' ? 'bg-primary text-white rounded-lg px-4' : 'border-transparent text-gray-500 '">
+                :class="activeTab === 'create' ? 'bg-primary text-white rounded-xl px-4' : 'border-transparent text-gray-500 '">
                 Créer un utilisateur
             </button>
         </nav>
@@ -52,8 +52,8 @@
 
     <!-- Liste des utilisateurs -->
     <div x-show="activeTab === 'list'"
-        class="bg-white border overflow-hidden sm:rounded-lg">
-        <table class="min-w-full divide-y divide-gray-200">
+        class=" dark:text-white dark:bg-secondary  overflow-hidden sm:rounded-xl">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-primary/70">
                 <tr>
                     <th
@@ -74,28 +74,32 @@
                     </th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody
+                class="bg-white dark:text-white dark:bg-secondary  divide-y divide-gray-200 dark:divide-gray-700">
                 {% for user in users %}
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
                             <div class="flex-shrink-0 h-10 w-10">
-                                <img class="h-10 w-10 rounded-full object-cover"
+                                <img
+                                    class="h-10 w-10 rounded-full border-2 {% if user.is_active %}border-green-500{% else %}border-rose-500{% endif %} object-cover"
                                     src="{% if user.photo %}{{ user.photo.url }}{% else %}/static/images/default-profile.png{% endif %}"
                                     alt="{{ user.username }}">
                             </div>
                             <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">
+                                <div
+                                    class="text-sm font-medium text-gray-900 dark:text-white">
                                     {{ user.username }}
                                 </div>
-                                <div class="text-sm text-gray-500">
+                                <div
+                                    class="text-sm text-gray-500 dark:text-gray-400">
                                     {{ user.first_name }} {{ user.last_name }}
                                 </div>
                             </div>
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">
+                        <div class="text-sm text-gray-900 dark:text-white">
                             {{ user.email }}
                         </div>
                     </td>
@@ -135,9 +139,11 @@
     </div>
 
     <!-- Formulaire de création/modification -->
-    <div x-show="activeTab === 'create'" class="bg-white border sm:rounded-lg">
+    <div x-show="activeTab === 'create'"
+        class="bg-white dark:bg-secondary  rounded-xl">
         <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Créer
+            <h3
+                class="text-lg font-medium leading-6 text-gray-900 dark:text-white mb-4">Créer
                 un nouvel utilisateur</h3>
             <form method="POST" action="{% url 'caisse:creer_utilisateur' %}"
                 enctype="multipart/form-data">
@@ -153,7 +159,7 @@
                         </div>
                         <div class="flex-1">
                             <label
-                                class="block text-sm font-medium text-gray-700">
+                                class="block text-sm font-medium text-gray-700 dark:text-white">
                                 Photo de profil
                             </label>
                             <div class="mt-1 flex items-center space-x-4">
@@ -161,14 +167,15 @@
                                     name="photo"
                                     onchange="previewImage(event)"
                                     accept="image/*"
-                                    class="block w-full text-sm text-gray-500
+                                    class="block w-full text-sm text-gray-500 dark:text-gray-400
                                             file:mr-4 file:py-2 file:px-4
                                             file:rounded-full file:border-0
                                             file:text-sm file:font-semibold
                                         file:bg-blue-50 file:text-blue-700
                                         hover:file:bg-blue-100">
                             </div>
-                            <p class="mt-2 text-sm text-gray-500">
+                            <p
+                                class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                                 PNG, JPG jusqu'à 5MB
                             </p>
                         </div>
@@ -176,39 +183,39 @@
 
                     <div>
                         <label
-                            class="block text-sm font-medium text-gray-700">Nom
+                            class="block text-sm font-medium text-gray-700 dark:text-white">Nom
                             d'utilisateur</label>
                         <input type="text" name="username" required
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700">
                     </div>
 
                     <div>
                         <label
-                            class="block text-sm font-medium text-gray-700">Email</label>
+                            class="block text-sm font-medium text-gray-700 dark:text-white">Email</label>
                         <input type="email" name="email" required
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700">
                     </div>
 
                     <div>
                         <label
-                            class="block text-sm font-medium text-gray-700">Prénom</label>
+                            class="block text-sm font-medium text-gray-700 dark:text-white">Prénom</label>
                         <input type="text" name="first_name"
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700">
                     </div>
 
                     <div>
                         <label
-                            class="block text-sm font-medium text-gray-700">Nom</label>
+                            class="block text-sm font-medium text-gray-700 dark:text-white">Nom</label>
                         <input type="text" name="last_name"
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700">
                     </div>
 
                     <div>
                         <label
-                            class="block text-sm font-medium text-gray-700">Mot
+                            class="block text-sm font-medium text-gray-700 dark:text-white">Mot
                             de passe</label>
                         <input type="password" name="password" required
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-800 dark:text-white dark:border-gray-700">
                     </div>
 
                     <div class="flex items-center space-x-6 pt-5">
@@ -216,21 +223,21 @@
                             <input type="checkbox" name="is_staff" value="true"
                                 class="form-checkbox h-4 w-4 text-blue-600">
                             <span
-                                class="ml-2 text-sm text-gray-700">Staff</span>
+                                class="ml-2 text-sm text-gray-700 dark:text-white">Staff</span>
                         </label>
                         <label class="flex items-center">
                             <input type="checkbox" name="is_active" value="true"
                                 checked
                                 class="form-checkbox h-4 w-4 text-blue-600">
                             <span
-                                class="ml-2 text-sm text-gray-700">Actif</span>
+                                class="ml-2 text-sm text-gray-700 dark:text-white">Actif</span>
                         </label>
                     </div>
                 </div>
 
                 <div class="mt-6 flex justify-end space-x-3">
                     <button type="button" @click="activeTab = 'list'"
-                        class="bg-gray-100 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        class="bg-gray-100 dark:bg-gray-800 py-2 px-4 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         Annuler
                     </button>
                     <button type="submit"

@@ -59,4 +59,10 @@ urlpatterns = [
     path('export/excel/', views.generer_excel_operations, name='generer_excel_operations'), 
     path('export-entree/excel/', views.generer_excel_operations_entrees, name='generer_excel_operations_entrees'),
     path('export-sortie/excel/',views.generer_excel_operations_sorties, name="generer_excel_operations_sorties"),
+    # Ajouter ces lignes dans urlpatterns
+    path('beneficiaires/', views.beneficiaires, name='beneficiaires'),
+    path('beneficiaires/creer/', views.creer_beneficiaire, name='creer_beneficiaire'),
+    path('beneficiaires/modifier/<int:pk>/', views.modifier_beneficiaire, name='modifier_beneficiaire'),
+    path('beneficiaires/supprimer/<int:pk>/', views.supprimer_beneficiaire, name='supprimer_beneficiaire'),
+    path('beneficiaires/editer/<int:pk>/', views.editer_beneficiaire, name='editer_beneficiaire'),
 ]

@@ -50,14 +50,16 @@ def superuser_required(view_func):
 
 @login_required
 def index(request):
-    # Calcul des totaux
+    """Vue du tableau de bord"""
+    # Calcul des totaux globaux
     total_entrees = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
     total_sorties = OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
     solde_actuel = total_entrees - total_sorties
 
-    # Données pour le graphique par mois
-    six_months_ago = timezone.now() - timedelta(days=180)
-    
+    # Obtenir les 6 derniers mois
+    today = timezone.now()
+    six_months_ago = today - timedelta(days=180)
+
     # Données des entrées par mois
     entrees_par_mois = list(OperationEntrer.objects.filter(
         date_transaction__gte=six_months_ago
@@ -67,7 +69,7 @@ def index(request):
         total=Sum('montant')
     ).order_by('mois'))
 
-    # Données des sorties par mois
+    # Données des sorties par mois 
     sorties_par_mois = list(OperationSortir.objects.filter(
         date_de_sortie__gte=six_months_ago
     ).annotate(
@@ -76,20 +78,6 @@ def index(request):
         total=Sum('montant')
     ).order_by('mois'))
 
-    # Calcul des soldes par mois
-    soldes_par_mois = []
-    for entree in entrees_par_mois:
-        mois = entree['mois']
-        total_entree = entree['total']
-        total_sortie = next(
-            (item['total'] for item in sorties_par_mois if item['mois'] == mois),
-            0
-        )
-        soldes_par_mois.append({
-            'mois': format_date(mois, format='MMMM yyyy', locale='fr_FR'),
-            'solde': float(total_entree - total_sortie)
-        })
-
     # Données pour le graphique des catégories de sorties
     sorties_categories = list(OperationSortir.objects.values(
         'categorie__name'
@@ -97,37 +85,58 @@ def index(request):
         total=Sum('montant')
     ).order_by('-total')[:5])
 
-    # Données pour les 4 derniers mois
-    entrees_4_mois = list(OperationEntrer.objects.filter(
-        date_transaction__gte=timezone.now() - timedelta(days=120)
-    ).annotate(
-        mois=TruncMonth('date_transaction')
-    ).values('mois').annotate(
-        montant=Sum('montant')
-    ).order_by('-mois')[:4])
+    # Créer un dictionnaire pour faciliter l'accès aux totaux par mois
+    entrees_dict = {item['mois'].strftime('%Y-%m'): item['total'] for item in entrees_par_mois}
+    sorties_dict = {item['mois'].strftime('%Y-%m'): item['total'] for item in sorties_par_mois}
+
+    # Obtenir tous les mois uniques
+    all_months = sorted(set(entrees_dict.keys()) | set(sorties_dict.keys()))
+
+    # Calculer les soldes cumulatifs
+    solde_cumule = 0
+    soldes_par_mois = []
+    formatted_entrees = []
+    formatted_sorties = []
+    
+    for mois_str in all_months:
+        entree_mois = float(entrees_dict.get(mois_str, 0) or 0)
+        sortie_mois = float(sorties_dict.get(mois_str, 0) or 0)
+        solde_mois = entree_mois - sortie_mois
+        solde_cumule += solde_mois
+        
+        # Convertir la chaîne de date en objet datetime pour le formatage
+        mois_date = datetime.strptime(mois_str, '%Y-%m')
+        mois_format = format_date(mois_date, format='MMMM yyyy', locale='fr_FR')
+        
+        soldes_par_mois.append({
+            'mois': mois_format,
+            'solde': solde_cumule
+        })
+        formatted_entrees.append({
+            'mois': mois_format,
+            'total': entree_mois
+        })
+        formatted_sorties.append({
+            'mois': mois_format,
+            'total': sortie_mois
+        })
+
+    # Formater les données des catégories
+    formatted_categories = [{
+        'categorie': item['categorie__name'],
+        'total': float(item['total'])
+    } for item in sorties_categories]
 
     # Formater les données pour le template
     context = {
         'solde_actuel': float(solde_actuel),
         'total_entrees': float(total_entrees),
         'total_sorties': float(total_sorties),
-        'entrees_par_mois': json.dumps([{
-            'mois': format_date(item['mois'], format='MMMM yyyy', locale='fr_FR'),
-            'total': float(item['total'])
-        } for item in entrees_par_mois]),
-        'sorties_par_mois': json.dumps([{
-            'mois': format_date(item['mois'], format='MMMM yyyy', locale='fr_FR'),
-            'total': float(item['total'])
-        } for item in sorties_par_mois]),
+        'entrees_par_mois': json.dumps(formatted_entrees),
+        'sorties_par_mois': json.dumps(formatted_sorties),
         'soldes_par_mois': json.dumps(soldes_par_mois),
-        'sorties_categories': json.dumps([{
-            'categorie': item['categorie__name'],
-            'total': float(item['total'])
-        } for item in sorties_categories]),
-        'entrees_4_mois': json.dumps([{
-            'date': format_date(item['mois'], format='MMMM yyyy', locale='fr_FR'),
-            'montant': float(item['montant'])
-        } for item in entrees_4_mois])
+        'sorties_categories': json.dumps(formatted_categories),
+        'entrees_4_mois': json.dumps(formatted_entrees[-4:]) if formatted_entrees else json.dumps([]),
     }
 
     return render(request, "caisse/dashboard.html", context)
@@ -178,7 +187,7 @@ def listes(request):
     date_max = request.GET.get('date_max')
     sort_by = request.GET.get('sort', 'date')  # Par défaut, tri par date
     ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
-
+    
     # Filtrer les opérations d'entrée et de sortie
     entree = OperationEntrer.objects.all()
     sortie = OperationSortir.objects.all()
@@ -219,9 +228,23 @@ def listes(request):
     lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 10
 
     # Combiner et trier par date
+    if sort_by == 'date':
+        key_func = lambda op: getattr(op, 'date_transaction', None) or getattr(op, 'date_de_sortie', None)
+    elif sort_by == 'categorie':
+        key_func = lambda op: op.categorie.name
+    elif sort_by == 'description':
+        key_func = lambda op: op.description
+    elif sort_by == 'beneficiaire':
+        key_func = lambda op: op.beneficiaire.name if op.beneficiaire else ''
+    elif sort_by == 'fournisseur':
+        key_func = lambda op: op.fournisseur.name if op.fournisseur else ''
+    else:
+        key_func = lambda op: getattr(op, 'date_transaction', None) or getattr(op, 'date_de_sortie', None)
+
+    # Trier les opérations
     operations = sorted(
         chain(entree, sortie),
-        key=lambda op: getattr(op, 'date_transaction', None) or getattr(op, 'date_de_sortie', None),
+        key=key_func,
         reverse=(ordre == 'desc')
     )
     # Pagination
@@ -1027,6 +1050,7 @@ def liste_entrees(request):
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
     sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
+    ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
 
     # Filtrer les opérations d'entrée
     entrees = OperationEntrer.objects.all()
@@ -1045,8 +1069,19 @@ def liste_entrees(request):
     if date_max:
         entrees = entrees.filter(date_transaction__lte=date_max)
 
-    # Appliquer le triage
-    entrees = entrees.order_by(sort_by)
+    # Définir les champs de tri valides
+    valid_sort_fields = {
+        'description': 'description',
+        'categorie': 'categorie__name',
+        'date': 'date_transaction',
+        'montant': 'montant'
+    }
+
+    # Appliquer le tri
+    sort_field = valid_sort_fields.get(sort_by, 'date_transaction')  # Valeur par défaut si le champ n'est pas valide
+    if ordre == 'desc':
+        sort_field = f'-{sort_field}'
+    entrees = entrees.order_by(sort_field)
 
     # Récupérer uniquement les catégories de type "entrée" pour les options de filtrage
     categories = Categorie.objects.filter(type="entree")
@@ -1054,6 +1089,7 @@ def liste_entrees(request):
     # Charger le template
     template = loader.get_template('caisse/listes/entrees.html')
     
+    # Pagination
     lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 5
     paginator = Paginator(entrees, lignes_par_page)
     page_number = request.GET.get('page')
@@ -1065,6 +1101,7 @@ def liste_entrees(request):
         'categories': categories,
         'prix': "Ar",
         'sort_by': sort_by,
+        'ordre': ordre,
         'lignes_par_page': lignes_par_page,
     }
     return HttpResponse(template.render(context, request))
@@ -1082,6 +1119,7 @@ def liste_sorties(request):
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
     sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
+    ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
 
     # Filtrer les opérations de sortie
     sorties = OperationSortir.objects.all()
@@ -1104,8 +1142,21 @@ def liste_sorties(request):
     if date_max:
         sorties = sorties.filter(date_de_sortie__lte=date_max)
 
-    # Appliquer le triage
-    sorties = sorties.order_by(sort_by)
+    # Définir les champs de tri valides
+    valid_sort_fields = {
+        'description': 'description',
+        'categorie': 'categorie__name',
+        'date': 'date_de_sortie',
+        'beneficiaire': 'beneficiaire__name',
+        'fournisseur': 'fournisseur__name',
+        'montant': 'montant'
+    }
+
+    # Appliquer le tri
+    sort_field = valid_sort_fields.get(sort_by, 'date_de_sortie')  # Valeur par défaut si le champ n'est pas valide
+    if ordre == 'desc':
+        sort_field = f'-{sort_field}'
+    sorties = sorties.order_by(sort_field)
 
     # Récupérer uniquement les catégories de type "sortie" pour les options de filtrage
     categories = Categorie.objects.filter(type="sortie")
@@ -1120,6 +1171,7 @@ def liste_sorties(request):
     paginator = Paginator(sorties, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
     # Contexte à passer au template
     context = {
         'page_obj': page_obj,
@@ -1128,6 +1180,7 @@ def liste_sorties(request):
         'fournisseurs': fournisseurs,
         'prix': "Ar",
         'sort_by': sort_by,
+        'ordre': ordre,
         'lignes_par_page': lignes_par_page,
     }
     return HttpResponse(template.render(context, request))
@@ -1301,3 +1354,118 @@ def historique(request):
         historique = UserActivity.objects.filter(user=request.user).order_by('-timestamp')
     
     return render(request, 'caisse/historique/historique.html', {'historique': historique})
+
+@login_required
+def beneficiaires(request):
+    """
+    Affiche la liste des bénéficiaires.
+    """
+    beneficiaires = Beneficiaire.objects.all()
+    personnels = Personnel.objects.all()
+    
+    beneficiaires_json = json.loads(serialize('json', beneficiaires))
+    personnels_json = json.loads(serialize('json', personnels))
+    
+    context = {
+        'beneficiaires': json.dumps([{**item['fields'], 'id': item['pk']} for item in beneficiaires_json]),
+        'personnels': json.dumps([{**item['fields'], 'id': item['pk']} for item in personnels_json]),
+    }
+    return render(request, "caisse/acteurs/beneficiaires.html", context)
+
+@login_required
+@require_POST
+@csrf_exempt
+def creer_beneficiaire(request):
+    data = json.loads(request.body)
+    personnel_id = data.get('personnel_id')
+    name = data.get('name')
+    
+    try:
+        personnel = None
+        if personnel_id:
+            personnel = Personnel.objects.get(pk=personnel_id)
+        
+        beneficiaire = Beneficiaire.objects.create(
+            personnel=personnel,
+            name=name if not personnel else None
+        )
+        
+        UserActivity.objects.create(
+            user=request.user, 
+            action='Création', 
+            description='a créé un nouveau bénéficiaire'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'beneficiaire': {
+                'id': beneficiaire.id,
+                'personnel_id': personnel_id,
+                'name': name if not personnel else f"{personnel.first_name} {personnel.last_name}"
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@login_required
+@require_POST
+@csrf_exempt
+def modifier_beneficiaire(request, pk):
+    beneficiaire = get_object_or_404(Beneficiaire, pk=pk)
+    data = json.loads(request.body)
+    
+    try:
+        personnel_id = data.get('personnel_id')
+        if personnel_id:
+            beneficiaire.personnel = Personnel.objects.get(pk=personnel_id)
+            beneficiaire.name = None
+        else:
+            beneficiaire.personnel = None
+            beneficiaire.name = data.get('name')
+            
+        beneficiaire.save()
+        
+        UserActivity.objects.create(
+            user=request.user, 
+            action='Modification', 
+            description='a modifié un bénéficiaire'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'beneficiaire': {
+                'id': beneficiaire.id,
+                'personnel_id': personnel_id,
+                'name': beneficiaire.name or f"{beneficiaire.personnel.first_name} {beneficiaire.personnel.last_name}"
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@login_required
+@require_POST
+@csrf_exempt
+def supprimer_beneficiaire(request, pk):
+    beneficiaire = get_object_or_404(Beneficiaire, pk=pk)
+    
+    try:
+        beneficiaire.delete()
+        UserActivity.objects.create(
+            user=request.user, 
+            action='Suppression', 
+            description='a supprimé un bénéficiaire'
+        )
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@login_required
+def editer_beneficiaire(request, pk):
+    beneficiaire = get_object_or_404(Beneficiaire, pk=pk)
+    personnels = Personnel.objects.all()
+    
+    context = {
+        'beneficiaire': beneficiaire,
+        'personnels': personnels,
+    }
+    return render(request, 'caisse/acteurs/editer_beneficiaire.html', context)

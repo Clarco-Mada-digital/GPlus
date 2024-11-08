@@ -25,8 +25,10 @@
 
                 </div>
                 <div>
-                    <p class="text-sm text-gray-600 dark:text-white">Solde Actuel</p>
-                    <h3 class="text-3xl font-bold text-gray-800 dark:text-white">Ar
+                    <p class="text-sm text-gray-600 dark:text-white">Solde
+                        Actuel</p>
+                    <h3
+                        class="text-3xl font-bold text-gray-800 dark:text-white">Ar
                         {{solde_actuel|floatformat:0|intcomma}}</h3>
                 </div>
             </div>
@@ -49,8 +51,10 @@
 
                 </div>
                 <div>
-                    <p class="text-sm text-gray-600 dark:text-white">Total des Entrées</p>
-                    <h3 class="text-3xl font-bold text-gray-800 dark:text-white">Ar
+                    <p class="text-sm text-gray-600 dark:text-white">Total des
+                        Entrées</p>
+                    <h3
+                        class="text-3xl font-bold text-gray-800 dark:text-white">Ar
                         {{total_entrees|floatformat:0|intcomma}}</h3>
                 </div>
             </div>
@@ -77,8 +81,10 @@
                 </div>
 
                 <div>
-                    <p class="text-sm text-gray-600 dark:text-white">Total des Sorties</p>
-                    <h3 class="text-3xl font-bold text-gray-800 dark:text-white">Ar
+                    <p class="text-sm text-gray-600 dark:text-white">Total des
+                        Sorties</p>
+                    <h3
+                        class="text-3xl font-bold text-gray-800 dark:text-white">Ar
                         {{total_sorties|floatformat:0|intcomma}}</h3>
                 </div>
             </div>
@@ -87,7 +93,8 @@
 
     <!-- Graphique principal -->
     <h2
-        class="text-lg font-semibold mb-4 text-gray-800 dark:text-white underline decoration underline-offset-4">Résumé du mois</h2>
+        class="text-lg font-semibold mb-4 text-gray-800 dark:text-white underline decoration underline-offset-4">Résumé
+        du mois</h2>
     <div class="bg-white dark:bg-secondary rounded-2xl p-6 mb-8">
 
         <!-- <div class="flex space-x-4 mb-4">
@@ -135,14 +142,16 @@
                 <div class="overflow-x-auto">
                     <table class="min-w-full">
                         <thead>
-                            <tr class="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-white">
+                            <tr
+                                class="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-white">
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
                                 <th
                                     class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Montant</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200"
+                        <tbody
+                            class="bg-white dark:bg-secondary dark:text-white divide-y divide-gray-200 dark:divide-gray-700"
                             id="entrees4mois">
                             <!-- Rempli par JavaScript -->
                         </tbody>
@@ -156,173 +165,205 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     // Données
-    const entreesParMois = {{ entrees_par_mois|safe }};
-    const sortiesParMois = {{ sorties_par_mois|safe }};
-    const soldesParMois = {{ soldes_par_mois|safe }};
-    const sortiesCategories = {{ sorties_categories|safe }};
-    const entrees4Mois = {{ entrees_4_mois|safe }};
+    const entreesParMois = JSON.parse('{{ entrees_par_mois|safe }}');
+    const sortiesParMois = JSON.parse('{{ sorties_par_mois|safe }}');
+    const soldesParMois = JSON.parse('{{ soldes_par_mois|safe }}');
+    const sortiesCategories = JSON.parse('{{ sorties_categories|safe }}');
+    const entrees4Mois = JSON.parse('{{ entrees_4_mois|safe }}');
 
-  // Graphique Résumé du mois
-new Chart(document.getElementById('resumeMoisChart'), {
-    type: 'bar',
-    data: {
-        labels: entreesParMois.map(item => item.mois),
-        datasets: [ {
-            label: 'Solde',
-            data: soldesParMois.map(item => item.solde),
-            backgroundColor: '#396AFF',
-            borderColor: '#396AFF',
-            borderRadius: 10,  
-           
-            barThickness: 30 
-        }, {
-            label: 'Entrées',
-            data: entreesParMois.map(item => item.total),
-            backgroundColor: '#16DBCC',
-            borderColor: '#16DBCC',
-            borderRadius: 10,  
-           
-            barThickness: 30  
-        }, {
-            label: 'Sorties',
-            data: sortiesParMois.map(item => item.total),
-            backgroundColor: '#FF82AC',
-            borderColor: '#FF82AC',
-            borderRadius: 10,  
-            barThickness: 30  
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            y: {
-                beginAtZero: true,
-                position: 'right', 
-                ticks: {
-                    callback: value => 'Ar ' + value.toLocaleString('fr-FR'),
-                    font: {
-                        size: 12,  // Adjust font size for cleaner look
-                        weight: 'bold'  // Optional: make labels bolder
-                    }
-                },
-                grid: {
-                    color: 'rgba(200, 200, 200, 0.3)'  // Lighter grid lines
-                }
-            },
-            x: {
-                grid: {
-                    display: false  // Hide x-axis grid lines for a cleaner look
-                },
-                ticks: {
-                    font: {
-                        size: 12,
-                        weight: 'bold'
-                    }
-                }
-            }
-        },
-        interaction: {
-            intersect: false,
-            mode: 'index'
-        },
-        plugins: {
-            legend: {
-                labels: {
-                    font: {
-                        size: 12
-                    },
-                    usePointStyle: true,  // Use rounded legend markers
-                    padding: 20
-                },
-                position: 'top',  // Changed to top-left position
-                align: 'start'        // Align the legend to the left
-                
-            },
-            layout: {
-                padding: {
-                    top: 30,
-                    bottom: 30,  // Extra space below the legend
-                    left: 20,
-                    right: 20
-                }
-            }
-        }
-    }
-});
-// Graphique Sorties par catégories
-    new Chart(document.getElementById('sortiesCategoriesChart'), {
-        type: 'doughnut',
+    // Graphique Résumé du mois
+    new Chart(document.getElementById('resumeMoisChart'), {
+        type: 'bar',
         data: {
-            labels: sortiesCategories.map(item => item.categorie),
+            labels: entreesParMois.map(item => item.mois),
             datasets: [{
-                data: sortiesCategories.map(item => item.total),
-                backgroundColor: [
-                    '#4040FF',    // Bleu principal
-                    '#16DBCC',    // Turquoise
-                    '#FF82AC',    // Rose
-                    '#FFB800',    // Orange
-                ],
-                borderWidth: 0,   // Supprime les bordures
-                borderRadius: 10,  // Pas d'arrondi
-                spacing: 2        // Petit espacement entre les segments
+                label: 'Solde',
+                data: soldesParMois.map(item => item.solde),
+                backgroundColor: '#396AFF',
+                borderColor: '#396AFF',
+                borderRadius: 10,
+                barThickness: 30
+            }, {
+                label: 'Entrées',
+                data: entreesParMois.map(item => item.total),
+                backgroundColor: '#16DBCC',
+                borderColor: '#16DBCC',
+                borderRadius: 10,
+                barThickness: 30
+            }, {
+                label: 'Sorties',
+                data: sortiesParMois.map(item => item.total),
+                backgroundColor: '#FF82AC',
+                borderColor: '#FF82AC',
+                borderRadius: 10,
+                barThickness: 30
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '75%',       // Augmente la taille du trou central
-            plugins: {
-                legend: {
-                    position: 'left',
-                    labels: {
-                        usePointStyle: false,
-                        padding: 15,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    position: 'right',
+                    ticks: {
+                        callback: value => 'Ar ' + value.toLocaleString('fr-FR'),
                         font: {
-                            size: 15
+                            size: 12,
+                            weight: 'bold'
                         },
-                        generateLabels: function(chart) {
-                            const data = chart.data;
-                            if (data.labels.length && data.datasets.length) {
-                                return data.labels.map((label, i) => {
-                                    const value = data.datasets[0].data[i];
-                                    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    
-                                    return {
-                                        text: `${label} ${percentage}%`,
-                                        fillStyle: data.datasets[0].backgroundColor[i],
-                                        index: i
-                                    };
-                                });
-                            }
-                            return [];
-                        }
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#374151'
+                    },
+                    grid: {
+                        color: 'rgba(200, 200, 200, 0.3)'
                     }
                 },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const value = context.raw;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = ((value / total) * 100).toFixed(1);
-                            return `${context.label}: ${percentage}%`;
-                        }
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#374151'
                     }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        font: {
+                            size: 12
+                        },
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#374151',
+                        usePointStyle: true
+                    },
+                    position: 'top',
+                    align: 'start'
                 }
             }
         }
     });
 
+    // Créer une variable pour stocker l'instance du graphique
+    let sortiesCategoriesChart;
+
+    // Fonction pour créer la configuration du graphique
+    function createChartConfig() {
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        const textColor = isDarkMode ? '#FFFFFF' : '#374151';
+
+        return {
+            type: 'doughnut',
+            data: {
+                labels: sortiesCategories.map(item => item.categorie),
+                datasets: [{
+                    data: sortiesCategories.map(item => item.total),
+                    backgroundColor: [
+                        '#4040FF',    // Bleu principal
+                        '#16DBCC',    // Turquoise
+                        '#FF82AC',    // Rose
+                        '#FFB800',    // Orange
+                    ],
+                    borderWidth: 0,
+                    borderRadius: 10,
+                    spacing: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        position: 'left',
+                        labels: {
+                            color: textColor,
+                            usePointStyle: false,
+                            padding: 15,
+                            font: {
+                                size: 15,
+                                weight: 'bold'
+                            },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const value = data.datasets[0].data[i];
+                                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        
+                                        return {
+                                            text: `${label} ${percentage}%`,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            index: i,
+                                            fontColor: textColor // Forcer la couleur du texte
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
+                    },
+                    tooltip: {
+                        titleColor: textColor,
+                        bodyColor: textColor,
+                        backgroundColor: isDarkMode ? '#1f2937' : '#fff',
+                        borderColor: isDarkMode ? '#374151' : '#e5e7eb',
+                        displayColors: true
+                    }
+                }
+            }
+        };
+    }
+
+    // Initialiser le graphique
+    sortiesCategoriesChart = new Chart(
+        document.getElementById('sortiesCategoriesChart'),
+        createChartConfig()
+    );
+
+    // Ajouter un écouteur pour le changement de thème
+    document.addEventListener('dark-mode', function() {
+        if (sortiesCategoriesChart) {
+            sortiesCategoriesChart.destroy();
+        }
+        sortiesCategoriesChart = new Chart(
+            document.getElementById('sortiesCategoriesChart'),
+            createChartConfig()
+        );
+    });
+
     // Remplir le tableau des 4 derniers mois
     const tableBody = document.getElementById('entrees4mois');
-    entrees4Mois.forEach(entree => {
+    if (entrees4Mois && entrees4Mois.length > 0) {
+        entrees4Mois.forEach(entree => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white">
+                    ${entree.mois}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right dark:text-gray-400">
+                    Ar ${entree.total.toLocaleString('fr-FR')}
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } else {
+        // Afficher un message si aucune donnée n'est disponible
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${entree.date}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">Ar ${entree.montant.toLocaleString('fr-FR')}</td>
+            <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-white">
+                Aucune entrée pour les 4 derniers mois
+            </td>
         `;
         tableBody.appendChild(row);
-    });
+    }
 </script>
 {% endblock %}
