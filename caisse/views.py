@@ -1049,11 +1049,7 @@ def liste_entrees(request):
     categorie_id = request.GET.get('categorie')
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
-<<<<<<< HEAD
     sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
-=======
-    sort_by = request.GET.get('sort', 'description')  # Changé 'Description' en 'description'
->>>>>>> d763a23d434b41495dc37c1cffe17e1d7b5f8be4
     ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
 
     # Filtrer les opérations d'entrée
@@ -1122,11 +1118,7 @@ def liste_sorties(request):
     fournisseur_id = request.GET.get('fournisseur')
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
-<<<<<<< HEAD
     sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
-=======
-    sort_by = request.GET.get('sort', 'description')  # Changé 'Description' en 'description'
->>>>>>> d763a23d434b41495dc37c1cffe17e1d7b5f8be4
     ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
 
     # Filtrer les opérations de sortie
