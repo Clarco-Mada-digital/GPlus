@@ -1049,7 +1049,7 @@ def liste_entrees(request):
     categorie_id = request.GET.get('categorie')
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
-    sort_by = request.GET.get('sort', 'Description')  # Trier par date par défaut
+    sort_by = request.GET.get('sort', 'description')  # Changé 'Description' en 'description'
     ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
 
     # Filtrer les opérations d'entrée
@@ -1069,10 +1069,19 @@ def liste_entrees(request):
     if date_max:
         entrees = entrees.filter(date_transaction__lte=date_max)
 
-    # Appliquer le triage
+    # Définir les champs de tri valides
+    valid_sort_fields = {
+        'description': 'description',
+        'categorie': 'categorie__name',
+        'date': 'date_transaction',
+        'montant': 'montant'
+    }
+
+    # Appliquer le tri
+    sort_field = valid_sort_fields.get(sort_by, 'date_transaction')  # Valeur par défaut si le champ n'est pas valide
     if ordre == 'desc':
-        sort_by = f'-{sort_by}'
-    entrees = entrees.order_by(sort_by)
+        sort_field = f'-{sort_field}'
+    entrees = entrees.order_by(sort_field)
 
     # Récupérer uniquement les catégories de type "entrée" pour les options de filtrage
     categories = Categorie.objects.filter(type="entree")
@@ -1080,6 +1089,7 @@ def liste_entrees(request):
     # Charger le template
     template = loader.get_template('caisse/listes/entrees.html')
     
+    # Pagination
     lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 5
     paginator = Paginator(entrees, lignes_par_page)
     page_number = request.GET.get('page')
@@ -1090,7 +1100,7 @@ def liste_entrees(request):
         'page_obj': page_obj,
         'categories': categories,
         'prix': "Ar",
-        'sort_by': sort_by.lstrip('-'),  # Retirer le '-' pour le contexte
+        'sort_by': sort_by,
         'ordre': ordre,
         'lignes_par_page': lignes_par_page,
     }
@@ -1108,7 +1118,7 @@ def liste_sorties(request):
     fournisseur_id = request.GET.get('fournisseur')
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
-    sort_by = request.GET.get('sort', 'Description')  # Trier par date par défaut
+    sort_by = request.GET.get('sort', 'description')  # Changé 'Description' en 'description'
     ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
 
     # Filtrer les opérations de sortie
@@ -1132,10 +1142,21 @@ def liste_sorties(request):
     if date_max:
         sorties = sorties.filter(date_de_sortie__lte=date_max)
 
-    # Appliquer le triage
+    # Définir les champs de tri valides
+    valid_sort_fields = {
+        'description': 'description',
+        'categorie': 'categorie__name',
+        'date': 'date_de_sortie',
+        'beneficiaire': 'beneficiaire__name',
+        'fournisseur': 'fournisseur__name',
+        'montant': 'montant'
+    }
+
+    # Appliquer le tri
+    sort_field = valid_sort_fields.get(sort_by, 'date_de_sortie')  # Valeur par défaut si le champ n'est pas valide
     if ordre == 'desc':
-        sort_by = f'-{sort_by}'
-    sorties = sorties.order_by(sort_by)
+        sort_field = f'-{sort_field}'
+    sorties = sorties.order_by(sort_field)
 
     # Récupérer uniquement les catégories de type "sortie" pour les options de filtrage
     categories = Categorie.objects.filter(type="sortie")
@@ -1158,7 +1179,7 @@ def liste_sorties(request):
         'beneficiaires': beneficiaires,
         'fournisseurs': fournisseurs,
         'prix': "Ar",
-        'sort_by': sort_by.lstrip('-'),  # Retirer le '-' pour le contexte
+        'sort_by': sort_by,
         'ordre': ordre,
         'lignes_par_page': lignes_par_page,
     }
@@ -1333,3 +1354,118 @@ def historique(request):
         historique = UserActivity.objects.filter(user=request.user).order_by('-timestamp')
     
     return render(request, 'caisse/historique/historique.html', {'historique': historique})
+
+@login_required
+def beneficiaires(request):
+    """
+    Affiche la liste des bénéficiaires.
+    """
+    beneficiaires = Beneficiaire.objects.all()
+    personnels = Personnel.objects.all()
+    
+    beneficiaires_json = json.loads(serialize('json', beneficiaires))
+    personnels_json = json.loads(serialize('json', personnels))
+    
+    context = {
+        'beneficiaires': json.dumps([{**item['fields'], 'id': item['pk']} for item in beneficiaires_json]),
+        'personnels': json.dumps([{**item['fields'], 'id': item['pk']} for item in personnels_json]),
+    }
+    return render(request, "caisse/acteurs/beneficiaires.html", context)
+
+@login_required
+@require_POST
+@csrf_exempt
+def creer_beneficiaire(request):
+    data = json.loads(request.body)
+    personnel_id = data.get('personnel_id')
+    name = data.get('name')
+    
+    try:
+        personnel = None
+        if personnel_id:
+            personnel = Personnel.objects.get(pk=personnel_id)
+        
+        beneficiaire = Beneficiaire.objects.create(
+            personnel=personnel,
+            name=name if not personnel else None
+        )
+        
+        UserActivity.objects.create(
+            user=request.user, 
+            action='Création', 
+            description='a créé un nouveau bénéficiaire'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'beneficiaire': {
+                'id': beneficiaire.id,
+                'personnel_id': personnel_id,
+                'name': name if not personnel else f"{personnel.first_name} {personnel.last_name}"
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@login_required
+@require_POST
+@csrf_exempt
+def modifier_beneficiaire(request, pk):
+    beneficiaire = get_object_or_404(Beneficiaire, pk=pk)
+    data = json.loads(request.body)
+    
+    try:
+        personnel_id = data.get('personnel_id')
+        if personnel_id:
+            beneficiaire.personnel = Personnel.objects.get(pk=personnel_id)
+            beneficiaire.name = None
+        else:
+            beneficiaire.personnel = None
+            beneficiaire.name = data.get('name')
+            
+        beneficiaire.save()
+        
+        UserActivity.objects.create(
+            user=request.user, 
+            action='Modification', 
+            description='a modifié un bénéficiaire'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'beneficiaire': {
+                'id': beneficiaire.id,
+                'personnel_id': personnel_id,
+                'name': beneficiaire.name or f"{beneficiaire.personnel.first_name} {beneficiaire.personnel.last_name}"
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@login_required
+@require_POST
+@csrf_exempt
+def supprimer_beneficiaire(request, pk):
+    beneficiaire = get_object_or_404(Beneficiaire, pk=pk)
+    
+    try:
+        beneficiaire.delete()
+        UserActivity.objects.create(
+            user=request.user, 
+            action='Suppression', 
+            description='a supprimé un bénéficiaire'
+        )
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@login_required
+def editer_beneficiaire(request, pk):
+    beneficiaire = get_object_or_404(Beneficiaire, pk=pk)
+    personnels = Personnel.objects.all()
+    
+    context = {
+        'beneficiaire': beneficiaire,
+        'personnels': personnels,
+    }
+    return render(request, 'caisse/acteurs/editer_beneficiaire.html', context)

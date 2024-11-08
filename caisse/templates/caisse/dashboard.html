@@ -250,80 +250,94 @@
             }
         }
     });
-    // Graphique Sorties par catégories
-    new Chart(document.getElementById('sortiesCategoriesChart'), {
-        type: 'doughnut',
-        data: {
-            labels: sortiesCategories.map(item => item.categorie),
-            datasets: [{
-                data: sortiesCategories.map(item => item.total),
-                backgroundColor: [
-                    '#4040FF',    // Bleu principal
-                    '#16DBCC',    // Turquoise
-                    '#FF82AC',    // Rose
-                    '#FFB800',    // Orange
-                ],
-                borderWidth: 0,
-                borderRadius: 10,
-                spacing: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '75%',
-            plugins: {
-                legend: {
-                    position: 'left',
-                    labels: {
-                        usePointStyle: false,
-                        padding: 15,
-                        font: {
-                            size: 15,
-                        },
-                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#374151',
-                        generateLabels: function(chart) {
-                            const data = chart.data;
-                            if (data.labels.length && data.datasets.length) {
-                                return data.labels.map((label, i) => {
-                                    const value = data.datasets[0].data[i];
-                                    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    
-                                    return {
-                                        text: `${label} ${percentage}%`,
-                                        fillStyle: data.datasets[0].backgroundColor[i],
-                                        index: i,
-                                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#374151'
-                                    };
-                                });
+
+    // Créer une variable pour stocker l'instance du graphique
+    let sortiesCategoriesChart;
+
+    // Fonction pour créer la configuration du graphique
+    function createChartConfig() {
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        const textColor = isDarkMode ? '#FFFFFF' : '#374151';
+
+        return {
+            type: 'doughnut',
+            data: {
+                labels: sortiesCategories.map(item => item.categorie),
+                datasets: [{
+                    data: sortiesCategories.map(item => item.total),
+                    backgroundColor: [
+                        '#4040FF',    // Bleu principal
+                        '#16DBCC',    // Turquoise
+                        '#FF82AC',    // Rose
+                        '#FFB800',    // Orange
+                    ],
+                    borderWidth: 0,
+                    borderRadius: 10,
+                    spacing: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        position: 'left',
+                        labels: {
+                            color: textColor,
+                            usePointStyle: false,
+                            padding: 15,
+                            font: {
+                                size: 15,
+                                weight: 'bold'
+                            },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const value = data.datasets[0].data[i];
+                                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        
+                                        return {
+                                            text: `${label} ${percentage}%`,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            index: i,
+                                            fontColor: textColor // Forcer la couleur du texte
+                                        };
+                                    });
+                                }
+                                return [];
                             }
-                            return [];
-                        }
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const value = context.raw;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = ((value / total) * 100).toFixed(1);
-                            return `${context.label}: ${percentage}%`;
                         }
                     },
-                    titleColor: document.documentElement.classList.contains('dark') ? '#fff' : '#374151',
-                    bodyColor: document.documentElement.classList.contains('dark') ? '#fff' : '#374151',
-                    backgroundColor: document.documentElement.classList.contains('dark') ? '#1f2937' : '#fff',
-                    borderColor: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
+                    tooltip: {
+                        titleColor: textColor,
+                        bodyColor: textColor,
+                        backgroundColor: isDarkMode ? '#1f2937' : '#fff',
+                        borderColor: isDarkMode ? '#374151' : '#e5e7eb',
+                        displayColors: true
+                    }
                 }
             }
-        }
-    });
+        };
+    }
 
-    // Ajouter un écouteur pour mettre à jour les couleurs lors du changement de thème
+    // Initialiser le graphique
+    sortiesCategoriesChart = new Chart(
+        document.getElementById('sortiesCategoriesChart'),
+        createChartConfig()
+    );
+
+    // Ajouter un écouteur pour le changement de thème
     document.addEventListener('dark-mode', function() {
-        // Forcer la mise à jour du graphique
-        sortiesCategoriesChart.update();
+        if (sortiesCategoriesChart) {
+            sortiesCategoriesChart.destroy();
+        }
+        sortiesCategoriesChart = new Chart(
+            document.getElementById('sortiesCategoriesChart'),
+            createChartConfig()
+        );
     });
 
     // Remplir le tableau des 4 derniers mois
