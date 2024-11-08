@@ -187,7 +187,7 @@ def listes(request):
     date_max = request.GET.get('date_max')
     sort_by = request.GET.get('sort', 'date')  # Par défaut, tri par date
     ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
-
+    
     # Filtrer les opérations d'entrée et de sortie
     entree = OperationEntrer.objects.all()
     sortie = OperationSortir.objects.all()
@@ -228,9 +228,23 @@ def listes(request):
     lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 10
 
     # Combiner et trier par date
+    if sort_by == 'date':
+        key_func = lambda op: getattr(op, 'date_transaction', None) or getattr(op, 'date_de_sortie', None)
+    elif sort_by == 'categorie':
+        key_func = lambda op: op.categorie.name
+    elif sort_by == 'description':
+        key_func = lambda op: op.description
+    elif sort_by == 'beneficiaire':
+        key_func = lambda op: op.beneficiaire.name if op.beneficiaire else ''
+    elif sort_by == 'fournisseur':
+        key_func = lambda op: op.fournisseur.name if op.fournisseur else ''
+    else:
+        key_func = lambda op: getattr(op, 'date_transaction', None) or getattr(op, 'date_de_sortie', None)
+
+    # Trier les opérations
     operations = sorted(
         chain(entree, sortie),
-        key=lambda op: getattr(op, 'date_transaction', None) or getattr(op, 'date_de_sortie', None),
+        key=key_func,
         reverse=(ordre == 'desc')
     )
     # Pagination
@@ -1035,7 +1049,8 @@ def liste_entrees(request):
     categorie_id = request.GET.get('categorie')
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
-    sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
+    sort_by = request.GET.get('sort', 'Description')  # Trier par date par défaut
+    ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
 
     # Filtrer les opérations d'entrée
     entrees = OperationEntrer.objects.all()
@@ -1055,6 +1070,8 @@ def liste_entrees(request):
         entrees = entrees.filter(date_transaction__lte=date_max)
 
     # Appliquer le triage
+    if ordre == 'desc':
+        sort_by = f'-{sort_by}'
     entrees = entrees.order_by(sort_by)
 
     # Récupérer uniquement les catégories de type "entrée" pour les options de filtrage
@@ -1073,7 +1090,8 @@ def liste_entrees(request):
         'page_obj': page_obj,
         'categories': categories,
         'prix': "Ar",
-        'sort_by': sort_by,
+        'sort_by': sort_by.lstrip('-'),  # Retirer le '-' pour le contexte
+        'ordre': ordre,
         'lignes_par_page': lignes_par_page,
     }
     return HttpResponse(template.render(context, request))
@@ -1090,7 +1108,8 @@ def liste_sorties(request):
     fournisseur_id = request.GET.get('fournisseur')
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
-    sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
+    sort_by = request.GET.get('sort', 'Description')  # Trier par date par défaut
+    ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
 
     # Filtrer les opérations de sortie
     sorties = OperationSortir.objects.all()
@@ -1114,6 +1133,8 @@ def liste_sorties(request):
         sorties = sorties.filter(date_de_sortie__lte=date_max)
 
     # Appliquer le triage
+    if ordre == 'desc':
+        sort_by = f'-{sort_by}'
     sorties = sorties.order_by(sort_by)
 
     # Récupérer uniquement les catégories de type "sortie" pour les options de filtrage
@@ -1129,6 +1150,7 @@ def liste_sorties(request):
     paginator = Paginator(sorties, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
     # Contexte à passer au template
     context = {
         'page_obj': page_obj,
@@ -1136,7 +1158,8 @@ def liste_sorties(request):
         'beneficiaires': beneficiaires,
         'fournisseurs': fournisseurs,
         'prix': "Ar",
-        'sort_by': sort_by,
+        'sort_by': sort_by.lstrip('-'),  # Retirer le '-' pour le contexte
+        'ordre': ordre,
         'lignes_par_page': lignes_par_page,
     }
     return HttpResponse(template.render(context, request))

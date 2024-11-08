@@ -145,11 +145,41 @@
                 <th class="py-1 px-6 text-left">
                     <input type="checkbox" id="select-all-sorties">
                 </th>
-                <th class="py-1 px-6 text-left">Description</th>
-                <th class="py-1 px-6 text-left">Catégorie</th>
-                <th class="py-1 px-6 text-left">Bénéficiaire</th>
-                <th class="py-1 px-6 text-left">Fournisseur</th>
-                <th class="py-1 px-6 text-left">Date</th>
+                <th class="py-1 px-6 text-left">
+                    {% if request.GET.sort == 'description' and request.GET.order == 'asc' %}
+                        <a href="?sort=description&order=desc&lignes={{ lignes_par_page }}">Description ⬇</a>
+                    {% else %}
+                        <a href="?sort=description&order=asc&lignes={{ lignes_par_page }}">Description ⬆</a>
+                    {% endif %}
+                </th>
+                <th class="py-1 px-6 text-left">
+                    {% if request.GET.sort == 'categorie' and request.GET.order == 'asc' %}
+                        <a href="?sort=categorie&order=desc&lignes={{ lignes_par_page }}">Catégorie ⬇</a>
+                    {% else %}
+                        <a href="?sort=categorie&order=asc&lignes={{ lignes_par_page }}">Catégorie ⬆</a>
+                    {% endif %}
+                </th>
+                <th class="py-1 px-6 text-left">
+                    {% if request.GET.sort == 'beneficiaire' and request.GET.order == 'asc' %}
+                        <a href="?sort=beneficiaire&order=desc&lignes={{ lignes_par_page }}">Bénéficiaire ⬇</a>
+                    {% else %}
+                        <a href="?sort=beneficiaire&order=asc&lignes={{ lignes_par_page }}">Bénéficiaire ⬆</a>
+                    {% endif %}
+                </th>
+                <th class="py-1 px-6 text-left">
+                    {% if request.GET.sort == 'fournisseur' and request.GET.order == 'asc' %}
+                        <a href="?sort=fournisseur&order=desc&lignes={{ lignes_par_page }}">Fournisseur ⬇</a>
+                    {% else %}
+                        <a href="?sort=fournisseur&order=asc&lignes={{ lignes_par_page }}">Fournisseur ⬆</a>
+                    {% endif %}
+                </th>
+                <th class="py-1 px-6 text-left">
+                    {% if request.GET.sort == 'date' and request.GET.order == 'asc' %}
+                        <a href="?sort=date&order=desc&lignes={{ lignes_par_page }}">Date ⬇</a>
+                    {% else %}
+                        <a href="?sort=date&order=asc&lignes={{ lignes_par_page }}">Date ⬆</a>
+                    {% endif %}
+                </th>
                 <th class="py-1 px-6 text-right">Quantité</th>
                 <th class="py-1 px-6 text-right">Montant</th>
                 <th class="py-1 px-6 text-center">Actions</th>

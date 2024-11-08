@@ -146,15 +146,33 @@
                         <th class="px-4 py-1 text-left">
                             <input type="checkbox" id="select-all-entrees">
                         </th>
-                        <th class="px-4 py-1 text-left">Description</th>
-                        <th class="px-4 py-1 text-left">Catégorie</th>
-                        <th class="px-4 py-1 text-left">Date</th>
+                        <th class="px-4 py-1 text-left">
+                            {% if request.GET.sort == 'description' and request.GET.order == 'asc' %}
+                                <a href="?sort=description&order=desc&lignes={{ lignes_par_page }}">Description ⬇</a>
+                            {% else %}
+                                <a href="?sort=description&order=asc&lignes={{ lignes_par_page }}">Description ⬆</a>
+                            {% endif %}
+                        </th>
+                        <th class="px-4 py-1 text-left">
+                            {% if request.GET.sort == 'categorie' and request.GET.order == 'asc' %}
+                                <a href="?sort=categorie&order=desc&lignes={{ lignes_par_page }}">Catégorie ⬇</a>
+                            {% else %}
+                                <a href="?sort=categorie&order=asc&lignes={{ lignes_par_page }}">Catégorie ⬆</a>
+                            {% endif %}
+                        </th>
+                        <th class="px-4 py-1 text-left">
+                            {% if request.GET.sort == 'date' and request.GET.order == 'asc' %}
+                                <a href="?sort=date&order=desc&lignes={{ lignes_par_page }}">Date ⬇</a>
+                            {% else %}
+                                <a href="?sort=date&order=asc&lignes={{ lignes_par_page }}">Date ⬆</a>
+                            {% endif %}
+                        </th>
                         <th class="px-4 py-1 text-right">Montant</th>
                         <th class="px-4 py-1 text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for operation in entrees %}
+                    {% for operation in page_obj %}
                     <tr :key="{{ operation.id }}" class="{% cycle 'bg-gray-200' 'bg-white' %} border-b hover:bg-gray-50">
                         <td class="px-4 py-2">
                             <input type="checkbox" name="selected_operations" value="{{ operation.id }}">
