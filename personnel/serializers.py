@@ -80,13 +80,15 @@ class ScheduleListSerializer(serializers.ModelSerializer):
     jour_debut = serializers.CharField()
     jour_fin = serializers.CharField()
     location = serializers.CharField()
+    start_date = serializers.DateField(format="%x", required=False)
+    end_date = serializers.DateField(format="%x", required=False)   
 
     class Meta:
         model = Schedule
         fields = [
-            'employee_photo', 'employee_first_name', 'employee_last_name', 'employee_poste',
+            'id', 'employee_photo', 'employee_first_name', 'employee_last_name', 'employee_poste',
             'employee_type', 'employee_department', 'start_time', 'end_time', 'jour_debut', 'jour_fin',
-            'location'
+            'location', 'start_date', 'end_date'    
         ]
 
     def to_representation(self, instance):

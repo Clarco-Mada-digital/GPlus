@@ -96,7 +96,7 @@ Fiche de Paye
         </thead>
         <tbody>
             {% for paie in paies %}
-            <tr class="bg-white border-b" style="font-size: 0.83rem; font-weight: 500;">
+            <tr class="hover:bg-gray-50 transition ease-in-out duration-200" style="font-size: 0.83rem; font-weight: 500;">
                 <td class="px-6 py-4 whitespace-nowrap"> {{ paie.employee.id|stringformat:"05d" }} </td>
                 <td class="px-6 py-4 whitespace-nowrap flex items-center gap-4"> <img src="{{ paie.employee.photo.url }}" alt="Photo de {{ employee.nom }}" class="rounded-full w-12 h-10 ml-8">{{ paie.employee.nom }} {{ paie.employee.prenom }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ paie.exercice }}</td>

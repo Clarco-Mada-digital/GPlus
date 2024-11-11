@@ -12,16 +12,18 @@ def create_notification(user_action, user_affected, message,type):
 
     # Associe cette notification à l'utilisateur affecté
     user_notification = UserNotification.objects.create(
-        user_affected=user_affected,  # L'utilisateur affecté
+        user_affected=user_affected,  # L'utilisateur affectéd
         notification=notification
     )
 
     return user_notification
 
-def create_global_notification(message):
+def create_global_notification(user_action,type, message):
     # Crée la notification globale
     notification = Notification.objects.create(
+        user=user_action,
         message=message,
+        type=type,
         is_global=True
     )
 

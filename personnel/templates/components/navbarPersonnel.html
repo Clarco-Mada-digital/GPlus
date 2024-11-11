@@ -10,7 +10,7 @@
             <!-- Menu de l'utilisateur à droite -->
             <ul class="flex flex-col absolute right-4 top-1 items-center border border-gray/75 p-2 rounded-lg text-sm space-x-2 w-[182px]">
                 <li class=" flex items-center">
-                    <img src="{{user.photo.url}}" alt="photo de profil" class="h-6 w-6 rounded-full mr-2"> <!-- Photo de l'utilisateur -->
+                    <img src="{{user.employee.photo.url}}" alt="photo de profil" class="h-6 w-6 rounded-full mr-2"> <!-- Photo de l'utilisateur -->
                     {% comment %} <p>{{user.photo.url}}</p>  {% endcomment %}
                     <div class="flex flex-col w-[150px] overflow-hidden" >
                         <p class="text-sm">{{user.username}}</p>
@@ -183,7 +183,7 @@
 
 
             <div class="flex items-center relative right-11 text-sm border rounded border-gray/75 w-[168px] ">
-            <img src="{{user.photo.url}}" alt="" class="h-10 w-10 rounded-full mr-2"> <!-- Photo de l'utilisateur -->
+            <img src="{{user.employee.photo.url}}" alt="" class="h-10 w-10 rounded-full mr-2"> <!-- Photo de l'utilisateur -->
 
             <div class="flex flex-col w-[118px] overflow-hidden ">
                 <p class="text-sm ">{{user.username}}</p>

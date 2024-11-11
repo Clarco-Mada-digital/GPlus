@@ -10,6 +10,7 @@ from .views import (
     PaieViewSet, ExportFicheDePaiePDFView, SettingsView, ExportDatabaseView, profile_view,
     EmployeeCreateAPIView, EmployeeDetailAPIView, EmployeeUpdateAPIView, CreatePaieView, UpdatePaieView,
     DeletePaieView, ViewPaieView, CongeCreateView, CongeDetailAPIView, DupliquerFicheDePaieAPIView,
+    UpdateScheduleView, CreateScheduleView, DeleteScheduleView,
 )
 
 app_name = 'personnel'
@@ -34,6 +35,10 @@ urlpatterns = [
     path('conge/create/', CongeCreateView.as_view(), name='conge_create'),
     path('conge/<int:conge_id>/detail/', CongeDetailAPIView.as_view(), name='conge-details'),
 
+    path('schedule/<int:schedule_id>/update/', UpdateScheduleView.as_view(), name='schedule_update'),
+    path('schedule/<int:schedule_id>/delete/', DeleteScheduleView.as_view(), name='schedule_delete'),
+    path('schedule/create/', CreateScheduleView.as_view(), name='schedule_create'),
+    
     path('personnel/api/', include(router.urls)),  # Ajoute 'api/' devant toutes les URL des routeurs
 
     path('api/dashboard/', DashboardAPIView.as_view(), name='dashboard'),

@@ -19,7 +19,7 @@
 
 </div> 
 
-<form action="{% url 'signIn' %}" method="POST"> 
+<form action="{% url 'accounts:signIn' %}" method="POST"> 
     {% csrf_token %}
 
     <div class="relative z-0 w-full mb-4 group">
@@ -39,7 +39,7 @@
             <input type="checkbox" name="remember_me" class="form-checkbox h-5 w-5 text-indigo-600">
             <span class="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
         </label>
-        <a href="{% url 'password_reset' %}" class="text-sm text-indigo-600 hover:underline">Mot de passe oublié ?</a>
+        <a href="{% url 'accounts:password_reset' %}" class="text-sm text-indigo-600 hover:underline">Mot de passe oublié ?</a>
     </div>
 
     <button type="submit"

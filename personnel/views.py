@@ -1,6 +1,7 @@
 import base64
 import os
 import subprocess
+from datetime import date, datetime
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
@@ -98,6 +99,53 @@ class DashboardAPIView(APIView):
 
         # Rendu du template avec le contexte
         return render(request, 'dashboard.html', context)
+    def post(self, request):
+        try:
+            # Récupérer les données du formulaire
+            title = request.data.get('title')
+            start_date = request.data.get('start_date') 
+            start_time = request.data.get('start_time')
+            description = request.data.get('description')
+
+            # Valider les données requises
+            if not all([title, start_date, start_time, description]):
+                return Response(
+                    {'error': 'Le titre, la date de début et la date de fin sont obligatoires'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Créer l'événement
+            event = AgendaEvent.objects.create(
+                title=title,
+                start_date=start_date,
+                start_time=start_time,
+                description=description,
+            )
+
+            # Créer une notification
+            create_global_notification(
+                user_action=request.user,
+                type='evenement_create',
+                message=f"Un nouvel événement a été ajouté : {event.title} par {request.user}."
+            )
+
+            # Créer un historique
+            Historique.objects.create(
+                utilisateur=request.user,
+                action='create',
+                consequence=f"Ajout d'un nouvel événement : {event.title}",
+                utilisateur_affecte=request.user,
+                categorie='evenement',
+                date_action=timezone.now()
+            )
+
+            return redirect('personnel:dashboard')
+
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 #Les classes pour gérer les permissions
 class EmployeePermission(permissions.BasePermission):
@@ -716,7 +764,7 @@ class CongeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """
         Filtre les congés en fonction des paramètres du GET, incluant
-        l’employé, le type de congé, le statut, le poste et le département.
+        l'employé, le type de congé, le statut, le poste et le département.
         """
         queryset = super().get_queryset()
         return queryset
@@ -1156,17 +1204,16 @@ class NotificationListView(APIView):
             user_affected=request.user
         ).select_related('notification').order_by('-notification__date_created')
 
-        serializer = UserNotificationSerializer(notifications, many=True)
-
         # Rendu du template HTML avec les notifications
-        return render(request, 'notification.html', {'notifications': serializer.data})
+        return render(request, 'notification.html', {'notifications': notifications})
+    
 class HistoriqueListView(APIView):
     permission_classes = [IsAuthenticated]  # Exige que l'utilisateur soit authentifié et a les permission spécifique
     def get(self, request, *args, **kwargs):
         """Récupérer et retourner l'historique en JSON."""
         historiques = Historique.objects.all().order_by('-date_action')
-        serializer = HistoriqueSerializer(historiques, many=True)
-        return render(request,'historique.html', {'historiques': serializer.data})
+        # Passer directement les objets Historique au template
+        return render(request, 'historique.html', {'historiques': historiques})
 
 
 def profile_view(request):
@@ -1343,6 +1390,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         # Créer une notification pour la mise à jour de l'emploi du temps
         create_notification(
             user_action=self.request.user,
+            type='schedule_create',
             message=f"L'emploi du temps de {schedule.employee.nom} {schedule.employee.prenom} a été modifié.",
             user_affected=schedule.employee.user  # Associez la notification à l'utilisateur affecté
         )
@@ -1366,9 +1414,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         employee_department = request.GET.getlist('departement')
         employee_type = request.GET.getlist('type_salarie')
         employee_poste = request.GET.getlist('poste')
-        location = request.GET.getlist('schedule')
-        day = request.GET.get('day')
-
+       
         # Filtrer par département
         if employee_department:
             queryset = queryset.filter(employee__department__id__in=employee_department)
@@ -1381,15 +1427,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         if employee_poste:
             queryset = queryset.filter(employee__poste__id__in=employee_poste)
 
-        # Filtrer par lieu
-        if location:
-            queryset = queryset.filter(location__id__in=location)
-
-        # Filtrer par jour
-        if day:
-            queryset = queryset.filter(jour_debut__icontains=day)  # Vous pouvez ajuster cela selon votre logique
-
-        # Sérialiser les horaires
+         # Sérialiser les horaires
         serializer = ScheduleListSerializer(queryset, many=True)
 
         # Créer un dictionnaire pour stocker les résultats
@@ -1399,6 +1437,9 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         paginator = CustomPageNumberPagination()
         page = paginator.paginate_queryset(queryset, request)
         total_emploiedutemps = queryset.count()
+        departements = Departement.objects.all()  # Récupère tous les départements
+        postes = Poste.objects.all()
+        type_salaries = Employee.TYPE_CHOICES
 
         # Regrouper les horaires par employé
         for schedule in serializer.data:
@@ -1415,11 +1456,14 @@ class ScheduleViewSet(viewsets.ModelViewSet):
                 }
             # Ajouter les horaires sans les imbriquer dans une liste supplémentaire
             schedules_dict[employee_id]['schedules'].append({
+                'schedule_id': schedule['id'],
                 'start_time': schedule['start_time'],
                 'end_time': schedule['end_time'],
                 'jour_debut': schedule['jour_debut'],
                 'jour_fin': schedule['jour_fin'],
-                'location': schedule['location']
+                'location': schedule['location'],
+                'start_date': schedule['start_date'],
+                'end_date': schedule['end_date'],   
             })
 
         num_pages = paginator.page.paginator.num_pages if paginator.page else None
@@ -1430,7 +1474,233 @@ class ScheduleViewSet(viewsets.ModelViewSet):
             'paginator': paginator,
             'page_obj': paginator.page,
             'total_emploiedutemps': total_emploiedutemps,
+            'departements': departements,
+            'postes': postes,
+            'type_salaries': type_salaries,
+            'today': date.today(),
+            'now': datetime.now().time(),
         })
+    
+class CreateScheduleView(APIView):
+    def get(self, request, *args, **kwargs):
+        employees = Employee.objects.all()
+        days = Schedule.DAY_CHOICES
+        return render(request, 'calendrier_create.html', {
+            'employees': employees,
+            'days': days,
+        })
+
+    def post(self, request, *args, **kwargs):
+        # Récupérer les données du formulaire
+        employee_id = request.data.get('employee_id')
+        location = request.data.get('location')
+        jour_debut = request.data.get('jour_debut')
+        jour_fin = request.data.get('jour_fin')
+        start_time = request.data.get('start_time')
+        end_time = request.data.get('end_time')
+        start_date = request.data.get('start_date')
+        end_date = request.data.get('end_date')
+        description = request.data.get('description')
+
+
+        # Valider les données requises
+        if not all([employee_id, location, description, jour_debut, jour_fin, start_time, end_time, start_date, end_date]):
+            return Response(
+                {'error': 'Tous les champs sont obligatoires'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Récupérer l'employé
+            employee = Employee.objects.get(id=employee_id)
+            
+            # Créer le nouvel emploi du temps
+            schedule = Schedule.objects.create(
+                employee=employee,
+                location=location,
+                jour_debut=jour_debut,
+                jour_fin=jour_fin,
+                start_time=start_time,
+                end_time=end_time,
+                start_date=start_date,
+                end_date=end_date,
+                description=description,
+            )
+
+            # Créer une notification
+            create_notification(
+            user_action=self.request.user,
+            type='schedule_create',
+            message=f"L'emploi du temps de {schedule.employee.nom} {schedule.employee.prenom} a été modifié.",
+            user_affected=schedule.employee.user  # Associez la notification à l'utilisateur affecté
+            ) 
+
+            # Créer un historique
+            Historique.objects.create(
+            utilisateur=self.request.user,
+            action='update',
+            consequence=f"Mise à jour de l'emploi du temps pour {schedule.employee.nom} {schedule.employee.prenom}.",
+            utilisateur_affecte=schedule.employee.user,
+            categorie='emploi_du_temps',
+            date_action=timezone.now(),
+            )
+
+            # Rediriger vers la liste des calendriers après succès
+            return redirect('personnel:schedule-list')
+
+        except Employee.DoesNotExist:
+            return Response(
+                {'error': 'Employé non trouvé'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
+class UpdateScheduleView(APIView):
+    def get(self, request, schedule_id, *args, **kwargs):
+        try:
+            # Récupérer l'emploi du temps par son ID
+            schedule = Schedule.objects.get(id=schedule_id)
+            employees = Employee.objects.all()
+            days = Schedule.DAY_CHOICES
+
+            # Préparer le contexte pour le formulaire de mise à jour
+            context = {
+                'schedule': schedule,
+                'employees': employees,
+                'days': days,
+                'description': schedule.description,
+                'start_date': schedule.start_date,
+                'end_date': schedule.end_date,
+                'start_time': schedule.start_time,
+                'end_time': schedule.end_time,
+                'location': schedule.location,
+                'jour_debut': schedule.jour_debut,
+                'jour_fin': schedule.jour_fin,
+            }
+
+            # Rendre le formulaire de mise à jour avec les données pré-remplies
+            return render(request, 'calendrier_update.html', context)
+
+        except Schedule.DoesNotExist:
+            return Response({'error': 'Emploi du temps non trouvé'}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, schedule_id, *args, **kwargs):
+        try:
+            # Récupérer l'emploi du temps par son ID
+            schedule = Schedule.objects.get(id=schedule_id)
+
+            # Récupérer les données du formulaire POST
+            employee_id = request.data.get('employee_id')
+            location = request.data.get('location')
+            jour_debut = request.data.get('jour_debut')
+            jour_fin = request.data.get('jour_fin')
+            start_time = request.data.get('start_time')
+            end_time = request.data.get('end_time')
+            start_date = request.data.get('start_date')
+            end_date = request.data.get('end_date')
+            description = request.data.get('description')
+
+            # Valider les données requises
+            if not all([employee_id, location, description, jour_debut, jour_fin, start_time, end_time, start_date, end_date]):
+                return Response(
+                    {'error': 'Tous les champs sont obligatoires'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Récupérer l'employé
+            employee = Employee.objects.get(id=employee_id)
+
+            # Mettre à jour l'emploi du temps
+            schedule.employee = employee
+            schedule.location = location
+            schedule.jour_debut = jour_debut
+            schedule.jour_fin = jour_fin
+            schedule.start_time = start_time
+            schedule.end_time = end_time
+            schedule.start_date = start_date
+            schedule.end_date = end_date
+            schedule.description = description
+            schedule.save()
+
+            # Créer une notification
+            create_notification(
+                user_action=self.request.user,
+                type='schedule_update',
+                message=f"L'emploi du temps de {schedule.employee.nom} {schedule.employee.prenom} a été mis à jour.",
+                user_affected=schedule.employee.user
+            )
+
+            # Créer un historique
+            Historique.objects.create(
+                utilisateur=self.request.user,
+                action='update',
+                consequence=f"Mise à jour de l'emploi du temps pour {schedule.employee.nom} {schedule.employee.prenom}.",
+                utilisateur_affecte=schedule.employee.user,
+                categorie='emploi_du_temps',
+                date_action=timezone.now(),
+            )
+
+            # Rediriger après succès
+            return redirect('personnel:schedule-list')
+
+        except Employee.DoesNotExist:
+            return Response({'error': 'Employé non trouvé'}, status=status.HTTP_404_NOT_FOUND)
+        except Schedule.DoesNotExist:
+            return Response({'error': 'Emploi du temps non trouvé'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class DeleteScheduleView(APIView):
+    """Vue pour supprimer un emploi du temps."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, schedule_id):
+        try:
+            # Récupérer l'emploi du temps
+            schedule = get_object_or_404(Schedule, id=schedule_id)
+
+            # Stocker les informations avant suppression pour l'historique
+            employee_name = f"{schedule.employee.nom} {schedule.employee.prenom}"
+            employee_user = schedule.employee.user
+
+            # Supprimer l'emploi du temps
+            schedule.delete()
+
+            # Créer une notification
+            create_notification(
+                user_action=request.user,
+                type='schedule_delete',
+                message=f"L'emploi du temps de {employee_name} a été supprimé.",
+                user_affected=employee_user
+            )
+
+            # Créer un historique
+            Historique.objects.create(
+                utilisateur=request.user,
+                action='delete',
+                consequence=f"Suppression de l'emploi du temps pour {employee_name}.",
+                utilisateur_affecte=employee_user,
+                categorie='emploi_du_temps',
+                date_action=timezone.now(),
+            )
+
+            # Rediriger après succès
+            return redirect('personnel:schedule-list')
+
+        except Schedule.DoesNotExist:
+            return Response(
+                {'error': 'Emploi du temps non trouvé'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {'error': str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class MarkNotificationAsReadView(APIView):
@@ -1567,25 +1837,57 @@ class AgendaEventViewSet(viewsets.ModelViewSet):
 
         # Supprimer l'événement
         instance.delete()
+    
+
 
 class ManageEmployeePermissionsView(APIView):
     permission_classes = [IsAuthenticated]  # Sécurise la vue
 
     def get(self, request):
         users = CustomUser.objects.all()  # Utilise CustomUser ici
-        permissions = Permission.objects.all()  # Récupère toutes les permissions
+
+        # Filtrer les permissions pour n'inclure que celles qui sont pertinentes
+        permissions = Permission.objects.filter(
+            codename__in=[
+                'manage_conge',  # Gestion congé
+                'add_paie',   # Fiche de paie create
+                'update_paie',   # Fiche de paie modifier
+                'export_paie',   # Fiche de paie exporte
+                'add_employee',  # Crée employé
+                'update_employee',  # Modifier employé
+                'add_schedule',  # Crée schedule
+                'update_schedule',  # Modifie schedule
+                'add_agendaevent'  # Ajout agenda event
+            ]
+        )
+
+        if request.user.is_authenticated:
+            employee = None
+            employees = Employee.objects.all()
+            types_conges = Conge.TYPE_CHOICES  # Récupère les choix de types de salarié
+        if hasattr(request.user, 'employee'):
+            employee = request.user.employee  # Récupérer l'objet Employee associé à l'utilisateur
 
         # Préparez les données des utilisateurs pour le rendu du template
-        user_data = [{
-            'id': user.id,
-            'username': user.username,
-            'permissions': list(user.user_permissions.values_list('id', flat=True)),  # Liste des ID des permissions
-        } for user in users]
+        user_data = []
+        for user in users:
+            if user.username != 'admin':  # Exclure l'utilisateur avec ce nom d'utilisateur
+                employee_obj = getattr(user, 'employee', None)
+                user_data.append({
+                    'id': user.id,
+                    'username': user.username,
+                    'permissions': list(user.user_permissions.values_list('id', flat=True)),  # Liste des ID des permissions
+                    'employee': employee_obj,
+                })
 
         # Rendre le template avec les données nécessaires
         return render(request, 'profile_manage_perm.html', {
             'users': user_data,
-            'permissions': permissions,  # Liste des permissions
+            'permissions': permissions,  # Liste des permissions filtrées
+            'username': request.user.username,
+            'employee': employee,
+            'employees': employees,
+            'types_conges': types_conges,
         })
 
     def post(self, request):
@@ -1594,8 +1896,7 @@ class ManageEmployeePermissionsView(APIView):
             # Utiliser get pour récupérer les permissions de la requête
             user_permissions = request.POST.getlist(f'permissions_{user.id}', [])  # Récupère les permissions ou une liste vide
             user.user_permissions.set(user_permissions)  # Met à jour les permissions
-        return Response({'success': True, 'message': 'Permissions mises à jour avec succès.'},
-                        status=status.HTTP_200_OK)
+        return redirect('personnel:manage_employee_permissions')
 
 class PaieViewSet(viewsets.ModelViewSet):
     queryset = Paie.objects.order_by('-date_creation')
@@ -2438,3 +2739,4 @@ class ExportDatabaseView(LoginRequiredMixin, View):
 
         except Exception as e:
             return HttpResponse(f"Erreur lors de l'export de la base de données: {str(e)}", status=500)
+

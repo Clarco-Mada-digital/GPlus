@@ -22,7 +22,7 @@ def create_user_for_employe(sender, instance, created, **kwargs):
         groups_mapping = {
             'salarie': 'Salarié',
             'direction': 'Direction',
-            'assit_direction': 'Assistant Direction',  # Correction ici
+            'assit_direction': 'Assistant Direction', 
             'benevole': 'Bénévole',
             'stagiaire': 'Stagiaire',
             'freelance': 'Freelance'
@@ -56,8 +56,6 @@ def create_user_for_employe(sender, instance, created, **kwargs):
 
         # Créer les paramètres utilisateur associés
         UserSettings.objects.create(user=user)
-        print(f"User settings created for {user.username}.")
 
         # Sauvegarder la relation entre l'employé et l'utilisateur
         instance.save()
-        print(f"Employee {instance.email} saved with linked user.")

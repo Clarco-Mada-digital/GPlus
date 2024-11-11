@@ -17,12 +17,13 @@
            <div class="max-w-7xl mx-auto p-6">
 
             <div class="bg-white shadow-md border w-screen md:w-auto rounded-lg p-6">
-                <form>
+                <form method="post" >
+                    {% csrf_token %}
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                         <!-- Employé -->
                         <div class=" col-span-3">
                             <label for="employee" class="block text-gray-700 font-semibold">Employé:</label>
-                            <select id="employee" class="mt-1 block w-1/2 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                            <select id="employee" name="employee_id" class="mt-1 block w-1/2 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                                 <option value="" disabled selected>-------------</option>
                                 {% for employee in employees %}
                                 <option value="{{ employee.id }}">{{ employee.nom }} {{ employee.prenom }}</option>
@@ -86,7 +87,7 @@
                         <!-- Description -->
                         <div class="col-span-3">
                             <label for="description" class="block text-gray-700 font-semibold">Description:</label>
-                            <textarea id="description" rows="4" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"></textarea>
+                            <textarea id="description" name="description" rows="4" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"></textarea>
                         </div>
                     </div>
                 

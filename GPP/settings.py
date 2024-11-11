@@ -14,6 +14,7 @@ from django.contrib.messages import constants as message_constants
 from django.utils.translation import gettext_lazy as _
 
 from pathlib import Path
+from decouple import config, Config, RepositoryEnv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -185,8 +186,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 1  # Le nombre par défaut d'élément par page si aucun n'est spécifié
-
 }
 
 LANGUAGES = [
@@ -202,12 +201,17 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = 'smtp.your_email_provider.com'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mail.me.com'
+EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'dzoubery@gmail.com.com'
-EMAIL_HOST_PASSWORD = '1245689'
-DEFAULT_FROM_EMAIL = 'dzoubery@gmail.com.com'
+
+# Spécifiez le chemin vers votre fichier .env
+config = Config(RepositoryEnv('.env/.env'))
+
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = 'dzoubery@icloud.com'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

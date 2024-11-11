@@ -213,22 +213,24 @@ class Conge(models.Model):
     #Model Notification
 class Notification(models.Model):
     TYPES = [
-        ('employee_create','Création d un nouveau employée réussi'),
-        ('conge_termine', 'Congé terminé'),
-        ('rappel_mise_a_jour', 'Rappel de mise à jour'),
-        ('conge_approuve', 'Congé approuvé'),
-        ('conge_refuse', 'Congé refusé'),
-        ('paie_create', 'Fiche de paie crée'),
-        ('paie_delete', 'Fiche de paie a été suprimer'),
-        ('paie_update', 'Fiche de paie a été crée'),
-        ('paie_ready', 'Fiche de paie prête'),
-        ('mise_a_jour_document', 'Mise à jour de document'),
-        ('avis_de_conge', 'Avis de congé'),
-        ('demande_conge_recue', 'Demande de congé reçue'),
-        ('connexion_reussi', 'Connéxion réussie'),
+        ('employee_create', 'Création d\'un nouvel employé réussie'),
+        ('conge_termine', 'Le congé est terminé'),
+        ('rappel_mise_a_jour', 'Rappel pour mise à jour'),
+        ('conge_approuve', 'Le congé a été approuvé'),
+        ('conge_refuse', 'Le congé a été refusé'),
+        ('paie_create', 'La fiche de paie a été créée'),
+        ('paie_delete', 'La fiche de paie a été supprimée'),
+        ('paie_update', 'La fiche de paie a été mise à jour'),
+        ('paie_ready', 'La fiche de paie est prête'),
+        ('mise_a_jour_document', 'Le document a été mis à jour'),
+        ('avis_de_conge', 'Un avis de congé a été émis'),
+        ('demande_conge_recue', 'La demande de congé a été reçue'),
+        ('connexion_reussi', 'Connexion réussie'),
         ('deconnexion_reussi', 'Déconnexion réussie'),
-        ('demande_conge', 'Demande de congé envoyer avec succes'),
-        ('schedule_create', 'Un nouveau emploie du temps a été ajouter dans le calendrier')
+        ('demande_conge', 'La demande de congé a été envoyée avec succès'),
+        ('schedule_create', 'Un nouvel emploi du temps a été ajouté au calendrier'),
+        ('schedule_delete',  'Un emploi du temps a été supprimer'),
+        ('evenement_create', 'Un nouvel événement a été ajouté'),
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_creat_notifications')
@@ -260,7 +262,8 @@ class Historique(models.Model):
         ('paie', 'Paie'),
         ('session', 'Session'),
         ('privilege', 'Privilèges'),
-        ('calendrier', 'Calendrier'),
+        ('emploi_du_temps', 'Calendrier'),
+        ('evenement', 'Événement'),
     ]
 
     utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

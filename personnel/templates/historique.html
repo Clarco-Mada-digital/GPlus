@@ -16,25 +16,25 @@
 
         <div class="min-h-screen bg-white p-6">
     
-            <div class="bg-white rounded-lg shadow-md max-w-screen mx-auto p-4 border-2 border-gray500">
+            <div class="bg-white rounded-lg shadow-md max-w-screen mx-auto -mt-4 p-4 border-2 border-gray500">
 
         {% for historique in historiques %}
 
-        <form id="historique" class="flex items-center justify-between p-4">
+        <div  class="flex items-center justify-between p-4">
 
             <div class="flex items-center space-x-4">
-                <div class="bg-purple-500 text-white p-3 rounded-full">
-                    <img src="{{ historique.utilisateur.photo.url }}" alt="">
-                </div>
+                <img src="{{ historique.utilisateur.employee.photo.url }}" alt="{{ historique.utilisateur.username }}" class="w-12 h-12 rounded-full">
                 <div>
-                    <h3 class="font-bold">{{ historique.categorie }} || {{ historique.action }}</h3>
-                    <p class="text-gray-600">{{ historique.consequence }}</p>
+                    <h3 class="font-bold">
+                        {{ historique.get_categorie_display }} || {{ historique.get_action_display }}
+                    </h3>
+                    <p class="text-gray-600">{{ historique.consequence }} <span class="text-gray-400 font-semibold">Par @{{ historique.utilisateur.username }} </span>.</p>
                 </div>
             </div>
-            <small class="text-gray-300" id="historique-{{ historique.id }}-time" data-timestamp="{{ historique.date_action }}">
-                <!-- La date sera insérée dynamiquement ici -->
-            </small>
-        </form>
+            <small class="text-gray-300" ">
+                Il y a {{ historique.date_action|timesince }} 
+                       </small>
+        </div>
                   {% endfor %}
 
 
@@ -45,16 +45,6 @@
 
 {% block script %}
 
-<script>
-    
 
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll('small[data-timestamp]').forEach(function(element) {
-            var timestamp = element.getAttribute('data-timestamp');
-            var relativeTime = moment(timestamp).fromNow();  // Calculer le temps relatif
-            element.innerHTML = "Il y a " + relativeTime;  // Afficher le temps relatif
-        });
-    });
-</script>
 
 {% endblock %}

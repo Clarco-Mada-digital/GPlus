@@ -48,7 +48,7 @@ def logout_user(request):
     return redirect('accounts:signIn')  # Redirection vers la page de connexion après déconnexion
 
 
-@login_required(login_url='signIn')
+@login_required(login_url='accounts:signIn')
 def home(request):
     return redirect('personnel:dashboard')
 

@@ -46,7 +46,7 @@
       </div>
     </form>
     
-    <form method="POST" action="{% url 'settings' %}">
+    <form method="POST" action="{% url 'personnel:settings' %}">
       {% csrf_token %}
       
       <div class="mb-4 flex items-center justify-between">
@@ -175,7 +175,7 @@
       </p>
     </div>
     <div class="mt-2 ">
-        <a href="{% url 'personnel:logout' %}" class="">
+        <a href="{% url 'accounts:logout' %}" class="">
           <svg width="36" height="36" viewBox="0 0 57 57" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M28.5 4.75V28.5M43.7 15.675C46.6845 18.6606 48.7181 22.4632 49.5444 26.603C50.3706 30.7429 49.9525 35.0348 48.3427 38.9374C46.733 42.8399 44.0037 46.1785 40.499 48.5319C36.9943 50.8853 32.8712 52.1483 28.6497 52.1615C24.4282 52.1747 20.2973 50.9376 16.778 48.6062C13.2586 46.2748 10.5084 42.9534 8.87426 39.061C7.24008 35.1686 6.79508 30.8794 7.59539 26.7344C8.39569 22.5895 10.4054 18.7743 13.3712 15.77" stroke="#8D75F5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>

@@ -1,0 +1,104 @@
+{% extends "base_primary_employee.html" %} 
+
+{% block title %} Modifier emploie du temps {% endblock %}
+
+{% block body %}  
+<div class="container mx-auto mt-20">
+    <div class="">
+
+        <h2 class="text-2xl font-bold mt-20 ">Modifier Calendrier</h2>
+        <p class="text-xs font-semibold text-gray-400">Modifier emploie du temps</p>
+      
+    </div>        
+
+    <!-- modifier emploie du temps -->
+    <div class="max-w-7xl mx-auto p-6">
+
+        <div class="bg-white shadow-md border w-screen md:w-auto rounded-lg p-6">
+            <form>
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <!-- Employé -->
+                    <div class="col-span-3">
+                        <label for="employee" class="block text-gray-700 font-semibold">Employé:</label>
+                        <select id="employee" class="mt-1 block w-1/2 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                            <option value="" disabled>-------------</option>
+                            {% for employee in employees %}
+                            <option value="{{ employee.id }}" {% if employee.id == selected_employee_id %}selected{% endif %}>{{ employee.nom }} {{ employee.prenom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="md:col-span-3 md:flex gap-6 justify-between items-center">
+                    <!-- Lieu -->
+                    <div>
+                        <label for="location" class="block text-gray-700 font-semibold">Lieu:</label>
+                        <input type="text" id="location" name="location" value="{{ location }}" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500" placeholder="ex: ANKA,CC,...">
+                    </div>
+
+                    <!-- Jour -->
+                    <div class="flex w-full md:w-auto space-x-2">
+                        <div class="flex-1">
+                            <label for="jour_debut" class="block text-gray-700 font-semibold">Jour:</label>
+                            <select name="jour_debut" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="" disabled>----------</option>
+                                {% for day in days %}
+                                <option value="{{ day.0 }}" {% if day.0 == jour_debut %}selected{% endif %}>{{ day.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <span class="text-gray-700 flex items-center mt-5">à</span>
+                        <div class="flex mt-6">
+                            <select name="jour_fin" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="" disabled>----------</option>
+                                {% for day in days %}
+                                <option value="{{ day.0 }}" {% if day.0 == jour_fin %}selected{% endif %}>{{ day.1 }}</option>
+                                {% endfor %}
+                            </select> 
+                        </div>
+                    </div>
+
+                    <!-- Période -->
+                    <div class="flex w-full md:w-auto space-x-2">
+                        <div class="flex-1">
+                            <label for="start_date" class="block text-gray-700 font-semibold">Période:</label>
+                            <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+                        <span class="text-gray-700 flex items-center mt-5">à</span>
+                        <div class="flex mt-6">
+                            <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+                    </div>
+                    <!-- Heures -->
+                    <div class="flex space-x-2">
+                        <div class="flex-1">
+                            <label for="start_time" class="block text-gray-700 font-semibold">Heure:</label>
+                            <input type="time" id="start_time" name="start_time" value="{{ start_time }}" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+                        <span class="text-gray-700 flex items-center mt-5">à</span>
+                        <div class="flex mt-6">
+                            <input type="time" id="end_time" name="end_time" value="{{ end_time }}" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="col-span-3">
+                    <label for="description" class="block text-gray-700 font-semibold">Description:</label>
+                    <textarea id="description" name="description" rows="4" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">{{ description }}</textarea>
+                </div>
+            </div>
+
+            <!-- Boutons -->
+            <div class="flex justify-end mt-6 gap-4">
+                <a href="javascript:history.back()" class="bg-cp_secondary text-white py-2 px-6 rounded-lg">Annuler</a>
+                <button type="submit" class="bg-cp_primary text-white py-2 px-6 rounded-lg">Mettre à jour</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}  
+
+{% block script %}
+
+{% endblock %}
