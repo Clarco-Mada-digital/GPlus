@@ -75,11 +75,6 @@
     <!-- Filtrage sorties -->
     <form method="GET" action="{% url 'caisse:liste_sorties' %}" class="p-4" id="filter-form">
         <div class="flex items-center dark:bg-secondary rounded-xl  space-x-4 text-sm">
-            <button type="submit" class="flex items-center space-x-1 dark:text-white font-bold px py-2 rounded-lg">
-                <i class="fas fa-filter"></i>
-                <span>Filtrer par</span>
-            </button>
-            <div class="h-10 w-0.5 bg-gray-300"></div>
             <div class="flex space-x-4">
                 <!-- Sélecteur Catégories -->
                 <select name="categorie" class="px-8 py-2 border-none dark:bg-secondary focus:ring-0" onchange="document.getElementById('filter-form').submit();">
@@ -147,58 +142,58 @@
     <table class="w-full">
         <thead>
             <tr class="uppercase text-sm border-b">
-                <th class="px-4 py-1 text-left">
+                <th class="px-2 py-1 text-left">
                     <input type="checkbox" id="select-all-sorties">
                 </th>
-                <th class="px-4 py-1 text-left">
+                <th class="px-2 py-1 text-left">
                     {% if request.GET.sort == 'description' and request.GET.order == 'asc' %}
                         <a href="?sort=description&order=desc&lignes={{ lignes_par_page }}">Description ⬇</a>
                     {% else %}
                         <a href="?sort=description&order=asc&lignes={{ lignes_par_page }}">Description ⬆</a>
                     {% endif %}
                 </th>
-                <th class="px-4 py-1 text-left">
+                <th class="px-2 py-1 text-left">
                     {% if request.GET.sort == 'categorie' and request.GET.order == 'asc' %}
                         <a href="?sort=categorie&order=desc&lignes={{ lignes_par_page }}">Catégorie ⬇</a>
                     {% else %}
                         <a href="?sort=categorie&order=asc&lignes={{ lignes_par_page }}">Catégorie ⬆</a>
                     {% endif %}
                 </th>
-                <th class="px-4 py-1 text-left">
+                <th class="px-2 py-1 text-left">
                     {% if request.GET.sort == 'beneficiaire' and request.GET.order == 'asc' %}
                         <a href="?sort=beneficiaire&order=desc&lignes={{ lignes_par_page }}">Bénéficiaire ⬇</a>
                     {% else %}
                         <a href="?sort=beneficiaire&order=asc&lignes={{ lignes_par_page }}">Bénéficiaire ⬆</a>
                     {% endif %}
                 </th>
-                <th class="px-4 py-1 text-left">
+                <th class="px-2 py-1 text-left">
                     {% if request.GET.sort == 'fournisseur' and request.GET.order == 'asc' %}
                         <a href="?sort=fournisseur&order=desc&lignes={{ lignes_par_page }}">Fournisseur ⬇</a>
                     {% else %}
                         <a href="?sort=fournisseur&order=asc&lignes={{ lignes_par_page }}">Fournisseur ⬆</a>
                     {% endif %}
                 </th>
-                <th class="px-4 py-1 text-left">
+                <th class="px-2 py-1 text-left">
                     {% if request.GET.sort == 'date' and request.GET.order == 'asc' %}
                         <a href="?sort=date&order=desc&lignes={{ lignes_par_page }}">Date ⬇</a>
                     {% else %}
                         <a href="?sort=date&order=asc&lignes={{ lignes_par_page }}">Date ⬆</a>
                     {% endif %}
                 </th>
-                <th class="px-4 py-1 text-right">Quantité</th>
-                <th class="px-4 py-1 text-right">Montant</th>
-                <th class="px-4 py-1 text-center">Actions</th>
+                <th class="px-2 py-1 text-right">Quantité</th>
+                <th class="px-2 py-1 text-right">Montant</th>
+                <th class="px-2 py-1 text-center">Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for operation in page_obj %}
             <tr :key="{{ operation.id }}" class="{% cycle 'bg-white dark:bg-secondary' 'bg-gray-300 dark:bg-blue-950' %} border-b border-white">
-                <td class="px-4 py-2">
+                <td class="px-2 py-2">
                     <input type="checkbox" name="selected_operations" value="{{ operation.id }}">
                 </td>
-                <td class="py-1 px-4">{{ operation.description }}</td>
-                <td class="py-1 px-4">{{ operation.categorie.name }}</td>
-                <td class="py-1 px-4">
+                <td class="py-1 px-2">{{ operation.description }}</td>
+                <td class="py-1 px-2">{{ operation.categorie.name }}</td>
+                <td class="py-1 px-2">
                     {% if operation.beneficiaire.personnel %}
                         {{ operation.beneficiaire.personnel }}
                     {% elif operation.beneficiaire.name %}
@@ -207,11 +202,11 @@
                         Bénéficiaire non spécifié
                     {% endif %}
                 </td>
-                <td class="py-1 px-4">{{ operation.fournisseur.name }}</td>
-                <td class="py-1 px-4">{{ operation.date_de_sortie }}</td>
-                <td class="py-1 px-4 text-right">{{ operation.quantite }}</td>
-                <td class="py-1 px-4 text-right">{{ operation.montant|intcomma }} Ar</td>
-                <td class="py-1 px-4 text-right">
+                <td class="py-1 px-2">{{ operation.fournisseur.name }}</td>
+                <td class="py-1 px-2">{{ operation.date_de_sortie }}</td>
+                <td class="py-1 px-2 text-right">{{ operation.quantite }}</td>
+                <td class="py-1 px-2 text-right">{{ operation.montant|intcomma }} Ar</td>
+                <td class="py-1 px-2 text-right">
                     <div class="flex justify-center items-center space-x-2 border dark:border-white rounded-2xl">
                         <!-- Icône de modification (stylo) -->
                         <a href="{% url 'caisse:modifier_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">

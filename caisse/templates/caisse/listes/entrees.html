@@ -189,7 +189,7 @@
                         <td class="py-1 px-4">{{ operation.date_transaction }}</td>
                         <td class="py-1 px-4 text-center">{{ operation.montant|intcomma }} Ar</td>
                         <td class="py-1 px-4 text-right">
-                            <div class="flex justify-center items-center space-x-2 border border-gray-300 dark:border-white rounded-2xl">
+                            <div class="flex justify-center items-center space-x-2 border border-black border-gray-300 dark:border-white rounded-2xl">
                                 <!-- Icône de modification (stylo) -->
                                 <a href="{% url 'caisse:modifier_entree' operation.id %}" class="p-1 rounded-lg hover:bg-gray-200">
                                     <svg xmlns="http://www.w3.org/2000/svg"
