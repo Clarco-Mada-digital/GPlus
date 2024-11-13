@@ -40,14 +40,14 @@ Fiche de Paye
 
 <!-- Pop-up de filtrage -->
 <div id="filter-popup" class="hidden fixed inset-0 backdrop-blur-sm bg-black bg-opacity-50 flex justify-center items-center">
-    <div class="bg-white p-4 rounded-md shadow-lg w-96">
-        <h2 class="text-lg font-bold mb-2">Filtrer les fiches de paies</h2>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-md shadow-lg w-96">
+        <h2 class="text-lg font-bold mb-2 dark:text-white">Filtrer les fiches de paies</h2>
         <form id="filter-form" method="GET">
             <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-2">Statut</label>
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Statut</label>
                 <div class="grid grid-cols-2 gap-2">
                     {% for type in types_paie %}
-                    <label class="flex items-center text-xs">
+                    <label class="flex items-center text-xs dark:text-gray-300">
                         <input type="checkbox" name="statut" value="{{ type.0 }}" class="form-checkbox text-purple-600 rounded-md mr-2">
                         {{ type.1 }}
                     </label>                        
@@ -55,15 +55,14 @@ Fiche de Paye
                 </div>
             </div>
 
-            
             <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-2">Date</label>
-                <input type="date" name="date" class="border border-gray-300 rounded-md p-2 w-full">
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Date</label>
+                <input type="date" name="date" class="border border-gray-300 dark:border-gray-600 rounded-md p-2 w-full dark:bg-gray-700 dark:text-white">
             </div>
 
             <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-2">Employé</label>
-                <select name="employee" class="border border-gray-300 rounded-md p-2 w-full">
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Employé</label>
+                <select name="employee" class="border border-gray-300 dark:border-gray-600 rounded-md p-2 w-full dark:bg-gray-700 dark:text-white">
                     <option value="">Sélectionnez un employé</option>
                     {% for employee in employees %}
                     <option value="{{ employee.id }}">{{ employee.nom }} {{ employee.prenom }}</option>
@@ -71,8 +70,8 @@ Fiche de Paye
                 </select>
             </div>
 
-            <div class="flex justify-between font-medium ">
-                <button type="button" onclick="togglePopup()" class="mr-2 bg-gray-200 text-black px-10 p-2 rounded-lg border">Retour</button>
+            <div class="flex justify-between font-medium">
+                <button type="button" onclick="togglePopup()" class="mr-2 bg-gray-200 dark:bg-gray-600 text-black dark:text-white px-10 p-2 rounded-lg border">Retour</button>
                 <button type="submit" class="bg-cp_primary text-white px-10 p-2 rounded-lg border">Appliquer</button>
             </div>
         </form>
@@ -80,69 +79,67 @@ Fiche de Paye
 </div>
 
 
-<div class="bg-white shadow-md rounded-lg">
+<div class="bg-white shadow-md rounded-lg dark:bg-gray-800">
     <table class="table-auto w-full">
-        <thead class="border-t border-b ">
+        <thead class="border-t border-b dark:border-gray-700">
             <tr class="text-sm">
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ID</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Nom de l'employée</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Date</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Salaire net</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Salaire de base</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Lot</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Statut</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Action</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">Nom de l'employée</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">Salaire net</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">Salaire de base</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">Lot</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">Statut</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider dark:text-gray-300">Action</th>
             </tr>
         </thead>
         <tbody>
             {% for paie in paies %}
-            <tr class="hover:bg-gray-50 transition ease-in-out duration-200" style="font-size: 0.83rem; font-weight: 500;">
-                <td class="px-6 py-4 whitespace-nowrap"> {{ paie.employee.id|stringformat:"05d" }} </td>
-                <td class="px-6 py-4 whitespace-nowrap flex items-center gap-4"> <img src="{{ paie.employee.photo.url }}" alt="Photo de {{ employee.nom }}" class="rounded-full w-12 h-10 ml-8">{{ paie.employee.nom }} {{ paie.employee.prenom }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ paie.exercice }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ paie.net_a_payer }} MGA</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ paie.salaire_base }} MGA</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ paie.date_debut|date:"F Y"  }}</td>
+            <tr class="hover:bg-gray-50 transition ease-in-out duration-200 dark:hover:bg-gray-700" style="font-size: 0.83rem; font-weight: 500;">
+                <td class="px-6 py-4 whitespace-nowrap dark:text-gray-300"> {{ paie.employee.id|stringformat:"05d" }} </td>
+                <td class="px-6 py-4 whitespace-nowrap flex items-center gap-4 dark:text-gray-300"> <img src="{{ paie.employee.photo.url }}" alt="Photo de {{ employee.nom }}" class="rounded-full w-12 h-10 ml-8">{{ paie.employee.nom }} {{ paie.employee.prenom }}</td>
+                <td class="px-6 py-4 whitespace-nowrap dark:text-gray-300">{{ paie.exercice }}</td>
+                <td class="px-6 py-4 whitespace-nowrap dark:text-gray-300">{{ paie.net_a_payer }} MGA</td>
+                <td class="px-6 py-4 whitespace-nowrap dark:text-gray-300">{{ paie.salaire_base }} MGA</td>
+                <td class="px-6 py-4 whitespace-nowrap dark:text-gray-300">{{ paie.date_debut|date:"F Y"  }}</td>
                 {% if paie.statut == 'P' %}
                 <td class="px-3 py-2 whitespace-nowrap text-cp_primary ">
-                    <p class="bg-green-100 px-2 py-1 rounded-lg text-green-700 ">Complété</p>
+                    <p class="bg-green-100 px-2 py-1 rounded-lg text-green-700 dark:bg-green-900 dark:text-green-300">Complété</p>
                 </td>
                 {% else %}
                 <td class="px-3 py-2 whitespace-nowrap">
-                    <p class="bg-yellow-100 px-2 py-1 rounded-lg text-yellow-700">En attente</p>
+                    <p class="bg-yellow-100 px-2 py-1 rounded-lg text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300">En attente</p>
                 </td>
                 {% endif %}
+                
 
                  <td class="px-6 py-4 whitespace-nowrap flex gap-2">
-                    <a href="{% url 'personnel:view_paie' paie.id %}" class="text-indigo-600 duration-300 hover:scale-150">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M21.1303 9.8531C22.2899 11.0732 22.2899 12.9268 21.1303 14.1469C19.1745 16.2047 15.8155 19 12 19C8.18448 19 4.82549 16.2047 2.86971 14.1469C1.7101 12.9268 1.7101 11.0732 2.86971 9.8531C4.82549 7.79533 8.18448 5 12 5C15.8155 5 19.1745 7.79533 21.1303 9.8531Z" stroke="#16151C" stroke-width="1.5"/>
-                            <circle cx="12" cy="12" r="3" stroke="#16151C" stroke-width="1.5"/>
-                            </svg>
-                                                        
+                    <a href="{% url 'personnel:view_paie' paie.id %}" class="duration-300 hover:scale-150">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="stroke-current text-dark dark:text-white">
+                            <path d="M21.1303 9.8531C22.2899 11.0732 22.2899 12.9268 21.1303 14.1469C19.1745 16.2047 15.8155 19 12 19C8.18448 19 4.82549 16.2047 2.86971 14.1469C1.7101 12.9268 1.7101 11.0732 2.86971 9.8531C4.82549 7.79533 8.18448 5 12 5C15.8155 5 19.1745 7.79533 21.1303 9.8531Z" stroke-width="1.5"/>
+                            <circle cx="12" cy="12" r="3" stroke-width="1.5"/>
+                        </svg>
                     </a>
 
-                    <a href="{% url 'personnel:export_fiche_de_paie_pdf' paie.id %}" class="text-indigo-600 duration-300 hover:scale-150">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <a href="{% url 'personnel:export_fiche_de_paie_pdf' paie.id %}" class="duration-300 hover:scale-150">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="stroke-current text-dark dark:text-white">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M7.46967 11.5303C7.17677 11.2374 7.17678 10.7626 7.46967 10.4697C7.76257 10.1768 8.23744 10.1768 8.53033 10.4697L11.25 13.1893L11.25 1C11.25 0.585786 11.5858 0.25 12 0.25C12.4142 0.25 12.75 0.585786 12.75 1V13.1894L15.4697 10.4697C15.7626 10.1768 16.2374 10.1768 16.5303 10.4697C16.8232 10.7626 16.8232 11.2374 16.5303 11.5303L12.5303 15.5303C12.3896 15.671 12.1989 15.75 12 15.75C11.801 15.75 11.6103 15.671 11.4696 15.5303L7.46967 11.5303ZM6.33981 8.46913C6.59889 8.14594 6.54692 7.67392 6.22373 7.41484C5.90054 7.15576 5.42852 7.20774 5.16944 7.53093C3.96871 9.02878 3.25 10.9315 3.25 13C3.25 17.8325 7.16751 21.75 12 21.75C16.8325 21.75 20.75 17.8325 20.75 13C20.75 10.9315 20.0313 9.02878 18.8306 7.53093C18.5715 7.20774 18.0995 7.15576 17.7763 7.41484C17.4531 7.67392 17.4011 8.14594 17.6602 8.46913C18.6553 9.71047 19.25 11.2848 19.25 13C19.25 17.0041 16.0041 20.25 12 20.25C7.99594 20.25 4.75 17.0041 4.75 13C4.75 11.2848 5.34472 9.71047 6.33981 8.46913Z" fill="#16151C"/>
-                            </svg>
-                            
-                                                        
+                        </svg>
                     </a>
 
-                    <a href="{% url 'personnel:update_paie' paie.id %}" class="text-indigo-600 duration-300 hover:scale-150">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 21H21M13.7844 5.31171C13.7844 5.31171 13.7844 6.94634 15.419 8.58096C17.0537 10.2156 18.6883 10.2156 18.6883 10.2156M7.31963 17.9881L10.7523 17.4977C11.2475 17.4269 11.7064 17.1975 12.06 16.8438L20.3229 8.58096C21.2257 7.67818 21.2257 6.21449 20.3229 5.31171L18.6883 3.67708C17.7855 2.77431 16.3218 2.77431 15.419 3.67708L7.15616 11.94C6.80248 12.2936 6.57305 12.7525 6.50231 13.2477L6.01193 16.6804C5.90295 17.4432 6.5568 18.097 7.31963 17.9881Z" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
-                            </svg>                                
+                    <a href="{% url 'personnel:update_paie' paie.id %}" class="duration-300 hover:scale-150">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="stroke-current text-dark dark:text-white">
+                            <path d="M3 21H21M13.7844 5.31171C13.7844 5.31171 13.7844 6.94634 15.419 8.58096C17.0537 10.2156 18.6883 10.2156 18.6883 10.2156M7.31963 17.9881L10.7523 17.4977C11.2475 17.4269 11.7064 17.1975 12.06 16.8438L20.3229 8.58096C21.2257 7.67818 21.2257 6.21449 20.3229 5.31171L18.6883 3.67708C17.7855 2.77431 16.3218 2.77431 15.419 3.67708L7.15616 11.94C6.80248 12.2936 6.57305 12.7525 6.50231 13.2477L6.01193 16.6804C5.90295 17.4432 6.5568 18.097 7.31963 17.9881Z" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
                     </a>
-                    <a href="{% url 'personnel:delete_paie' paie.id %}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette fiche de paie ?');" class="hover:text-indigo-600 duration-300 hover:scale-150" onclick="event.preventDefault(); document.getElementById('delete-form-{{ paie.id }}').submit();">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M19 9L18.2841 18.3068C18.1238 20.3908 16.386 22 14.2959 22H9.70412C7.61398 22 5.87621 20.3908 5.71591 18.3068L5 9M21 7C18.4021 5.73398 15.3137 5 12 5C8.68635 5 5.59792 5.73398 3 7M10 5V4C10 2.89543 10.8954 2 12 2C13.1046 2 14 2.89543 14 4V5M10 11V17M14 11V17" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
-                            </svg>
-                        </a>
-                            <a href="{% url 'personnel:duplicate_paie' paie.id %}" class="text-indigo-600 duration-300 hover:scale-150">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M16 8V4H4V16H8M8 8H20V20H8V8Z" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <a href="{% url 'personnel:delete_paie' paie.id %}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette fiche de paie ?');" class="duration-300 hover:scale-150">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="stroke-current text-dark dark:text-white">
+                            <path d="M19 9L18.2841 18.3068C18.1238 20.3908 16.386 22 14.2959 22H9.70412C7.61398 22 5.87621 20.3908 5.71591 18.3068L5 9M21 7C18.4021 5.73398 15.3137 5 12 5C8.68635 5 5.59792 5.73398 3 7M10 5V4C10 2.89543 10.8954 2 12 2C13.1046 2 14 2.89543 14 4V5M10 11V17M14 11V17" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </a>
+                            <a href="{% url 'personnel:duplicate_paie' paie.id %}" class="duration-300 hover:scale-150">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="stroke-current text-dark dark:text-white">
+                                    <path d="M16 8V4H4V16H8M8 8H20V20H8V8Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </a>
                                 
@@ -154,29 +151,28 @@ Fiche de Paye
 
         <tfoot>
             <tr>
-                
-                <td colspan="8" class="px-6 py-4 text-xs">
+                <td colspan="8" class="px-6 py-4 text-xs dark:text-gray-300">
                     <div class="flex justify-between">
                         <div class="flex">
-                            <p class="mt-1">Affichage</p>
-                            <p class="ml-2 border-2 text-xs p-2 -mt-1 rounded-lg">
+                            <p class="mt-1 dark:text-gray-300">Affichage</p>
+                            <p class="ml-2 border-2 text-xs p-2 -mt-1 rounded-lg dark:border-gray-700 dark:text-gray-300">
                                 {{ page_obj.paginator.per_page }}  <!-- Affiche le nombre d'éléments par page -->
                             </p>
                         </div>
-                        <span class="text-gray-700 mt-1">
+                        <span class="text-gray-700 mt-1 dark:text-gray-300">
                             Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }} avec {{ total_fiche }} fiches de paie enregistrées.
                         </span>
                         <div class="flex pr-12">
                             <!-- Première page -->
                             <a href="?page=1" class="mx-2">
-                                <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 2v20l8-4h6V2H6z"></path>
                                 </svg>
                             </a>
                             <!-- Lien vers la page précédente -->
                             {% if page_obj.has_previous %}
                                 <a href="?page={{ page_obj.previous_page_number }}" class="mx-2 hover:text-indigo hover:text-xl">
-                                    <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                                     </svg>
                                 </a>
@@ -184,24 +180,22 @@ Fiche de Paye
                             <!-- Lien vers la page suivante -->
                             {% if page_obj.has_next %}
                                 <a href="?page={{ page_obj.next_page_number }}" class="mx-2">
-                                    <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19l7-7-7-7"></path>
                                     </svg>
                                 </a>
                             {% endif %}
                             <!-- Dernière page -->
                             <a href="?page={{ page_obj.paginator.num_pages }}" class="mx-2">
-                                <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"  d="M18 2v20l-8-4H6V2h12z"></path>
                                 </svg>
                             </a>
                         </div>
                     </div>
                 </td>
-                
-                
             </tr>
-           </tfoot>
+        </tfoot>
     </table>
 </div>
 

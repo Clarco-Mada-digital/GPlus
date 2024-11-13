@@ -1849,10 +1849,10 @@ class ManageEmployeePermissionsView(APIView):
         # Filtrer les permissions pour n'inclure que celles qui sont pertinentes
         permissions = Permission.objects.filter(
             codename__in=[
-                'manage_conge',  # Gestion congé
+                'can_manage_conge',  # Gestion congé
                 'add_paie',   # Fiche de paie create
                 'update_paie',   # Fiche de paie modifier
-                'export_paie',   # Fiche de paie exporte
+                'can_export_paie',   # Fiche de paie exporte
                 'add_employee',  # Crée employé
                 'update_employee',  # Modifier employé
                 'add_schedule',  # Crée schedule
@@ -1900,7 +1900,8 @@ class ManageEmployeePermissionsView(APIView):
 
 class PaieViewSet(viewsets.ModelViewSet):
     queryset = Paie.objects.order_by('-date_creation')
-    permission_classes = [PaiePermission]
+    permission_classes = [IsAuthenticated]
+
 
     @action(detail=False, methods=['GET', 'POST'], renderer_classes=[TemplateHTMLRenderer])
     def create_paie_form(self, request, *args, **kwargs):

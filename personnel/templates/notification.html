@@ -10,16 +10,14 @@
 {% block body %}
     
 
-    <div class="max-w-screen mx-auto p-6 bg-white mt-12 rounded-lg shadow-md">
-        <h2 class="text-2xl font-semibold mb-4 mt-4">Notifications</h2>
-        <p class="text-gray-600 mb-6">Toutes les notifications</p>
+<div class="max-w-screen mx-auto p-6 bg-white dark:bg-gray-800 mt-12 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold mb-4 mt-4 dark:text-gray-200">Notifications</h2>
+    <p class="text-gray-600 dark:text-gray-400 mb-6">Toutes les notifications</p>
 
-        <div class="min-h-screen bg-white p-6">
-    
-            <div class="bg-white rounded-lg shadow-md max-w-screen mx-auto -mt-4 p-4 border-2 border-gray500">
- 
-                {% for notif in notifications %}
-                <div class="flex items-center justify-between p-4">
+    <div class="min-h-screen bg-white dark:bg-gray-800 p-6">
+        <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md max-w-screen mx-auto -mt-4 p-4 border-2 border-gray-500 dark:border-gray-600">
+            {% for notif in notifications %}
+            <div class="flex items-center justify-between p-4">
                 {% csrf_token %}
                 <div class="flex items-center space-x-4">
                     {% if not notif.is_read %}
@@ -34,21 +32,18 @@
                     {% endif %}
                     <img src="{{ notif.notification.user.employee.photo.url }}" alt="" class="w-12 h-12 rounded-full">
                     <div>
-                        <h3 class="font-bold">{{ notif.notification.get_type_display }}</h3>
-                        <p class="text-gray-600">{{ notif.notification.message }}</p>
+                        <h3 class="font-bold dark:text-gray-200">{{ notif.notification.get_type_display }}</h3>
+                        <p class="text-gray-600 dark:text-gray-400">{{ notif.notification.message }}</p>
                     </div>
                 </div>
-                <small class="text-gray-300" >
+                <small class="text-gray-300 dark:text-gray-500">
                     Il y a {{ notif.notification.date_created|timesince }}
                 </small>
-                </div>
-                    {% endfor %}
-
-
             </div>
+            {% endfor %}
         </div>
-        </div>
-
+    </div>
+</div>
 {% endblock %}
 
 {% block script %}

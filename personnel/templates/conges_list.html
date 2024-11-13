@@ -37,133 +37,117 @@
 </div>
 
 <!-- Table des congés -->
-<div class="bg-white shadow-md rounded-lg ">
+<div id="conges-table" class="bg-white shadow-md rounded-lg dark:bg-gray-800">
     <table class="table-auto w-full">
-        <thead class=" border-b">
-            <tr class="text-sm ">
-                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"></th>
-                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nom et prenom</th>
-                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Poste</th>
-                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Département</th>
-                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Durée</th>
-                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Responsable des rapports</th>
-                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+        <thead class="border-b dark:border-gray-700">
+            <tr class="text-sm">
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider dark:text-gray-300"></th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider dark:text-gray-300">Nom et prenom</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider dark:text-gray-300">Poste</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider dark:text-gray-300">Département</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider dark:text-gray-300">Durée</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider dark:text-gray-300">Responsable des rapports</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider dark:text-gray-300">Status</th>
             </tr>
         </thead>
 
         <tbody>
             {% for conge in conges %}
-            <tr class="hover:bg-gray-50 transition ease-in-out duration-200" style="font-size: 0.83rem; font-weight: 500;">
+            <tr class="hover:bg-gray-50 transition ease-in-out duration-200 dark:hover:bg-gray-700" style="font-size: 0.83rem; font-weight: 500;">
                 <td class="px-6 py-4">
                     <img src="{{ conge.employee.photo.url }}" alt="{{ conge.employee.pseudo }}" class="rounded-full w-10 h-8">
                 </td>
-
-                <td class="px-6 py-4 whitespace-nowrap">{{ conge.employee.nom }} {{ conge.employee.prenom }}  </td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ conge.employee.poste }} </td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ conge.employee.departement }} </td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ conge.date_debut|date:"j F" }} - {{ conge.date_fin|date:"j F" }} </td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ conge.responsable }} </td>
+                <td class="px-6 py-4 whitespace-nowrap dark:text-gray-300">{{ conge.employee.nom }} {{ conge.employee.prenom }}</td>
+                <td class="px-6 py-4 whitespace-nowrap dark:text-gray-300">{{ conge.employee.poste }}</td>
+                <td class="px-6 py-4 whitespace-nowrap dark:text-gray-300">{{ conge.employee.departement }}</td>
+                <td class="px-6 py-4 whitespace-nowrap dark:text-gray-300">{{ conge.date_debut|date:"j F" }} - {{ conge.date_fin|date:"j F" }}</td>
+                <td class="px-6 py-4 whitespace-nowrap dark:text-gray-300">{{ conge.responsable }}</td>
                 {% if conge.statut == 'accepte' %}
-                <td class="flex px-3 py-2 whitespace-nowrap ">
-                    <p class="bg-green-100 px-2 py-1 rounded-lg text-green-700  text-sm font-bold items-center jutify-center">Accepté</p>
+                <td class="flex px-3 py-2 whitespace-nowrap">
+                    <p class="bg-green-100 px-2 py-1 rounded-lg text-green-700 text-sm font-bold items-center justify-center dark:bg-green-900 dark:text-green-300">Accepté</p>
                 </td>
                 {% endif %}
-
                 {% if conge.statut == 'refuse' %}
-                <td class="flex px-3 py-2 whitespace-nowrap ">
-                    <p class="bg-red/10 px-2 py-1 rounded-lg text-red/70 text-sm font-bold items-center jutify-center">Refusé</p>
+                <td class="flex px-3 py-2 whitespace-nowrap">
+                    <p class="bg-red-100 px-2 py-1 rounded-lg text-red/70 text-sm font-bold items-center justify-center dark:bg-red/30 dark:text-red/70">Refusé</p>
                 </td>
                 {% endif %}
-
-               
                 {% if conge.statut == 'en_attente' %}
-                <td class="flex px-3 py-2 whitespace-nowrap ">
-                    <p class="bg-yellow-100 px-2 py-1 rounded-lg text-yellow-700 text-sm font-bold items-center jutify-center">En attente</p>
+                <td class="flex px-3 py-2 whitespace-nowrap">
+                    <p class="bg-yellow-100 px-2 py-1 rounded-lg text-yellow-700 text-sm font-bold items-center justify-center dark:bg-yellow-900 dark:text-yellow-300">En attente</p>
                 </td>
-               
                 {% endif %}
-
-                
             </tr>
             {% endfor %}
         </tbody>
 
         <tfoot>
             <tr>
-                <td colspan="7" class="px-6 py-4 text-xs ">
-                    <div class="flex justify-between ">
+                <td colspan="7" class="px-6 py-4 text-xs dark:bg-gray-800 dark:text-gray-300">
+                    <div class="flex justify-between">
                         <div class="flex">
                             <p class="mt-1">
                                 Affichage 
                             </p>
                 
-                            <p class=" ml-2 border-2 text-xs p-2 -mt-1 rounded-lg">
+                            <p class="ml-2 border-2 text-xs p-2 -mt-1 rounded-lg dark:border-gray-600">
                                 10
                             </p>
                         </div>
-                        <span class="text-gray-700 mt-1">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }} avec {{ total_conges }} congés enregistrés.</span>
+                        <span class="text-gray-700 mt-1 dark:text-gray-400">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }} avec {{ total_conges }} congés enregistrés.</span>
                         <div class="flex justify-center">
                             <!-- Première page -->
-                            <a href="?page=1" class="mx-2">
-                                <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <a href="?page=1" class="mx-2 dark:text-gray-400">
+                                <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150 dark:hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 2v20l8-4h6V2H6z"></path>
-                                  </svg>
-                                  
+                                </svg>
                             </a>
                             
                             <!-- Lien vers la page précédente (affiché seulement s'il y a une page précédente) -->
                             {% if page_obj.has_previous %}
-                                <a href="?page={{ page_obj.previous_page_number }}" class="mx-2 hover:text-indigo hover:text-xl ">
-                                    <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <a href="?page={{ page_obj.previous_page_number }}" class="mx-2 hover:text-indigo hover:text-xl dark:text-gray-400">
+                                    <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150 dark:hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                                      </svg>
-                                  
-                                      
+                                    </svg>
                                 </a>
                             {% endif %}
                     
                             <!-- Lien vers la page suivante (affiché seulement s'il y a une page suivante) -->
                             {% if page_obj.has_next %}
-                                <a href="?page={{ page_obj.next_page_number }}" class="mx-2">
-                                   
-                                    <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <a href="?page={{ page_obj.next_page_number }}" class="mx-2 dark:text-gray-400">
+                                    <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150 dark:hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19l7-7-7-7"></path>
-                                      </svg>
-                                      
-                                      
+                                    </svg>
                                 </a>
                             {% endif %}
                             
                             <!-- Dernière page -->
-                            <a href="?page={{ paginator.num_pages }}" class="mx-2">
-                                
-                                <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <a href="?page={{ paginator.num_pages }}" class="mx-2 dark:text-gray-400">
+                                <svg class="w-6 h-6 hover:text-indigo-700 duration-300 hover:scale-150 dark:hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 2v20l-8-4H6V2h12z"></path>
-                                  </svg>
-                                  
+                                </svg>
                             </a>
-                            
                         </div>
                     </div>
                 </td>
             </tr>
-           </tfoot>
+        </tfoot>
 
     </table>
 </div>
 
 <!-- Pop-up de filtrage -->
 <div id="filter-popup" class="hidden fixed inset-0 backdrop-blur-sm bg-black bg-opacity-50 z-40 flex justify-center items-center">
-    <div class="bg-white p-4 rounded-md shadow-lg w-96">
-        <h2 class="text-lg font-bold mb-2">Filtrer les congés</h2>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-md shadow-lg w-96">
+        <h2 class="text-lg font-bold mb-2 dark:text-white">Filtrer les congés</h2>
 
         <form id="filter-form" method="GET">
             <!-- Type de congé -->
             <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-2">Type de congé</label>
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Type de congé</label>
                 <div class="grid grid-cols-3 gap-2">
                     {% for choice in types_conge %}
-                    <label class="flex items-center text-xs">
+                    <label class="flex items-center text-xs dark:text-gray-300">
                         <input type="checkbox" name="type" value="{{ choice.0 }}"
                             class="form-checkbox text-purple-600 rounded-md mr-2"> {{ choice.1 }}
                     </label>
@@ -173,10 +157,10 @@
 
             <!-- Statut du congé -->
             <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-2">Statut</label>
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Statut</label>
                 <div class="grid grid-cols-3 gap-2">
                     {% for statut in statuts %}
-                    <label class="flex items-center text-xs">
+                    <label class="flex items-center text-xs dark:text-gray-300">
                         <input type="checkbox" name="statut" value="{{ statut.0 }}"
                             class="form-checkbox text-purple-600 rounded-md mr-2"> {{ statut.1 }}
                     </label>
@@ -186,10 +170,10 @@
 
             <!-- Poste de l'employé -->
             <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-2">Poste</label>
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Poste</label>
                 <div class="grid grid-cols-2 gap-2">
                     {% for poste in postes %}
-                    <label class="flex items-center text-xs">
+                    <label class="flex items-center text-xs dark:text-gray-300">
                         <input type="checkbox" name="departement" value="{{ poste.id }}" class="form-checkbox text-purple-600 rounded-md mr-2">
                         {{ poste.nom }}
                     </label>                        
@@ -198,10 +182,10 @@
             </div>
             <!-- Département de l'employé -->
             <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-2">Département</label>
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Département</label>
                 <div class="grid grid-cols-2 gap-2">
                     {% for departement in departements %}
-                    <label class="flex items-center text-xs">
+                    <label class="flex items-center text-xs dark:text-gray-300">
                         <input type="checkbox" name="departement" value="{{ departement.id }}" class="form-checkbox text-purple-600 rounded-md mr-2">
                         {{ departement.nom }}
                     </label>                        
@@ -211,8 +195,8 @@
 
             <!-- Employé -->
             <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-2">Employé</label>
-                <select name="employee" class="border border-gray-300 rounded-md p-2 w-full">
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Employé</label>
+                <select name="employee" class="border border-gray-300 dark:border-gray-600 rounded-md p-2 w-full dark:bg-gray-700 dark:text-gray-300">
                     <option value="">Sélectionnez un employé</option>
                     {% for employee in employees %}
                     <option value="{{ employee.id }}">{{ employee.nom }} {{ employee.prenom }}</option>
@@ -220,11 +204,9 @@
                 </select>
             </div>
 
-            
-
             <div class="flex justify-between font-medium">
                 <button type="button" onclick="togglePopup()"
-                    class="mr-2 bg-gray-200 text-black px-10 p-2 rounded-lg border">Retour</button>
+                    class="mr-2 bg-gray-200 dark:bg-gray-600 text-black dark:text-white px-10 p-2 rounded-lg border">Retour</button>
                 <button type="submit" class="bg-cp_primary text-white px-10 p-2 rounded-lg border">Appliquer</button>
             </div>
         </form>

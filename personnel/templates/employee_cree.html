@@ -5,51 +5,53 @@
 
 
 {% block body %}  
-    <div class="container mx-auto mt-20">
+    <div class="container mx-auto mt-20 dark:bg-gray-900">
         <div class="">
 
-            <h2 class="text-2xl font-bold mt-20 ">Ajouter un nouveau salarié</h2>
-            <p class="text-xs font-semibold text-gray-400">Tout les salariés > Ajouter un nouveau salarié</p>
+            <h2 class="text-2xl font-bold mt-20 dark:text-white">Ajouter un nouveau salarié</h2>
+            <p class="text-xs font-semibold text-gray-400 dark:text-gray-300">Tout les salariés > Ajouter un nouveau salarié</p>
           
           </div>        
         <!-- Formulaire de création d'employé -->
        
-        <div class="min-h-screen bg-white p-6">
-            <div class="bg-white rounded-lg shadow-md max-w-6xl mx-auto p-8 border-2 border-gray500">
+        <div class="min-h-screen bg-white p-6 dark:bg-gray-900">
+            <div class="bg-white rounded-lg shadow-md max-w-6xl mx-auto p-8 border-2 border-gray500 dark:bg-gray-800 dark:border-gray-700">
               
                 <div class="flex space-x-8 mb-4">
-                <button id="step1Nav" class="text-gray-600 font-semibold flex gap-2 text-center justify-between" >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11ZM12 21C15.866 21 19 19.2091 19 17C19 14.7909 15.866 13 12 13C8.13401 13 5 14.7909 5 17C5 19.2091 8.13401 21 12 21Z" fill="#000000"/>
-                        </svg>
+                <button id="step1Nav" class="text-gray-600 font-semibold flex gap-2 text-center justify-between dark:text-gray-300" >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-black dark:text-white">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11ZM12 21C15.866 21 19 19.2091 19 17C19 14.7909 15.866 13 12 13C8.13401 13 5 14.7909 5 17C5 19.2091 8.13401 21 12 21Z" fill="currentColor"/>
+                    </svg>
+                        
                         
                     <p class="mt-1"> Informations personnelles </p>
                 </button>
                 
-                <button id="step2Nav" class="text-gray-600 font-semibold flex gap-2 text-center justify-between" >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 6V5C8 3.34315 9.34315 2 11 2H13C14.6569 2 16 3.34315 16 5V6M2 10.3475C2 10.3475 5.11804 12.4244 9.97767 12.9109M22 10.3475C22 10.3475 18.882 12.4244 14.0223 12.9109M6 22H18C20.2091 22 22 20.2091 22 18V10C22 7.79086 20.2091 6 18 6H6C3.79086 6 2 7.79086 2 10V18C2 20.2091 3.79086 22 6 22Z" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M14 12.1602V13.1602C14 13.1702 14 13.1702 14 13.1802C14 14.2702 13.99 15.1602 12 15.1602C10.02 15.1602 10 14.2802 10 13.1902V12.1602C10 11.1602 10 11.1602 11 11.1602H13C14 11.1602 14 11.1602 14 12.1602Z" stroke="#16151C" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                <button id="step2Nav" class="text-gray-600 font-semibold flex gap-2 text-center justify-between dark:text-gray-300" >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-black dark:text-white">
+                        <path d="M8 6V5C8 3.34315 9.34315 2 11 2H13C14.6569 2 16 3.34315 16 5V6M2 10.3475C2 10.3475 5.11804 12.4244 9.97767 12.9109M22 10.3475C22 10.3475 18.882 12.4244 14.0223 12.9109M6 22H18C20.2091 22 22 20.2091 22 18V10C22 7.79086 20.2091 6 18 6H6C3.79086 6 2 7.79086 2 10V18C2 20.2091 3.79086 22 6 22Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M14 12.1602V13.1602C14 13.1702 14 13.1702 14 13.1802C14 14.2702 13.99 15.1602 12 15.1602C10.02 15.1602 10 14.2802 10 13.1902V12.1602C10 11.1602 10 11.1602 11 11.1602H13C14 11.1602 14 11.1602 14 12.1602Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                        
                         
                         
                     <p class="mt-1"> Informations professionnelles </p>
                 </button>
 
-                <button id="step3Nav" class="text-gray-600 font-semibold flex gap-2 text-center justify-between"">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 6C4 3.79086 5.79086 2 8 2H15.3431C16.404 2 17.4214 2.42143 18.1716 3.17157L20.8284 5.82843C21.5786 6.57857 22 7.59599 22 8.65685V18C22 20.2091 20.2091 22 18 22H8C5.79086 22 4 20.2091 4 18V6Z" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
-                        <path d="M9 7L17 7" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M9 12H17" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M9 17H13" stroke="#16151C" stroke-width="1.5" stroke-linecap="round"/>
-                        </svg>
+                <button id="step3Nav" class="text-gray-600 font-semibold flex gap-2 text-center justify-between dark:text-gray-300">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-black dark:text-white">
+                        <path d="M4 6C4 3.79086 5.79086 2 8 2H15.3431C16.404 2 17.4214 2.42143 18.1716 3.17157L20.8284 5.82843C21.5786 6.57857 22 7.59599 22 8.65685V18C22 20.2091 20.2091 22 18 22H8C5.79086 22 4 20.2091 4 18V6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                        <path d="M9 7L17 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M9 12H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M9 17H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
                         <p class="mt-1">Documents </p>
 
                 </button>
-                <button id="step4Nav" class="text-gray-600 font-semibold flex gap-2 text-center justify-between"">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M16 8H8M16 8C18.2091 8 20 9.79086 20 12V18C20 20.2091 18.2091 22 16 22H8C5.79086 22 4 20.2091 4 18V12C4 9.79086 5.79086 8 8 8M16 8V6C16 3.79086 14.2091 2 12 2C9.79086 2 8 3.79086 8 6V8M14 15C14 16.1046 13.1046 17 12 17C10.8954 17 10 16.1046 10 15C10 13.8954 10.8954 13 12 13C13.1046 13 14 13.8954 14 15Z" stroke="#16151C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                <button id="step4Nav" class="text-gray-600 font-semibold flex gap-2 text-center justify-between dark:text-gray-300">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-black dark:text-white">
+                        <path d="M16 8H8M16 8C18.2091 8 20 9.79086 20 12V18C20 20.2091 18.2091 22 16 22H8C5.79086 22 4 20.2091 4 18V12C4 9.79086 5.79086 8 8 8M16 8V6C16 3.79086 14.2091 2 12 2C9.79086 2 8 3.79086 8 6V8M14 15C14 16.1046 13.1046 17 12 17C10.8954 17 10 16.1046 10 15C10 13.8954 10.8954 13 12 13C13.1046 13 14 13.8954 14 15Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                         <p class="mt-1">Accès au compte </p>
                 </button>
               </div>
@@ -65,10 +67,10 @@
                                         <!-- Input file caché (initialement visible) -->
                                         <label id="fileUploadLabel" for="fileUpload" class="cursor-pointer flex items-center ml-4 space-x-2 text-sm text-gray-500 py-2 px-4
                                             rounded-lg bg-gray-100 text-indigo-700 hover:bg-indigo-100 border border-gray-300
-                                            font-semibold">
+                                            font-semibold dark:bg-gray-700 dark:text-indigo-300 dark:border-gray-600">
                                             <!-- Icône de caméra SVG -->
                                             
-                                            <svg width="24" height="24" class="h-12 w-12 text-indigo-700 m-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <svg width="24" height="24" class="h-12 w-12 text-indigo-700 m-8 dark:text-indigo-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M15 13.5C15 15.1569 13.6569 16.5 12 16.5C10.3431 16.5 9 15.1569 9 13.5C9 11.8431 10.3431 10.5 12 10.5C13.6569 10.5 15 11.8431 15 13.5Z" stroke="#16151C" stroke-width="1.5"/>
                                                 <circle cx="12" cy="7" r="1" fill="#16151C"/>
                                                 <path d="M21 15.5V11.5C21 8.73858 18.7614 6.5 16 6.5H15.874C15.4299 4.77477 13.8638 3.5 12 3.5C10.1362 3.5 8.57006 4.77477 8.12602 6.5H8C5.23858 6.5 3 8.73858 3 11.5V15.5C3 18.2614 5.23858 20.5 8 20.5H16C18.7614 20.5 21 18.2614 21 15.5Z" stroke="#16151C" stroke-width="1.5" stroke-linejoin="round"/>
@@ -79,7 +81,7 @@
                                         <input id="fileUpload" type="file" accept="image/*" name="photo" onchange="previewImage(event)" class="hidden">
                                 
                                         <!-- Aperçu de l'image avec un bouton pour supprimer l'image -->
-                                        <div id="previewContainer" class="hidden relative w-[145.78px] h-[129.79px] ml-8 bg-gray-100 rounded-lg overflow-hidden">
+                                        <div id="previewContainer" class="hidden relative w-[145.78px] h-[129.79px] ml-8 bg-gray-100 rounded-lg overflow-hidden dark:bg-gray-700">
                                             <img id="imagePreview" class="w-full h-full object-cover" alt="Preview">
                                             <!-- Bouton pour changer l'image (croix rouge) -->
                                             <button id="removeImageButton" onclick="removeImage(event)" class="absolute top-0 right-0 mt-1 mr-1 text-red-600">
@@ -91,43 +93,41 @@
                                     </div>
                                 </div>
 
-                                <div class="text-sm text-gray-500 mt-2Q4">
+                                <div class="text-sm text-gray-500 mt-2Q4 dark:text-gray-300">
                                     Les champs marqués d'un <span class=" text-2xl text-red">*</span> sont obligatoires
                                 </div>
                         
                             <!-- Nom -->
-                            <div class="mb-4">
-                                <input type="text" name="nom" placeholder="Nom *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <div class="mb-4 dark:bg-gray-800">
+                                <input type="text" name="nom" placeholder="Nom *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" required>
                             </div>
                     
                             <!-- Prénom -->
-                            <div class="mb-4">
-                                <input type="text" name="prenom" placeholder="Prénom" class="w-full px-4 py-2 border  border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <div class="mb-4 dark:bg-gray-800">
+                                <input type="text" name="prenom" placeholder="Prénom" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600">
                             </div>
 
                             <!-- Numéro de téléphone -->
-                            <div class="mb-4">
-                                <input type="text" name="numero_telephone" placeholder="Numéro de téléphone *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <div class="mb-4 dark:bg-gray-800">
+                                <input type="text" name="numero_telephone" placeholder="Numéro de téléphone *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" required>
                             </div>
 
                             <!-- Email -->
-                            <div class="mb-4">
-                                <input type="email" name="email" placeholder="Adresse Email *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <div class="mb-4 dark:bg-gray-800">
+                                <input type="email" name="email" placeholder="Adresse Email *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" required>
 
                             </div>
 
                             <!-- Date de naissance -->
-                            <div class="relative mb-4  ">
+                            <div class="relative mb-4 dark:bg-gray-800">
                                 <input type="date" id="date_naissance" name="date_naissance" 
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer" 
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer dark:bg-gray-700 dark:border-gray-600" 
                                        required>
-                                       <span id="datePlaceholder" class="absolute t-1 left-4 top-2 ">Date de naissance <span class="text-red-500">*</span></span>
+                                       <span id="datePlaceholder" class="absolute t-1 left-4 top-2 dark:text-gray-200">Date de naissance *</span>
                             </div>
-                            
-
                             <!-- etat civil -->
-                            <div class="mb-4">
-                                <select name="statut_matrimonial" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <div class="mb-4 dark:bg-gray-800">
+                                <select name="statut_matrimonial" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" required>
                                     <option value="" disabled selected>Etat civil *</option>
                                     {% for etat in statut_matrimonials %}
                                     <option value="{{ etat.0 }}">{{ etat.1 }}</option>
@@ -136,8 +136,8 @@
                             </div>
 
                             <!-- sexe -->
-                            <div class="mb-4">
-                                <select name="sexe" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <div class="mb-4 dark:bg-gray-800">
+                                <select name="sexe" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600">
                                     <option value="" disabled selected> Sexe * </option>
                                     {% for sex in sexes %}
                                     <option value="{{ sex.0 }}">{{ sex.1 }}</option>
@@ -149,49 +149,46 @@
                             
 
                             <!-- Nationalité -->
-                            <div class="mb-4">
-                                <input type="text" name="nationalite" placeholder="Nationalité *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <div class="mb-4 dark:bg-gray-800">
+                                <input type="text" name="nationalite" placeholder="Nationalité *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" required>
                             </div>
                     
                             <!-- Adresse -->
-                            <div class="mb-4">
-                                <input type="text" name="adresse" placeholder="Adresse *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <div class="mb-4 dark:bg-gray-800">
+                                <input type="text" name="adresse" placeholder="Adresse *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" required>
                             </div>
                     
 
                             <!-- Ville -->
-                            <div class="mb-4">
-                                <input type="text" name="ville" placeholder="Ville *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <div class="mb-4 dark:bg-gray-800">
+                                <input type="text" name="ville" placeholder="Ville *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" required>
                             </div>
                             
                             <!-- Pays -->
-                            <div class="mb-4">
-                                <input type="text" name="pays" placeholder="Pays *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <div class="mb-4 dark:bg-gray-800">
+                                <input type="text" name="pays" placeholder="Pays *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" required>
                             </div>
 
                             <!-- Code postale -->
-                            <div class="mb-4">
-                                <input type="text" name="code_postal" placeholder="Code postale *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <div class="mb-4 dark:bg-gray-800">
+                                <input type="text" name="code_postal" placeholder="Code postale *" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" required>
                             </div>
 
                              <!-- Maladie -->
-                             <div class="mb-4">
-                                <input type="text" name="maladie" placeholder="Maladie" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                             <div class="mb-4 dark:bg-gray-800">
+                                <input type="text" name="maladie" placeholder="Maladie" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600">
                             </div>
 
                             <!-- Groupe Sanguin -->
-                            <div class="mb-4">
-                                <input type="text" name="groupe_sanguin" placeholder="Groupe Sanguin" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <div class="mb-4 dark:bg-gray-800">
+                                <input type="text" name="groupe_sanguin" placeholder="Groupe Sanguin" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600">
                             </div>
 
 
-                              <!-- Vide pour aliigner les autres -->
-                              <div>
-
-                              </div>
-                <div class="flex justify-end gap-6">
-                    <a href="javascript:history.back()" class="py-2 px-4 bg-white-100 text-black border border-gray rounded-md">Annuler</a>
-                    <button type="button" class="btn-next py-2 px-4 bg-cp_primary text-white rounded-md">Suivant</button>
+                             
+                <div class="flex col-span-2 justify-end gap-6 dark:bg-gray-800">
+                    <a href="javascript:history.back()" class="py-2 px-4 bg-white-100 text-black border border-gray rounded-md dark:bg-gray-700 dark:text-white">Annuler</a>
+                    <button type="button" class="btn-next py-2 px-4 bg-cp_primary text-white rounded-md dark:bg-cp_secondary">Suivant</button>
                   </div>
                         </div>
 
@@ -199,7 +196,7 @@
             <div class="hidden grid grid-cols-2 gap-6" id="step2">
                          <!-- Type de salarié -->
                 <div class="mb-4">
-                    <select name="type_salarie" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <select name="type_salarie" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
                         <option value="" disabled selected>Sélectionner le type de salarié *</option>
                         {% for type in type_choices %}
                         <option value="{{ type.0 }}">{{ type.1 }}</option>
@@ -209,7 +206,7 @@
                 
                 <!-- Département -->
                 <div class="mb-4">
-                    <select name="departement" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="departement" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500  dark:bg-gray-700 dark:border-gray-600">
                         <option value="" disabled selected>Sélectionner un département *</option>
                         {% for departement in departements %}
                         <option value="{{ departement.id }}">{{ departement.nom }}</option>
@@ -219,7 +216,7 @@
                
                  <!-- Contrat -->
                  <div class="mb-4">
-                    <select name="type_contrat" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="type_contrat" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500  dark:bg-gray-700 dark:border-gray-600">
                         <option value="" disabled selected>Sélectionner le type de contrat *</option>
                         {% for contrat in contrat_choices %}
                         <option value="{{ contrat.0 }}">{{ contrat.1 }}</option>
@@ -229,7 +226,7 @@
 
                  <!-- Poste -->
                  <div class="mb-4">
-                    <select name="poste" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="poste" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500  dark:bg-gray-700 dark:border-gray-600">
                         <option value="" disabled selected>Sélectionner un poste *</option>
                         {% for poste in postes %}
                         <option value="{{ poste.id }}">{{ poste.nom }}</option>
@@ -247,7 +244,7 @@
           
                 <!-- Compétence -->
                 <div class="mb-4">
-                    <select name="competence" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="competence" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500  dark:bg-gray-700 dark:border-gray-600">
                         <option value="" disabled selected>Sélectionner un compétence *</option>
                         {% for competence in competences %}
                         <option value="{{ competence.id }}">{{ competence.nom }}</option>
@@ -258,7 +255,7 @@
                
 
                 <div class="mb-4">
-                    <input type="number" id="salaire_base" name="salaire_base" placeholder="Salaire de base" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="0">
+                    <input type="number" id="salaire_base" name="salaire_base" placeholder="Salaire de base" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500  dark:bg-gray-700 dark:border-gray-600" value="0">
                 </div>
                   <!-- Bouton de soumission -->
                   <div>

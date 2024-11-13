@@ -7,12 +7,12 @@ from accounts.models import CustomUser
 @receiver(post_save, sender=Employee)
 def create_user_for_employe(sender, instance, created, **kwargs):
     if created:
-        # Création d'un utilisateur avec un mot de passe aléatoire sécurisé
+        # Création d'un utilisateur avec un mot de passe sécurisé
         user = CustomUser.objects.create_user(
             photo=instance.photo,
             username=instance.email.split('@')[0],  # Utiliser la partie avant '@' de l'email comme nom d'utilisateur
             email=instance.email,
-            password='123456789',
+            password='123456789',  # Vous pouvez utiliser un mot de passe généré aléatoirement ici
         )
 
         # Associer l'utilisateur avec l'employé sans sauvegarder immédiatement (évite le double save)
@@ -58,4 +58,11 @@ def create_user_for_employe(sender, instance, created, **kwargs):
         UserSettings.objects.create(user=user)
 
         # Sauvegarder la relation entre l'employé et l'utilisateur
-        instance.save()
+        instance.save() 
+
+    else:
+        # Vérifier si l'email de l'employé a été modifié pour synchroniser l'email de l'utilisateur
+        if instance.user and instance.user.email != instance.email:
+            instance.user.email = instance.email
+            instance.user.save()
+            print(f"Email synchronized: Employee's email {instance.email} updated in user {instance.user.username}.")

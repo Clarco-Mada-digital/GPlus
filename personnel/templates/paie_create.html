@@ -8,11 +8,11 @@
 {% endblock %}
 
 {% block body %}  
-    <div class="container mx-auto mt-20">
+    <div class="container mx-auto mt-20 dark:bg-gray-900">
         <div class="">
 
-            <h2 class="text-2xl font-bold mt-20 ">Fiche de Paie</h2>
-            <p class="text-xs font-semibold text-gray-400">Nouvelle fiche de paie</p>
+            <h2 class="text-2xl font-bold mt-20 dark:text-white">Fiche de Paie</h2>
+            <p class="text-xs font-semibold text-gray-400 dark:text-gray-400">Nouvelle fiche de paie</p>
           
                     {% if messages %}
             <div>
@@ -33,7 +33,7 @@
             <!-- Employé -->
             <div>
                 <label for="employee" class="block text-gray-700 font-semibold">Employé:</label>
-                <select id="employee" name="employee_id" class="mt-1 block w-1/2 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500" onchange="remplirSalaire()">
+                <select id="employee" name="employee_id" class="mt-1 block w-1/2 py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 dark:text-white">
                     <option value="" disabled {% if not paie %}selected{% endif %}>-------------</option>
                     {% for employee in employees %}
                     <option value="{{ employee.id }}" data-salaire="{{ employee.salaire_base }}" {% if paie and paie.employee_id == employee.id %}selected{% endif %}>
@@ -48,7 +48,7 @@
             <div class="flex-1">
                 <label for="start_date" class="block text-gray-700 font-semibold">Date de Début:</label>
                 <input type="date" id="start_date" name="date_debut" 
-                       class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500" 
+                       class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white" 
                        required 
                        value="{% if paie.date_debut %}{{ paie.date_debut|date:'Y-m-d' }}{% endif %}">
             </div>
@@ -56,7 +56,7 @@
             <div class="flex-1">
                 <label for="end_date" class="block text-gray-700 font-semibold">Date de Fin:</label>
                 <input type="date" id="end_date" name="date_fin" 
-                       class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500" 
+                       class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white" 
                        required 
                        value="{% if paie.date_fin %}{{ paie.date_fin|date:'Y-m-d' }}{% endif %}">
             </div>
@@ -65,7 +65,7 @@
             <!-- Statut -->
             <div class="">
                 <label for="statut" class="block text-gray-700 font-semibold">Statut:</label>
-                <select id="statut" name="statut" class="mt-1 block w-1/2 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                <select id="statut" name="statut" class="mt-1 block w-1/2 py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 dark:text-white">
                     <option value="" disabled {% if not paie %}selected{% endif %}>-------------</option>
                     <option value="P" {% if paie and paie.statut == 'P' %}selected{% endif %}>Payé</option>
                     <option value="E" {% if paie and paie.statut == 'E' %}selected{% endif %}>En attente</option>
@@ -76,7 +76,7 @@
             <div class="mt-8 space-y-6 col-span-2">
                 <div class="flex items-center justify-between space-x-4">
                     <label for="salaire_base" class="block text-gray-700 font-semibold">Salaire de base :</label>
-                    <input type="number" id="salaire_base" name="salaire_base" class="w-2/3 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" readonly required value="{{ paie.salaire_base|default:'' }}">
+                    <input type="number" id="salaire_base" name="salaire_base" class="w-2/3 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white" step="0.01" readonly required value="{{ paie.salaire_base|default:'' }}">
                 </div>
             </div>
 
@@ -85,7 +85,7 @@
                     {% if paie.indemnite_stage %}
                     <div class="flex items-center justify-between space-x-4 indemnity-confirmed mt-2">  
                         <label for="indemnite_stage" class="block text-gray-700 font-semibold">Indemnité Stage :</label>
-                        <input type="number" id="indemnite_stage" name="indemnite_stage" class="w-1/2 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" required value="{{ paie.indemnite_stage }}">
+                        <input type="number" id="indemnite_stage" name="indemnite_stage" class="w-1/2 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white" step="0.01" required value="{{ paie.indemnite_stage }}">
                   
                         <button type="button" class="bg-red/75 text-white px-4 py-2 rounded-full" onclick="removeIndemnite(this)">Supprimer</button>
                     </div>
@@ -93,7 +93,7 @@
                         {% if paie.indemnite_transport %}
                     <div class="flex items-center justify-between space-x-4 indemnity-confirmed mt-2">  
                         <label for="indemnite_transport" class="block text-gray-700 font-semibold">Indemnité de Transport :</label>
-                        <input type="number" id="indemnite_transport" name="indemnite_transport" class="w-1/2 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" required value="{{ paie.indemnite_transport }}">
+                        <input type="number" id="indemnite_transport" name="indemnite_transport" class="w-1/2 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white" step="0.01" required value="{{ paie.indemnite_transport }}">
                   
                         <button type="button" class="bg-red/75 text-white px-4 py-2 rounded-full" onclick="removeIndemnite(this)">Supprimer</button>
                     </div>
@@ -101,7 +101,7 @@
                         {% if paie.indemnite_communication %}
                     <div class="flex items-center justify-between space-x-4 indemnity-confirmed mt-2">  
                         <label for="indemnite_communication" class="block text-gray-700 font-semibold">Indemnité de Communication :</label>
-                        <input type="number" id="indemnite_communication" name="indemnite_communication" class="w-1/2 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" required value="{{ paie.indemnite_communication }}">
+                        <input type="number" id="indemnite_communication" name="indemnite_communication" class="w-1/2 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white" step="0.01" required value="{{ paie.indemnite_communication }}">
                   
                         <button type="button" class="bg-red/75 text-white px-4 py-2 rounded-full" onclick="removeIndemnite(this)">Supprimer</button>
                     </div>
@@ -120,18 +120,18 @@
                 {% for prime in paie.primes.all %}
                 <div class="prime-item flex items-center space-x-8 ">
                     <label for="prime_nom_{{ forloop.counter }}" class="block text-gray-700 font-semibold">Nom de la Prime :</label>
-                    <input type="text" id="prime_nom_{{ forloop.counter }}" name="prime_nom[]" class="w-1/3 border border-gray-300 rounded-lg p-2" required value="{{ prime.nom }}">
+                    <input type="text" id="prime_nom_{{ forloop.counter }}" name="prime_nom[]" class="w-1/3 border border-gray-300 dark:border-gray-600 rounded-lg p-2 dark:bg-gray-700 dark:text-white" required value="{{ prime.nom }}">
                     <label for="prime_montant_{{ forloop.counter }}" class="block text-gray-700 font-semibold">Montant :</label>
-                    <input type="number" step="0.01" id="prime_montant_{{ forloop.counter }}" name="prime_montant[]" class="w-2/3 border border-gray-300 rounded-lg p-2 text-right" required value="{{ prime.montant }}">
+                    <input type="number" step="0.01" id="prime_montant_{{ forloop.counter }}" name="prime_montant[]" class="w-2/3 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-right dark:bg-gray-700 dark:text-white" required value="{{ prime.montant }}">
                     <button type="button" class="bg-red/75 text-white px-4 py-2 rounded-full" onclick="removePrime(this)">Supprimer</button>
                 </div>
                 {% empty %}
                 <!-- Si aucune prime initiale, ajoute un bloc vide -->
                 <div class="prime-item flex items-center space-x-8">
                     <label for="prime_nom_1" class="block text-gray-700 font-semibold">Nom de la Prime :</label>
-                    <input type="text" id="prime_nom_1" name="prime_nom[]" class="w-1/3 border border-gray-300 rounded-lg p-2" required>
+                    <input type="text" id="prime_nom_1" name="prime_nom[]" class="w-1/3 border border-gray-300 dark:border-gray-600 rounded-lg p-2 dark:bg-gray-700 dark:text-white" required>
                     <label for="prime_montant_1" class="block text-gray-700 font-semibold">Montant :</label>
-                    <input type="number" step="0.01" id="prime_montant_1" name="prime_montant[]" class="w-2/3 border border-gray-300 rounded-lg p-2 text-right" required>
+                    <input type="number" step="0.01" id="prime_montant_1" name="prime_montant[]" class="w-2/3 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-right dark:bg-gray-700 dark:text-white" required>
                     <button type="button" class="bg-red/75 text-white px-4 py-2 rounded-full" onclick="removePrime(this)">Supprimer</button>
                 </div>
                 {% endfor %}
@@ -143,8 +143,8 @@
 
             <!-- Salaire net -->
             <div class="flex items-center gap-2">
-                <p class="text-xl font-bold">Salaire net :</p>
-                <input type="number" id="net_a_payer" name="net_a_payer" class="w-2/3 border border-gray-300 rounded-lg p-2 text-black focus:outline-none focus:ring-2 focus:ring-purple-500" required value="{{ paie.net_a_payer|default:'' }}">
+                <p class="text-xl font-bold dark:text-white">Salaire net :</p>
+                <input type="number" id="net_a_payer" name="net_a_payer" class="w-2/3 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700" required value="{{ paie.net_a_payer|default:'' }}">
                 <p class="text-xl font-bold text-gray-400 pl-4 pr-4 pt-2 pb-2"> MGA</p>
             </div>
 
@@ -249,9 +249,9 @@ document.addEventListener("DOMContentLoaded", function() {
         
         primeItem.innerHTML = `
             <label for="prime_nom_${primeCount}" class="block text-gray-700 font-semibold">Nom de la Prime :</label>
-            <input type="text" id="prime_nom_${primeCount}" name="prime_nom[]" class="w-1/3 border border-gray-300 rounded-lg p-2" required>
+            <input type="text" id="prime_nom_${primeCount}" name="prime_nom[]" class="w-1/3 border border-gray-300 dark:border-gray-600 rounded-lg p-2 dark:bg-gray-700 dark:text-white" required>
             <label for="prime_montant_${primeCount}" class="block text-gray-700 font-semibold">Montant :</label>
-            <input type="number" step="0.01" id="prime_montant_${primeCount}" name="prime_montant[]" class="w-2/3 border border-gray-300 rounded-lg p-2 text-right" required>
+            <input type="number" step="0.01" id="prime_montant_${primeCount}" name="prime_montant[]" class="w-2/3 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-right dark:bg-gray-700 dark:text-white" required>
             <button type="button" class="bg-red/75 text-white px-4 py-2 rounded-full" onclick="removePrime(this)">Supprimer</button>
         `;
         
@@ -287,7 +287,7 @@ function removePrime(button) {
         let choixIndemnite = `
             <div class="flex items-center justify-between space-x-4 indemnity-item mt-4">
                 <label for="choix_indemnite" class="block text-gray-700 font-semibold">Choisir une indemnité :</label>
-                <select id="choix_indemnite" class="w-1/2 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <select id="choix_indemnite" class="w-1/2 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white">
                     <option value="" disabled selected>-------------</option>
                     ${!indemnitesDejaAjoutees.includes('transport') ? '<option value="transport">Indemnité Transport</option>' : ''}
                     ${!indemnitesDejaAjoutees.includes('communication') ? '<option value="communication">Indemnité Communication</option>' : ''}
@@ -316,13 +316,13 @@ function validerIndemnite(button) {
 
     if (indemniteChoisie === 'transport') {
         inputHTML = `<label for="indemnite_transport" class="block text-gray-700 font-semibold">Indemnité Transport :</label>
-            <input type="number" id="indemnite_transport" name="indemnite_transport" class="w-1/2 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" required>`;
+            <input type="number" id="indemnite_transport" name="indemnite_transport" class="w-1/2 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white" step="0.01" required>`;
     } else if (indemniteChoisie === 'communication') {
         inputHTML = `<label for="indemnite_communication" class="block text-gray-700 font-semibold">Indemnité Communication :</label>
-            <input type="number" id="indemnite_communication" name="indemnite_communication" class="w-2/3 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" required>`;
+            <input type="number" id="indemnite_communication" name="indemnite_communication" class="w-2/3 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white" step="0.01" required>`;
     } else if (indemniteChoisie === 'stage') {
         inputHTML = `<label for="indemnite_stage" class="block text-gray-700 font-semibold">Indemnité Stage :</label>
-            <input type="number" id="indemnite_stage" name="indemnite_stage" class="w-1/2 border border-gray-300 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500" step="0.01" required>`;
+            <input type="number" id="indemnite_stage" name="indemnite_stage" class="w-1/2 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-right focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white" step="0.01" required>`;
     }
     // Insérer le champ de l'indemnité et ajouter un bouton de suppression
     container.insertAdjacentHTML('afterend', `

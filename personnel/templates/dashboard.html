@@ -38,7 +38,7 @@ Dashboard
                             <h3 class="text-sm font-semibold ml-4  dark:text-gray-400">Total salariés</h3>
                         </div>
                         <div class="flex mt-4 justify-between mb-2">
-                            <p class="text-3xl font-bold">{{ total_salaries }}</p>
+                            <p class="text-3xl font-bold dark:text-white">{{ total_salaries }}</p>
                         <div class="bg-green-100 rounded-md pl-2 pr-2"> 
                                 <p class="mt-2 text-green-500 text-sm">+12%</p> 
                             </div>
@@ -59,7 +59,7 @@ Dashboard
                             <h3 class="text-sm font-semibold ml-4 dark:text-gray-400">Total salariés disponibles</h3>
                         </div>
                         <div class="flex mt-4 justify-between mb-2">
-                            <p class="text-3xl font-bold">{{ salaries_disponibles }}</p>
+                            <p class="text-3xl font-bold dark:text-white">{{ salaries_disponibles }}</p>
                         <div class="bg-green-100 rounded-md pl-2 pr-2"> 
                                 <p class="mt-2 text-green-500 text-sm">+5%</p> 
                             </div>
@@ -79,7 +79,7 @@ Dashboard
                             <h3 class="text-sm font-semibold ml-4  dark:text-gray-400">Nombre de salariés en congés</h3>
                         </div>
                         <div class="flex mt-4 justify-between mb-2">
-                            <p class="text-3xl font-bold">{{ salaries_en_conge }}</p>
+                            <p class="text-3xl font-bold dark:text-white">{{ salaries_en_conge }}</p>
                         <div class="bg-red/30 rounded-md pl-2 pr-2"> 
                                 <p class="mt-2 text-red text-sm">-8%</p> 
                             </div>
@@ -95,7 +95,7 @@ Dashboard
             <div class="bg-white border-2 flex-grow gap-4 p-4 rounded-lg shadow-lg md:w-80 w-full mt-4 md:ml-8 mr-12 dark:bg-gray-800">
                 <!-- Conteneur du calendrier -->
                 <div class="flex justify-between">
-                    <h3 class="text-lg font-semibold">Calendrier</h3>
+                    <h3 class="text-lg font-semibold dark:text-gray-400">Calendrier</h3>
                     <button id="openModal" class="text-white bg-cp_primary p-2 rounded-md duration-300 hover:scale-110">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -105,18 +105,23 @@ Dashboard
 
                 <!-- Modal -->
                 <div id="myModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 overflow-y-auto h-full w-full hidden">
-                    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
                         <div class="mt-3 text-center">
-                            <h3 class="text-lg leading-6 font-bold text-gray-900">Créer un événement</h3>
+                            <h3 class="text-lg leading-6 font-bold text-gray-900 dark:text-gray-200">Créer un événement</h3>
                             <div class="mt-2">
                                 <form id="agendaForm" method="POST">
                                     {% csrf_token %}
-                                    <!-- Ajoutez ici votre formulaire pour créer un événement -->
-                                    <input type="text" placeholder="Titre de l'événement" name="title" class="border p-2 w-full mb-2 rounded-md shadow-sm">
-                                    <input type="date" name="start_date" class="border p-2 w-full mb-2 rounded-md shadow-sm">
-                                    <input type="time" name="start_time" class="border p-2 w-full mb-2 rounded-md shadow-sm">
-                                    <textarea placeholder="Description" name="description" class="border p-2 w-full mb-2 rounded-md shadow-sm"></textarea>
-                                    <button type="submit" class="bg-cp_primary text-white p-2 rounded-md w-full shadow-md hover:scale-105 transition-transform duration-300">Enregistrer</button>
+                                    <input type="text" placeholder="Titre de l'événement" name="title" 
+                                           class="border p-2 w-full mb-2 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
+                                    <input type="date" name="start_date" 
+                                           class="border p-2 w-full mb-2 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
+                                    <input type="time" name="start_time" 
+                                           class="border p-2 w-full mb-2 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
+                                    <textarea placeholder="Description" name="description" 
+                                              class="border p-2 w-full mb-2 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"></textarea>
+                                    <button type="submit" class="bg-cp_primary text-white p-2 rounded-md w-full shadow-md hover:scale-105 transition-transform duration-300">
+                                        Enregistrer
+                                    </button>
                                 </form>
                             </div>
                             <div class="items-center px-4 py-3">
@@ -134,7 +139,7 @@ Dashboard
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
-                    <button id="backToDay"><h2 id="monthYear" class="text-lg font-bold duration-300 hover:scale-110"></h2></button>
+                    <button id="backToDay"><h2 id="monthYear" class="text-lg font-bold duration-300 hover:scale-110 dark:text-gray-400"></h2></button>
                     <button id="nextMonth" class="text-white bg-cp_primary p-2 rounded-md duration-300 hover:scale-110">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -155,7 +160,7 @@ Dashboard
                 </div>
             
                 <!-- Conteneur des jours -->
-                <div id="daysContainer" class="grid grid-cols-7 gap-2 text-center ">
+                <div id="daysContainer" class="grid grid-cols-7 gap-2 text-center text-gray-500 dark:text-gray-400">
                     <!-- Les jours seront générés ici dynamiquement -->
                 </div>
                 <div class="border-b mt-2 ">
@@ -168,13 +173,13 @@ Dashboard
                             <p id="date" class="text-gray-500 dark:text-gray-400 mb-2"></p>
                             {% for event in today_events %}
                             <div class="flex justify-between pb-2">
-                                <div class="flex"><p class="font-bold mr-4"> {{ event.start_time }} </p> <p class=" text-gray-600 font-semibold"> {{ event.title }}</p></div>
-                                <div><p class="font-bold">{{ event.description }}</p></div>
+                                <div class="flex"><p class="font-bold mr-4 text-black dark:text-white"> {{ event.start_time }} </p> <p class=" text-gray-600 font-semibold"> {{ event.title }}</p></div>
+                                <div><p class="font-bold text-black dark:text-white">{{ event.description }}</p></div>
                             </div>
                             {% empty %}
                             
-                            <div class="flex justify-between">
-                                <p>Aucun événement aujourd'hui</p>
+                            <div class="flex justify-between ">
+                                <p class="text-black dark:text-white ">Aucun événement aujourd'hui</p>
                             </div>
                             {% endfor %}
                         </div>
@@ -183,13 +188,13 @@ Dashboard
                             <p id="tomorrow-date" class="text-gray-500 dark:text-gray-400 mb-2"></p>
                             {% for event in tomorrow_events %}
                             <div class="flex justify-between pb-2">
-                                <div class="flex"><p class="font-bold mr-4"> {{ event.start_time }} </p> <p class=" text-gray-600 font-semibold"> {{ event.title }}</p></div>
-                                <div><p class="font-bold">{{ event.description }}</p></div>
+                                <div class="flex"><p class="font-bold mr-4 text-black dark:text-white"> {{ event.start_time }} </p> <p class=" text-gray-600 font-semibold"> {{ event.title }}</p></div>
+                                <div><p class="font-bold text-black dark:text-white">{{ event.description }}</p></div>
                             </div>
                             {% empty %}
                             
                             <div class="flex justify-between">
-                                <p>Aucun événement demain</p>
+                                <p class="text-black dark:text-white">Aucun événement demain</p>
                             </div>
                             {% endfor %}
                         

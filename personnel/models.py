@@ -208,7 +208,11 @@ class Conge(models.Model):
 
     def __str__(self):
         return f'{self.employee} - {self.type_conge} du {self.date_debut} au {self.date_fin} - {self.statut}'
-
+    
+    class Meta:
+        permissions = [
+            ("can_manage_conge", "Can Manage conge"),
+        ]
 
     #Model Notification
 class Notification(models.Model):
@@ -389,6 +393,11 @@ class Paie(models.Model):
 
     def __str__(self):
         return f"Fiche de paie de {self.employee.prenom} {self.employee.nom} pour {self.lot}"
+    class Meta:
+        permissions = [
+            ("can_export_paie", " Can Export paie"),
+        ]
+
 
 class Prime(models.Model):
 

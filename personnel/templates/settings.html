@@ -6,24 +6,24 @@
 <div class="container mx-auto mt-20">
   <div class="">
 
-      <h2 class="text-2xl font-bold mt-20 ">Paramètres </h2>
+      <h2 class="text-2xl font-bold mt-20 dark:text-white ">Paramètres </h2>
       <p class="text-xs font-semibold text-gray-400">Tout les paramètres et prréférences</p>
     
     </div>     
   <!-- Paramètres Form -->
-  <div class="container mx-auto mt-2 border bg-white p-6 rounded-lg shadow-lg">
+  <div class="container mx-auto mt-2 border bg-white p-6 rounded-lg shadow-lg dark:bg-gray-800">
 
     <form method="POST" action="{% url 'personnel:settings' %}">
       {% csrf_token %}
     
       <div class="mb-4 flex justify-between ">
         <div>
-          <h3 class="text-lg font-bold">Apparence</h3>
-          <p class="text-xs text-gray-300">
+          <h3 class="text-lg font-bold dark:text-white">Apparence</h3>
+          <p class="text-xs text-gray-300 dark:text-gray-400">
             Personnalisez l'apparence de votre thème
           </p>
         </div>
-        <select id="theme" name="theme" class="mt-1 block w-32 bg-gray-100 border-gray-300 rounded-md" onchange="this.form.submit()">
+        <select id="theme" name="theme" class="mt-1 block w-32 bg-gray-100 border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300" onchange="this.form.submit()">
           <option value="light" {% if settings.theme == "light" %}selected{% endif %}>Clair</option>
           <option value="dark" {% if settings.theme == "dark" %}selected{% endif %}>Sombre</option>
         </select>
@@ -34,12 +34,12 @@
       {% csrf_token %}
       <div class="mb-4 flex justify-between">
         <div>
-          <h3 class="text-lg font-bold">Langue</h3>
-          <p class="text-xs text-gray-300">
+          <h3 class="text-lg font-bold dark:text-white">Langue</h3>
+          <p class="text-xs text-gray-300 dark:text-gray-400">
             Sélectionnez votre langue
           </p>
         </div>
-        <select id="language" name="language" class="mt-1 block w-32 bg-gray-100 border-gray-300 rounded-md" onchange="this.form.submit()">
+        <select id="language" name="language" class="mt-1 block w-32 bg-gray-100 border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300" onchange="this.form.submit()">
           <option value="fr" {% if settings.language == "fr" %}selected{% endif %}>Français</option>
           <option value="en" {% if settings.language == "en" %}selected{% endif %}>Anglais</option>
         </select>
@@ -52,32 +52,32 @@
       <div class="mb-4 flex items-center justify-between">
         <label for="desktop_notifications" class="block text-sm font-medium text-gray-700 mr-3">
           <div>
-            <h3 class="text-lg font-bold">Notification sur le bureau</h3>
-            <p class="text-xs text-gray-300">
+            <h3 class="text-lg font-bold dark:text-white">Notification sur le bureau</h3>
+            <p class="text-xs text-gray-300 dark:text-gray-400">
               Recevoir des notifications sur le bureau
             </p>
           </div>
         </label>
         <label for="desktop_notifications" class="relative cursor-pointer mt-5">
           <input id="desktop_notifications" type="checkbox" name="receive_desktop_notifications" class="sr-only peer" {% if settings.receive_desktop_notifications %}checked{% endif %} onchange="this.form.submit()">
-          <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors duration-200 ease-in-out"></div>
-          <div class="absolute left-0 top-0 w-6 h-6 bg-white rounded-full border border-gray-300 transform transition-transform duration-200 ease-in-out peer-checked:translate-x-5"></div>
+          <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors duration-200 ease-in-out dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"></div>
+          <div class="absolute left-0 top-0 w-6 h-6 bg-white rounded-full border border-gray-300 transform transition-transform duration-200 ease-in-out peer-checked:translate-x-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"></div>
         </label>
       </div>
       
       <div class="mb-4 flex items-center justify-between">
         <label for="email_notifications" class="block text-sm font-medium text-gray-700 mr-3">
           <div>
-            <h3 class="text-lg font-bold">Notification par email</h3>
-            <p class="text-xs text-gray-300">
+            <h3 class="text-lg font-bold dark:text-white">Notification par email</h3>
+            <p class="text-xs text-gray-300 dark:text-gray-400">
               Recevoir des notifications par email
             </p>
           </div>
         </label>
         <label for="email_notifications" class="relative cursor-pointer mt-5">
           <input id="email_notifications" type="checkbox" name="receive_email_notifications" class="sr-only peer" {% if settings.receive_email_notifications %}checked{% endif %} onchange="this.form.submit()">
-          <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors duration-200 ease-in-out"></div>
-          <div class="absolute left-0 top-0 w-6 h-6 bg-white rounded-full border border-gray-300 transform transition-transform duration-200 ease-in-out peer-checked:translate-x-5"></div>
+          <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors duration-200 ease-in-out dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"></div>
+          <div class="absolute left-0 top-0 w-6 h-6 bg-white rounded-full border border-gray-300 transform transition-transform duration-200 ease-in-out peer-checked:translate-x-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"></div>
         </label>
       </div>
     
@@ -93,12 +93,12 @@
     <!-- Formulaire pour changer le mot de passe -->
     <div class="flex justify-between">
       <div>
-      <h3 class="text-lg font-bold"> Sécurité</h3>
-      <p class="text-xs text-gray-300">
+      <h3 class="text-lg font-bold dark:text-white"> Sécurité</h3>
+      <p class="text-xs text-gray-300 dark:text-gray-400">
         Modifier votre mot de passe
       </p>
     </div>
-      <button id="open-password-popup" class="text-white font-bold py-2 px-4 rounded">
+      <button id="open-password-popup" class="text-white font-bold py-2 px-4 rounded dark:text-gray-300">
         <svg width="42" height="42" viewBox="0 0 57 57" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M22.5625 14.25L36.8125 28.5L22.5625 42.75" stroke="#A28FF7" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -109,19 +109,19 @@
 
       <!-- Le popup pour changer le mot de passe -->
   <div id="password-popup" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 hidden">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-      <h3 class="text-lg font-medium">Changer le mot de passe</h3>
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+      <h3 class="text-lg font-medium dark:text-white">Changer le mot de passe</h3>
       <form id="password-change-form" method="POST" action="{% url 'personnel:password_change' %}">
           {% csrf_token %}
           
           <div class="mb-4">
-              <label for="old_password" class="block text-sm font-medium text-gray-700">Ancien mot de passe</label>
-              <input id="old_password" name="old_password" type="password" class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md px-4 py-2">
+              <label for="old_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Ancien mot de passe</label>
+              <input id="old_password" name="old_password" type="password" class="mt-1 block w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 dark:text-white">
           </div>
           
           <div class="mb-4">
-              <label for="new_password" class="block text-sm font-medium text-gray-700">Nouveau mot de passe</label>
-              <input id="new_password" name="new_password" type="password" class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md px-4 py-2">
+              <label for="new_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nouveau mot de passe</label>
+              <input id="new_password" name="new_password" type="password" class="mt-1 block w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 dark:text-white">
           </div>
           
           <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md w-full">
@@ -130,7 +130,7 @@
       </form>
 
       <!-- Bouton pour fermer le popup -->
-      <button id="close-password-popup" class="mt-4 border-2 hover:bg-red-700 text-black font-bold py-2 px-4 rounded-md w-full">
+      <button id="close-password-popup" class="mt-4 border-2 hover:bg-red-700 text-black font-bold py-2 px-4 rounded-md w-full dark:text-gray-300">
          Annuler 
       </button>
     </div>
@@ -144,21 +144,21 @@
 <div class=" flex justify-between">
   <label for="table">
      <div>
-    <h3 class="text-lg font-bold ">Sauvegarde</h3>
-    <p class="text-xs text-gray-300">
+    <h3 class="text-lg font-bold dark:text-white">Sauvegarde</h3>
+    <p class="text-xs text-gray-300 dark:text-gray-400">
       Faire une sauvegarde en local
     </p>
   </div>    
 </label>
   <div class="flex gap-2 md:gap-8 ">
-  <select name="table" id="table" class="mt-1 block w-24 h-12 md:h-full md:w-40 bg-gray-100 border-gray-300 rounded-md">
+  <select name="table" id="table" class="mt-1 block w-24 h-12 md:h-full md:w-40 bg-gray-100 border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
     <option value="all">Tout exporter</option>
     <option value="personnel_employee">Employés</option>
     <option value="personnel_paie">Paie</option>
     <option value="personnel_conge">Congés</option>
     <option value="personnel_schedule">Horaires</option>
   </select>
-  <button type="submit" class="mt-1 bg-purple-600 text-white py-2 px-4 w-24 h-12 md:h-full md:w-36 rounded-md">
+  <button type="submit" class="mt-1 bg-purple-600 text-white py-2 px-4 w-24 h-12 md:h-full md:w-36 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
     Exporter
   </button>
 </div>
@@ -169,8 +169,8 @@
     <!-- Lien pour se déconnecter -->
     <div class="mt-4 flex justify-between">
       <div>
-      <h3 class="text-lg font-bold">Déconnexion</h3>
-      <p class="text-xs text-gray-300">
+      <h3 class="text-lg font-bold dark:text-white">Déconnexion</h3>
+      <p class="text-xs text-gray-300 dark:text-gray-400">
         Fermer la session et quitter
       </p>
     </div>
