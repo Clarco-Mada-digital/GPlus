@@ -134,12 +134,11 @@
             </div>
         </div>
     </form>
-    <div id="error-message" class="text-rose-500 text-center hidden mb-2">
-        Aucun élément sélectionné
-    </div>
+
     <!-- Tableau des opérations -->
-    <form method="post" action="{% url 'caisse:generer_excel_operations_sorties' %}">
+    <form method="post" id="export-form" action="{% url 'caisse:generer_excel_operations_sorties' %}">
         {% csrf_token %}
+        <input type="hidden" id="selected-operations-input" name="selected_operations_ids">
         <div class="overflow-x-auto bg-white text-sm dark:bg-secondary dark:text-white border-none rounded-lg">
     <table class="w-full">
         <thead>
@@ -237,28 +236,41 @@
     
         <!-- Boutons d'exportation -->
         <div class="flex justify-end mt-4">
-            <button onclick="validateExport('selected')" type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Exporter Sélection
-            </button>
-            <button onclick="validateExport('all')" type="button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2">
-                Exporter Tout
-            </button>
+            <button type="button" onclick="validateAndSubmitExport('selected')" 
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Exporter Sélection
+        </button>
+        <button type="button" onclick="validateAndSubmitExport('all')" 
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2">
+            Exporter Tout
+        </button>
         </div>
     </form>
     
     <script>
-        function validateExport(type) {
+        function validateAndSubmitExport(type) {
             const checkboxes = document.querySelectorAll('input[name="selected_operations"]:checked');
+            const form = document.getElementById('export-form');
             
             if (type === 'selected' && checkboxes.length === 0) {
-                alert('Aucun élément sélectionné');
+                alert('Veuillez sélectionner au moins une opération à exporter');
                 return false;
             }
             
-            // Si tout est ok, soumettre le formulaire
-            document.getElementById('filter-form').submit();
+            if (type === 'all') {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'export_all';
+                input.value = 'true';
+                form.appendChild(input);
+            } else {
+                const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+                document.getElementById('selected-operations-input').value = selectedIds.join(',');
+            }
+            
+            form.submit();
         }
-        document.getElementById('select-all-sorties').addEventListener('click', function(event) {
+        document.getElementById('select-all-entrees').addEventListener('click', function(event) {
             const checkboxes = document.querySelectorAll('input[name="selected_operations"]');
             checkboxes.forEach(checkbox => checkbox.checked = event.target.checked);
         });

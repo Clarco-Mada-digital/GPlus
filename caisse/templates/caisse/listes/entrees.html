@@ -143,14 +143,16 @@
     <!-- Filtrage entreés -->
 
     <!-- Tableau des opérations -->
-    <form method="post"
+    <form method="post" id="export-form"
         action="{% url 'caisse:generer_excel_operations_entrees' %}">
         {% csrf_token %}
+        <input type="hidden" id="selected-operations-input" name="selected_operations_ids">
         <div class="overflow-x-auto bg-white dark:bg-secondary dark:text-white border-none rounded-lg">
             <table class="w-full">
                 <thead>
                     <tr class="uppercase text-sm border-b">
                         <th class="px-4 py-1 text-left">
+                            <input type="hidden" id="selected-operations-input" name="selected_operations_ids">
                             <input type="checkbox" id="select-all-entrees">
                         </th>
                         <th class="px-4 py-1 text-left">
@@ -236,7 +238,7 @@
             const form = document.getElementById('export-form');
             
             if (type === 'selected' && checkboxes.length === 0) {
-                alert('Aucun élément sélectionné');
+                alert('Veuillez sélectionner au moins une opération à exporter');
                 return false;
             }
             

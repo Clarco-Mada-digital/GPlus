@@ -194,7 +194,7 @@ def categories(request):
 @login_required
 def listes(request):
     """
-    Affiche la liste des opérations.
+    Affiche la liste des opérations avec filtrage et tri.
     """
     # Récupérer les filtres de recherche et de triage
     query = request.GET.get('q')
@@ -203,91 +203,96 @@ def listes(request):
     fournisseur_id = request.GET.get('fournisseur')
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
-    sort_by = request.GET.get('sort', 'date')  # Par défaut, tri par date
-    ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
+    sort_by = request.GET.get('sort', 'date')  # 'date' est maintenant le tri par défaut
+    ordre = request.GET.get('order', 'desc')  # 'desc' est maintenant l'ordre par défaut
     
-    # Filtrer les opérations d'entrée et de sortie
-    entree = OperationEntrer.objects.all()
-    sortie = OperationSortir.objects.all()
+    # Initialiser les queryset avec tri par défaut
+    entree = OperationEntrer.objects.all().order_by('-date_transaction')
+    sortie = OperationSortir.objects.all().order_by('-date_de_sortie')
 
-    # Appliquer les filtres
+    # Appliquer les filtres de recherche
     if query:
         entree = entree.filter(
             Q(description__icontains=query) |
             Q(categorie__name__icontains=query) |
-            Q(montant__icontains=query) |
-            Q(date_transaction__icontains=query)
+            Q(montant__icontains=query)
         )
         sortie = sortie.filter(
             Q(description__icontains=query) |
             Q(categorie__name__icontains=query) |
-            Q(montant__icontains=query) |
-            Q(date_de_sortie__icontains=query)
+            Q(montant__icontains=query)
         )
+
+    # Filtre par catégorie
     if categorie_id:
         entree = entree.filter(categorie_id=categorie_id)
         sortie = sortie.filter(categorie_id=categorie_id)
 
+    # Filtre par bénéficiaire (uniquement pour les sorties)
     if beneficiaire_id:
         sortie = sortie.filter(beneficiaire_id=beneficiaire_id)
 
+    # Filtre par fournisseur (uniquement pour les sorties)
     if fournisseur_id:
         sortie = sortie.filter(fournisseur_id=fournisseur_id)
 
+    # Filtres par date
     if date_min:
         entree = entree.filter(date_transaction__gte=date_min)
         sortie = sortie.filter(date_de_sortie__gte=date_min)
-
     if date_max:
         entree = entree.filter(date_transaction__lte=date_max)
         sortie = sortie.filter(date_de_sortie__lte=date_max)
 
-    # Récupérer le nombre de lignes par page depuis les paramètres GET
-    lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 10
+    # Configuration du tri
+    sort_field_mapping = {
+        'description': {'entree': 'description', 'sortie': 'description'},
+        'categorie': {'entree': 'categorie__name', 'sortie': 'categorie__name'},
+        'date': {'entree': 'date_transaction', 'sortie': 'date_de_sortie'},
+        'beneficiaire': {'entree': 'date_transaction', 'sortie': 'beneficiaire__name'},
+        'fournisseur': {'entree': 'date_transaction', 'sortie': 'fournisseur__name'},
+        'montant': {'entree': 'montant', 'sortie': 'montant'}
+    }
 
-    # Combiner et trier par date
-    if sort_by == 'date':
-        key_func = lambda op: getattr(op, 'date_transaction', None) or getattr(op, 'date_de_sortie', None)
-    elif sort_by == 'categorie':
-        key_func = lambda op: op.categorie.name
-    elif sort_by == 'description':
-        key_func = lambda op: op.description
-    elif sort_by == 'beneficiaire':
-        key_func = lambda op: op.beneficiaire.name if op.beneficiaire else ''
-    elif sort_by == 'fournisseur':
-        key_func = lambda op: op.fournisseur.name if op.fournisseur else ''
-    else:
-        key_func = lambda op: getattr(op, 'date_transaction', None) or getattr(op, 'date_de_sortie', None)
+    # Appliquer le tri seulement si un tri spécifique est demandé
+    if sort_by != 'date' or ordre != 'desc':
+        sort_config = sort_field_mapping.get(sort_by, {'entree': 'date_transaction', 'sortie': 'date_de_sortie'})
+        sort_field_entree = sort_config['entree']
+        sort_field_sortie = sort_config['sortie']
+        
+        if ordre == 'desc':
+            sort_field_entree = f'-{sort_field_entree}'
+            sort_field_sortie = f'-{sort_field_sortie}'
+        
+        entree = entree.order_by(sort_field_entree)
+        sortie = sortie.order_by(sort_field_sortie)
 
-    # Trier les opérations
+    # Combiner les résultats
     operations = sorted(
         chain(entree, sortie),
-        key=key_func,
-        reverse=(ordre == 'desc')
+        key=lambda x: getattr(x, 'date_transaction', None) or getattr(x, 'date_de_sortie', None),
+        reverse=True  # Tri décroissant par défaut
     )
+
     # Pagination
+    lignes_par_page = request.GET.get('lignes', 5)
     paginator = Paginator(operations, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
-    # Récupérer les catégories, bénéficiaires et fournisseurs pour les options de filtrage
-    categories = Categorie.objects.all()
-    beneficiaires = Beneficiaire.objects.all()
-    fournisseurs = Fournisseur.objects.all()
 
-    # Contexte et rendu du template
-    template = loader.get_template('caisse/listes/listes_operations.html')
+    # Contexte pour le template
     context = {
         'page_obj': page_obj,
-        'categories': categories,
-        'beneficiaires': beneficiaires,
-        'fournisseurs': fournisseurs,
+        'categories': Categorie.objects.all(),
+        'beneficiaires': Beneficiaire.objects.all(),
+        'fournisseurs': Fournisseur.objects.all(),
         'prix': "Ar",
         'sort_by': sort_by,
         'ordre': ordre,
         'lignes_par_page': lignes_par_page,
     }
-    return HttpResponse(template.render(context, request))
+
+    return render(request, 'caisse/listes/listes_operations.html', context)
 
 @login_required
 def depenses(request):
