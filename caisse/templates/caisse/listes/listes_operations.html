@@ -5,7 +5,7 @@
 {% block title_page %}Liste des Opérations{% endblock %}
 
 {% block content %}
-<div class="dark:text-white">
+<div class="dark:text-white ">
 
     <!-- Navigation entre Entrées et Sorties -->
     <div class="flex justify-between dark:text-white  space-x-4 mb-4  items-center">
@@ -75,10 +75,10 @@
     <!-- Filtrage entreés -->
 
     <form method="GET" action="{% url 'caisse:listes' %}" class="p-4" id="filter-form">
-        <div class="flex items-center dark:bg-secondary rounded-xl  space-x-4 text-sm">
+        <div class="flex items-center dark:bg-secondary rounded-xl space-x-4 text-sm">
             <div class="flex space-x-4">
                 <!-- Sélecteur Catégories -->
-                <select name="categorie" class="px-8 py-2 border-none dark:bg-secondary focus:ring-0" onchange="document.getElementById('filter-form').submit();">
+                <select name="categorie" class="w-[30%] px-8 py-2 border-none dark:bg-secondary focus:ring-0" onchange="submitFormWithCurrentParams(this)">
                     <option value="">Catégories</option>
                     {% for categorie in categories %}
                         <option value="{{ categorie.id }}" {% if request.GET.categorie == categorie.id|stringformat:"s" %}selected{% endif %}>
@@ -88,8 +88,8 @@
                 </select>
                 <div class="h-10 w-0.5 bg-gray-300"></div>
     
-                <!-- Sélecteur Bénéficiaires -->
-                <select name="beneficiaire" class="px py-2 border-none dark:bg-secondary focus:ring-0 rounded-md" onchange="document.getElementById('filter-form').submit();">
+                <!-- Sélecteur Bénéficiaires (uniquement pour les sorties) -->
+                <select name="beneficiaire" class="px py-2 border-none dark:bg-secondary focus:ring-0 rounded-md" onchange="submitFormWithCurrentParams(this)">
                     <option value="">Bénéficiaires</option>
                     {% for beneficiaire in beneficiaires %}
                         <option value="{{ beneficiaire.id }}" {% if request.GET.beneficiaire == beneficiaire.id|stringformat:"s" %}selected{% endif %}>
@@ -99,8 +99,8 @@
                 </select>
                 <div class="h-10 w-0.5 bg-gray-300"></div>
     
-                <!-- Sélecteur Fournisseurs -->
-                <select name="fournisseur" class="px py-2 bg-white border-none dark:bg-secondary focus:ring-0 rounded-md" onchange="document.getElementById('filter-form').submit();">
+                <!-- Sélecteur Fournisseurs (uniquement pour les sorties) -->
+                <select name="fournisseur" class="px py-2 bg-white border-none dark:bg-secondary focus:ring-0 rounded-md" onchange="submitFormWithCurrentParams(this)">
                     <option value="">Fournisseurs</option>
                     {% for fournisseur in fournisseurs %}
                         <option value="{{ fournisseur.id }}" {% if request.GET.fournisseur == fournisseur.id|stringformat:"s" %}selected{% endif %}>
@@ -110,25 +110,24 @@
                 </select>
                 <div class="h-10 w-0.5 bg-gray-300"></div>
     
-                <!-- Sélecteur de Tri -->
+                <!-- Dates avec conservation des paramètres -->
                 <div class="flex space-x-4">
-                    <!-- Date de début -->
-                    <input type="date" name="date_min" placeholder="Date de début" value="{{ request.GET.date_min }}" onchange="document.getElementById('filter-form').submit();"
-                            class="px-4 py-2  dark:bg-secondary  border-none rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        
-                    <!-- Date de fin -->
-                    <input type="date" name="date_max" placeholder="Date de fin" value="{{ request.GET.date_max }}" onchange="document.getElementById('filter-form').submit();"
-                            class="px-4 py-2 dark:bg-secondary border-none rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <input type="date" name="date_min" value="{{ request.GET.date_min }}" 
+                           onchange="submitFormWithCurrentParams(this)"
+                           class="px-4 py-2 dark:bg-secondary border-none rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <input type="date" name="date_max" value="{{ request.GET.date_max }}" 
+                           onchange="submitFormWithCurrentParams(this)"
+                           class="px-4 py-2 dark:bg-secondary border-none rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 </div>
-                <div class="h-10 w-0.5 bg-gray-300"></div>
     
-                <!-- Bouton pour réinitialiser les filtres -->
-                <a href="{% url 'caisse:listes' %}" class="text-red px-3 py-2 hover:text-red-700 flex items-center space-x-1">
-                    <i class="fas fa-sync-alt"></i><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Bouton Reset qui conserve le nombre de lignes -->
+                <a href="?lignes={{ lignes_par_page }}" class="text-red px-3 py-2 hover:text-red-700 flex items-center space-x-1">
+                    <i class="fas fa-sync-alt"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M23 4v6h-6"/>
                         <path d="M1 20v-6h6"/>
                         <path d="M3.51 9a9 9 0 0114.13-3.36L23 10M1 14l4.36 4.36A9 9 0 0020.49 15"/>
-                      </svg>
+                    </svg>
                     <span>Reset</span>
                 </a>
             </div>
@@ -136,9 +135,10 @@
     </form>
 
     <!-- Tableau des opérations -->
-    <form method="post" action="{% url 'caisse:generer_excel_operations' %}">
+    <form method="post" id="export-form" action="{% url 'caisse:generer_excel_operations' %}">
         {% csrf_token %}
-        <div class= "table-container overflow-x-auto text-sm bg-white dark:bg-secondary dark:text-white border-none rounded-lg">
+        <input type="hidden" id="selected-operations-input" name="selected_operations_ids">
+        <div class="table-container overflow-x-auto text bg-white dark:bg-secondary dark:text-white border-none rounded-lg">
                 <table class="w-full">
                     <thead>
                         <tr class="uppercase text-sm border-b">
@@ -221,33 +221,33 @@
                             <td class="py-1 px-4 text-right">{{ operation.quantite|default:"vide"|intcomma }}</td>
                             <td class="py-1 px-4 text-right">{{ operation.montant|intcomma }} {{ prix }}</td>
                             <td class="py-1 px-4 text-right">
-                                <div class="flex justify-center items-center space-x-2 border border-secondary dark:border-white rounded-2xl">
-                                        <!-- Icône de modification (stylo) -->
-                                        {% if operation.date_transaction %}
-                                            <a href="{% url 'caisse:modifier_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
-                                        {% else %}
-                                            <a href="{% url 'caisse:modifier_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
-                                        {% endif %}
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 inline" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round"
-                                            stroke-linejoin="round" stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                        </svg>
-                                        </a>
+                                <div class="flex justify-center items-center space-x-2 border border-gray-950 dark:border-white rounded-2xl">
+                                    <!-- Icône de modification (stylo) -->
+                                    {% if operation.date_transaction %}
+                                        <a href="{% url 'caisse:modifier_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
+                                    {% else %}
+                                        <a href="{% url 'caisse:modifier_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
+                                    {% endif %}
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 inline" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                                    </a>
 
-                                        <div class="h-10 bg-secondary dark:bg-white" style="width: 1px;"></div>
-                                        <!-- Icône de suppression -->
-                                        {% if operation.date_transaction %}
-                                            <a href="{% url 'caisse:supprimer_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?');">
-                                        {% else %}
-                                            <a href="{% url 'caisse:supprimer_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie ?');">
-                                        {% endif %}
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                        </svg>
-                                        </a>
+                                    <div class="h-10 bg-secondary dark:bg-white" style="width: 1px;"></div>
+                                    <!-- Icône de suppression -->
+                                    {% if operation.date_transaction %}
+                                        <a href="{% url 'caisse:supprimer_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?');">
+                                    {% else %}
+                                        <a href="{% url 'caisse:supprimer_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie ?');">
+                                    {% endif %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -257,10 +257,15 @@
             </div>
             <!-- Boutons pour l'exportation -->
             <div class="flex justify-end mt-4">
-                <button type="submit" name="export_selected" value="true" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Exporter Sélection</button>
-                <button type="submit" name="export_all" value="true" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2">Exporter Tout</button>
+                <button onclick="validateAndSubmitExport('selected')" type="button" 
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Exporter Sélection
+                </button>
+                <button onclick="validateAndSubmitExport('all')" type="button" 
+                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2">
+                    Exporter Tout
+                </button>
             </div>
-        </div>
     </form>
     <!-- Sélecteur pour le nombre de lignes par page -->
 
@@ -268,6 +273,62 @@
 
     
     <script>
+        function submitFormWithCurrentParams(changedElement) {
+            const form = document.getElementById('filter-form');
+            const currentParams = new URLSearchParams(window.location.search);
+            
+            // Conserver le nombre de lignes par page
+            if (currentParams.has('lignes')) {
+                const lignesInput = document.createElement('input');
+                lignesInput.type = 'hidden';
+                lignesInput.name = 'lignes';
+                lignesInput.value = currentParams.get('lignes');
+                form.appendChild(lignesInput);
+            }
+            
+            // Conserver le tri actuel
+            if (currentParams.has('sort')) {
+                const sortInput = document.createElement('input');
+                sortInput.type = 'hidden';
+                sortInput.name = 'sort';
+                sortInput.value = currentParams.get('sort');
+                form.appendChild(sortInput);
+            }
+            
+            if (currentParams.has('order')) {
+                const orderInput = document.createElement('input');
+                orderInput.type = 'hidden';
+                orderInput.name = 'order';
+                orderInput.value = currentParams.get('order');
+                form.appendChild(orderInput);
+            }
+            
+            form.submit();
+        }
+        
+        function validateAndSubmitExport(type) {
+            const checkboxes = document.querySelectorAll('input[name="selected_operations"]:checked');
+            const form = document.getElementById('export-form');
+            
+            if (type === 'selected' && checkboxes.length === 0) {
+                alert('Veuillez sélectionner au moins une opération à exporter');
+                return false;
+            }
+            
+            if (type === 'all') {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'export_all';
+                input.value = 'true';
+                form.appendChild(input);
+            } else {
+                const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+                document.getElementById('selected-operations-input').value = selectedIds.join(',');
+            }
+            
+            form.submit();
+        }
+    
         // Script pour sélectionner/désélectionner toutes les cases à cocher
         document.getElementById('select-all').addEventListener('click', function(event) {
             let checkboxes = document.querySelectorAll('input[name="selected_operations"]');
