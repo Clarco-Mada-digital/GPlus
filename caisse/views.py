@@ -1260,7 +1260,12 @@ def generer_excel_operations(request):
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     workbook.save(response)
-
+    # Enregistrer l'activité de l'utilisateur
+    UserActivity.objects.create(
+    user=request.user,
+    action='EXPORTATION',  
+    description="a exporté en Excel la liste des opérations d'entrée et de sortie"
+)
     return response
 
 def generer_excel_operations_entrees(request):
@@ -1299,10 +1304,10 @@ def generer_excel_operations_entrees(request):
     workbook.save(response)
     # Enregistrer l'activité de l'utilisateur
     UserActivity.objects.create(
-        user=request.user,
-        activity_type="EXPORT",
-        description=f"Export Excel des opérations d'entrée"
-    )
+    user=request.user,
+    action='EXPORTATION',  
+    description="a exporté en Excel la liste des opérations d'entrée"
+)
 
     return response
 
@@ -1356,8 +1361,8 @@ def generer_excel_operations_sorties(request):
     # Enregistrer l'activité de l'utilisateur
     UserActivity.objects.create(
         user=request.user,
-        activity_type="EXPORT",
-        description=f"Export Excel des opérations de sortie"
+        action="EXPORTATION",
+        description="a exporté en Excel la liste des opérations de sortie"
     )
 
     return response
