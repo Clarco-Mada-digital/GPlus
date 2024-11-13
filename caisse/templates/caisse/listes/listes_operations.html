@@ -5,7 +5,7 @@
 {% block title_page %}Liste des Opérations{% endblock %}
 
 {% block content %}
-<div class="dark:text-white">
+<div class="dark:text-white ">
 
     <!-- Navigation entre Entrées et Sorties -->
     <div class="flex justify-between dark:text-white  space-x-4 mb-4  items-center">
@@ -75,10 +75,10 @@
     <!-- Filtrage entreés -->
 
     <form method="GET" action="{% url 'caisse:listes' %}" class="p-4" id="filter-form">
-        <div class="flex items-center dark:bg-secondary rounded-xl  space-x-4 text-sm">
+        <div class="flex items-center  dark:bg-secondary rounded-xl  space-x-4 text-sm">
             <div class="flex space-x-4">
                 <!-- Sélecteur Catégories -->
-                <select name="categorie" class="px-8 py-2 border-none dark:bg-secondary focus:ring-0" onchange="document.getElementById('filter-form').submit();">
+                <select name="categorie" class="w-[30%] px-8 py-2 border-none dark:bg-secondary focus:ring-0" onchange="document.getElementById('filter-form').submit();">
                     <option value="">Catégories</option>
                     {% for categorie in categories %}
                         <option value="{{ categorie.id }}" {% if request.GET.categorie == categorie.id|stringformat:"s" %}selected{% endif %}>
@@ -134,11 +134,13 @@
             </div>
         </div>
     </form>
-
+    <div id="error-message" class="text-rose-500 text-center hidden mb-2">
+        Aucun élément sélectionné
+    </div>
     <!-- Tableau des opérations -->
     <form method="post" action="{% url 'caisse:generer_excel_operations' %}">
         {% csrf_token %}
-        <div class= "table-container overflow-x-auto text-sm bg-white dark:bg-secondary dark:text-white border-none rounded-lg">
+        <div class= "table-container overflow-x-auto text bg-white dark:bg-secondary dark:text-white border-none rounded-lg">
                 <table class="w-full">
                     <thead>
                         <tr class="uppercase text-sm border-b">
@@ -221,33 +223,33 @@
                             <td class="py-1 px-4 text-right">{{ operation.quantite|default:"vide"|intcomma }}</td>
                             <td class="py-1 px-4 text-right">{{ operation.montant|intcomma }} {{ prix }}</td>
                             <td class="py-1 px-4 text-right">
-                                <div class="flex justify-center items-center space-x-2 border border-secondary dark:border-white rounded-2xl">
-                                        <!-- Icône de modification (stylo) -->
-                                        {% if operation.date_transaction %}
-                                            <a href="{% url 'caisse:modifier_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
-                                        {% else %}
-                                            <a href="{% url 'caisse:modifier_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
-                                        {% endif %}
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 inline" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round"
-                                            stroke-linejoin="round" stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                        </svg>
-                                        </a>
+                                <div class="flex justify-center items-center space-x-2 border border-gray-950 dark:border-white rounded-2xl">
+                                    <!-- Icône de modification (stylo) -->
+                                    {% if operation.date_transaction %}
+                                        <a href="{% url 'caisse:modifier_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
+                                    {% else %}
+                                        <a href="{% url 'caisse:modifier_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
+                                    {% endif %}
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 inline" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                                    </a>
 
-                                        <div class="h-10 bg-secondary dark:bg-white" style="width: 1px;"></div>
-                                        <!-- Icône de suppression -->
-                                        {% if operation.date_transaction %}
-                                            <a href="{% url 'caisse:supprimer_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?');">
-                                        {% else %}
-                                            <a href="{% url 'caisse:supprimer_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie ?');">
-                                        {% endif %}
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                        </svg>
-                                        </a>
+                                    <div class="h-10 bg-secondary dark:bg-white" style="width: 1px;"></div>
+                                    <!-- Icône de suppression -->
+                                    {% if operation.date_transaction %}
+                                        <a href="{% url 'caisse:supprimer_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?');">
+                                    {% else %}
+                                        <a href="{% url 'caisse:supprimer_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie ?');">
+                                    {% endif %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -257,8 +259,12 @@
             </div>
             <!-- Boutons pour l'exportation -->
             <div class="flex justify-end mt-4">
-                <button type="submit" name="export_selected" value="true" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Exporter Sélection</button>
-                <button type="submit" name="export_all" value="true" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2">Exporter Tout</button>
+                <button onclick="validateExport('selected')" type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Exporter Sélection
+                </button>
+                <button onclick="validateExport('all')" type="button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2">
+                    Exporter Tout
+                </button>
             </div>
         </div>
     </form>
@@ -268,6 +274,17 @@
 
     
     <script>
+        function validateExport(type) {
+            const checkboxes = document.querySelectorAll('input[name="selected_operations"]:checked');
+            
+            if (type === 'selected' && checkboxes.length === 0) {
+                alert('Aucun élément sélectionné');
+                return false;
+            }
+            
+            // Si tout est ok, soumettre le formulaire
+            document.getElementById('filter-form').submit();
+        }
         // Script pour sélectionner/désélectionner toutes les cases à cocher
         document.getElementById('select-all').addEventListener('click', function(event) {
             let checkboxes = document.querySelectorAll('input[name="selected_operations"]');
