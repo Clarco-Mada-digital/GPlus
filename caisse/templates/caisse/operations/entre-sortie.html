@@ -59,15 +59,15 @@ class="container mx-auto p-6 dark:text-white">
                 <template x-for="(ligne, index) in lignesEntrees" :key="index">
                     <div class="flex justify-between flex-wrap relative">
                         <span
-                            class="mb-10 w-auto self-center font-bold dark:text-white">Ligne
+                            class="mb-10 w-auto self-center text-placeholder font-semibold dark:text-white">Ligne
                             <span x-text="index + 1"></span>:</span>
                         <div
                             class="mb-10 flex w-[15%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <span
-                                class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Date:</span>
+                                class="flex select-none  items-center pl-3 text-placeholder/50 sm:text-sm">Date:</span>
                             <input type="date" autocomplete="off"
                                 x-model="ligne.date" name="date"
-                                class="dateInput focus:ring-0 block flex-1 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                                class="dateInput focus:ring-0 text-placeholder block flex-1 border-none w-full font-semibold bg-transparent py-1.5 pl-1 text-blue-200 sm:text-sm sm:leading-6"
                                 required>
                         </div>
 
@@ -76,7 +76,7 @@ class="container mx-auto p-6 dark:text-white">
                             <input type="text" x-model="ligne.designation"
                                 name="designation"
                                 placeholder="Désignation"
-                                class="block flex-1 focus:ring-0 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                                class="block flex-1 focus:ring-0 text-placeholder border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
                                 required>
                         </div>
 
@@ -85,13 +85,13 @@ class="container mx-auto p-6 dark:text-white">
                             <input type="number" x-model="ligne.montant"
                                 name="montant"
                                 placeholder="Montant"
-                                class="block flex-1 focus:ring-0 w-full border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                                class="block flex-1 focus:ring-0 w-full text-placeholder border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                         </div>
 
                         <div class="mb-10 w-[25%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700 relative"> <!-- Ajout de relative ici -->
                             <select x-model="ligne.categorie" name="categorie"
                                     placeholder="Catégorie" required
-                                    class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full focus:ring-0">
+                                    class="block flex-1 text-placeholder border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6 w-full focus:ring-0">
                                 <option value="Catégorie" disabled selected>Choisissez une catégorie</option>
                                 {% for categorie in categories_entree %}
                                 <option value="{{ categorie.id }}">{{ categorie.name }}</option>
@@ -161,18 +161,18 @@ class="container mx-auto p-6 dark:text-white">
                 <template x-for="(ligne, index) in lignesSorties" :key="index">
                     <div class="flex justify-between flex-wrap relative">
                         <span
-                            class="mb-10 w-auto self-center font-bold text-gray-500">Ligne
+                            class="mb-10 w-auto self-center font-semibold text-placeholder">Ligne
                             <span x-text="index + 1"></span>:</span>
                         <!-- Date -->
                         <div
                             class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <span
-                                class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Date:</span>
+                                class="flex select-none items-center pl-3 text-placeholder/50 sm:text-sm">Date:</span>
                             <input type="date" name="date"
                                 x-init="ligne.date = new Date().toISOString().split('T')[0]"
                                 x-model="ligne.date" id="datenow"
                                 autocomplete="off"
-                                class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                                class="block flex-1 text-placeholder focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                         </div>
 
                         <!-- Désignation -->
@@ -181,7 +181,7 @@ class="container mx-auto p-6 dark:text-white">
                             <input type="text" name="designation" required
                                 x-model="ligne.designation"
                                 placeholder="Désignation"
-                                class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                                class="block flex-1 text-placeholder focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                         </div>
 
                         <!-- Bénéficiaire -->
@@ -191,7 +191,7 @@ class="container mx-auto p-6 dark:text-white">
                                    x-model="ligne.beneficiaire" required
                                    list="beneficiaires-list"
                                    placeholder="Bénéficiaire"
-                                   class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                                   class="block flex-1 text-placeholder focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                             <datalist id="beneficiaires-list">
                                 {% for beneficiaire in beneficiaires %}
                                     <option value="{{ beneficiaire }}">{{ beneficiaire }}</option>
@@ -206,7 +206,7 @@ class="container mx-auto p-6 dark:text-white">
                                    x-model="ligne.fournisseur"
                                    list="fournisseurs-list"
                                    placeholder="Fournisseur"
-                                   class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                                   class="block flex-1 text-placeholder focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                             <datalist id="fournisseurs-list">
                                 {% for fournisseur in fournisseurs %}
                                     <option value="{{ fournisseur.name }}">{{ fournisseur.name }}</option>
@@ -218,11 +218,11 @@ class="container mx-auto p-6 dark:text-white">
                         <div
                             class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <span
-                                class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Quantité:</span>
+                                class="flex select-none items-center pl-3 text-placeholder/50 sm:text-sm">Quantité:</span>
                             <input type="number" name="quantite" required
                                 x-model="ligne.quantite" min="1"
                                 placeholder="Quantité"
-                                class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                                class="block flex-1 focus:ring-0 text-placeholder border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
                                 x-on:input="ligne.prixTotal = ligne.quantite * ligne.prixUnitaire">
                         </div>
 
@@ -232,7 +232,7 @@ class="container mx-auto p-6 dark:text-white">
                             <input type="number" name="prixUnitaire"
                                 x-model="ligne.prixUnitaire" required
                                 placeholder="Prix Unitaire"
-                                class="block flex-1 items-center  focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                                class="block flex-1 items-center text-placeholder  focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
                                 step="0.01"
                                 x-on:input="ligne.prixTotal = ligne.quantite * ligne.prixUnitaire">
                         </div>
@@ -244,7 +244,7 @@ class="container mx-auto p-6 dark:text-white">
                                    x-model="ligne.categorie" required
                                    list="categories-list"
                                    placeholder="Catégorie"
-                                   class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
+                                   class="block flex-1 focus:ring-0 text-placeholder border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                             <datalist id="categories-list">
                                 {% for categorie in categories_sortie %}
                                     <option value="{{ categorie.name }}">{{ categorie.name }}</option>
@@ -257,7 +257,7 @@ class="container mx-auto p-6 dark:text-white">
                             <input type="number" name="prixTotal"
                                     x-model="ligne.prixTotal"
                                     placeholder="Prix Total"
-                                    class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                                    class="block flex-1 focus:ring-0 text-placeholder border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
                                     readonly>
                                     <!-- Boutons d'action -->
                                 <div class="absolute -right-20 top-1/2 -translate-y-1/2 flex items-center space-x-2">
