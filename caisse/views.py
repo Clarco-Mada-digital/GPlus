@@ -32,6 +32,7 @@ from django.core.paginator import Paginator
 from .models import UserActivity
 from functools import wraps
 from babel.dates import format_date
+from django.db.models import F
 
 User = get_user_model()
 
@@ -249,33 +250,61 @@ def listes(request):
         'description': {'entree': 'description', 'sortie': 'description'},
         'categorie': {'entree': 'categorie__name', 'sortie': 'categorie__name'},
         'date': {'entree': 'date_transaction', 'sortie': 'date_de_sortie'},
-        'beneficiaire': {'entree': 'date_transaction', 'sortie': 'beneficiaire__name'},
-        'fournisseur': {'entree': 'date_transaction', 'sortie': 'fournisseur__name'},
-        'montant': {'entree': 'montant', 'sortie': 'montant'}
+        'beneficiaire': {'entree': None, 'sortie': 'beneficiaire__name'},
+        'fournisseur': {'entree': None, 'sortie': 'fournisseur__name'},
+        'montant': {
+            'entree': models.F('montant').desc(nulls_last=True),
+            'sortie': models.F('montant').desc(nulls_last=True)
+        },
+        'quantite': {
+            'entree': None,
+            'sortie': models.F('quantite').desc(nulls_last=True)
+        }
     }
 
-    # Appliquer le tri seulement si un tri spécifique est demandé
-    if sort_by != 'date' or ordre != 'desc':
-        sort_config = sort_field_mapping.get(sort_by, {'entree': 'date_transaction', 'sortie': 'date_de_sortie'})
+    # Modifiez également la partie du tri pour gérer le cas où sort_field_entree est None
+    if sort_by in sort_field_mapping:
+        sort_config = sort_field_mapping.get(sort_by)
         sort_field_entree = sort_config['entree']
         sort_field_sortie = sort_config['sortie']
-        
-        if ordre == 'desc':
-            sort_field_entree = f'-{sort_field_entree}'
-            sort_field_sortie = f'-{sort_field_sortie}'
-        
-        entree = entree.order_by(sort_field_entree)
-        sortie = sortie.order_by(sort_field_sortie)
+
+        # Pour les champs numériques (montant et quantité)
+        if sort_by in ['montant', 'quantite']:
+            if ordre == 'asc':
+                if sort_field_entree:
+                    sort_field_entree = models.F(sort_by).asc(nulls_last=True)
+                if sort_field_sortie:
+                    sort_field_sortie = models.F(sort_by).asc(nulls_last=True)
+            else:
+                if sort_field_entree:
+                    sort_field_entree = models.F(sort_by).desc(nulls_last=True)
+                if sort_field_sortie:
+                    sort_field_sortie = models.F(sort_by).desc(nulls_last=True)
+        else:
+            # Pour les champs non numériques
+            if ordre == 'desc':
+                if sort_field_entree:
+                    sort_field_entree = f'-{sort_field_entree}'
+                if sort_field_sortie:
+                    sort_field_sortie = f'-{sort_field_sortie}'
+
+        # Appliquer le tri aux queryset
+        if sort_field_entree:
+            entree = entree.order_by(sort_field_entree)
+        if sort_field_sortie:
+            sortie = sortie.order_by(sort_field_sortie)
 
     # Combiner les résultats
     operations = sorted(
         chain(entree, sortie),
-        key=lambda x: getattr(x, 'date_transaction', None) or getattr(x, 'date_de_sortie', None),
-        reverse=True  # Tri décroissant par défaut
+        key=lambda x: (
+            getattr(x, 'date_transaction', None) or getattr(x, 'date_de_sortie', None)
+        ),
+        reverse=(sort_by == 'date' and ordre == 'desc')
     )
 
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 5)
+    lignes_par_page = request.GET.get('lignes', 10)
     paginator = Paginator(operations, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -1101,6 +1130,12 @@ def liste_entrees(request):
     }
 
     # Appliquer le tri
+    if sort_by in valid_sort_fields:
+        sort_field = valid_sort_fields[sort_by]
+        if ordre == 'desc':
+            sort_field = f'-{sort_field}'
+        entrees = entrees.order_by(sort_field)
+        
     sort_field = valid_sort_fields.get(sort_by, 'date_transaction')  # Valeur par défaut si le champ n'est pas valide
     if ordre == 'desc':
         sort_field = f'-{sort_field}'
@@ -1113,7 +1148,7 @@ def liste_entrees(request):
     template = loader.get_template('caisse/listes/entrees.html')
     
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 5
+    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 5
     paginator = Paginator(entrees, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -1172,14 +1207,25 @@ def liste_sorties(request):
         'date': 'date_de_sortie',
         'beneficiaire': 'beneficiaire__name',
         'fournisseur': 'fournisseur__name',
-        'montant': 'montant'
+        'montant': 'montant',
+        'quantite': 'quantite'
     }
 
     # Appliquer le tri
-    sort_field = valid_sort_fields.get(sort_by, 'date_de_sortie')  # Valeur par défaut si le champ n'est pas valide
-    if ordre == 'desc':
-        sort_field = f'-{sort_field}'
-    sorties = sorties.order_by(sort_field)
+    if sort_by in valid_sort_fields:
+        sort_field = valid_sort_fields[sort_by]
+        
+        # Pour les champs numériques
+        if sort_by in ['montant', 'quantite']:
+            if ordre == 'desc':
+                sorties = sorties.order_by(F(sort_by).desc(nulls_last=True))
+            else:
+                sorties = sorties.order_by(F(sort_by).asc(nulls_last=True))
+        else:
+            # Pour les champs non numériques
+            if ordre == 'desc':
+                sort_field = f'-{sort_field}'
+            sorties = sorties.order_by(sort_field)
 
     # Récupérer uniquement les catégories de type "sortie" pour les options de filtrage
     categories = Categorie.objects.filter(type="sortie")
@@ -1190,7 +1236,7 @@ def liste_sorties(request):
     template = loader.get_template('caisse/listes/sorties.html')
 
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 5
+    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 5
     paginator = Paginator(sorties, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -1497,3 +1543,88 @@ def editer_beneficiaire(request, pk):
         'personnels': personnels,
     }
     return render(request, 'caisse/acteurs/editer_beneficiaire.html', context)
+
+@login_required
+def ajouter_element(request):
+    element_type = request.GET.get('type')
+    return_url = request.GET.get('return_url')
+    
+    if element_type == 'catégorie':
+        if request.method == 'POST':
+            form = CategorieForm(request.POST)
+            if form.is_valid():
+                categorie = form.save()
+                UserActivity.objects.create(
+                    user=request.user, 
+                    action='Création', 
+                    description='a créé une nouvelle catégorie'
+                )
+                messages.success(request, "Catégorie ajoutée avec succès")
+                if return_url:
+                    return redirect(return_url)
+                return redirect('caisse:liste_categories')
+        else:
+            form = CategorieForm()
+        return render(request, 'caisse/parametres/ajouter_categorie.html', {'form': form, 'return_url': return_url})
+    
+    elif element_type == 'bénéficiaire':
+        if request.method == 'POST':
+            form = BeneficiaireForm(request.POST)
+            if form.is_valid():
+                beneficiaire = form.save()
+                UserActivity.objects.create(
+                    user=request.user, 
+                    action='Création', 
+                    description='a créé un nouveau bénéficiaire'
+                )
+                messages.success(request, "Bénéficiaire ajouté avec succès")
+                if return_url:
+                    return redirect(return_url)
+                return redirect('caisse:liste_beneficiaires')
+        else:
+            form = BeneficiaireForm()
+        return render(request, 'caisse/acteurs/ajouter_beneficiaire.html', {'form': form, 'return_url': return_url})
+    
+    elif element_type == 'fournisseur':
+        if request.method == 'POST':
+            form = FournisseurForm(request.POST)
+            if form.is_valid():
+                fournisseur = form.save()
+                UserActivity.objects.create(
+                    user=request.user, 
+                    action='Création', 
+                    description='a créé un nouveau fournisseur'
+                )
+                messages.success(request, "Fournisseur ajouté avec succès")
+                if return_url:
+                    return redirect(return_url)
+                return redirect('caisse:liste_fournisseurs')
+        else:
+            form = FournisseurForm()
+        return render(request, 'caisse/acteurs/ajouter_fournisseur.html', {'form': form, 'return_url': return_url})
+    
+    return redirect('caisse:index')
+
+@login_required
+def verifier_categorie(request, id):
+    try:
+        exists = Categorie.objects.filter(id=id).exists()
+        return JsonResponse({'exists': exists})
+    except:
+        return JsonResponse({'exists': False})
+
+@login_required
+def verifier_beneficiaire(request, id):
+    try:
+        exists = Beneficiaire.objects.filter(id=id).exists()
+        return JsonResponse({'exists': exists})
+    except:
+        return JsonResponse({'exists': False})
+
+@login_required
+def verifier_fournisseur(request, id):
+    try:
+        exists = Fournisseur.objects.filter(id=id).exists()
+        return JsonResponse({'exists': exists})
+    except:
+        return JsonResponse({'exists': False})
