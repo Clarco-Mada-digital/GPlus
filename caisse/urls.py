@@ -65,4 +65,10 @@ urlpatterns = [
     path('beneficiaires/modifier/<int:pk>/', views.modifier_beneficiaire, name='modifier_beneficiaire'),
     path('beneficiaires/supprimer/<int:pk>/', views.supprimer_beneficiaire, name='supprimer_beneficiaire'),
     path('beneficiaires/editer/<int:pk>/', views.editer_beneficiaire, name='editer_beneficiaire'),
+    # API de vérification pour l'ajouts des opérations
+    path('ajouter-element/', views.ajouter_element, name='ajouter_element'),
+    # Routes API pour la vérification
+    path('api/verifier-categorie/<str:id>/', views.verifier_categorie, name='verifier_categorie'),
+    path('api/verifier-beneficiaire/<str:id>/', views.verifier_beneficiaire, name='verifier_beneficiaire'),
+    path('api/verifier-fournisseur/<str:id>/', views.verifier_fournisseur, name='verifier_fournisseur'),
 ]

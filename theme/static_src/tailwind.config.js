@@ -57,7 +57,8 @@ module.exports = {
         cp_primary : "#7152F3",
         cp_secondary : "#DCDBDE",
         table : "#718EBF",
-        placeholder : "#5477B1",
+        liste : "#343C6A",
+        placeholder : "#5477B1"
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
