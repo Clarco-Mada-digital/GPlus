@@ -59,7 +59,18 @@ urlpatterns = [
     path('export/excel/', views.generer_excel_operations, name='generer_excel_operations'), 
     path('export-entree/excel/', views.generer_excel_operations_entrees, name='generer_excel_operations_entrees'),
     path('export-sortie/excel/',views.generer_excel_operations_sorties, name="generer_excel_operations_sorties"),
-    # Ajouter ces lignes dans urlpatterns
+  
+     # Ajouter ces nouvelles URLs dans urlpatterns
+    path('details/entrees/', views.details_entrees, name='details_entrees'),
+    path('details/sorties/', views.details_sorties, name='details_sorties'),
+    path('details/solde/', views.details_solde, name='details_solde'),
+    # API de vérification pour l'ajouts des opérations
+    path('ajouter-element/', views.ajouter_element, name='ajouter_element'),
+    # Routes API pour la vérification
+    path('api/verifier-categorie/<str:id>/', views.verifier_categorie, name='verifier_categorie'),
+    path('api/verifier-beneficiaire/<str:id>/', views.verifier_beneficiaire, name='verifier_beneficiaire'),
+    path('api/verifier-fournisseur/<str:id>/', views.verifier_fournisseur, name='verifier_fournisseur'),
+    # Gestion des bénéficiaires
     path('beneficiaires/', views.beneficiaires, name='beneficiaires'),
     path('beneficiaires/creer/', views.creer_beneficiaire, name='creer_beneficiaire'),
     path('beneficiaires/modifier/<int:pk>/', views.modifier_beneficiaire, name='modifier_beneficiaire'),

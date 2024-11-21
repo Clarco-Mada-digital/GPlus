@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     "django_browser_reload",
     'tailwind',
     'theme',
@@ -45,7 +46,6 @@ INSTALLED_APPS = [
     'personnel',
     'caisse',
     'simple_history',
-    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
