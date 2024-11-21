@@ -1,0 +1,106 @@
+{% extends 'layout/layout.html' %}
+{% load humanize %}
+
+{% block title_page %}Détails du Solde{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    {% include 'caisse/details/partials/nav_details.html' with active='solde' %}
+
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Détails du Solde</h1>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white dark:bg-secondary rounded-lg p-4">
+                <p class="text-sm text-gray-600 dark:text-gray-300">Total des Entrées</p>
+                <p class="text-xl font-bold text-blue-600">Ar {{ total_entrees|floatformat:0|intcomma }}</p>
+            </div>
+            <div class="bg-white dark:bg-secondary rounded-lg p-4">
+                <p class="text-sm text-gray-600 dark:text-gray-300">Total des Sorties</p>
+                <p class="text-xl font-bold text-pink-600">Ar {{ total_sorties|floatformat:0|intcomma }}</p>
+            </div>
+            <div class="bg-white dark:bg-secondary rounded-lg p-4">
+                <p class="text-sm text-gray-600 dark:text-gray-300">Solde Final</p>
+                <p class="text-xl font-bold {% if solde_final >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                    Ar {{ solde_final|floatformat:0|intcomma }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-secondary rounded-lg shadow-md">
+        <!-- Table responsive -->
+        <div class="overflow-x-auto">
+            <div class="inline-block min-w-full align-middle">
+                <div class="overflow-hidden">
+                    <div class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <!-- En-têtes pour grand écran -->
+                        <div class="hidden md:block">
+                            <div class="bg-gray-50 dark:bg-gray-700">
+                                <div class="grid grid-cols-5 gap-2">
+                                    <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Mois</div>
+                                    <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Entrées</div>
+                                    <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Sorties</div>
+                                    <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Solde du mois</div>
+                                    <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Solde cumulé</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Données -->
+                        <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                            {% for solde in soldes %}
+                            <!-- Version mobile -->
+                            <div class="md:hidden p-4 space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Mois:</span>
+                                    <span class="text-sm text-gray-900 dark:text-gray-300">{{ solde.mois_format }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Entrées:</span>
+                                    <span class="text-sm text-blue-600 dark:text-blue-400">Ar {{ solde.entrees|floatformat:0|intcomma }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Sorties:</span>
+                                    <span class="text-sm text-pink-600 dark:text-pink-400">Ar {{ solde.sorties|floatformat:0|intcomma }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Solde du mois:</span>
+                                    <span class="text-sm {% if solde.solde_mois >= 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+                                        Ar {{ solde.solde_mois|floatformat:0|intcomma }}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Solde cumulé:</span>
+                                    <span class="text-sm {% if solde.solde_cumule >= 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+                                        Ar {{ solde.solde_cumule|floatformat:0|intcomma }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Version desktop -->
+                            <div class="hidden md:grid grid-cols-5 gap-2 hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">
+                                    {{ solde.mois_format }}
+                                </div>
+                                <div class="px-4 py-3 text-sm text-blue-600 dark:text-blue-400 text-right">
+                                    Ar {{ solde.entrees|floatformat:0|intcomma }}
+                                </div>
+                                <div class="px-4 py-3 text-sm text-pink-600 dark:text-pink-400 text-right">
+                                    Ar {{ solde.sorties|floatformat:0|intcomma }}
+                                </div>
+                                <div class="px-4 py-3 text-sm {% if solde.solde_mois >= 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %} text-right">
+                                    Ar {{ solde.solde_mois|floatformat:0|intcomma }}
+                                </div>
+                                <div class="px-4 py-3 text-sm {% if solde.solde_cumule >= 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %} text-right">
+                                    Ar {{ solde.solde_cumule|floatformat:0|intcomma }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
