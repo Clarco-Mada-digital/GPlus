@@ -5,149 +5,203 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-
-    <div class=" overflow-hidden mb-8">
-        <div class="flex justify-between items-center p-4">
-            <h2 class="text-xl font-semibold dark:text-white">Détails des
-                Dépenses par
-                Employés</h2>
-            <select id="moisSelect" class="border rounded px-12 py-1"
-                onchange="updateMonth(this.value)">
+    <!-- En-tête avec sélecteur de mois -->
+    <div class="bg-white dark:bg-secondary rounded-2xl shadow-sm mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-center p-4">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 md:mb-0">
+                Détails des Dépenses par Employés
+            </h2>
+            <select id="moisSelect" 
+                    class="w-full md:w-auto px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
+                    onchange="updateMonth(this.value)">
                 {% for mois in mois_liste %}
-                <option value="{{ mois.value }}"
-                    {% if mois.value == mois_selectionne %}selected{% endif %}>
+                <option value="{{ mois.value }}" {% if mois.value == mois_selectionne %}selected{% endif %}>
                     {{ mois.label }}
                 </option>
                 {% endfor %}
             </select>
         </div>
-        <div class="bg-white dark:bg-secondary rounded-2xl p-4">
-            <table
-                class=" divide-gray-200 dark:divide-gray-600 text-gray-800 dark:text-gray-400 text-center">
-                <thead class>
-                    <tr>
-                        <th
-                            class="px-6 py-3 text-left text-md font-medium text-gray-500 dark:text-white tracking-wider">Employé</th>
-                        <th
-                            class="px-6 py-3 text-left text-md font-medium text-gray-500 dark:text-white tracking-wider">Total
-                            des dépenses</th>
-                        <th
-                            class="px-6 py-3 text-left text-md font-medium text-gray-500 dark:text-white                                                                                 tracking-wider">Catégorie
-                            la plus dépensée</th>
-                        <th
-                            class="px-6 py-3 text-left text-md font-medium text-gray-500 dark:text-white tracking-wider">Nombre
-                            total des dépenses</th>
-                        <th
-                            class="px-6 py-3 text-left text-md font-medium text-gray-500 dark:text-white tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody
-                    class="bg-white dark:bg-secondary divide-y divide-gray-200 dark:divide-gray-600 p-4">
-                    {% for depense in depenses_par_employe %}
-                    <tr>
-                        <td class="    py-4 whitespace-nowrap">
-                            {{ depense.beneficiaire__personnel__first_name }}
-                        </td>
-                        <td class="    py-4 whitespace-nowrap">
-                            {{ depense.total_depenses }} Ar
-                        </td>
-                        <td class="    py-4 whitespace-nowrap">
-                            {{ depense.categorie_plus_depensee }}
-                        </td>
-                        <td class="    py-4 whitespace-nowrap">
-                            {{ depense.nombre_depenses }}
-                        </td>
-                        <td class="    py-4 whitespace-nowrap">
-                            <button
-                                class="text-primary hover:text-primary">•••</button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+        <!-- Table responsive -->
+        <div class="overflow-x-auto">
+            <div class="inline-block min-w-full align-middle">
+                <div class="overflow-hidden">
+                    <div class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <!-- En-têtes pour grand écran -->
+                        <div class="bg-gray-50 dark:bg-gray-700">
+                            <div class="grid grid-cols-5 gap-2">
+                                <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Employé</div>
+                                <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total des dépenses</div>
+                                <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Catégorie la plus dépensée</div>
+                                <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Nombre d'opérations</div>
+                                <div class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</div>
+                            </div>
+                        </div>
+
+                        <!-- Données -->
+                        <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                            {% for depense in depenses_par_employe %}
+                            <!-- Version mobile -->
+                            <div class="md:hidden p-4 space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Employé:</span>
+                                    <span class="text-sm text-gray-900 dark:text-gray-300">
+                                        {{ depense.beneficiaire__personnel__first_name }}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Total:</span>
+                                    <span class="text-sm text-blue-600 dark:text-blue-400">
+                                        Ar {{ depense.total_depenses|floatformat:0 }}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Catégorie:</span>
+                                    <span class="text-sm text-gray-900 dark:text-gray-300">
+                                        {{ depense.categorie_plus_depensee }}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Opérations:</span>
+                                    <span class="text-sm text-gray-900 dark:text-gray-300">
+                                        {{ depense.nombre_depenses }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Version desktop -->
+                            <div class="hidden md:grid grid-cols-5 gap-2 hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">
+                                    {{ depense.beneficiaire__personnel__first_name }}
+                                </div>
+                                <div class="px-4 py-3 text-sm text-blue-600 dark:text-blue-400 text-right">
+                                    Ar {{ depense.total_depenses|floatformat:0}}
+                                </div>
+                                <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">
+                                    {{ depense.categorie_plus_depensee }}
+                                </div>
+                                <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300 text-right">
+                                    {{ depense.nombre_depenses }}
+                                </div>
+                                <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300 text-center">
+                                    <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                        •••
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Dépenses par Catégories -->
-    <h2
-        class="text-xl font-semibold text-gray-700 dark:text-white mt-16  mb-3">Détails
-        des
-        Dépenses
-        par
-        Catégories</h2>
-    <div class="bg-white dark:bg-gray-600 rounded-2xl overflow-hidden mb-8">
+    <div class="bg-white dark:bg-secondary rounded-2xl shadow-sm mb-8">
+        <div class="p-4">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+                Détails des Dépenses par Catégories
+            </h2>
+            
+            <div class="overflow-x-auto">
+                <div class="inline-block min-w-full align-middle">
+                    <div class="overflow-hidden">
+                        <div class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <!-- En-têtes -->
+                            <div class="bg-gray-50 dark:bg-gray-700">
+                                <div class="grid grid-cols-4 gap-2">
+                                    <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Catégorie</div>
+                                    <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total des dépenses</div>
+                                    <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Nombre d'opérations</div>
+                                    <div class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</div>
+                                </div>
+                            </div>
 
-        <table
-            class="min-w-full divide-y divide-gray-200 py-4 text-gray-800 dark:text-white">
-            <thead class="text-center">
-                <tr>
-                    <th
-                        class="px-6 py-3 text-left text-md font-medium text-gray-800  tracking-wider">Catégorie</th>
-                    <th
-                        class="px-6 py-3 text-left text-md font-medium text-gray-800  tracking-wider">Total
-                        des dépenses</th>
-                    <th
-                        class="px-6 py-3 text-left text-md font-medium text-gray-800  tracking-wider">Nombre
-                        total des dépenses</th>
-                    <th
-                        class="px-6 py-3 text-left text-md font-medium text-gray-800  tracking-wider">Actions</th>
-                </tr>
-            </thead>
-            <tbody
-                class="bg-white dark:bg-secondary text-center divide-y divide-gray-200">
-                {% for depense in depenses_par_categorie %}
-                <tr>
-                    <td class=" text-gray-600  py-4 ">
-                        {{ depense.categorie__name }}
-                    </td>
-                    <td class=" text-gray-600  py-4 ">
-                        {{ depense.total_depenses }} Ar
-                    </td>
-                    <td class=" text-gray-600  py-4 ">
-                        {{ depense.nombre_depenses }}
-                    </td>
-                    <td class=" text-gray-600  py-4 ">
-                        <button
-                            class="text-primary hover:text-primary">•••</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                            <!-- Données -->
+                            <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                                {% for depense in depenses_par_categorie %}
+                                <!-- Version mobile -->
+                                <div class="md:hidden p-4 space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Catégorie:</span>
+                                        <span class="text-sm text-gray-900 dark:text-gray-300">
+                                            {{ depense.categorie__name }}
+                                        </span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Total:</span>
+                                        <span class="text-sm text-blue-600 dark:text-blue-400">
+                                            Ar {{ depense.total_depenses|floatformat:0 }}
+                                        </span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Opérations:</span>
+                                        <span class="text-sm text-gray-900 dark:text-gray-300">
+                                            {{ depense.nombre_depenses }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Version desktop -->
+                                <div class="hidden md:grid grid-cols-4 gap-2 hover:bg-gray-50 dark:hover:bg-gray-800">
+                                    <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">
+                                        {{ depense.categorie__name }}
+                                    </div>
+                                    <div class="px-4 py-3 text-sm text-blue-600 dark:text-blue-400 text-right">
+                                        Ar {{ depense.total_depenses|floatformat:0}}
+                                    </div>
+                                    <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300 text-right">
+                                        {{ depense.nombre_depenses }}
+                                    </div>
+                                    <div class="px-4 py-3 text-sm text-center">
+                                        <button class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                            •••
+                                        </button>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Graphiques -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- Graphique par Catégories -->
-        <div class>
+        <div class="bg-white dark:bg-secondary rounded-2xl shadow-sm p-4">
             <div class="flex justify-between items-center mb-4">
-                <h2
-                    class="text-xl font-semibold text-gray-700 ">Graphique
-                    par catégories</h2>
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
+                    Graphique par catégories
+                </h2>
                 <select id="graphiqueSelect"
-                    class="border-none rounded-xl px-12 py-2"
-                    onchange="updateGraphType(this.value)">
+                        class="px-4 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
+                        onchange="updateGraphType(this.value)">
                     <option value="mensuel">Mensuel</option>
                     <option value="annuel">Annuel</option>
                 </select>
             </div>
-            <div class="bg-white dark:bg-secondary rounded-2xl p-4"
-                style="height: 400px;">
+            <div style="height: 400px;">
                 <canvas id="categoryChart"></canvas>
             </div>
         </div>
 
         <!-- Graphique Dépenses par année -->
-        <div>
-            <h2 class="text-xl font-semibold mb-4">Dépenses par année</h2>
-            <div class="bg-white rounded-2xl p-4" style="height: 400px;">
+        <div class="bg-white dark:bg-secondary rounded-2xl shadow-sm p-4">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+                Dépenses par année
+            </h2>
+            <div style="height: 400px;">
                 <canvas id="yearlyExpensesChart"></canvas>
             </div>
         </div>
     </div>
 </div>
 
-<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     function updateMonth(mois) {
         const url = new URL(window.location);
@@ -393,6 +447,20 @@
                 filterTableByCategory(selectedCategory);
             }
         }
+    });
+
+    // Mettre à jour les options des graphiques pour le mode sombre
+    Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151';
+    Chart.defaults.borderColor = document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb';
+
+    // Écouter les changements de mode
+    document.addEventListener('dark-mode', function() {
+        Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151';
+        Chart.defaults.borderColor = document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb';
+        
+        // Mettre à jour les graphiques
+        if (categoryChart) categoryChart.update();
+        if (yearlyExpensesChart) yearlyExpensesChart.update();
     });
 </script>
 {% endblock %}

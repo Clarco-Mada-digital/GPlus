@@ -1,0 +1,35 @@
+<div class="flex flex-col md:flex-row justify-between items-center mb-8">
+    <div class="flex justify-center space-x-4 mb-4 md:mb-0">
+        <a href="{% url 'caisse:details_solde' %}{% if selected_year %}?year={{ selected_year }}{% endif %}"
+            class="px-6 py-3 rounded-lg font-medium transition-all duration-200 {% if active == 'solde' %}bg-blue-500 text-white{% else %}bg-white dark:bg-secondary text-gray-600 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900{% endif %}">
+            Solde
+        </a>
+        <a href="{% url 'caisse:details_entrees' %}{% if selected_year %}?year={{ selected_year }}{% endif %}"
+            class="px-6 py-3 rounded-lg font-medium transition-all duration-200 {% if active == 'entrees' %}bg-cyan-500 text-white{% else %}bg-white dark:bg-secondary text-gray-600 dark:text-gray-300 hover:bg-cyan-50 dark:hover:bg-cyan-900{% endif %}">
+            Entrées
+        </a>
+        <a href="{% url 'caisse:details_sorties' %}{% if selected_year %}?year={{ selected_year }}{% endif %}"
+            class="px-6 py-3 rounded-lg font-medium transition-all duration-200 {% if active == 'sorties' %}bg-rose-500 text-white{% else %}bg-white dark:bg-secondary text-gray-600 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-pink-900{% endif %}">
+            Sorties
+        </a>
+    </div>
+    <div class="flex items-center space-x-2">
+        <label for="year-select" class="text-gray-600 dark:text-gray-300">Année :</label>
+        <select id="year-select" onchange="changeYear(this.value)"
+            class="px-4 py-2 rounded-lg bg-white dark:bg-secondary text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600">
+            {% for year in available_years %}
+                <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>
+                    {{ year }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<script>
+function changeYear(year) {
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('year', year);
+    window.location.href = currentUrl.toString();
+}
+</script>

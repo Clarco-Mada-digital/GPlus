@@ -207,9 +207,9 @@ def listes(request):
     sort_by = request.GET.get('sort', 'date')
     ordre = request.GET.get('order', 'desc')
     
-    # Initialiser les queryset avec tri par défaut
-    entree = OperationEntrer.objects.all().order_by('-date_transaction')
-    sortie = OperationSortir.objects.all().order_by('-date_de_sortie')
+    # Filtrer les opérations d'entrée et de sortie
+    entree = OperationEntrer.objects.all()
+    sortie = OperationSortir.objects.all()
 
     # Appliquer les filtres de recherche
     if query:
@@ -1484,6 +1484,140 @@ def editer_beneficiaire(request, pk):
         'personnels': personnels,
     }
     return render(request, 'caisse/acteurs/editer_beneficiaire.html', context)
+
+def get_available_years():
+    """Récupère toutes les années disponibles dans les opérations"""
+    current_year = timezone.now().year
+    all_years = set()
+    
+    # Années des entrées
+    entree_years = OperationEntrer.objects.dates('date_transaction', 'year')
+    all_years.update(d.year for d in entree_years)
+    
+    # Années des sorties
+    sortie_years = OperationSortir.objects.dates('date_de_sortie', 'year')
+    all_years.update(d.year for d in sortie_years)
+    
+    # Ajouter l'année courante si elle n'est pas déjà présente
+    all_years.add(current_year)
+    
+    return sorted(list(all_years), reverse=True)
+
+@login_required
+def details_entrees(request):
+    """Vue détaillée des entrées par mois"""
+    # Récupérer l'année sélectionnée ou utiliser l'année courante
+    selected_year = int(request.GET.get('year', timezone.now().year))
+    
+    # Filtrer les entrées pour l'année sélectionnée
+    entrees = OperationEntrer.objects.filter(
+        date_transaction__year=selected_year
+    ).annotate(
+        mois=TruncMonth('date_transaction')
+    ).values('mois').annotate(
+        total=Sum('montant'),
+        nombre_operations=Count('id')
+    ).order_by('-mois')
+
+    for entree in entrees:
+        entree['operations'] = OperationEntrer.objects.filter(
+            date_transaction__month=entree['mois'].month,
+            date_transaction__year=entree['mois'].year
+        ).order_by('-date_transaction')
+        entree['mois_format'] = format_date(entree['mois'], format='MMMM yyyy', locale='fr_FR')
+
+    context = {
+        'entrees': entrees,
+        'total_general': sum(entree['total'] for entree in entrees),
+        'selected_year': selected_year,
+        'available_years': get_available_years(),
+    }
+    return render(request, 'caisse/details/details_entrees.html', context)
+
+@login_required
+def details_sorties(request):
+    """Vue détaillée des sorties par mois"""
+    selected_year = int(request.GET.get('year', timezone.now().year))
+    
+    sorties = OperationSortir.objects.filter(
+        date_de_sortie__year=selected_year
+    ).annotate(
+        mois=TruncMonth('date_de_sortie')
+    ).values('mois').annotate(
+        total=Sum('montant'),
+        nombre_operations=Count('id')
+    ).order_by('-mois')
+
+    for sortie in sorties:
+        sortie['operations'] = OperationSortir.objects.filter(
+            date_de_sortie__month=sortie['mois'].month,
+            date_de_sortie__year=sortie['mois'].year
+        ).order_by('-date_de_sortie')
+        sortie['mois_format'] = format_date(sortie['mois'], format='MMMM yyyy', locale='fr_FR')
+
+    context = {
+        'sorties': sorties,
+        'total_general': sum(sortie['total'] for sortie in sorties),
+        'selected_year': selected_year,
+        'available_years': get_available_years(),
+    }
+    return render(request, 'caisse/details/details_sorties.html', context)
+
+@login_required
+def details_solde(request):
+    """Vue détaillée du solde par mois"""
+    selected_year = int(request.GET.get('year', timezone.now().year))
+    
+    # Calculer les entrées et sorties pour l'année sélectionnée
+    entrees = OperationEntrer.objects.filter(
+        date_transaction__year=selected_year
+    ).annotate(
+        mois=TruncMonth('date_transaction')
+    ).values('mois').annotate(
+        total_entrees=Sum('montant')
+    ).order_by('-mois')
+
+    sorties = OperationSortir.objects.filter(
+        date_de_sortie__year=selected_year
+    ).annotate(
+        mois=TruncMonth('date_de_sortie')
+    ).values('mois').annotate(
+        total_sorties=Sum('montant')
+    ).order_by('-mois')
+
+    # Combiner les données
+    soldes_mensuels = []
+    solde_cumule = 0
+    
+    entrees_dict = {e['mois']: e['total_entrees'] for e in entrees}
+    sorties_dict = {s['mois']: s['total_sorties'] for s in sorties}
+    
+    tous_mois = sorted(set(list(entrees_dict.keys()) + list(sorties_dict.keys())), reverse=True)
+    
+    for mois in tous_mois:
+        entrees_mois = entrees_dict.get(mois, 0) or 0
+        sorties_mois = sorties_dict.get(mois, 0) or 0
+        solde_mois = entrees_mois - sorties_mois
+        solde_cumule += solde_mois
+        
+        soldes_mensuels.append({
+            'mois': mois,
+            'mois_format': format_date(mois, format='MMMM yyyy', locale='fr_FR'),
+            'entrees': entrees_mois,
+            'sorties': sorties_mois,
+            'solde_mois': solde_mois,
+            'solde_cumule': solde_cumule
+        })
+
+    context = {
+        'soldes': soldes_mensuels,
+        'total_entrees': sum(entrees_dict.values()),
+        'total_sorties': sum(sorties_dict.values()),
+        'solde_final': sum(entrees_dict.values()) - sum(sorties_dict.values()),
+        'selected_year': selected_year,
+        'available_years': get_available_years(),
+    }
+    return render(request, 'caisse/details/details_solde.html', context)
 
 @login_required
 def ajouter_element(request):
