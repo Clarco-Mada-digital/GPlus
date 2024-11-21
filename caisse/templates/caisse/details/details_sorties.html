@@ -1,0 +1,107 @@
+{% extends 'layout/layout.html' %}
+{% load humanize %}
+
+{% block title_page %}Détails des Sorties{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    {% include 'caisse/details/partials/nav_details.html' with active='sorties' %}
+
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Détails des Sorties</h1>
+        <p class="text-gray-600 dark:text-gray-300">Total général: Ar {{ total_general|floatformat:0|intcomma }}</p>
+    </div>
+
+    {% for sortie in sorties %}
+    <div class="bg-white dark:bg-secondary rounded-lg shadow-md mb-6">
+        <div class="p-4 bg-pink-50 dark:bg-pink-900">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
+                {{ sortie.mois_format }}
+            </h2>
+            <p class="text-gray-600 dark:text-gray-300">
+                Total: Ar {{ sortie.total|floatformat:0|intcomma }}
+                ({{ sortie.nombre_operations }} opérations)
+            </p>
+        </div>
+
+        <!-- Table responsive -->
+        <div class="overflow-x-auto">
+            <div class="inline-block min-w-full align-middle">
+                <div class="overflow-hidden">
+                    <div class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <!-- En-têtes pour grand écran -->
+                        <div class="hidden md:block">
+                            <div class="bg-gray-50 dark:bg-gray-700">
+                                <div class="grid grid-cols-6 gap-2">
+                                    <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Date</div>
+                                    <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Description</div>
+                                    <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Catégorie</div>
+                                    <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Bénéficiaire</div>
+                                    <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Fournisseur</div>
+                                    <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Montant</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Données -->
+                        <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                            {% for operation in sortie.operations %}
+                            <!-- Version mobile -->
+                            <div class="md:hidden p-4 space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Date:</span>
+                                    <span class="text-sm text-gray-900 dark:text-gray-300">{{ operation.date_de_sortie|date:"d/m/Y" }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Description:</span>
+                                    <span class="text-sm text-gray-900 dark:text-gray-300">{{ operation.description }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Catégorie:</span>
+                                    <span class="text-sm text-gray-900 dark:text-gray-300">{{ operation.categorie.name }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Bénéficiaire:</span>
+                                    <span class="text-sm text-gray-900 dark:text-gray-300">{{ operation.beneficiaire }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Fournisseur:</span>
+                                    <span class="text-sm text-gray-900 dark:text-gray-300">{{ operation.fournisseur }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Montant:</span>
+                                    <span class="text-sm text-gray-900 dark:text-gray-300">Ar {{ operation.montant|floatformat:0|intcomma }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Version desktop -->
+                            <div class="hidden md:grid grid-cols-6 gap-2 hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">
+                                    {{ operation.date_de_sortie|date:"d/m/Y" }}
+                                </div>
+                                <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">
+                                    {{ operation.description }}
+                                </div>
+                                <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">
+                                    {{ operation.categorie.name }}
+                                </div>
+                                <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">
+                                    {{ operation.beneficiaire }}
+                                </div>
+                                <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">
+                                    {{ operation.fournisseur }}
+                                </div>
+                                <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300 text-right">
+                                    Ar {{ operation.montant|floatformat:0|intcomma }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
