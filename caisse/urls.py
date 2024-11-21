@@ -65,8 +65,4 @@ urlpatterns = [
     path('beneficiaires/modifier/<int:pk>/', views.modifier_beneficiaire, name='modifier_beneficiaire'),
     path('beneficiaires/supprimer/<int:pk>/', views.supprimer_beneficiaire, name='supprimer_beneficiaire'),
     path('beneficiaires/editer/<int:pk>/', views.editer_beneficiaire, name='editer_beneficiaire'),
-    # Ajouter ces nouvelles URLs dans urlpatterns
-    path('details/entrees/', views.details_entrees, name='details_entrees'),
-    path('details/sorties/', views.details_sorties, name='details_sorties'),
-    path('details/solde/', views.details_solde, name='details_solde'),
 ]

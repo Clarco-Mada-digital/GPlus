@@ -18,9 +18,14 @@
         <link
             href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:wght@100..900&family=Urbanist:ital,wght@0,554;1,554&display=swap"
             rel="stylesheet">
+            <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
     </head>
 
     <style>
+    /* Mode sombre */
+    .dark input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1); /* Blanc en mode sombre */
+    }
     body {
         font-family: "Inter", sans-serif;
         font-optical-sizing: auto;
@@ -115,7 +120,7 @@
                         <span class="ml-3">Opérations</span>
                     </a>
                     <a href="{% url 'caisse:listes' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/listes/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
+                    class="flex items-center px-4 py-2 mt-2 {% if '/caisse/listes/' in request.path %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                             fill="currentColor">

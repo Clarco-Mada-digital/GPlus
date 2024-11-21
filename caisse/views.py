@@ -32,6 +32,7 @@ from django.core.paginator import Paginator
 from .models import UserActivity
 from functools import wraps
 from babel.dates import format_date
+from django.db.models import F
 
 User = get_user_model()
 
@@ -194,7 +195,7 @@ def categories(request):
 @login_required
 def listes(request):
     """
-    Affiche la liste des opérations.
+    Affiche la liste des opérations avec filtrage et tri.
     """
     # Récupérer les filtres de recherche et de triage
     query = request.GET.get('q')
@@ -203,91 +204,124 @@ def listes(request):
     fournisseur_id = request.GET.get('fournisseur')
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
-    sort_by = request.GET.get('sort', 'date')  # Par défaut, tri par date
-    ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
+    sort_by = request.GET.get('sort', 'date')  # 'date' est maintenant le tri par défaut
+    ordre = request.GET.get('order', 'desc')  # 'desc' est maintenant l'ordre par défaut
     
-    # Filtrer les opérations d'entr��e et de sortie
+    # Filtrer les opérations d'entrée et de sortie
     entree = OperationEntrer.objects.all()
     sortie = OperationSortir.objects.all()
 
-    # Appliquer les filtres
+    # Appliquer les filtres de recherche
     if query:
         entree = entree.filter(
             Q(description__icontains=query) |
             Q(categorie__name__icontains=query) |
-            Q(montant__icontains=query) |
-            Q(date_transaction__icontains=query)
+            Q(montant__icontains=query)
         )
         sortie = sortie.filter(
             Q(description__icontains=query) |
             Q(categorie__name__icontains=query) |
-            Q(montant__icontains=query) |
-            Q(date_de_sortie__icontains=query)
+            Q(montant__icontains=query)
         )
+
+    # Filtre par catégorie
     if categorie_id:
         entree = entree.filter(categorie_id=categorie_id)
         sortie = sortie.filter(categorie_id=categorie_id)
 
+    # Filtre par bénéficiaire (uniquement pour les sorties)
     if beneficiaire_id:
         sortie = sortie.filter(beneficiaire_id=beneficiaire_id)
 
+    # Filtre par fournisseur (uniquement pour les sorties)
     if fournisseur_id:
         sortie = sortie.filter(fournisseur_id=fournisseur_id)
 
+    # Filtres par date
     if date_min:
         entree = entree.filter(date_transaction__gte=date_min)
         sortie = sortie.filter(date_de_sortie__gte=date_min)
-
     if date_max:
         entree = entree.filter(date_transaction__lte=date_max)
         sortie = sortie.filter(date_de_sortie__lte=date_max)
 
-    # Récupérer le nombre de lignes par page depuis les paramètres GET
-    lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 10
+    # Configuration du tri
+    sort_field_mapping = {
+        'description': {'entree': 'description', 'sortie': 'description'},
+        'categorie': {'entree': 'categorie__name', 'sortie': 'categorie__name'},
+        'date': {'entree': 'date_transaction', 'sortie': 'date_de_sortie'},
+        'beneficiaire': {'entree': None, 'sortie': 'beneficiaire__name'},
+        'fournisseur': {'entree': None, 'sortie': 'fournisseur__name'},
+        'montant': {
+            'entree': models.F('montant').desc(nulls_last=True),
+            'sortie': models.F('montant').desc(nulls_last=True)
+        },
+        'quantite': {
+            'entree': None,
+            'sortie': models.F('quantite').desc(nulls_last=True)
+        }
+    }
 
-    # Combiner et trier par date
-    if sort_by == 'date':
-        key_func = lambda op: getattr(op, 'date_transaction', None) or getattr(op, 'date_de_sortie', None)
-    elif sort_by == 'categorie':
-        key_func = lambda op: op.categorie.name
-    elif sort_by == 'description':
-        key_func = lambda op: op.description
-    elif sort_by == 'beneficiaire':
-        key_func = lambda op: op.beneficiaire.name if op.beneficiaire else ''
-    elif sort_by == 'fournisseur':
-        key_func = lambda op: op.fournisseur.name if op.fournisseur else ''
-    else:
-        key_func = lambda op: getattr(op, 'date_transaction', None) or getattr(op, 'date_de_sortie', None)
+    # Modifiez également la partie du tri pour gérer le cas où sort_field_entree est None
+    if sort_by in sort_field_mapping:
+        sort_config = sort_field_mapping.get(sort_by)
+        sort_field_entree = sort_config['entree']
+        sort_field_sortie = sort_config['sortie']
 
-    # Trier les opérations
+        # Pour les champs numériques (montant et quantité)
+        if sort_by in ['montant', 'quantite']:
+            if ordre == 'asc':
+                if sort_field_entree:
+                    sort_field_entree = models.F(sort_by).asc(nulls_last=True)
+                if sort_field_sortie:
+                    sort_field_sortie = models.F(sort_by).asc(nulls_last=True)
+            else:
+                if sort_field_entree:
+                    sort_field_entree = models.F(sort_by).desc(nulls_last=True)
+                if sort_field_sortie:
+                    sort_field_sortie = models.F(sort_by).desc(nulls_last=True)
+        else:
+            # Pour les champs non numériques
+            if ordre == 'desc':
+                if sort_field_entree:
+                    sort_field_entree = f'-{sort_field_entree}'
+                if sort_field_sortie:
+                    sort_field_sortie = f'-{sort_field_sortie}'
+
+        # Appliquer le tri aux queryset
+        if sort_field_entree:
+            entree = entree.order_by(sort_field_entree)
+        if sort_field_sortie:
+            sortie = sortie.order_by(sort_field_sortie)
+
+    # Combiner les résultats
     operations = sorted(
         chain(entree, sortie),
-        key=key_func,
-        reverse=(ordre == 'desc')
+        key=lambda x: (
+            getattr(x, 'date_transaction', None) or getattr(x, 'date_de_sortie', None)
+        ),
+        reverse=(sort_by == 'date' and ordre == 'desc')
     )
+
     # Pagination
+    lignes_par_page = request.GET.get('lignes', 10)
     paginator = Paginator(operations, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
-    # Récupérer les catégories, bénéficiaires et fournisseurs pour les options de filtrage
-    categories = Categorie.objects.all()
-    beneficiaires = Beneficiaire.objects.all()
-    fournisseurs = Fournisseur.objects.all()
 
-    # Contexte et rendu du template
-    template = loader.get_template('caisse/listes/listes_operations.html')
+    # Contexte pour le template
     context = {
         'page_obj': page_obj,
-        'categories': categories,
-        'beneficiaires': beneficiaires,
-        'fournisseurs': fournisseurs,
+        'categories': Categorie.objects.all(),
+        'beneficiaires': Beneficiaire.objects.all(),
+        'fournisseurs': Fournisseur.objects.all(),
         'prix': "Ar",
         'sort_by': sort_by,
         'ordre': ordre,
         'lignes_par_page': lignes_par_page,
     }
-    return HttpResponse(template.render(context, request))
+
+    return render(request, 'caisse/listes/listes_operations.html', context)
 
 @login_required
 def depenses(request):
@@ -1096,6 +1130,12 @@ def liste_entrees(request):
     }
 
     # Appliquer le tri
+    if sort_by in valid_sort_fields:
+        sort_field = valid_sort_fields[sort_by]
+        if ordre == 'desc':
+            sort_field = f'-{sort_field}'
+        entrees = entrees.order_by(sort_field)
+        
     sort_field = valid_sort_fields.get(sort_by, 'date_transaction')  # Valeur par défaut si le champ n'est pas valide
     if ordre == 'desc':
         sort_field = f'-{sort_field}'
@@ -1108,7 +1148,7 @@ def liste_entrees(request):
     template = loader.get_template('caisse/listes/entrees.html')
     
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 5
+    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 5
     paginator = Paginator(entrees, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -1167,14 +1207,25 @@ def liste_sorties(request):
         'date': 'date_de_sortie',
         'beneficiaire': 'beneficiaire__name',
         'fournisseur': 'fournisseur__name',
-        'montant': 'montant'
+        'montant': 'montant',
+        'quantite': 'quantite'
     }
 
     # Appliquer le tri
-    sort_field = valid_sort_fields.get(sort_by, 'date_de_sortie')  # Valeur par défaut si le champ n'est pas valide
-    if ordre == 'desc':
-        sort_field = f'-{sort_field}'
-    sorties = sorties.order_by(sort_field)
+    if sort_by in valid_sort_fields:
+        sort_field = valid_sort_fields[sort_by]
+        
+        # Pour les champs numériques
+        if sort_by in ['montant', 'quantite']:
+            if ordre == 'desc':
+                sorties = sorties.order_by(F(sort_by).desc(nulls_last=True))
+            else:
+                sorties = sorties.order_by(F(sort_by).asc(nulls_last=True))
+        else:
+            # Pour les champs non numériques
+            if ordre == 'desc':
+                sort_field = f'-{sort_field}'
+            sorties = sorties.order_by(sort_field)
 
     # Récupérer uniquement les catégories de type "sortie" pour les options de filtrage
     categories = Categorie.objects.filter(type="sortie")
@@ -1185,7 +1236,7 @@ def liste_sorties(request):
     template = loader.get_template('caisse/listes/sorties.html')
 
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 5)  # Valeur par défaut : 5
+    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 5
     paginator = Paginator(sorties, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -1260,7 +1311,12 @@ def generer_excel_operations(request):
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     workbook.save(response)
-
+    # Enregistrer l'activité de l'utilisateur
+    UserActivity.objects.create(
+    user=request.user,
+    action='EXPORTATION',  
+    description="a exporté en Excel la liste des opérations d'entrée et de sortie"
+)
     return response
 
 def generer_excel_operations_entrees(request):
@@ -1299,10 +1355,10 @@ def generer_excel_operations_entrees(request):
     workbook.save(response)
     # Enregistrer l'activité de l'utilisateur
     UserActivity.objects.create(
-        user=request.user,
-        activity_type="EXPORT",
-        description=f"Export Excel des opérations d'entrée"
-    )
+    user=request.user,
+    action='EXPORTATION',  
+    description="a exporté en Excel la liste des opérations d'entrée"
+)
 
     return response
 
@@ -1356,8 +1412,8 @@ def generer_excel_operations_sorties(request):
     # Enregistrer l'activité de l'utilisateur
     UserActivity.objects.create(
         user=request.user,
-        activity_type="EXPORT",
-        description=f"Export Excel des opérations de sortie"
+        action="EXPORTATION",
+        description="a exporté en Excel la liste des opérations de sortie"
     )
 
     return response
@@ -1621,3 +1677,88 @@ def details_solde(request):
         'available_years': get_available_years(),
     }
     return render(request, 'caisse/details/details_solde.html', context)
+
+@login_required
+def ajouter_element(request):
+    element_type = request.GET.get('type')
+    return_url = request.GET.get('return_url')
+    
+    if element_type == 'catégorie':
+        if request.method == 'POST':
+            form = CategorieForm(request.POST)
+            if form.is_valid():
+                categorie = form.save()
+                UserActivity.objects.create(
+                    user=request.user, 
+                    action='Création', 
+                    description='a créé une nouvelle catégorie'
+                )
+                messages.success(request, "Catégorie ajoutée avec succès")
+                if return_url:
+                    return redirect(return_url)
+                return redirect('caisse:liste_categories')
+        else:
+            form = CategorieForm()
+        return render(request, 'caisse/parametres/ajouter_categorie.html', {'form': form, 'return_url': return_url})
+    
+    elif element_type == 'bénéficiaire':
+        if request.method == 'POST':
+            form = BeneficiaireForm(request.POST)
+            if form.is_valid():
+                beneficiaire = form.save()
+                UserActivity.objects.create(
+                    user=request.user, 
+                    action='Création', 
+                    description='a créé un nouveau bénéficiaire'
+                )
+                messages.success(request, "Bénéficiaire ajouté avec succès")
+                if return_url:
+                    return redirect(return_url)
+                return redirect('caisse:liste_beneficiaires')
+        else:
+            form = BeneficiaireForm()
+        return render(request, 'caisse/acteurs/ajouter_beneficiaire.html', {'form': form, 'return_url': return_url})
+    
+    elif element_type == 'fournisseur':
+        if request.method == 'POST':
+            form = FournisseurForm(request.POST)
+            if form.is_valid():
+                fournisseur = form.save()
+                UserActivity.objects.create(
+                    user=request.user, 
+                    action='Création', 
+                    description='a créé un nouveau fournisseur'
+                )
+                messages.success(request, "Fournisseur ajouté avec succès")
+                if return_url:
+                    return redirect(return_url)
+                return redirect('caisse:liste_fournisseurs')
+        else:
+            form = FournisseurForm()
+        return render(request, 'caisse/acteurs/ajouter_fournisseur.html', {'form': form, 'return_url': return_url})
+    
+    return redirect('caisse:index')
+
+@login_required
+def verifier_categorie(request, id):
+    try:
+        exists = Categorie.objects.filter(id=id).exists()
+        return JsonResponse({'exists': exists})
+    except:
+        return JsonResponse({'exists': False})
+
+@login_required
+def verifier_beneficiaire(request, id):
+    try:
+        exists = Beneficiaire.objects.filter(id=id).exists()
+        return JsonResponse({'exists': exists})
+    except:
+        return JsonResponse({'exists': False})
+
+@login_required
+def verifier_fournisseur(request, id):
+    try:
+        exists = Fournisseur.objects.filter(id=id).exists()
+        return JsonResponse({'exists': exists})
+    except:
+        return JsonResponse({'exists': False})
