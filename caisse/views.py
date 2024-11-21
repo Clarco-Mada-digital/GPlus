@@ -204,8 +204,8 @@ def listes(request):
     fournisseur_id = request.GET.get('fournisseur')
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
-    sort_by = request.GET.get('sort', 'date')  # 'date' est maintenant le tri par défaut
-    ordre = request.GET.get('order', 'desc')  # 'desc' est maintenant l'ordre par défaut
+    sort_by = request.GET.get('sort', 'date')
+    ordre = request.GET.get('order', 'desc')
     
     # Initialiser les queryset avec tri par défaut
     entree = OperationEntrer.objects.all().order_by('-date_transaction')
@@ -232,10 +232,12 @@ def listes(request):
     # Filtre par bénéficiaire (uniquement pour les sorties)
     if beneficiaire_id:
         sortie = sortie.filter(beneficiaire_id=beneficiaire_id)
+        entree = entree.none()  # Masquer les entrées si un bénéficiaire est filtré
 
     # Filtre par fournisseur (uniquement pour les sorties)
     if fournisseur_id:
         sortie = sortie.filter(fournisseur_id=fournisseur_id)
+        entree = entree.none()  # Masquer les entrées si un fournisseur est filtré
 
     # Filtres par date
     if date_min:
@@ -245,56 +247,8 @@ def listes(request):
         entree = entree.filter(date_transaction__lte=date_max)
         sortie = sortie.filter(date_de_sortie__lte=date_max)
 
-    # Configuration du tri
-    sort_field_mapping = {
-        'description': {'entree': 'description', 'sortie': 'description'},
-        'categorie': {'entree': 'categorie__name', 'sortie': 'categorie__name'},
-        'date': {'entree': 'date_transaction', 'sortie': 'date_de_sortie'},
-        'beneficiaire': {'entree': None, 'sortie': 'beneficiaire__name'},
-        'fournisseur': {'entree': None, 'sortie': 'fournisseur__name'},
-        'montant': {
-            'entree': models.F('montant').desc(nulls_last=True),
-            'sortie': models.F('montant').desc(nulls_last=True)
-        },
-        'quantite': {
-            'entree': None,
-            'sortie': models.F('quantite').desc(nulls_last=True)
-        }
-    }
-
-    # Modifiez également la partie du tri pour gérer le cas où sort_field_entree est None
-    if sort_by in sort_field_mapping:
-        sort_config = sort_field_mapping.get(sort_by)
-        sort_field_entree = sort_config['entree']
-        sort_field_sortie = sort_config['sortie']
-
-        # Pour les champs numériques (montant et quantité)
-        if sort_by in ['montant', 'quantite']:
-            if ordre == 'asc':
-                if sort_field_entree:
-                    sort_field_entree = models.F(sort_by).asc(nulls_last=True)
-                if sort_field_sortie:
-                    sort_field_sortie = models.F(sort_by).asc(nulls_last=True)
-            else:
-                if sort_field_entree:
-                    sort_field_entree = models.F(sort_by).desc(nulls_last=True)
-                if sort_field_sortie:
-                    sort_field_sortie = models.F(sort_by).desc(nulls_last=True)
-        else:
-            # Pour les champs non numériques
-            if ordre == 'desc':
-                if sort_field_entree:
-                    sort_field_entree = f'-{sort_field_entree}'
-                if sort_field_sortie:
-                    sort_field_sortie = f'-{sort_field_sortie}'
-
-        # Appliquer le tri aux queryset
-        if sort_field_entree:
-            entree = entree.order_by(sort_field_entree)
-        if sort_field_sortie:
-            sortie = sortie.order_by(sort_field_sortie)
-
-    # Combiner les résultats
+    # Pagination
+    lignes_par_page = request.GET.get('lignes', 10)
     operations = sorted(
         chain(entree, sortie),
         key=lambda x: (
@@ -302,9 +256,6 @@ def listes(request):
         ),
         reverse=(sort_by == 'date' and ordre == 'desc')
     )
-
-    # Pagination
-    lignes_par_page = request.GET.get('lignes', 10)
     paginator = Paginator(operations, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -319,6 +270,12 @@ def listes(request):
         'sort_by': sort_by,
         'ordre': ordre,
         'lignes_par_page': lignes_par_page,
+        'query': query,
+        'categorie_id': categorie_id,
+        'beneficiaire_id': beneficiaire_id,
+        'fournisseur_id': fournisseur_id,
+        'date_min': date_min,
+        'date_max': date_max,
     }
 
     return render(request, 'caisse/listes/listes_operations.html', context)
@@ -591,23 +548,21 @@ def ajouts_entree(request):
                 lignes_entrees.append(operation_entree)
             except (ValueError, Categorie.DoesNotExist):
                 return render(request, 'caisse/operations/entre-sortie.html', {'error': 'Données invalides', 'categories_entree': categories_entree})
-            
-        return redirect('caisse:listes')
+        messages.success(request, "Le(s) opération(s) d'entrée a (ont) été ajoutée(s) avec succès.")    
+        return redirect('caisse:liste_entrees')
 
     return render(request, 'caisse/operations/entre-sortie.html', {'categories_entree': categories_entree, 'operation': 'entree',})
 
 @login_required
 def ajouts_sortie(request):
     """
-    Gère l'ajout d'opérations de sortie.
+    Gère l'ajout d'opérations de sortie sans vérification.
     """
     categories_sortie = Categorie.objects.filter(type='sortie') 
     beneficiaires = Beneficiaire.objects.all()
     fournisseurs = Fournisseur.objects.all()
 
     if request.method == 'POST':
-        # Récupérer les données envoyées depuis le formulaire.
-        # Utiliser getlist pour gérer les listes de valeurs.
         dates = request.POST.getlist('date')
         designations = request.POST.getlist('designation')
         beneficiaires_ids = request.POST.getlist('beneficiaire')
@@ -615,52 +570,43 @@ def ajouts_sortie(request):
         quantites = request.POST.getlist('quantite')
         prix_unitaires = request.POST.getlist('prixUnitaire')
         categories_ids = request.POST.getlist('categorie')
-        prix_total = request.POST.getlist('prixTotal')
+
         for i in range(len(dates)):
             try:
-                # Conversion explicite en types appropriés
-                date_operation = dates[i]
-                designation = designations[i]
-                beneficiaire_id = int(beneficiaires_ids[i])  # Conversion en entier
-                fournisseur_id = int(fournisseurs_ids[i])  # Conversion en entier
+                # Validation de base des données
+                if not dates[i] or not designations[i] or not beneficiaires_ids[i] or not fournisseurs_ids[i]:
+                    raise ValueError("Tous les champs doivent être remplis.")
+
+                date_operation = datetime.strptime(dates[i], '%Y-%m-%d').date()
                 quantite = int(quantites[i])
                 prix_unitaire = float(prix_unitaires[i])
-                categorie_id = int(categories_ids[i])      # Conversion en entier
-                prix_total_ligne = float(prix_total[i])
 
+                if quantite <= 0 or prix_unitaire < 0:
+                    raise ValueError("Quantité et prix unitaire doivent être positifs.")
 
-                # Récupérer les objets ForeignKey en utilisant .get() et gérer les exceptions
-                categorie = Categorie.objects.get(pk=categorie_id)
-                beneficiaire = Beneficiaire.objects.get(pk=beneficiaire_id)
-                fournisseur = Fournisseur.objects.get(pk=fournisseur_id)
-
-                # Calculer le montant total
-                montant_total = quantite * prix_unitaire
-
-                # Créer une nouvelle opération de sortie
-                operation_sortie = OperationSortir(
+                # Création de l'opération
+                OperationSortir.objects.create(
                     date_de_sortie=date_operation,
-                    description=designation,
-                    beneficiaire=beneficiaire,
-                    fournisseur=fournisseur,
+                    description=designations[i],
+                    beneficiaire_id=int(beneficiaires_ids[i]),
+                    fournisseur_id=int(fournisseurs_ids[i]),
                     quantite=quantite,
-                    montant=montant_total, # Utiliser le montant total calculé
-                    categorie=categorie
+                    montant=quantite * prix_unitaire,
+                    categorie_id=int(categories_ids[i])
                 )
-                operation_sortie.save()
-                # Enregistrement de l'activité
-                UserActivity.objects.create(user=request.user, action='Création', description='a créé une opération de sortie')
-                
 
-            except (ValueError, Categorie.DoesNotExist, Beneficiaire.DoesNotExist, Fournisseur.DoesNotExist) as e:
-                # Gérer les erreurs plus précisément : afficher le type d'erreur et l'index de la ligne problématique
+            except Exception as e:
+                messages.error(request, f"Erreur à la ligne {i + 1} : {e}")
                 return render(request, 'caisse/operations/entre-sortie.html', {
-                    'error': f"Erreur à la ligne {i+1} : {type(e).__name__} - {e}",
                     'categories_sortie': categories_sortie,
                     'beneficiaires': beneficiaires,
                     'fournisseurs': fournisseurs,
+                    'operation': 'sortie',
                 })
-        return redirect('caisse:listes') # Rediriger après un traitement réussi
+
+        # Ajout des opérations réussi
+        messages.success(request, "Les opérations de sortie ont été ajoutées avec succès.")
+        return redirect('caisse:liste_sorties')
 
     return render(request, 'caisse/operations/entre-sortie.html', {
         'categories_sortie': categories_sortie,
@@ -1102,7 +1048,7 @@ def liste_entrees(request):
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
     sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
-    ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
+    ordre = request.GET.get('order', 'desc')  # Ordre décroissant par défaut
 
     # Filtrer les opérations d'entrée
     entrees = OperationEntrer.objects.all()
@@ -1133,14 +1079,9 @@ def liste_entrees(request):
     if sort_by in valid_sort_fields:
         sort_field = valid_sort_fields[sort_by]
         if ordre == 'desc':
-            sort_field = f'-{sort_field}'
+            sort_field = f'-{sort_field}'  # Tri décroissant
         entrees = entrees.order_by(sort_field)
         
-    sort_field = valid_sort_fields.get(sort_by, 'date_transaction')  # Valeur par défaut si le champ n'est pas valide
-    if ordre == 'desc':
-        sort_field = f'-{sort_field}'
-    entrees = entrees.order_by(sort_field)
-
     # Récupérer uniquement les catégories de type "entrée" pour les options de filtrage
     categories = Categorie.objects.filter(type="entree")
 
@@ -1148,7 +1089,7 @@ def liste_entrees(request):
     template = loader.get_template('caisse/listes/entrees.html')
     
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 5
+    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 10
     paginator = Paginator(entrees, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -1161,6 +1102,10 @@ def liste_entrees(request):
         'sort_by': sort_by,
         'ordre': ordre,
         'lignes_par_page': lignes_par_page,
+        'query': query,
+        'categorie_id': categorie_id,
+        'date_min': date_min,
+        'date_max': date_max,
     }
     return HttpResponse(template.render(context, request))
 
@@ -1177,7 +1122,7 @@ def liste_sorties(request):
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
     sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
-    ordre = request.GET.get('order', 'asc')  # Ordre croissant ou décroissant
+    ordre = request.GET.get('order', 'desc')  # Ordre décroissant par défaut
 
     # Filtrer les opérations de sortie
     sorties = OperationSortir.objects.all()
@@ -1214,33 +1159,23 @@ def liste_sorties(request):
     # Appliquer le tri
     if sort_by in valid_sort_fields:
         sort_field = valid_sort_fields[sort_by]
-        
-        # Pour les champs numériques
-        if sort_by in ['montant', 'quantite']:
-            if ordre == 'desc':
-                sorties = sorties.order_by(F(sort_by).desc(nulls_last=True))
-            else:
-                sorties = sorties.order_by(F(sort_by).asc(nulls_last=True))
-        else:
-            # Pour les champs non numériques
-            if ordre == 'desc':
-                sort_field = f'-{sort_field}'
-            sorties = sorties.order_by(sort_field)
+        if ordre == 'desc':
+            sort_field = f'-{sort_field}'
+        sorties = sorties.order_by(sort_field)
 
     # Récupérer uniquement les catégories de type "sortie" pour les options de filtrage
     categories = Categorie.objects.filter(type="sortie")
     beneficiaires = Beneficiaire.objects.all()
     fournisseurs = Fournisseur.objects.all()
-
     # Charger le template
     template = loader.get_template('caisse/listes/sorties.html')
-
+    
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 5
+    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 10
     paginator = Paginator(sorties, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
+    
     # Contexte à passer au template
     context = {
         'page_obj': page_obj,
@@ -1251,6 +1186,12 @@ def liste_sorties(request):
         'sort_by': sort_by,
         'ordre': ordre,
         'lignes_par_page': lignes_par_page,
+        'query': query,
+        'categorie_id': categorie_id,
+        'beneficiaire_id': beneficiaire_id,
+        'fournisseur_id': fournisseur_id,
+        'date_min': date_min,
+        'date_max': date_max,
     }
     return HttpResponse(template.render(context, request))
 
