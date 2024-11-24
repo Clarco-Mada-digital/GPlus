@@ -202,11 +202,26 @@ def listes(request):
     categorie_id = request.GET.get('categorie')
     beneficiaire_id = request.GET.get('beneficiaire')
     fournisseur_id = request.GET.get('fournisseur')
-    date_min = request.GET.get('date_min')
-    date_max = request.GET.get('date_max')
+    mois = request.GET.get('mois')  # Récupérer le mois sélectionné
     sort_by = request.GET.get('sort', 'date')
     ordre = request.GET.get('order', 'desc')
-    
+
+    # Liste des mois pour le filtrage
+    mois_liste = [
+        {'value': 1, 'label': 'Janvier'},
+        {'value': 2, 'label': 'Février'},
+        {'value': 3, 'label': 'Mars'},
+        {'value': 4, 'label': 'Avril'},
+        {'value': 5, 'label': 'Mai'},
+        {'value': 6, 'label': 'Juin'},
+        {'value': 7, 'label': 'Juillet'},
+        {'value': 8, 'label': 'Août'},
+        {'value': 9, 'label': 'Septembre'},
+        {'value': 10, 'label': 'Octobre'},
+        {'value': 11, 'label': 'Novembre'},
+        {'value': 12, 'label': 'Décembre'},
+    ]
+
     # Initialiser les queryset avec tri par défaut
     entree = OperationEntrer.objects.all().order_by('-date_transaction')
     sortie = OperationSortir.objects.all().order_by('-date_de_sortie')
@@ -239,13 +254,10 @@ def listes(request):
         sortie = sortie.filter(fournisseur_id=fournisseur_id)
         entree = entree.none()  # Masquer les entrées si un fournisseur est filtré
 
-    # Filtres par date
-    if date_min:
-        entree = entree.filter(date_transaction__gte=date_min)
-        sortie = sortie.filter(date_de_sortie__gte=date_min)
-    if date_max:
-        entree = entree.filter(date_transaction__lte=date_max)
-        sortie = sortie.filter(date_de_sortie__lte=date_max)
+    # Filtre par mois
+    if mois:
+        entree = entree.filter(date_transaction__month=int(mois))
+        sortie = sortie.filter(date_de_sortie__month=int(mois))
 
     # Pagination
     lignes_par_page = request.GET.get('lignes', 10)
@@ -260,24 +272,20 @@ def listes(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Contexte pour le template
+    # Contexte à passer au template
     context = {
         'page_obj': page_obj,
         'categories': Categorie.objects.all(),
         'beneficiaires': Beneficiaire.objects.all(),
         'fournisseurs': Fournisseur.objects.all(),
-        'prix': "Ar",
-        'sort_by': sort_by,
-        'ordre': ordre,
         'lignes_par_page': lignes_par_page,
         'query': query,
         'categorie_id': categorie_id,
         'beneficiaire_id': beneficiaire_id,
         'fournisseur_id': fournisseur_id,
-        'date_min': date_min,
-        'date_max': date_max,
+        'mois_liste': mois_liste,  
+        'mois': mois,  
     }
-
     return render(request, 'caisse/listes/listes_operations.html', context)
 
 @login_required
@@ -1045,10 +1053,25 @@ def liste_entrees(request):
     # Récupérer les filtres de recherche et de triage
     query = request.GET.get('q')
     categorie_id = request.GET.get('categorie')
-    date_min = request.GET.get('date_min')
-    date_max = request.GET.get('date_max')
+    mois = request.GET.get('mois')
     sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
     ordre = request.GET.get('order', 'desc')  # Ordre décroissant par défaut
+    
+    # Liste des mois pour le filtrage
+    mois_liste = [
+        {'value': 1, 'label': 'Janvier'},
+        {'value': 2, 'label': 'Février'},
+        {'value': 3, 'label': 'Mars'},
+        {'value': 4, 'label': 'Avril'},
+        {'value': 5, 'label': 'Mai'},
+        {'value': 6, 'label': 'Juin'},
+        {'value': 7, 'label': 'Juillet'},
+        {'value': 8, 'label': 'Août'},
+        {'value': 9, 'label': 'Septembre'},
+        {'value': 10, 'label': 'Octobre'},
+        {'value': 11, 'label': 'Novembre'},
+        {'value': 12, 'label': 'Décembre'},
+    ]
 
     # Filtrer les opérations d'entrée
     entrees = OperationEntrer.objects.all()
@@ -1062,10 +1085,9 @@ def liste_entrees(request):
         )
     if categorie_id:
         entrees = entrees.filter(categorie_id=categorie_id)
-    if date_min:
-        entrees = entrees.filter(date_transaction__gte=date_min)
-    if date_max:
-        entrees = entrees.filter(date_transaction__lte=date_max)
+    # Filtre par mois
+    if mois:
+        entrees = entrees.filter(date_transaction__month=int(mois))
 
     # Définir les champs de tri valides
     valid_sort_fields = {
@@ -1104,8 +1126,8 @@ def liste_entrees(request):
         'lignes_par_page': lignes_par_page,
         'query': query,
         'categorie_id': categorie_id,
-        'date_min': date_min,
-        'date_max': date_max,
+        'mois_liste': mois_liste, 
+        'mois': mois, 
     }
     return HttpResponse(template.render(context, request))
 
@@ -1119,10 +1141,25 @@ def liste_sorties(request):
     categorie_id = request.GET.get('categorie')
     beneficiaire_id = request.GET.get('beneficiaire')
     fournisseur_id = request.GET.get('fournisseur')
-    date_min = request.GET.get('date_min')
-    date_max = request.GET.get('date_max')
+    mois = request.GET.get('mois')
     sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
     ordre = request.GET.get('order', 'desc')  # Ordre décroissant par défaut
+    
+    # Liste des mois pour le filtrage
+    mois_liste = [
+        {'value': 1, 'label': 'Janvier'},
+        {'value': 2, 'label': 'Février'},
+        {'value': 3, 'label': 'Mars'},
+        {'value': 4, 'label': 'Avril'},
+        {'value': 5, 'label': 'Mai'},
+        {'value': 6, 'label': 'Juin'},
+        {'value': 7, 'label': 'Juillet'},
+        {'value': 8, 'label': 'Août'},
+        {'value': 9, 'label': 'Septembre'},
+        {'value': 10, 'label': 'Octobre'},
+        {'value': 11, 'label': 'Novembre'},
+        {'value': 12, 'label': 'Décembre'},
+    ]
 
     # Filtrer les opérations de sortie
     sorties = OperationSortir.objects.all()
@@ -1140,10 +1177,9 @@ def liste_sorties(request):
         sorties = sorties.filter(beneficiaire_id=beneficiaire_id)
     if fournisseur_id:
         sorties = sorties.filter(fournisseur_id=fournisseur_id)
-    if date_min:
-        sorties = sorties.filter(date_de_sortie__gte=date_min)
-    if date_max:
-        sorties = sorties.filter(date_de_sortie__lte=date_max)
+    # Filtre par mois
+    if mois:
+        sorties = sorties.filter(date_de_sortie__month=int(mois))
 
     # Définir les champs de tri valides
     valid_sort_fields = {
@@ -1191,8 +1227,8 @@ def liste_sorties(request):
         'categorie_id': categorie_id,
         'beneficiaire_id': beneficiaire_id,
         'fournisseur_id': fournisseur_id,
-        'date_min': date_min,
-        'date_max': date_max,
+        'mois_liste': mois_liste,
+        'mois': mois,
     }
     return HttpResponse(template.render(context, request))
 
