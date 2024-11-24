@@ -45,30 +45,30 @@
         <!-- Pagination -->
         <div class="flex items-center space-x-2">
             <span class="mx-2">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
-            <div class="flex space-x-2">
-                {% if page_obj.has_previous %}
-                    <a href="?page=1&lignes={{ lignes_par_page }}" class="px-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 12H5M12 5l-7 7 7 7"/>
-                        </svg></a>
-                    <a href="?page={{ page_obj.previous_page_number }}&lignes={{ lignes_par_page }}" class="px-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M15 18l-6-6 6-6"/>
-                        </svg>
-                    </a>
-                {% endif %}
-                {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}&lignes={{ lignes_par_page }}" class="px-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 6l6 6-6 6"/>
-                        </svg>
-                    </a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}&lignes={{ lignes_par_page }}" class="px-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M5 12h14M12 19l7-7-7-7"/>
-                        </svg>
-                    </a>
-                {% endif %}
+    <div class="flex space-x-2">
+        {% if page_obj.has_previous %}
+            <a href="?page=1&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 5l-7 7 7 7"/>
+                </svg></a>
+            <a href="?page={{ page_obj.previous_page_number }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </a>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 6l6 6-6 6"/>
+                </svg>
+            </a>
+            <a href="?page={{ page_obj.paginator.num_pages }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 19l7-7-7-7"/>
+                </svg>
+            </a>
+        {% endif %}
             </div>
         </div>
     </div>
@@ -76,10 +76,7 @@
     <form method="GET" action="{% url 'caisse:liste_entrees' %}" class="p-4" id="filter-form">
         <div class="flex items-center dark:bg-secondary rounded-xl  space-x-4 text-sm">
             <button type="submit" class="flex items-center space-x-1 dark:text-white font-bold px py-2 rounded-lg">
-                <i class="fas fa-filter"></i>
-                <span>Filtrer par</span>
             </button>
-            <div class="h-10 w-0.5 bg-gray-300"></div>
             <div class="flex space-x-4">
                 <!-- Sélecteur Catégories -->
                 <select name="categorie" class="px-8 py-2 border-none dark:bg-secondary focus:ring-0" onchange="document.getElementById('filter-form').submit();">

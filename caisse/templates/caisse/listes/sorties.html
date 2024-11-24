@@ -47,23 +47,23 @@
             <span class="mx-2">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
             <div class="flex space-x-2">
                 {% if page_obj.has_previous %}
-                    <a href="?page=1&lignes={{ lignes_par_page }}" class="px-3">
+                    <a href="?page=1&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M19 12H5M12 5l-7 7 7 7"/>
                         </svg></a>
-                    <a href="?page={{ page_obj.previous_page_number }}&lignes={{ lignes_par_page }}" class="px-3">
+                    <a href="?page={{ page_obj.previous_page_number }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M15 18l-6-6 6-6"/>
                         </svg>
                     </a>
                 {% endif %}
                 {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}&lignes={{ lignes_par_page }}" class="px-3">
+                    <a href="?page={{ page_obj.next_page_number }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M9 6l6 6-6 6"/>
                         </svg>
                     </a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}&lignes={{ lignes_par_page }}" class="px-3">
+                    <a href="?page={{ page_obj.paginator.num_pages }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M5 12h14M12 19l7-7-7-7"/>
                         </svg>
@@ -93,7 +93,7 @@
                     <option value="">Bénéficiaires</option>
                     {% for beneficiaire in beneficiaires %}
                         <option value="{{ beneficiaire.id }}" {% if request.GET.beneficiaire == beneficiaire.id|stringformat:"s" %}selected{% endif %}>
-                            {{ beneficiaire.name }}
+                            {{ beneficiaire }}
                         </option>
                     {% endfor %}
                 </select>
@@ -104,7 +104,7 @@
                     <option value="">Fournisseurs</option>
                     {% for fournisseur in fournisseurs %}
                         <option value="{{ fournisseur.id }}" {% if request.GET.fournisseur == fournisseur.id|stringformat:"s" %}selected{% endif %}>
-                            {{ fournisseur.name }}
+                            {{ fournisseur }}
                         </option>
                     {% endfor %}
                 </select>

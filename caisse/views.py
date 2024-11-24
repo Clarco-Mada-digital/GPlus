@@ -207,9 +207,9 @@ def listes(request):
     sort_by = request.GET.get('sort', 'date')
     ordre = request.GET.get('order', 'desc')
     
-    # Filtrer les opérations d'entrée et de sortie
-    entree = OperationEntrer.objects.all()
-    sortie = OperationSortir.objects.all()
+    # Initialiser les queryset avec tri par défaut
+    entree = OperationEntrer.objects.all().order_by('-date_transaction')
+    sortie = OperationSortir.objects.all().order_by('-date_de_sortie')
 
     # Appliquer les filtres de recherche
     if query:
@@ -1084,10 +1084,10 @@ def liste_entrees(request):
         
     # Récupérer uniquement les catégories de type "entrée" pour les options de filtrage
     categories = Categorie.objects.filter(type="entree")
-
+    
     # Charger le template
     template = loader.get_template('caisse/listes/entrees.html')
-    
+
     # Pagination
     lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 10
     paginator = Paginator(entrees, lignes_par_page)
@@ -1167,15 +1167,16 @@ def liste_sorties(request):
     categories = Categorie.objects.filter(type="sortie")
     beneficiaires = Beneficiaire.objects.all()
     fournisseurs = Fournisseur.objects.all()
+    
     # Charger le template
     template = loader.get_template('caisse/listes/sorties.html')
-    
+
     # Pagination
     lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 10
     paginator = Paginator(sorties, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     # Contexte à passer au template
     context = {
         'page_obj': page_obj,
