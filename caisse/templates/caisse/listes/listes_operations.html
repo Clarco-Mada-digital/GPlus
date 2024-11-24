@@ -47,23 +47,23 @@
             <span class="mx-2">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
             <div class="flex space-x-2">
                 {% if page_obj.has_previous %}
-                    <a href="?page=1&lignes={{ lignes_par_page }}" class="px-3">
+                    <a href="?page=1&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M19 12H5M12 5l-7 7 7 7"/>
                         </svg></a>
-                    <a href="?page={{ page_obj.previous_page_number }}&lignes={{ lignes_par_page }}" class="px-3">
+                    <a href="?page={{ page_obj.previous_page_number }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M15 18l-6-6 6-6"/>
                         </svg>
                     </a>
                 {% endif %}
                 {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}&lignes={{ lignes_par_page }}" class="px-3">
+                    <a href="?page={{ page_obj.next_page_number }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M9 6l6 6-6 6"/>
                         </svg>
                     </a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}&lignes={{ lignes_par_page }}" class="px-3">
+                    <a href="?page={{ page_obj.paginator.num_pages }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M5 12h14M12 19l7-7-7-7"/>
                         </svg>
@@ -75,7 +75,7 @@
 
     <!-- Filtrage entreés -->
 
-    <form method="GET" action="{% url 'caisse:listes' %}" class="p-4" id="filter-form">
+    <form method="GET" action="{% url 'caisse:listes' %}" class="p-4" id="filter-form" onsubmit="return false;">
         <div class="flex items-center dark:bg-secondary font-medium rounded-xl space-x-4 text-sm">
             <div class="flex space-x-4">
                 <!-- Sélecteur Catégories -->
@@ -105,7 +105,7 @@
                     <option value="">Fournisseurs</option>
                     {% for fournisseur in fournisseurs %}
                         <option value="{{ fournisseur.id }}" {% if request.GET.fournisseur == fournisseur.id|stringformat:"s" %}selected{% endif %}>
-                            {{ fournisseur.name }}
+                            {{ fournisseur }}
                         </option>
                     {% endfor %}
                 </select>
@@ -113,12 +113,14 @@
     
                 <!-- Dates avec conservation des paramètres -->
                 <div class="flex space-x-4">
-                    <input type="date" name="date_min" value="{{ request.GET.date_min }}" 
-                           onchange="submitFormWithCurrentParams(this)"
-                           class="px-4 py-2 dark:bg-secondary border-none rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    <input type="date" name="date_max" value="{{ request.GET.date_max }}" 
-                           onchange="submitFormWithCurrentParams(this)"
-                           class="px-4 py-2 dark:bg-secondary border-none rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <select name="mois" class="px-4 py-2 dark:bg-secondary border-none focus:ring-0 rounded-md" onchange="submitFormWithCurrentParams(this)">
+                        <option value="">Mois</option>
+                        {% for mois in mois_liste %}
+                            <option value="{{ mois.value }}" {% if request.GET.mois == mois.value|stringformat:"s" %}selected{% endif %}>
+                                {{ mois.label }}
+                            </option>
+                        {% endfor %}
+                    </select>
                 </div>
     
                 <!-- Bouton Reset qui conserve le nombre de lignes -->
@@ -142,7 +144,7 @@
         <div class="table-container overflow-x-auto text-sm bg-white text-table text-medium dark:bg-secondary dark:text-white border-none rounded-lg">
                 <table class="w-full">
                     <thead>
-                        <tr class="text-sm border-b dark:text-white/70">
+                        <tr class="text-sm border-b dark:border-gray-800 dark:text-white/70">
                             <th class="px-4 py-1 text-leftt"><input type="checkbox" id="select-all"></th>
                             <th class="px-4 py-1 text-left">
                                 {% if request.GET.sort == 'description' and request.GET.order == 'asc' %}
@@ -203,12 +205,11 @@
                                 </th>
                                 <th class="py-2 px-4">Actions</th>
                             </tr>
-                            <th class="px-4 py-1 text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="text-liste dark:text-white font-medium">
                         {% for operation in page_obj %}
-                        <tr :key="{{ operation.id }}" class="{% cycle 'bg-white dark:bg-secondary' 'bg-gray-300 dark:bg-blue-950' %} border-b border-white">
+                        <tr :key="{{ operation.id }}" class="{% cycle 'bg-white dark:bg-secondary' 'bg-gray-300 dark:bg-blue-950' %} border-b border-white dark:border-gray-800">
                             <td class="px-4 py-2">
                                 <input type="checkbox" name="selected_operations" value="{{ operation.id }}">
                             </td>
@@ -239,22 +240,20 @@
                             <td class="py-1 px-4">{{ operation.categorie.name }}</td>
                             <td class="py-1 px-4">
                                 {% if operation.beneficiaire %}
-                                    {% if operation.beneficiaire.personnel %}
-                                        {{ operation.beneficiaire.personnel }}
-                                    {% elif operation.beneficiaire.name %}
-                                        {{ operation.beneficiaire.name }}
+                                    {% if operation.beneficiaire %}
+                                        {{ operation.beneficiaire }}
                                     {% else %}
                                         Bénéficiaire non spécifié
                                     {% endif %}
                                 {% else %}
-                                    Bénéficiaire non spécifié
+                                    
                                 {% endif %}
                             </td>
                             <td class="py-1 px-4">
                                 {% if operation.fournisseur %}
                                     {{ operation.fournisseur.name }}
                                 {% else %}
-                                    vide
+                                    
                                 {% endif %}
                             </td>
                             <td class="py-1 px-4">
@@ -264,10 +263,10 @@
                                     {{ operation.date_de_sortie }}
                                 {% endif %}
                             </td>
-                            <td class="py-1 px-4 text-right">{{ operation.quantite|default:"vide"|intcomma }}</td>
+                            <td class="py-1 px-4 text-right">{{ operation.quantite|intcomma }}</td>
                             <td class="py-1 px-4 text-right">{{ operation.montant|intcomma }} {{ prix }}</td>
                             <td class="py-1 px-4 text-right">
-                                <div class="flex justify-center text-table dark:text-white items-center space-x-2 border border-table dark:border-white rounded-2xl">
+                                <div class="flex justify-center text-table dark:text-white items-center space-x-2 border border-table dark:border-gray-600 rounded-2xl">
                                     <!-- Icône de modification (stylo) -->
                                     {% if operation.date_transaction %}
                                         <a href="{% url 'caisse:modifier_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
@@ -283,7 +282,7 @@
                             </svg>
                                     </a>
 
-                                    <div class="h-10 bg-table dark:bg-white" style="width: 1px;"></div>
+                                    <div class="h-10 bg-table dark:bg-gray-600" style="width: 1px;"></div>
                                     <!-- Icône de suppression -->
                                     {% if operation.date_transaction %}
                                         <a href="{% url 'caisse:supprimer_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?');">
