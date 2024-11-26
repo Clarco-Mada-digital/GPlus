@@ -240,27 +240,25 @@ def listes(request):
         )
 
     # Filtre par catégorie
-    if categorie_id:
+    if categorie_id and categorie_id.isdigit():  # Vérifier que c'est un nombre
         entree = entree.filter(categorie_id=categorie_id)
         sortie = sortie.filter(categorie_id=categorie_id)
 
     # Filtre par bénéficiaire (uniquement pour les sorties)
-    if beneficiaire_id:
+    if beneficiaire_id and beneficiaire_id.isdigit():  # Vérifier que c'est un nombre
         sortie = sortie.filter(beneficiaire_id=beneficiaire_id)
-        entree = entree.none()  # Masquer les entrées si un bénéficiaire est filtré
 
     # Filtre par fournisseur (uniquement pour les sorties)
-    if fournisseur_id:
+    if fournisseur_id and fournisseur_id.isdigit():  # Vérifier que c'est un nombre
         sortie = sortie.filter(fournisseur_id=fournisseur_id)
-        entree = entree.none()  # Masquer les entrées si un fournisseur est filtré
 
     # Filtre par mois
-    if mois:
+    if mois and mois.isdigit():  # Vérifier que c'est un nombre
         entree = entree.filter(date_transaction__month=int(mois))
         sortie = sortie.filter(date_de_sortie__month=int(mois))
 
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 10)
+    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 10
     operations = sorted(
         chain(entree, sortie),
         key=lambda x: (
@@ -283,8 +281,8 @@ def listes(request):
         'categorie_id': categorie_id,
         'beneficiaire_id': beneficiaire_id,
         'fournisseur_id': fournisseur_id,
-        'mois_liste': mois_liste,  
-        'mois': mois,  
+        'mois_liste': mois_liste,
+        'mois': mois,
     }
     return render(request, 'caisse/listes/listes_operations.html', context)
 
@@ -1083,10 +1081,10 @@ def liste_entrees(request):
             Q(montant__icontains=query) | 
             Q(date_transaction__icontains=query)
         )
-    if categorie_id:
+    if categorie_id and categorie_id.isdigit():  # Vérifier que c'est un nombre
         entrees = entrees.filter(categorie_id=categorie_id)
     # Filtre par mois
-    if mois:
+    if mois and mois.isdigit():  # Vérifier que c'est un nombre
         entrees = entrees.filter(date_transaction__month=int(mois))
 
     # Définir les champs de tri valides
@@ -1115,7 +1113,7 @@ def liste_entrees(request):
     paginator = Paginator(entrees, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     # Contexte à passer au template
     context = {
         'page_obj': page_obj,
@@ -1123,7 +1121,7 @@ def liste_entrees(request):
         'prix': "Ar",
         'sort_by': sort_by,
         'ordre': ordre,
-        'lignes_par_page': lignes_par_page,
+        'lignes_par_page': request.GET.get('lignes', 10),
         'query': query,
         'categorie_id': categorie_id,
         'mois_liste': mois_liste, 
@@ -1178,7 +1176,7 @@ def liste_sorties(request):
     if fournisseur_id:
         sorties = sorties.filter(fournisseur_id=fournisseur_id)
     # Filtre par mois
-    if mois:
+    if mois and mois.isdigit():  # Vérifiez que mois est un nombre
         sorties = sorties.filter(date_de_sortie__month=int(mois))
 
     # Définir les champs de tri valides
