@@ -148,14 +148,14 @@ class OperationSortir(models.Model):
     description = models.CharField(max_length=255)  # Nom de l'opération
     montant = models.DecimalField(max_digits=10, decimal_places=0, default=0)  # Montant
     date = models.DateField(auto_now_add=True)  # Date de l'ajout dans l'application
-    date_de_sortie = models.DateField(default=timezone.now)
-    quantite = models.DecimalField(max_digits=10, decimal_places=0, default=1)
+    date_de_sortie = models.DateField(default=timezone.now) #Date du moment où une sortie de la caisse s'est fait 
+    quantite = models.DecimalField(max_digits=10, decimal_places=0, default=1) # Quantité de la chose acheté
     categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, null=False)  # Clé étrangère vers Categorie
     beneficiaire = models.ForeignKey(Beneficiaire, on_delete=models.PROTECT, null=False) #clé étrangère vers Personnel
     fournisseur = models.ForeignKey(Fournisseur, on_delete=models.PROTECT, null=False) #clé étrangère vers Fournisseur
-    history = HistoricalRecords()
+    history = HistoricalRecords() # Stocker l'historique par Django simple history
 
-
+    # Affichage des données stockées 
     def __str__(self):
         return f"{self.description} - {self.montant} - {self.beneficiaire} - {self.categorie} - {self.fournisseur}"
 
