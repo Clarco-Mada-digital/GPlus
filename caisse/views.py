@@ -52,36 +52,32 @@ def superuser_required(view_func):
 @login_required
 def index(request):
     """Vue du tableau de bord"""
-    # Obtenir le premier et dernier jour du mois actuel
     today = timezone.now()
+    
+    # Calculer le premier et dernier jour du mois actuel
     first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     if today.month == 12:
-        last_day_of_month = today.replace(year=today.year + 1, month=1, day=1, hour=23, minute=59, second=59) - timedelta(days=1)
+        last_day_of_month = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
     else:
-        last_day_of_month = today.replace(month=today.month + 1, day=1, hour=23, minute=59, second=59) - timedelta(days=1)
+        last_day_of_month = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
 
-    # Calcul des totaux pour le mois actuel uniquement
+    # Calculer les totaux du mois actuel
     total_entrees_mois = OperationEntrer.objects.filter(
         date_transaction__gte=first_day_of_month,
         date_transaction__lte=last_day_of_month
-    ).aggregate(Sum('montant'))['montant__sum'] or 0
+    ).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
 
     total_sorties_mois = OperationSortir.objects.filter(
         date_de_sortie__gte=first_day_of_month,
         date_de_sortie__lte=last_day_of_month
-    ).aggregate(Sum('montant'))['montant__sum'] or 0
-
-    # Calcul du solde total (toutes les opérations)
-    total_entrees_all = OperationEntrer.objects.aggregate(Sum('montant'))['montant__sum'] or 0
-    total_sorties_all = OperationSortir.objects.aggregate(Sum('montant'))['montant__sum'] or 0
-    solde_actuel = total_entrees_all - total_sorties_all
-
-    # Le reste du code reste inchangé...
-    six_months_ago = today - timedelta(days=180)
+    ).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
+    
+    # Obtenir les 12 derniers mois
+    twelve_months_ago = today - timedelta(days=365)
 
     # Données des entrées par mois
     entrees_par_mois = list(OperationEntrer.objects.filter(
-        date_transaction__gte=six_months_ago
+        date_transaction__gte=twelve_months_ago
     ).annotate(
         mois=TruncMonth('date_transaction')
     ).values('mois').annotate(
@@ -90,36 +86,38 @@ def index(request):
 
     # Données des sorties par mois 
     sorties_par_mois = list(OperationSortir.objects.filter(
-        date_de_sortie__gte=six_months_ago
+        date_de_sortie__gte=twelve_months_ago
     ).annotate(
         mois=TruncMonth('date_de_sortie')
     ).values('mois').annotate(
         total=Sum('montant')
     ).order_by('mois'))
 
-    # Données pour le graphique des catégories de sorties
-    sorties_categories = list(OperationSortir.objects.values(
-        'categorie__name'
-    ).annotate(
-        total=Sum('montant')
-    ).order_by('-total')[:5])
-
     # Créer un dictionnaire pour faciliter l'accès aux totaux par mois
-    entrees_dict = {item['mois'].strftime('%Y-%m'): item['total'] for item in entrees_par_mois}
-    sorties_dict = {item['mois'].strftime('%Y-%m'): item['total'] for item in sorties_par_mois}
+    entrees_dict = {item['mois'].strftime('%Y-%m'): item['total'] or Decimal('0') for item in entrees_par_mois}
+    sorties_dict = {item['mois'].strftime('%Y-%m'): item['total'] or Decimal('0') for item in sorties_par_mois}
 
     # Obtenir tous les mois uniques
     all_months = sorted(set(entrees_dict.keys()) | set(sorties_dict.keys()))
 
     # Calculer les soldes cumulatifs
-    solde_cumule = 0
+    solde_cumule = Decimal('0')
     soldes_par_mois = []
     formatted_entrees = []
     formatted_sorties = []
     
+    # Calculer le solde initial
+    solde_initial = (
+        OperationEntrer.objects.filter(date_transaction__lt=twelve_months_ago).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
+    ) - (
+        OperationSortir.objects.filter(date_de_sortie__lt=twelve_months_ago).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
+    )
+    
+    solde_cumule = solde_initial
+
     for mois_str in all_months:
-        entree_mois = float(entrees_dict.get(mois_str, 0) or 0)
-        sortie_mois = float(sorties_dict.get(mois_str, 0) or 0)
+        entree_mois = entrees_dict.get(mois_str, Decimal('0'))
+        sortie_mois = sorties_dict.get(mois_str, Decimal('0'))
         solde_mois = entree_mois - sortie_mois
         solde_cumule += solde_mois
         
@@ -129,33 +127,44 @@ def index(request):
         
         soldes_par_mois.append({
             'mois': mois_format,
-            'solde': solde_cumule
+            'solde': float(solde_cumule)  # Convertir en float pour JSON
         })
         formatted_entrees.append({
             'mois': mois_format,
-            'total': entree_mois
+            'total': float(entree_mois)  # Convertir en float pour JSON
         })
         formatted_sorties.append({
             'mois': mois_format,
-            'total': sortie_mois
+            'total': float(sortie_mois)  # Convertir en float pour JSON
         })
+
+    # Données pour le graphique des catégories de sorties
+    sorties_categories = list(OperationSortir.objects.values(
+        'categorie__name'
+    ).annotate(
+        total=Sum('montant')
+    ).order_by('-total')[:5])
 
     # Formater les données des catégories
     formatted_categories = [{
         'categorie': item['categorie__name'],
-        'total': float(item['total'])
+        'total': float(item['total'] or Decimal('0'))
     } for item in sorties_categories]
+
+    # Calculer les totaux pour le contexte
+    total_entrees = sum(entrees_dict.values(), Decimal('0'))
+    total_sorties = sum(sorties_dict.values(), Decimal('0'))
 
     # Formater les données pour le template
     context = {
-        'solde_actuel': float(solde_actuel),
-        'total_entrees': float(total_entrees_mois),  # Total des entrées du mois
-        'total_sorties': float(total_sorties_mois),  # Total des sorties du mois
+        'solde_actuel': float(solde_cumule),
+        'total_entrees': float(total_entrees_mois),  # Total des entrées du mois actuel
+        'total_sorties': float(total_sorties_mois),  # Total des sorties du mois actuel
         'entrees_par_mois': json.dumps(formatted_entrees),
         'sorties_par_mois': json.dumps(formatted_sorties),
         'soldes_par_mois': json.dumps(soldes_par_mois),
         'sorties_categories': json.dumps(formatted_categories),
-        'entrees_4_mois': json.dumps(formatted_entrees[-4:]) if formatted_entrees else json.dumps([]),
+        'entrees_4_mois': json.dumps(formatted_entrees[-4:][::-1]) if formatted_entrees else json.dumps([]),
     }
 
     return render(request, "caisse/dashboard.html", context)
@@ -415,7 +424,7 @@ def ajouter_fournisseur(request):
         if form.is_valid():
             form.save()
             # Enregistrement de l'activité
-            UserActivity.objects.create(user=request.user, action='Création', description='a ajouté un fournisseur')
+            UserActivity.objects.create(user=request.user, action='Création', description='a ajout un fournisseur')
             messages.success(request, "Fournisseur ajouté avec succès.")
             return redirect('caisse:acteurs')
         else:
@@ -1568,6 +1577,17 @@ def details_solde(request):
     """Vue détaillée du solde par mois"""
     selected_year = int(request.GET.get('year', timezone.now().year))
     
+    # Calculer le solde initial (avant l'année sélectionnée)
+    solde_initial = (
+        OperationEntrer.objects.filter(
+            date_transaction__lt=f"{selected_year}-01-01"
+        ).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
+    ) - (
+        OperationSortir.objects.filter(
+            date_de_sortie__lt=f"{selected_year}-01-01"
+        ).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
+    )
+
     # Calculer les entrées et sorties pour l'année sélectionnée
     entrees = OperationEntrer.objects.filter(
         date_transaction__year=selected_year
@@ -1575,7 +1595,7 @@ def details_solde(request):
         mois=TruncMonth('date_transaction')
     ).values('mois').annotate(
         total_entrees=Sum('montant')
-    ).order_by('-mois')
+    ).order_by('mois')  # Changer en ordre croissant
 
     sorties = OperationSortir.objects.filter(
         date_de_sortie__year=selected_year
@@ -1583,37 +1603,50 @@ def details_solde(request):
         mois=TruncMonth('date_de_sortie')
     ).values('mois').annotate(
         total_sorties=Sum('montant')
-    ).order_by('-mois')
+    ).order_by('mois')  # Changer en ordre croissant
 
-    # Combiner les données
+    # Créer des dictionnaires pour un accès facile
+    entrees_dict = {e['mois']: e['total_entrees'] or Decimal('0') for e in entrees}
+    sorties_dict = {s['mois']: s['total_sorties'] or Decimal('0') for s in sorties}
+    
+    # Obtenir tous les mois uniques et les trier par ordre croissant
+    tous_mois = sorted(set(list(entrees_dict.keys()) + list(sorties_dict.keys())))
+    
+    # Calculer les soldes cumulatifs
     soldes_mensuels = []
-    solde_cumule = 0
+    solde_cumule = solde_initial
+    total_entrees_annee = Decimal('0')
+    total_sorties_annee = Decimal('0')
     
-    entrees_dict = {e['mois']: e['total_entrees'] for e in entrees}
-    sorties_dict = {s['mois']: s['total_sorties'] for s in sorties}
-    
-    tous_mois = sorted(set(list(entrees_dict.keys()) + list(sorties_dict.keys())), reverse=True)
-    
+    # Premier passage : calculer les soldes cumulés dans l'ordre chronologique
+    soldes_temp = {}
     for mois in tous_mois:
-        entrees_mois = entrees_dict.get(mois, 0) or 0
-        sorties_mois = sorties_dict.get(mois, 0) or 0
+        entrees_mois = entrees_dict.get(mois, Decimal('0'))
+        sorties_mois = sorties_dict.get(mois, Decimal('0'))
         solde_mois = entrees_mois - sorties_mois
         solde_cumule += solde_mois
         
-        soldes_mensuels.append({
+        total_entrees_annee += entrees_mois
+        total_sorties_annee += sorties_mois
+        
+        soldes_temp[mois] = {
             'mois': mois,
             'mois_format': format_date(mois, format='MMMM yyyy', locale='fr_FR'),
             'entrees': entrees_mois,
             'sorties': sorties_mois,
             'solde_mois': solde_mois,
             'solde_cumule': solde_cumule
-        })
+        }
+    
+    # Deuxième passage : créer la liste finale dans l'ordre décroissant
+    for mois in reversed(tous_mois):
+        soldes_mensuels.append(soldes_temp[mois])
 
     context = {
         'soldes': soldes_mensuels,
-        'total_entrees': sum(entrees_dict.values()),
-        'total_sorties': sum(sorties_dict.values()),
-        'solde_final': sum(entrees_dict.values()) - sum(sorties_dict.values()),
+        'total_entrees': total_entrees_annee,
+        'total_sorties': total_sorties_annee,
+        'solde_final': solde_cumule,
         'selected_year': selected_year,
         'available_years': get_available_years(),
     }

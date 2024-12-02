@@ -1,9 +1,7 @@
-<!-- templates/dashboard.html -->
+<!-- templates/dashboard.htm  %}-->
 {% extends 'layout/layout.html' %}
 {% load humanize %}
-
 {% block title_page %}Tableau De Bord{% endblock %}
-
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <!-- Cartes des totaux -->
@@ -239,7 +237,7 @@
             maintainAspectRatio: false,
             scales: {
                 y: {
-                    beginAtZero: true,
+                    beginAtZero: false,
                     position: 'right',
                     ticks: {
                         callback: value => 'Ar ' + value.toLocaleString('fr-FR'),
