@@ -41,7 +41,7 @@
 
                         <div class="divide-y divide-gray-200 dark:divide-gray-700">
                             {% for operation in entree.operations %}
-                            <div class="md:hidden p-4 space-y-2">
+                            <div class="md:hidden p-4 space-y-2 {% cycle 'bg-gray-50' '' as mobile_cycle_light %} {% cycle 'dark:bg-gray-800/50' '' as mobile_cycle_dark %}">
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Date:</span>
                                     <span class="text-sm text-gray-900 dark:text-gray-300">{{ operation.date_transaction|date:"d/m/Y" }}</span>
@@ -60,7 +60,7 @@
                                 </div>
                             </div>
 
-                            <div class="hidden md:grid grid-cols-4 gap-2 hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <div class="hidden md:grid grid-cols-4 gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 {% cycle 'bg-gray-50' '' as desktop_cycle_light %} {% cycle 'dark:bg-gray-800/50' '' as desktop_cycle_dark %}">
                                 <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">
                                     {{ operation.date_transaction|date:"d/m/Y" }}
                                 </div>
