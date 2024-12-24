@@ -1,300 +1,449 @@
 <!-- templates/listes/index.html -->
 {% extends 'layout/layout.html' %}
 {% load humanize %}
-
 {% block title_page %}Liste des Opérations{% endblock %}
 
 {% block content %}
 <div class="text-liste font-medium dark:text-white ">
 
     <!-- Navigation entre Entrées et Sorties -->
-    <div class="flex justify-between dark:text-white  space-x-4 mb-4  items-center">
+    <div
+        class="flex justify-between dark:text-white  space-x-4 mb-4  items-center">
         <div> </div>
-        <div class="flex space-x-4 p-2 rounded-xl bg-white dark:bg-secondary border-none">
+        <div
+            class="flex space-x-4 p-2 rounded-xl bg-white dark:bg-secondary border-none">
             <a href="{% url 'caisse:listes' %}">
-                <svg width="48" height="43" viewBox="0 0 48 43" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="48" height="43" rx="5" transform="matrix(-1 0 0 1 48 0)" fill="#396AFF"/>
-                    <path d="M6.98404 27.141L12.0931 22.721C14.6792 20.4837 18.716 20.2654 21.6175 22.0661L24.6451 19.4469C23.7621 18.4101 23.2575 17.155 23.2575 15.7908C23.2575 14.0992 24.0144 12.4622 25.402 11.2617L30.5111 6.84167C33.3495 4.38611 38.0171 4.38611 40.9185 6.84167C42.2431 8.09673 43 9.67921 43 11.3708C43 13.0624 42.2431 14.6449 40.8554 15.8454L35.8094 20.2654C34.3587 21.5205 32.4664 22.1207 30.6373 22.1207C29.2496 22.1207 27.925 21.7933 26.7266 21.1385L23.5728 23.8669C24.3297 24.8491 24.7082 26.0496 24.7082 27.2501C24.7082 28.9417 23.9513 30.5242 22.5636 31.7247L17.5176 36.1447C16.0669 37.3997 14.1746 38 12.3454 38C10.4532 38 8.56092 37.3997 7.17326 36.1447C5.78561 34.9442 5.02871 33.3617 5.02871 31.6701C4.83948 29.9785 5.59638 28.396 6.98404 27.141ZM33.791 18.5192L38.837 14.0992C39.7201 13.3353 40.1616 12.353 40.1616 11.3162C40.1616 10.2795 39.7201 9.29723 38.837 8.53328C37.954 7.76933 36.8186 7.38735 35.6202 7.38735C34.4848 7.38735 33.2864 7.76933 32.4034 8.53328L27.2943 12.8987C26.4743 13.6627 25.9697 14.6449 25.9697 15.6817C25.9697 16.3911 26.1589 16.9913 26.5374 17.5916L28.1142 16.2274C28.6819 15.7363 29.565 15.7363 30.1327 16.2274C30.7003 16.7185 30.7003 17.4824 30.1327 17.9735L28.6819 19.2286C30.448 19.9926 32.4664 19.7197 33.791 18.5192ZM9.06552 34.3985C10.8316 35.9264 13.7331 35.9264 15.4361 34.3985L20.4821 29.9785C21.3652 29.2146 21.8067 28.2323 21.8067 27.1955C21.8067 26.6499 21.6806 26.1042 21.4283 25.6131L19.9775 26.8136C19.7252 27.0318 19.3468 27.1955 18.9683 27.1955C18.5899 27.1955 18.2114 27.0864 17.9591 26.8136C17.3915 26.3224 17.3915 25.5585 17.9591 25.0674L19.536 23.8669C18.8422 23.5395 18.0853 23.3758 17.3284 23.3758C16.193 23.3758 14.9946 23.7577 14.1115 24.5217L9.00245 28.8871C8.18247 29.6511 7.67787 30.6333 7.67787 31.6701C7.74094 32.7069 8.18247 33.6891 9.06552 34.3985Z" fill="white"/>
-                    </svg>
+                <a href="{% url 'caisse:listes' %}" class="text-primary dark:text-white">
+                    <svg width="48" height="43" viewBox="0 0 48 43" fill="none" xmlns="http://www.w3.org/2000/svg">
+                             <path d="M6.98404 27.141L12.0931 22.721C14.6792 20.4837 18.716 20.2654 21.6175 22.0661L24.6451 19.4469C23.7621 18.4101 23.2575 17.155 23.2575 15.7908C23.2575 14.0992 24.0144 12.4622 25.402 11.2617L30.5111 6.84167C33.3495 4.38611 38.0171 4.38611 40.9185 6.84167C42.2431 8.09673 43 9.67921 43 11.3708C43 13.0624 42.2431 14.6449 40.8554 15.8454L35.8094 20.2654C34.3587 21.5205 32.4664 22.1207 30.6373 22.1207C29.2496 22.1207 27.925 21.7933 26.7266 21.1385L23.5728 23.8669C24.3297 24.8491 24.7082 26.0496 24.7082 27.2501C24.7082 28.9417 23.9513 30.5242 22.5636 31.7247L17.5176 36.1447C16.0669 37.3997 14.1746 38 12.3454 38C10.4532 38 8.56092 37.3997 7.17326 36.1447C5.78561 34.9442 5.02871 33.3617 5.02871 31.6701C4.83948 29.9785 5.59638 28.396 6.98404 27.141ZM33.791 18.5192L38.837 14.0992C39.7201 13.3353 40.1616 12.353 40.1616 11.3162C40.1616 10.2795 39.7201 9.29723 38.837 8.53328C37.954 7.76933 36.8186 7.38735 35.6202 7.38735C34.4848 7.38735 33.2864 7.76933 32.4034 8.53328L27.2943 12.8987C26.4743 13.6627 25.9697 14.6449 25.9697 15.6817C25.9697 16.3911 26.1589 16.9913 26.5374 17.5916L28.1142 16.2274C28.6819 15.7363 29.565 15.7363 30.1327 16.2274C30.7003 16.7185 30.7003 17.4824 30.1327 17.9735L28.6819 19.2286C30.448 19.9926 32.4664 19.7197 33.791 18.5192ZM9.06552 34.3985C10.8316 35.9264 13.7331 35.9264 15.4361 34.3985L20.4821 29.9785C21.3652 29.2146 21.8067 28.2323 21.8067 27.1955C21.8067 26.6499 21.6806 26.1042 21.4283 25.6131L19.9775 26.8136C19.7252 27.0318 19.3468 27.1955 18.9683 27.1955C18.5899 27.1955 18.2114 27.0864 17.9591 26.8136C17.3915 26.3224 17.3915 25.5585 17.9591 25.0674L19.536 23.8669C18.8422 23.5395 18.0853 23.3758 17.3284 23.3758C16.193 23.3758 14.9946 23.7577 14.1115 24.5217L9.00245 28.8871C8.18247 29.6511 7.67787 30.6333 7.67787 31.6701C7.74094 32.7069 8.18247 33.6891 9.06552 34.3985Z" fill="currentColor"/>
+                             </svg>
+                     </a>
+                </a>
             </a>
-            <a href="{% url 'caisse:liste_entrees' %}" class="rounded-lg text-table dark:text-white font-bold py-2 px-6">
+            <a href="{% url 'caisse:liste_entrees' %}"
+                class="rounded-lg text-table dark:text-white font-bold py-2 px-6">
                 Entrées
             </a>
-            <a href="{% url 'caisse:liste_sorties' %}" class="rounded-lg text-table dark:text-white font-bold py-2 px-6">
+            <a href="{% url 'caisse:liste_sorties' %}"
+                class"rounded-lg text-table dark:text-white font-bold py-2 px-6">
                 Sorties
             </a>
         </div>
         <div><a href="{% url 'caisse:operation' %}">
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Nouvelle Opération</button>
-        </a>
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Nouvelle
+                    opération</button>
+            </a>
         </div>
     </div>
     <div class="flex justify-between font-medium items-center space-x-4">
         <!-- Sélecteur pour le nombre de lignes par page -->
         <form method="get" class="flex items-center space-x-2">
             <label for="lignes">Nombre de lignes :</label>
-            <select name="lignes" class="border-none dark:bg-secondary focus:ring-0" id="lignes" onchange="this.form.submit()">
-                <option value="5" {% if lignes_par_page == '5' %}selected{% endif %}>5</option>
+            <select me="lignes"
+                class="border-none dark:bg-secondary focus:ring-0" id="lignes"
+                onchae="this.form.submit()">
+                <option value="5" {% if lignes_par_page == '5' %}selected{%endif%}>5</option>
                 <option value="10" {% if lignes_par_page == '10' %}selected{% endif %}>10</option>
                 <option value="15" {% if lignes_par_page == '15' %}selected{% endif %}>15</option>
                 <option value="30" {% if lignes_par_page == '30' %}selected{% endif %}>30</option>
                 <option value="100" {% if lignes_par_page == '100' %}selected{% endif %}>100</option>
             </select>
         </form>
-    
+
         <!-- Pagination -->
         <div class="flex items-center font-medium space-x-2">
             <span class="mx-2">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
             <div class="flex space-x-2">
-                {% if page_obj.has_previous %}
-                    <a href="?page=1&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 12H5M12 5l-7 7 7 7"/>
-                        </svg></a>
-                    <a href="?page={{ page_obj.previous_page_number }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M15 18l-6-6 6-6"/>
-                        </svg>
-                    </a>
+              {% if page_obj.has_previous %}
+                <a
+                    href="?page=1&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}"
+                    class="px-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                        height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5M12 5l-7 7 7 7" />
+                    </svg></a>
+                <a
+                    href="?page={{ page_obj.previous_page_number }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}"
+                    class="px-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                        height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                </a>
                 {% endif %}
                 {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 6l6 6-6 6"/>
-                        </svg>
-                    </a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M5 12h14M12 19l7-7-7-7"/>
-                        </svg>
-                    </a>
+                <a
+                    href="?page={{ page_obj.next_page_number }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}"
+                    class="px-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                    height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 6l6 6-6 6" />
+                    </svg>
+                </a>
+                <a
+                    href="?page={{ page_obj.paginator.num_pages }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}"
+                    class="px-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                        height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M12 19l7-7-7-7" />
+                    </svg>
+                </a>
                 {% endif %}
             </div>
         </div>
     </div>
 
-    <!-- Filtrage entreés -->
+    <!-- Filtrage entrées -->
+    <div class="relative">
+        <!-- Bouton pour afficher/masquer les filtres sur mobile -->
+        <button onclick="toggleFilters()" 
+                class="md:hidden w-full flex items-center justify-between p-4 bg-white dark:bg-secondary rounded-lg mb-2">
+            <span class="font-medium">Filtres</span>
+            <svg id="filter-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
 
-    <form method="GET" action="{% url 'caisse:listes' %}" class="p-4" id="filter-form" onsubmit="return false;">
-        <div class="flex items-center dark:bg-secondary font-medium rounded-xl space-x-4 text-sm">
-            <div class="flex space-x-4">
-                <!-- Sélecteur Catégories -->
-                <select name="categorie" class="w-[30%] py-2 border-none dark:bg-secondary focus:ring-0" onchange="submitFormWithCurrentParams(this)">
-                    <option value="">Catégories</option>
-                    {% for categorie in categories %}
-                        <option value="{{ categorie.id }}" {% if request.GET.categorie == categorie.id|stringformat:"s" %}selected{% endif %}>
+        <!-- Section des filtres -->
+        <form method="GET" action="{% url 'caisse:listes' %}" 
+              class="hidden md:block p-4" 
+              id="filter-form" 
+              onsubmit="return false;">
+            <div class="flex items-center dark:bg-secondary font-medium rounded-xl space-x-4 text-sm">
+                <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 w-full">
+                    <!-- Sélecteur Catégories -->
+                    <select name="categorie"
+                            class="w-full md:w-[30%] py-2 border-none dark:bg-secondary focus:ring-0 rounded-lg"
+                            onchange="submitFormWithCurrentParams(this)">
+                        <option value>Catégories</option>
+                        {% for categorie in categories %}
+                        <option value="{{ categorie.id }}"
+                            {% if request.GET.categorie == categorie.id|stringformat:"s" %} selected{% endif %}>
                             {{ categorie.name }}
                         </option>
-                    {% endfor %}
-                </select>
-                <div class="h-10 w-0.5 bg-gray-300"></div>
-    
-                <!-- Sélecteur Bénéficiaires (uniquement pour les sorties) -->
-                <select name="beneficiaire" class="px py-2 border-none dark:bg-secondary focus:ring-0 rounded-md" onchange="submitFormWithCurrentParams(this)">
-                    <option value="">Bénéficiaires</option>
-                    {% for beneficiaire in beneficiaires %}
+                        {% endfor %}
+                    </select>
+
+                    <div class="hidden md:block h-10 w-0.5 bg-gray-300"></div>
+
+                    <!-- Sélecteur Bénéficiaires (uniquement pour les sorties) -->
+                    <select name="beneficiaire"
+                            class="px py-2 border-none dark:bg-secondary focus:ring-0 rounded-md"
+                            onchange="submitFormWithCurrentParams(this)">
+                        <option value>Bénéficiaires</option>
+                        {% for beneficiaire in beneficiaires %}
                         <option value="{{ beneficiaire.id }}" {% if request.GET.beneficiaire == beneficiaire.id|stringformat:"s" %}selected{% endif %}>
                             {{ beneficiaire }}
                         </option>
-                    {% endfor %}
-                </select>
-                <div class="h-10 w-0.5 bg-gray-300"></div>
-    
-                <!-- Sélecteur Fournisseurs (uniquement pour les sorties) -->
-                <select name="fournisseur" class="px py-2 bg-white border-none dark:bg-secondary focus:ring-0 rounded-md" onchange="submitFormWithCurrentParams(this)">
-                    <option value="">Fournisseurs</option>
-                    {% for fournisseur in fournisseurs %}
+                        {% endfor %}
+                    </select>
+
+                    <div class="hidden md:block h-10 w-0.5 bg-gray-300"></div>
+
+                    <!-- Sélecteur Fournisseurs (uniquement pour les sorties) -->
+                    <select name="fournisseur"
+                            class="px py-2 bg-white border-none dark:bg-secondary focus:ring-0 rounded-md"
+                            onchange="submitFormWithCurrentParams(this)">
+                        <option value>Fournisseurs</option>
+                        {% for fournisseur in fournisseurs %}
                         <option value="{{ fournisseur.id }}" {% if request.GET.fournisseur == fournisseur.id|stringformat:"s" %}selected{% endif %}>
                             {{ fournisseur }}
                         </option>
-                    {% endfor %}
-                </select>
-                <div class="h-10 w-0.5 bg-gray-300"></div>
-    
-                <!-- Dates avec conservation des paramètres -->
-                <div class="flex space-x-4">
-                    <select name="mois" class="px-4 py-2 dark:bg-secondary border-none focus:ring-0 rounded-md" onchange="submitFormWithCurrentParams(this)">
-                        <option value="">Mois</option>
-                        {% for mois in mois_liste %}
-                            <option value="{{ mois.value }}" {% if request.GET.mois == mois.value|stringformat:"s" %}selected{% endif %}>
-                                {{ mois.label }}
-                            </option>
                         {% endfor %}
                     </select>
+
+                    <div class="hidden md:block h-10 w-0.5 bg-gray-300"></div>
+
+                    <!-- Dates avec conservation des paramètres -->
+                    <div class="flex space-x-4">
+                        <select name="mois"
+                                class="px-4 py-2 dark:bg-secondary border-none focus:ring-0 rounded-md"
+                                onchange="submitFormWithCurrentParams(this)">
+                            <option value>Mois</option>
+                            {% for mois in mois_liste %}
+                            <option value="{{ mois.value }}" {% if request.GET.mois
+                                == mois.value|stringformat:"s" %}selected{% endif
+                                %}>
+                                {{ mois.label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Bouton Reset -->
+                    <a href="?lignes={{ lignes_par_page }}"
+                       class="text-red px-3 py-2 hover:text-red-700 flex items-center justify-center md:justify-start space-x-1">
+                        <i class="fas fa-sync-alt"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 4v6h-6" />
+                            <path d="M1 20v-6h6" />
+                            <path d="M3.51 9a9 9 0 0114.13-3.36L23 10M1 14l4.36 4.36A9 9 0 0020.49 15" />
+                        </svg>
+                        <span>Reset</span>
+                    </a>
                 </div>
-    
-                <!-- Bouton Reset qui conserve le nombre de lignes -->
-                <a href="?lignes={{ lignes_par_page }}" class="text-red px-3 py-2 hover:text-red-700 flex items-center space-x-1">
-                    <i class="fas fa-sync-alt"></i>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M23 4v6h-6"/>
-                        <path d="M1 20v-6h6"/>
-                        <path d="M3.51 9a9 9 0 0114.13-3.36L23 10M1 14l4.36 4.36A9 9 0 0020.49 15"/>
-                    </svg>
-                    <span>Reset</span>
-                </a>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
 
     <!-- Tableau des opérations -->
-    <form method="post" id="export-form" action="{% url 'caisse:generer_excel_operations' %}">
+    <form method="post" id="export-form"
+        action="{% url 'caisse:generer_excel_operations' %}">
         {% csrf_token %}
-        <input type="hidden" id="selected-operations-input" name="selected_operations_ids">
-        <div class="table-container overflow-x-auto text-sm bg-white text-table text-medium dark:bg-secondary dark:text-white border-none rounded-lg">
-                <table class="w-full">
-                    <thead>
-                        <tr class="text-sm border-b dark:border-gray-800 dark:text-white/70">
-                            <th class="px-4 py-1 text-leftt"><input type="checkbox" id="select-all"></th>
-                            <th class="px-4 py-1 text-left">
-                                {% if request.GET.sort == 'description' and request.GET.order == 'asc' %}
-                                    <a href="?sort=description&order=desc&lignes={{ lignes_par_page }}">Description ⬇</a>
+        <input type="hidden" id="selected-operations-input"
+            name="selected_operations_ids">
+        <div
+            class="table-container overflow-x-auto text-sm bg-white text-table text-medium dark:bg-secondary dark:text-white border-none rounded-lg">
+            <!-- Version desktop du tableau -->
+            <table class="w-full hidden md:table">
+                <thead>
+                    <tr
+                        class="text-sm border-b dark:border-gray-800 dark:text-white/70">
+                        <th class="px-4 py-1 text-leftt"><input type="checkbox"
+                                id="select-all"></th>
+                        <th class="px-4 py-1 text-left">
+                            {% if request.GET.sort == 'description' and request.GET.order == 'asc' %}
+                            <a
+                                href="?sort=description&order=desc&lignes={{ lignes_par_page }}">Description
+                                ⬇</a>
+                            {% else %}
+                            <a
+                                href="?sort=description&order=asc&lignes={{ lignes_par_page }}">Description
+                                ⬆</a>
+                            {% endif %}
+                        </th>
+                        <th class="px-4 py-1 text-left">
+                            {% if request.GET.sort == 'categorie' and request.GET.order == 'asc' %}
+                            <a
+                                href="?sort=categorie&order=desc&lignes={{ lignes_par_page }}">Catégorie
+                                ⬇</a>
+                            {% else %}
+                            <a
+                                href="?sort=categorie&order=asc&lignes={{ lignes_par_page }}">Catégorie
+                                ⬆</a>
+                            {% endif %}
+                        </th>
+                        <th class="px-4 py-1 text-left">
+                            {% if request.GET.sort == 'beneficiaire' and request.GET.order == 'asc' %}
+                            <a
+                                href="?sort=beneficiaire&order=desc&lignes={{ lignes_par_page }}">Bénéficiaire
+                                ⬇</a>
+                            {% else %}
+                            <a
+                                href="?sort=beneficiaire&order=asc&lignes={{ lignes_par_page }}">Bénéficiaire
+                                ⬆</a>
+                            {% endif %}
+                        </th>
+                        <th class="px-2 py-1 text-left items-center">
+                            {% if request.GET.sort == 'fournisseur' and request.GET.order == 'asc' %}
+                            <a
+                                href="?sort=fournisseur&order=desc&lignes={{ lignes_par_page }}">Fournisseur
+                                ⬇</a>
+                            {% else %}
+                            <a
+                                href="?sort=fournisseur&order=asc&lignes={{ lignes_par_page }}">Fournisseur
+                                ⬆</a>
+                            {% endif %}
+                        </th>
+                        <th class="px-4 py-1 text-left">
+                            {% if request.GET.sort == 'date' and request.GET.order == 'asc' %}
+                            <a
+                                href="?sort=date&order=desc&lignes={{ lignes_par_page }}">Date
+                                ⬇</a>
+                            {% else %}
+                            <a
+                                href="?sort=date&order=asc&lignes={{ lignes_par_page }}">Date
+                                ⬆</a>
+                            {% endif %}
+                        </th>
+                        <th class="py-2 px-4 text-right">
+                            {% if request.GET.sort == 'quantite' and request.GET.order == 'asc' %}
+                            <a
+                                href="?sort=quantite&order=desc&lignes={{ lignes_par_page }}"
+                                class="flex items-center justify-end">
+                                <span>Quantité</span> ⬇
+                            </a>
+                            {% else %}
+                            <a
+                                href="?sort=quantite&order=asc&lignes={{ lignes_par_page }}"
+                                class="flex items-center justify-end">
+                                <span>Quantité</span> ⬆
+                            </a>
+                            {% endif %}
+                        </th>
+                        <th class="py-2 px-4 text-right">
+                            {% if request.GET.sort == 'montant' and request.GET.order == 'asc' %}
+                            <a
+                                href="?sort=montant&order=desc&lignes={{ lignes_par_page }}"
+                                class="flex items-center justify-end">
+                                <span>Montant</span> ⬇
+                            </a>
+                            {% else %}
+                            <a
+                                href="?sort=montant&order=asc&lignes={{ lignes_par_page }}"
+                                class="flex items-center justify-end">
+                                <span>Montant</span> ⬆
+                            </a>
+                            {% endif %}
+                        </th>
+                        <th class="py-2 px-4">Actions</th>
+                    </tr>
+                </tr>
+            </thead>
+            <tbody class="text-liste dark:text-white font-medium">
+                {% for operation in page_obj %}
+                <tr :key="{{ operation.id }}"
+                    class="{% cycle 'bg-white dark:bg-secondary' 'bg-gray-50 dark:bg-gray-800' %} ">
+                    <td class="px-4 py-2">
+                        <input type="checkbox" name="selected_operations"
+                            value="{{ operation.id }}">
+                    </td>
+                    <td class="py-1 px-4 flex items-center gap-2">
+                        {% if operation.date_transaction %}
+                        <svg width="23" height="22" viewBox="0 0 23 22"
+                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="0.5" width="22" height="22" rx="11"
+                                fill="#DCFAF8" />
+                            <path
+                                d="M16.6927 10.4289H15.979C15.8165 10.0214 15.5547 9.65644 15.2196 9.35814L16.3203 8.92239C16.4776 8.86014 16.5637 8.70456 16.519 8.55575C16.3862 8.11402 15.9382 7.78906 15.4059 7.78906H14.498C13.976 7.78906 13.5352 8.10175 13.3932 8.53053H12.4343C12.0742 9.72345 10.8578 10.6036 9.41649 10.6036C8.53667 10.6036 7.74071 10.2755 7.17209 9.74873C7.01194 9.95364 6.88076 10.1782 6.78408 10.4178C6.4969 10.3614 6.26077 10.1577 6.19475 9.89243C6.15247 9.72248 5.96443 9.61535 5.77505 9.65342C5.58556 9.69135 5.46622 9.85985 5.50852 10.0298C5.58043 10.3187 5.76139 10.5811 6.01805 10.7684C6.19372 10.8967 6.40027 10.986 6.61913 11.0307C6.60209 11.1509 6.59328 11.2734 6.59328 11.3977V11.7034C6.59328 12.862 7.35608 13.8599 8.45382 14.3121V15.0069C8.45382 15.385 8.79566 15.6916 9.21732 15.6916C9.63899 15.6916 9.98082 15.385 9.98082 15.0069V14.5705H12.8409V15.0069C12.8409 15.385 13.1828 15.6916 13.6044 15.6916C14.0261 15.6916 14.368 15.385 14.368 15.0069V14.2854C15.1706 13.9353 15.7853 13.2904 16.0386 12.5067H16.6926C17.1385 12.5067 17.5 12.181 17.5 11.7793V11.1563C17.5 10.7546 17.1386 10.4289 16.6927 10.4289ZM14.0985 10.611C13.9051 10.611 13.7482 10.4703 13.7482 10.2968C13.7482 10.1233 13.9051 9.98268 14.0985 9.98268C14.292 9.98268 14.4488 10.1233 14.4488 10.2968C14.4488 10.4703 14.292 10.611 14.0985 10.611Z"
+                                fill="#00B69B" />
+                            <path
+                                d="M9.41639 5.62158C8.0802 5.62158 6.99316 6.59761 6.99316 7.7973C6.99316 8.997 8.08022 9.97303 9.41639 9.97303C10.7526 9.97303 11.8396 8.997 11.8396 7.7973C11.8396 6.59757 10.7525 5.62158 9.41639 5.62158ZM9.19137 7.46486H9.64142C10.1491 7.46486 10.5621 7.83549 10.5621 8.29105C10.5621 8.70805 10.2159 9.05369 9.76796 9.10921V9.22763C9.76796 9.40174 9.61055 9.5429 9.41639 9.5429C9.22224 9.5429 9.06483 9.40174 9.06483 9.22763V9.1172H8.97514C8.58673 9.1172 8.2707 8.83367 8.2707 8.48515C8.2707 8.31104 8.4281 8.16988 8.62226 8.16988C8.81642 8.16988 8.97382 8.31104 8.97382 8.48515L9.64139 8.48666C9.76135 8.48666 9.85892 8.39889 9.85892 8.29103C9.85892 8.18316 9.76135 8.09539 9.64139 8.09539H9.19135C8.68369 8.09539 8.2707 7.72478 8.2707 7.26922C8.2707 6.8522 8.61685 6.50656 9.06483 6.45103V6.36698C9.06483 6.19287 9.22224 6.05171 9.41639 6.05171C9.61055 6.05171 9.76796 6.19287 9.76796 6.36698V6.44303H9.85763C10.246 6.44303 10.5621 6.72658 10.5621 7.0751C10.5621 7.24921 10.4047 7.39037 10.2105 7.39037C10.0163 7.39037 9.85894 7.24921 9.85894 7.0751C9.85894 7.07459 9.85889 7.07438 9.85889 7.07438L9.19137 7.07356C9.07142 7.07356 8.97385 7.16133 8.97385 7.26922C8.97385 7.37708 9.07142 7.46486 9.19137 7.46486Z"
+                                fill="#00B69B" />
+                        </svg>
+                        {% else %}
+                        <svg width="22" height="23" viewBox="0 0 22 23"
+                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect y="0.621582" width="22" height="22" rx="11"
+                                fill="#FFE0EB" />
+                            <g clip-path="url(#clip0_394_243)">
+                                <path
+                                    d="M15.0523 5.62158C14.366 5.62158 13.8096 6.17799 13.8096 6.86436V10.5725H15.9436C16.1377 10.5725 16.2951 10.4151 16.2951 10.221V6.86436C16.2951 6.17799 15.7387 5.62158 15.0523 5.62158V5.62158Z"
+                                    fill="#FB6094" />
+                                <path
+                                    d="M9.25045 14.4575C9.25045 12.3338 10.9781 10.5846 13.1302 10.5905V7.01579C13.1302 6.48101 13.3315 5.99243 13.6622 5.62158H7.46145C6.49254 5.62158 5.7041 6.41002 5.7041 7.37893V17.2637C5.7041 17.58 6.09098 17.7353 6.30973 17.5067L6.75949 17.0371L7.23457 17.5124C7.37168 17.6495 7.59434 17.6495 7.73168 17.5124L8.18191 17.0624L8.6366 17.5133C8.77371 17.6492 8.99473 17.6492 9.13184 17.5133L9.59379 17.0553L10.056 17.5133C10.1929 17.6492 10.4136 17.6492 10.5507 17.5135L10.6403 17.4249C9.76859 16.6962 9.25045 15.6185 9.25045 14.4575ZM8.54815 8.45752H9.24199V7.76368C9.24199 7.56952 9.3994 7.41211 9.59355 7.41211C9.78771 7.41211 9.94512 7.56952 9.94512 7.76368V8.45752H10.639C10.8331 8.45752 10.9905 8.61493 10.9905 8.80908C10.9905 9.00324 10.8331 9.16064 10.639 9.16064H9.94512V9.85449C9.94512 10.0486 9.78771 10.2061 9.59355 10.2061C9.3994 10.2061 9.24199 10.0486 9.24199 9.85449V9.16064H8.54815C8.35399 9.16064 8.19659 9.00324 8.19659 8.80908C8.19659 8.61493 8.35399 8.45752 8.54815 8.45752ZM7.48416 10.9196H9.85137C10.0455 10.9196 10.2029 11.077 10.2029 11.2712C10.2029 11.4653 10.0455 11.6228 9.85137 11.6228H7.48416C7.29 11.6228 7.13259 11.4653 7.13259 11.2712C7.13259 11.077 7.29 10.9196 7.48416 10.9196ZM8.6572 14.4329H7.48181C7.28766 14.4329 7.13025 14.2755 7.13025 14.0813C7.13025 13.8872 7.28766 13.7298 7.48181 13.7298H8.6572C8.85136 13.7298 9.00877 13.8872 9.00877 14.0813C9.00877 14.2755 8.85136 14.4329 8.6572 14.4329ZM8.8916 13.029H7.48296C7.2888 13.029 7.1314 12.8716 7.1314 12.6774C7.1314 12.4833 7.2888 12.3259 7.48296 12.3259H8.8916C9.08576 12.3259 9.24316 12.4833 9.24316 12.6774C9.24316 12.8716 9.08576 13.029 8.8916 13.029Z"
+                                    fill="#FB6094" />
+                                <path
+                                    d="M13.1172 11.2935C11.3725 11.2935 9.95312 12.7129 9.95312 14.4575C9.95312 16.2022 11.3725 17.6216 13.1172 17.6216C14.8619 17.6216 16.2812 16.2022 16.2812 14.4575C16.2812 12.7129 14.8619 11.2935 13.1172 11.2935ZM13.4699 15.8115V15.8449C13.4699 16.0391 13.3124 16.1965 13.1183 16.1965C12.9241 16.1965 12.7667 16.0391 12.7667 15.8449V15.8389C12.6092 15.8014 12.4631 15.7394 12.3473 15.6636C12.1848 15.5573 12.1393 15.3394 12.2455 15.1769C12.3519 15.0144 12.5697 14.9689 12.7322 15.0752C12.8761 15.1693 13.1133 15.2051 13.2299 15.1502C13.3054 15.1147 13.3639 15.0388 13.372 14.9657C13.3894 14.81 13.1455 14.7232 12.9999 14.6657C12.7795 14.5787 12.5053 14.4703 12.3461 14.1829C12.1191 13.7732 12.3179 13.2331 12.7667 13.0483V13.0306C12.7667 12.8365 12.9241 12.6791 13.1183 12.6791C13.3105 12.6791 13.4665 12.8334 13.4696 13.0249C13.5961 13.0645 13.7127 13.1278 13.806 13.2139C13.9488 13.3455 13.9577 13.5679 13.8261 13.7106C13.6944 13.8534 13.472 13.8623 13.3293 13.7307C13.2715 13.6773 13.0932 13.6558 13.0158 13.7078C12.9637 13.7428 12.9433 13.8099 12.9611 13.8421C13.0354 13.9762 13.4242 14.0221 13.7185 14.2514C14.3196 14.7199 14.1104 15.5658 13.4699 15.8115Z"
+                                    fill="#FB6094" />
+                            </g>
+                            <defs>
+                                <clippath id="clip0_394_243">
+                                    <rect width="12" height="12" fill="white"
+                                        transform="translate(5 5.62158)" />
+                                </clippath>
+                            </defs>
+                        </svg>
+                        {% endif %}
+                        {{ operation.description }}
+                    </td>
+                    <td class="py-1 px-4">{{ operation.categorie.name }}</td>
+                    <td class="py-1 px-4">
+                        {% if operation.beneficiaire %}
+                        {% if operation.beneficiaire %}
+                        {{ operation.beneficiaire }}
+                        {% else %}
+                        Bénéficiaire non spécifié
+                        {% endif %}
+                        {% else %}
+
+                        {% endif %}
+                    </td>
+                    <td class="py-1 px-4">
+                        {% if operation.fournisseur %}
+                        {{ operation.fournisseur.name }}
+                        {% else %}
+
+                        {% endif %}
+                    </td>
+                    <td class="py-1 px-4">
+                        {% if operation.date_transaction %}
+                        {{ operation.date_transaction }}
+                        {% else %}
+                        {{ operation.date_de_sortie }}
+                        {% endif %}
+                    </td>
+                    <td class="py-1 px-4 text-right">{{operation.quantite|intcomma }}</td>
+                    <td class="py-1 px-4 text-right">{{operation.montant|intcomma }} {{ prix }}</td>
+                    <td class="py-1 px-4 text-right">
+                        <div
+                            class="flex justify-center text-table dark:text-white items-center space-x-2 border border-table dark:border-gray-600 rounded-2xl">
+                            <!-- Icône de modification (stylo) -->
+                            {% if operation.date_transaction %}
+                            <a
+                                href="{% url 'caisse:modifier_entree' operation.id %}"
+                                class="p-2 rounded-lg hover:bg-gray-200">
                                 {% else %}
-                                    <a href="?sort=description&order=asc&lignes={{ lignes_par_page }}">Description ⬆</a>
-                                {% endif %}
-                            </th>
-                            <th class="px-4 py-1 text-left">
-                                {% if request.GET.sort == 'categorie' and request.GET.order == 'asc' %}
-                                    <a href="?sort=categorie&order=desc&lignes={{ lignes_par_page }}">Catégorie ⬇</a>
-                                {% else %}
-                                    <a href="?sort=categorie&order=asc&lignes={{ lignes_par_page }}">Catégorie ⬆</a>
-                                {% endif %}
-                            </th>
-                            <th class="px-4 py-1 text-left">
-                                {% if request.GET.sort == 'beneficiaire' and request.GET.order == 'asc' %}
-                                    <a href="?sort=beneficiaire&order=desc&lignes={{ lignes_par_page }}">Bénéficiaire ⬇</a>
-                                {% else %}
-                                    <a href="?sort=beneficiaire&order=asc&lignes={{ lignes_par_page }}">Bénéficiaire ⬆</a>
-                                {% endif %}
-                            </th>
-                            <th class="px-2 py-1 text-left items-center">
-                                {% if request.GET.sort == 'fournisseur' and request.GET.order == 'asc' %}
-                                    <a href="?sort=fournisseur&order=desc&lignes={{ lignes_par_page }}">Fournisseur ⬇</a>
-                                {% else %}
-                                    <a href="?sort=fournisseur&order=asc&lignes={{ lignes_par_page }}">Fournisseur ⬆</a>
-                                {% endif %}
-                            </th>
-                            <th class="px-4 py-1 text-left">
-                                {% if request.GET.sort == 'date' and request.GET.order == 'asc' %}
-                                    <a href="?sort=date&order=desc&lignes={{ lignes_par_page }}">Date ⬇</a>
-                                {% else %}
-                                    <a href="?sort=date&order=asc&lignes={{ lignes_par_page }}">Date ⬆</a>
-                                {% endif %}
-                            </th>
-                                <th class="py-2 px-4 text-right">
-                                    {% if request.GET.sort == 'quantite' and request.GET.order == 'asc' %}
-                                        <a href="?sort=quantite&order=desc&lignes={{ lignes_par_page }}" class="flex items-center justify-end">
-                                            <span>Quantité</span> ⬇
-                                        </a>
-                                    {% else %}
-                                        <a href="?sort=quantite&order=asc&lignes={{ lignes_par_page }}" class="flex items-center justify-end">
-                                            <span>Quantité</span> ⬆
-                                        </a>
-                                    {% endif %}
-                                </th>
-                                <th class="py-2 px-4 text-right">
-                                    {% if request.GET.sort == 'montant' and request.GET.order == 'asc' %}
-                                        <a href="?sort=montant&order=desc&lignes={{ lignes_par_page }}" class="flex items-center justify-end">
-                                            <span>Montant</span> ⬇
-                                        </a>
-                                    {% else %}
-                                        <a href="?sort=montant&order=asc&lignes={{ lignes_par_page }}" class="flex items-center justify-end">
-                                            <span>Montant</span> ⬆
-                                        </a>
-                                    {% endif %}
-                                </th>
-                                <th class="py-2 px-4">Actions</th>
-                            </tr>
-                        </tr>
-                    </thead>
-                    <tbody class="text-liste dark:text-white font-medium">
-                        {% for operation in page_obj %}
-                        <tr :key="{{ operation.id }}" class="{% cycle 'bg-white dark:bg-secondary' 'bg-gray-300 dark:bg-blue-950' %} border-b border-white dark:border-gray-800">
-                            <td class="px-4 py-2">
-                                <input type="checkbox" name="selected_operations" value="{{ operation.id }}">
-                            </td>
-                            <td class="py-1 px-4 flex items-center gap-2">
-                                {% if operation.date_transaction %}
-                                <svg width="23" height="22" viewBox="0 0 23 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="0.5" width="22" height="22" rx="11" fill="#DCFAF8"/>
-                                    <path d="M16.6927 10.4289H15.979C15.8165 10.0214 15.5547 9.65644 15.2196 9.35814L16.3203 8.92239C16.4776 8.86014 16.5637 8.70456 16.519 8.55575C16.3862 8.11402 15.9382 7.78906 15.4059 7.78906H14.498C13.976 7.78906 13.5352 8.10175 13.3932 8.53053H12.4343C12.0742 9.72345 10.8578 10.6036 9.41649 10.6036C8.53667 10.6036 7.74071 10.2755 7.17209 9.74873C7.01194 9.95364 6.88076 10.1782 6.78408 10.4178C6.4969 10.3614 6.26077 10.1577 6.19475 9.89243C6.15247 9.72248 5.96443 9.61535 5.77505 9.65342C5.58556 9.69135 5.46622 9.85985 5.50852 10.0298C5.58043 10.3187 5.76139 10.5811 6.01805 10.7684C6.19372 10.8967 6.40027 10.986 6.61913 11.0307C6.60209 11.1509 6.59328 11.2734 6.59328 11.3977V11.7034C6.59328 12.862 7.35608 13.8599 8.45382 14.3121V15.0069C8.45382 15.385 8.79566 15.6916 9.21732 15.6916C9.63899 15.6916 9.98082 15.385 9.98082 15.0069V14.5705H12.8409V15.0069C12.8409 15.385 13.1828 15.6916 13.6044 15.6916C14.0261 15.6916 14.368 15.385 14.368 15.0069V14.2854C15.1706 13.9353 15.7853 13.2904 16.0386 12.5067H16.6926C17.1385 12.5067 17.5 12.181 17.5 11.7793V11.1563C17.5 10.7546 17.1386 10.4289 16.6927 10.4289ZM14.0985 10.611C13.9051 10.611 13.7482 10.4703 13.7482 10.2968C13.7482 10.1233 13.9051 9.98268 14.0985 9.98268C14.292 9.98268 14.4488 10.1233 14.4488 10.2968C14.4488 10.4703 14.292 10.611 14.0985 10.611Z" fill="#00B69B"/>
-                                    <path d="M9.41639 5.62158C8.0802 5.62158 6.99316 6.59761 6.99316 7.7973C6.99316 8.997 8.08022 9.97303 9.41639 9.97303C10.7526 9.97303 11.8396 8.997 11.8396 7.7973C11.8396 6.59757 10.7525 5.62158 9.41639 5.62158ZM9.19137 7.46486H9.64142C10.1491 7.46486 10.5621 7.83549 10.5621 8.29105C10.5621 8.70805 10.2159 9.05369 9.76796 9.10921V9.22763C9.76796 9.40174 9.61055 9.5429 9.41639 9.5429C9.22224 9.5429 9.06483 9.40174 9.06483 9.22763V9.1172H8.97514C8.58673 9.1172 8.2707 8.83367 8.2707 8.48515C8.2707 8.31104 8.4281 8.16988 8.62226 8.16988C8.81642 8.16988 8.97382 8.31104 8.97382 8.48515L9.64139 8.48666C9.76135 8.48666 9.85892 8.39889 9.85892 8.29103C9.85892 8.18316 9.76135 8.09539 9.64139 8.09539H9.19135C8.68369 8.09539 8.2707 7.72478 8.2707 7.26922C8.2707 6.8522 8.61685 6.50656 9.06483 6.45103V6.36698C9.06483 6.19287 9.22224 6.05171 9.41639 6.05171C9.61055 6.05171 9.76796 6.19287 9.76796 6.36698V6.44303H9.85763C10.246 6.44303 10.5621 6.72658 10.5621 7.0751C10.5621 7.24921 10.4047 7.39037 10.2105 7.39037C10.0163 7.39037 9.85894 7.24921 9.85894 7.0751C9.85894 7.07459 9.85889 7.07438 9.85889 7.07438L9.19137 7.07356C9.07142 7.07356 8.97385 7.16133 8.97385 7.26922C8.97385 7.37708 9.07142 7.46486 9.19137 7.46486Z" fill="#00B69B"/>
-                                    </svg>
-                                {% else %}
-                                    <svg width="22" height="23" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <rect y="0.621582" width="22" height="22" rx="11" fill="#FFE0EB"/>
-                                        <g clip-path="url(#clip0_394_243)">
-                                        <path d="M15.0523 5.62158C14.366 5.62158 13.8096 6.17799 13.8096 6.86436V10.5725H15.9436C16.1377 10.5725 16.2951 10.4151 16.2951 10.221V6.86436C16.2951 6.17799 15.7387 5.62158 15.0523 5.62158V5.62158Z" fill="#FB6094"/>
-                                        <path d="M9.25045 14.4575C9.25045 12.3338 10.9781 10.5846 13.1302 10.5905V7.01579C13.1302 6.48101 13.3315 5.99243 13.6622 5.62158H7.46145C6.49254 5.62158 5.7041 6.41002 5.7041 7.37893V17.2637C5.7041 17.58 6.09098 17.7353 6.30973 17.5067L6.75949 17.0371L7.23457 17.5124C7.37168 17.6495 7.59434 17.6495 7.73168 17.5124L8.18191 17.0624L8.6366 17.5133C8.77371 17.6492 8.99473 17.6492 9.13184 17.5133L9.59379 17.0553L10.056 17.5133C10.1929 17.6492 10.4136 17.6492 10.5507 17.5135L10.6403 17.4249C9.76859 16.6962 9.25045 15.6185 9.25045 14.4575ZM8.54815 8.45752H9.24199V7.76368C9.24199 7.56952 9.3994 7.41211 9.59355 7.41211C9.78771 7.41211 9.94512 7.56952 9.94512 7.76368V8.45752H10.639C10.8331 8.45752 10.9905 8.61493 10.9905 8.80908C10.9905 9.00324 10.8331 9.16064 10.639 9.16064H9.94512V9.85449C9.94512 10.0486 9.78771 10.2061 9.59355 10.2061C9.3994 10.2061 9.24199 10.0486 9.24199 9.85449V9.16064H8.54815C8.35399 9.16064 8.19659 9.00324 8.19659 8.80908C8.19659 8.61493 8.35399 8.45752 8.54815 8.45752ZM7.48416 10.9196H9.85137C10.0455 10.9196 10.2029 11.077 10.2029 11.2712C10.2029 11.4653 10.0455 11.6228 9.85137 11.6228H7.48416C7.29 11.6228 7.13259 11.4653 7.13259 11.2712C7.13259 11.077 7.29 10.9196 7.48416 10.9196ZM8.6572 14.4329H7.48181C7.28766 14.4329 7.13025 14.2755 7.13025 14.0813C7.13025 13.8872 7.28766 13.7298 7.48181 13.7298H8.6572C8.85136 13.7298 9.00877 13.8872 9.00877 14.0813C9.00877 14.2755 8.85136 14.4329 8.6572 14.4329ZM8.8916 13.029H7.48296C7.2888 13.029 7.1314 12.8716 7.1314 12.6774C7.1314 12.4833 7.2888 12.3259 7.48296 12.3259H8.8916C9.08576 12.3259 9.24316 12.4833 9.24316 12.6774C9.24316 12.8716 9.08576 13.029 8.8916 13.029Z" fill="#FB6094"/>
-                                        <path d="M13.1172 11.2935C11.3725 11.2935 9.95312 12.7129 9.95312 14.4575C9.95312 16.2022 11.3725 17.6216 13.1172 17.6216C14.8619 17.6216 16.2812 16.2022 16.2812 14.4575C16.2812 12.7129 14.8619 11.2935 13.1172 11.2935ZM13.4699 15.8115V15.8449C13.4699 16.0391 13.3124 16.1965 13.1183 16.1965C12.9241 16.1965 12.7667 16.0391 12.7667 15.8449V15.8389C12.6092 15.8014 12.4631 15.7394 12.3473 15.6636C12.1848 15.5573 12.1393 15.3394 12.2455 15.1769C12.3519 15.0144 12.5697 14.9689 12.7322 15.0752C12.8761 15.1693 13.1133 15.2051 13.2299 15.1502C13.3054 15.1147 13.3639 15.0388 13.372 14.9657C13.3894 14.81 13.1455 14.7232 12.9999 14.6657C12.7795 14.5787 12.5053 14.4703 12.3461 14.1829C12.1191 13.7732 12.3179 13.2331 12.7667 13.0483V13.0306C12.7667 12.8365 12.9241 12.6791 13.1183 12.6791C13.3105 12.6791 13.4665 12.8334 13.4696 13.0249C13.5961 13.0645 13.7127 13.1278 13.806 13.2139C13.9488 13.3455 13.9577 13.5679 13.8261 13.7106C13.6944 13.8534 13.472 13.8623 13.3293 13.7307C13.2715 13.6773 13.0932 13.6558 13.0158 13.7078C12.9637 13.7428 12.9433 13.8099 12.9611 13.8421C13.0354 13.9762 13.4242 14.0221 13.7185 14.2514C14.3196 14.7199 14.1104 15.5658 13.4699 15.8115Z" fill="#FB6094"/>
-                                        </g>
-                                        <defs>
-                                        <clipPath id="clip0_394_243">
-                                        <rect width="12" height="12" fill="white" transform="translate(5 5.62158)"/>
-                                        </clipPath>
-                                        </defs>
-                                        </svg>
-                                {% endif %}
-                                {{ operation.description }}
-                            </td>
-                            <td class="py-1 px-4">{{ operation.categorie.name }}</td>
-                            <td class="py-1 px-4">
-                                {% if operation.beneficiaire %}
-                                    {% if operation.beneficiaire %}
-                                        {{ operation.beneficiaire }}
-                                    {% else %}
-                                        Bénéficiaire non spécifié
-                                    {% endif %}
-                                {% else %}
-                                    
-                                {% endif %}
-                            </td>
-                            <td class="py-1 px-4">
-                                {% if operation.fournisseur %}
-                                    {{ operation.fournisseur.name }}
-                                {% else %}
-                                    
-                                {% endif %}
-                            </td>
-                            <td class="py-1 px-4">
-                                {% if operation.date_transaction %}
-                                    {{ operation.date_transaction }}
-                                {% else %}
-                                    {{ operation.date_de_sortie }}
-                                {% endif %}
-                            </td>
-                            <td class="py-1 px-4 text-right">{{ operation.quantite|intcomma }}</td>
-                            <td class="py-1 px-4 text-right">{{ operation.montant|intcomma }} {{ prix }}</td>
-                            <td class="py-1 px-4 text-right">
-                                <div class="flex justify-center text-table dark:text-white items-center space-x-2 border border-table dark:border-gray-600 rounded-2xl">
-                                    <!-- Icône de modification (stylo) -->
-                                    {% if operation.date_transaction %}
-                                        <a href="{% url 'caisse:modifier_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
-                                    {% else %}
-                                        <a href="{% url 'caisse:modifier_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200">
+                                <a
+                                    href="{% url 'caisse:modifier_sortie' operation.id %}"
+                                    class="p-2 rounded-lg hover:bg-gray-200">
                                     {% endif %}
                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 inline" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round"
-                                    stroke-linejoin="round" stroke-width="2"
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                                    </a>
+                                        class="h-5 w-5 inline" fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </a>
 
-                                    <div class="h-10 bg-table dark:bg-gray-600" style="width: 1px;"></div>
-                                    <!-- Icône de suppression -->
-                                    {% if operation.date_transaction %}
-                                        <a href="{% url 'caisse:supprimer_entree' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?');">
+                                <div class="h-10 bg-table dark:bg-gray-600"
+                                    style="width: 1px;"></div>
+                                <!-- Icône de suppression -->
+                                {% if operation.date_transaction %}
+                                <a
+                                    href="{% url 'caisse:supprimer_entree' operation.id %}"
+                                    class="p-2 rounded-lg hover:bg-gray-200"
+                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?');">
                                     {% else %}
-                                        <a href="{% url 'caisse:supprimer_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-200" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie ?');">
-                                    {% endif %}
-                                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M13.097 15.7002H4.51158C3.83421 15.7002 3.2851 15.1629 3.2851 14.5002V3.7002H14.3234V14.5002C14.3234 15.1629 13.7743 15.7002 13.097 15.7002Z" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M6.96576 12.1003V7.30029" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M10.6448 12.1003V7.30029" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M0.831726 3.70029H16.776" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M10.6444 1.30029H6.96495C6.28758 1.30029 5.73846 1.83755 5.73846 2.50029V3.70029H11.8709V2.50029C11.8709 1.83755 11.3218 1.30029 10.6444 1.30029Z" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <a
+                                        href="{% url 'caisse:supprimer_sortie' operation.id %}"
+                                        class="p-2 rounded-lg hover:bg-gray-200"
+                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie ?');">
+                                        {% endif %}
+                                        <svg width="17" height="17"
+                                            viewBox="0 0 17 17" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                clip-rule="evenodd"
+                                                d="M13.097 15.7002H4.51158C3.83421 15.7002 3.2851 15.1629 3.2851 14.5002V3.7002H14.3234V14.5002C14.3234 15.1629 13.7743 15.7002 13.097 15.7002Z"
+                                                stroke="#EF3826"
+                                                stroke-width="1.2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path d="M6.96576 12.1003V7.30029"
+                                                stroke="#EF3826"
+                                                stroke-width="1.2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path d="M10.6448 12.1003V7.30029"
+                                                stroke="#EF3826"
+                                                stroke-width="1.2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path d="M0.831726 3.70029H16.776"
+                                                stroke="#EF3826"
+                                                stroke-width="1.2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path fill-rule="evenodd"
+                                                clip-rule="evenodd"
+                                                d="M10.6444 1.30029H6.96495C6.28758 1.30029 5.73846 1.83755 5.73846 2.50029V3.70029H11.8709V2.50029C11.8709 1.83755 11.3218 1.30029 10.6444 1.30029Z"
+                                                stroke="#EF3826"
+                                                stroke-width="1.2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round" />
                                         </svg>
                                     </a>
                                 </div>
@@ -303,85 +452,202 @@
                         {% endfor %}
                     </tbody>
                 </table>
+
+                <!-- Version mobile du tableau -->
+                <div class="md:hidden">
+                    {% for operation in page_obj %}
+                    <div class="p-4 border-b dark:border-gray-800 {% cycle 'bg-white dark:bg-secondary' 'bg-gray-300 dark:bg-gray-800' %}">
+                        <!-- En-tête avec checkbox et description -->
+                        <div class="flex items-center mb-4">
+                            <input type="checkbox" name="selected_operations" value="{{ operation.id }}" class="mr-2">
+                            <div class="flex-1">
+                                <div class="flex items-center">
+                                    {% if operation.date_transaction %}
+                                    <svg width="23" height="22" viewBox="0 0 23 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="0.5" width="22" height="22" rx="11" fill="#DCFAF8"/>
+                                        <path d="M16.6927 10.4289H15.979C15.8165 10.0214 15.5547 9.65644 15.2196 9.35814L16.3203 8.92239C16.4776 8.86014 16.5637 8.70456 16.519 8.55575C16.3862 8.11402 15.9382 7.78906 15.4059 7.78906H14.498C13.976 7.78906 13.5352 8.10175 13.3932 8.53053H12.4343C12.0742 9.72345 10.8578 10.6036 9.41649 10.6036C8.53667 10.6036 7.74071 10.2755 7.17209 9.74873C7.01194 9.95364 6.88076 10.1782 6.78408 10.4178C6.4969 10.3614 6.26077 10.1577 6.19475 9.89243C6.15247 9.72248 5.96443 9.61535 5.77505 9.65342C5.58556 9.69135 5.46622 9.85985 5.50852 10.0298C5.58043 10.3187 5.76139 10.5811 6.01805 10.7684C6.19372 10.8967 6.40027 10.986 6.61913 11.0307C6.60209 11.1509 6.59328 11.2734 6.59328 11.3977V11.7034C6.59328 12.862 7.35608 13.8599 8.45382 14.3121V15.0069C8.45382 15.385 8.79566 15.6916 9.21732 15.6916C9.63899 15.6916 9.98082 15.385 9.98082 15.0069V14.5705H12.8409V15.0069C12.8409 15.385 13.1828 15.6916 13.6044 15.6916C14.0261 15.6916 14.368 15.385 14.368 15.0069V14.2854C15.1706 13.9353 15.7853 13.2904 16.0386 12.5067H16.6926C17.1385 12.5067 17.5 12.181 17.5 11.7793V11.1563C17.5 10.7546 17.1386 10.4289 16.6927 10.4289Z" fill="#00B69B"/>
+                                        <path d="M9.41639 5.62158C8.0802 5.62158 6.99316 6.59761 6.99316 7.7973C6.99316 8.997 8.08022 9.97303 9.41639 9.97303C10.7526 9.97303 11.8396 8.997 11.8396 7.7973C11.8396 6.59757 10.7525 5.62158 9.41639 5.62158ZM9.19137 7.46486H9.64142C10.1491 7.46486 10.5621 7.83549 10.5621 8.29105C10.5621 8.70805 10.2159 9.05369 9.76796 9.10921V9.22763C9.76796 9.40174 9.61055 9.5429 9.41639 9.5429C9.22224 9.5429 9.06483 9.40174 9.06483 9.22763V9.1172H8.97514C8.58673 9.1172 8.2707 8.83367 8.2707 8.48515C8.2707 8.31104 8.4281 8.16988 8.62226 8.16988C8.81642 8.16988 8.97382 8.31104 8.97382 8.48515L9.64139 8.48666C9.76135 8.48666 9.85892 8.39889 9.85892 8.29103C9.85892 8.18316 9.76135 8.09539 9.64139 8.09539H9.19135C8.68369 8.09539 8.2707 7.72478 8.2707 7.26922C8.2707 6.8522 8.61685 6.50656 9.06483 6.45103V6.36698C9.06483 6.19287 9.22224 6.05171 9.41639 6.05171C9.61055 6.05171 9.76796 6.19287 9.76796 6.36698V6.44303H9.85763C10.246 6.44303 10.5621 6.72658 10.5621 7.0751C10.5621 7.24921 10.4047 7.39037 10.2105 7.39037C10.0163 7.39037 9.85894 7.24921 9.85894 7.0751C9.85894 7.07459 9.85889 7.07438 9.85889 7.07438L9.19137 7.07356C9.07142 7.07356 8.97385 7.16133 8.97385 7.26922C8.97385 7.37708 9.07142 7.46486 9.19137 7.46486Z" fill="#00B69B"/>
+                                    </svg>
+                                    {% else %}
+                                    <svg width="22" height="23" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect y="0.621582" width="22" height="22" rx="11" fill="#FFE0EB"/>
+                                        <g clip-path="url(#clip0_394_243)">
+                                            <path d="M15.0523 5.62158C14.366 5.62158 13.8096 6.17799 13.8096 6.86436V10.5725H15.9436C16.1377 10.5725 16.2951 10.4151 16.2951 10.221V6.86436C16.2951 6.17799 15.7387 5.62158 15.0523 5.62158V5.62158Z" fill="#FB6094"/>
+                                            <path d="M9.25045 14.4575C9.25045 12.3338 10.9781 10.5846 13.1302 10.5905V7.01579C13.1302 6.48101 13.3315 5.99243 13.6622 5.62158H7.46145C6.49254 5.62158 5.7041 6.41002 5.7041 7.37893V17.2637C5.7041 17.58 6.09098 17.7353 6.30973 17.5067L6.75949 17.0371L7.23457 17.5124C7.37168 17.6495 7.59434 17.6495 7.73168 17.5124L8.18191 17.0624L8.6366 17.5133C8.77371 17.6492 8.99473 17.6492 9.13184 17.5133L9.59379 17.0553L10.056 17.5133C10.1929 17.6492 10.4136 17.6492 10.5507 17.5135L10.6403 17.4249C9.76859 16.6962 9.25045 15.6185 9.25045 14.4575ZM8.54815 8.45752H9.24199V7.76368C9.24199 7.56952 9.3994 7.41211 9.59355 7.41211C9.78771 7.41211 9.94512 7.56952 9.94512 7.76368V8.45752H10.639C10.8331 8.45752 10.9905 8.61493 10.9905 8.80908C10.9905 9.00324 10.8331 9.16064 10.639 9.16064H9.94512V9.85449C9.94512 10.0486 9.78771 10.2061 9.59355 10.2061C9.3994 10.2061 9.24199 10.0486 9.24199 9.85449V9.16064H8.54815C8.35399 9.16064 8.19659 9.00324 8.19659 8.80908C8.19659 8.61493 8.35399 8.45752 8.54815 8.45752ZM7.48416 10.9196H9.85137C10.0455 10.9196 10.2029 11.077 10.2029 11.2712C10.2029 11.4653 10.0455 11.6228 9.85137 11.6228H7.48416C7.29 11.6228 7.13259 11.4653 7.13259 11.2712C7.13259 11.077 7.29 10.9196 7.48416 10.9196ZM8.6572 14.4329H7.48181C7.28766 14.4329 7.13025 14.2755 7.13025 14.0813C7.13025 13.8872 7.28766 13.7298 7.48181 13.7298H8.6572C8.85136 13.7298 9.00877 13.8872 9.00877 14.0813C9.00877 14.2755 8.85136 14.4329 8.6572 14.4329ZM8.8916 13.029H7.48296C7.2888 13.029 7.1314 12.8716 7.1314 12.6774C7.1314 12.4833 7.2888 12.3259 7.48296 12.3259H8.8916C9.08576 12.3259 9.24316 12.4833 9.24316 12.6774C9.24316 12.8716 9.08576 13.029 8.8916 13.029Z" fill="#FB6094"/>
+                                            <path d="M13.1172 11.2935C11.3725 11.2935 9.95312 12.7129 9.95312 14.4575C9.95312 16.2022 11.3725 17.6216 13.1172 17.6216C14.8619 17.6216 16.2812 16.2022 16.2812 14.4575C16.2812 12.7129 14.8619 11.2935 13.1172 11.2935ZM13.4699 15.8115V15.8449C13.4699 16.0391 13.3124 16.1965 13.1183 16.1965C12.9241 16.1965 12.7667 16.0391 12.7667 15.8449V15.8389C12.6092 15.8014 12.4631 15.7394 12.3473 15.6636C12.1848 15.5573 12.1393 15.3394 12.2455 15.1769C12.3519 15.0144 12.5697 14.9689 12.7322 15.0752C12.8761 15.1693 13.1133 15.2051 13.2299 15.1502C13.3054 15.1147 13.3639 15.0388 13.372 14.9657C13.3894 14.81 13.1455 14.7232 12.9999 14.6657C12.7795 14.5787 12.5053 14.4703 12.3461 14.1829C12.1191 13.7732 12.3179 13.2331 12.7667 13.0483V13.0306C12.7667 12.8365 12.9241 12.6791 13.1183 12.6791C13.3105 12.6791 13.4665 12.8334 13.4696 13.0249C13.5961 13.0645 13.7127 13.1278 13.806 13.2139C13.9488 13.3455 13.9577 13.5679 13.8261 13.7106C13.6944 13.8534 13.472 13.8623 13.3293 13.7307C13.2715 13.6773 13.0932 13.6558 13.0158 13.7078C12.9637 13.7428 12.9433 13.8099 12.9611 13.8421C13.0354 13.9762 13.4242 14.0221 13.7185 14.2514C14.3196 14.7199 14.1104 15.5658 13.4699 15.8115Z" fill="#FB6094"/>
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_394_243">
+                                                <rect width="12" height="12" fill="white" transform="translate(5 5.62158)"/>
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                    {% endif %}
+                                    <span class="ml-2 font-medium">{{operation.description}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Informations en grille -->
+                        <div class="grid grid-cols-2 gap-y-3 text-sm mb-4">
+                            <div class="text-gray-600 dark:text-gray-400">Catégorie:</div>
+                            <div class="text-right">{{ operation.categorie.name }}</div>
+
+                            {% if operation.beneficiaire %}
+                            <div class="text-gray-600 dark:text-gray-400">Bénéficiaire:</div>
+                            <div class="text-right">{{ operation.beneficiaire }}</div>
+                            {% endif %}
+
+                            {% if operation.fournisseur %}
+                            <div class="text-gray-600 dark:text-gray-400">Fournisseur:</div>
+                            <div class="text-right">{{ operation.fournisseur.name }}</div>
+                            {% endif %}
+
+                            <div class="text-gray-600 dark:text-gray-400">Date:</div>
+                            <div class="text-right">
+                                {% if operation.date_transaction %}
+                                    {{ operation.date_transaction }}
+                                {% else %}
+                                    {{ operation.date_de_sortie }}
+                                {% endif %}
+                            </div>
+
+                            <div class="text-gray-600 dark:text-gray-400">Quantité:</div>
+                            <div class="text-right">{{ operation.quantite|intcomma }}</div>
+
+                            <div class="text-gray-600 dark:text-gray-400">Montant:</div>
+                            <div class="text-right font-medium">{{ operation.montant|intcomma }} {{ prix }}</div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex justify-end space-x-2 border-t dark:border-gray-700 pt-3">
+                            {% if operation.date_transaction %}
+                            <a href="{% url 'caisse:modifier_entree' operation.id %}" 
+                               class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </a>
+                            <a href="{% url 'caisse:supprimer_entree' operation.id %}" 
+                               class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?');">
+                                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.097 15.7002H4.51158C3.83421 15.7002 3.2851 15.1629 3.2851 14.5002V3.7002H14.3234V14.5002C14.3234 15.1629 13.7743 15.7002 13.097 15.7002Z" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M6.96576 12.1003V7.30029" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M10.6448 12.1003V7.30029" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M0.831726 3.70029H16.776" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M10.6444 1.30029H6.96495C6.28758 1.30029 5.73846 1.83755 5.73846 2.50029V3.70029H11.8709V2.50029C11.8709 1.83755 11.3218 1.30029 10.6444 1.30029Z" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                            {% else %}
+                            <a href="{% url 'caisse:modifier_sortie' operation.id %}" 
+                               class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </a>
+                            <a href="{% url 'caisse:supprimer_sortie' operation.id %}" 
+                               class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie ?');">
+                                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.097 15.7002H4.51158C3.83421 15.7002 3.2851 15.1629 3.2851 14.5002V3.7002H14.3234V14.5002C14.3234 15.1629 13.7743 15.7002 13.097 15.7002Z" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M6.96576 12.1003V7.30029" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M10.6448 12.1003V7.30029" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M0.831726 3.70029H16.776" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M10.6444 1.30029H6.96495C6.28758 1.30029 5.73846 1.83755 5.73846 2.50029V3.70029H11.8709V2.50029C11.8709 1.83755 11.3218 1.30029 10.6444 1.30029Z" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
             <!-- Boutons pour l'exportation -->
             <div class="flex justify-end mt-4">
-                <button onclick="validateAndSubmitExport('selected')" type="button" 
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <button onclick="validateAndSubmitExport('selected')"
+                    type="button"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Exporter Sélection
                 </button>
-                <button onclick="validateAndSubmitExport('all')" type="button" 
-                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2">
+                <button onclick="validateAndSubmitExport('all')"
+                    type="button"
+                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2">
                     Exporter Tout
                 </button>
             </div>
-    </form>
-    <!-- Sélecteur pour le nombre de lignes par page -->
+        </form>
+        <!-- Sélecteur pour le nombre de lignes par page -->
 
-
-
-    
-    <script>
-        function submitFormWithCurrentParams(changedElement) {
-            const form = document.getElementById('filter-form');
-            const currentParams = new URLSearchParams(window.location.search);
-            
-            // Conserver le nombre de lignes par page
-            if (currentParams.has('lignes')) {
-                const lignesInput = document.createElement('input');
-                lignesInput.type = 'hidden';
-                lignesInput.name = 'lignes';
-                lignesInput.value = currentParams.get('lignes');
-                form.appendChild(lignesInput);
-            }
-            
-            // Conserver le tri actuel
-            if (currentParams.has('sort')) {
-                const sortInput = document.createElement('input');
-                sortInput.type = 'hidden';
-                sortInput.name = 'sort';
-                sortInput.value = currentParams.get('sort');
-                form.appendChild(sortInput);
-            }
-            
-            if (currentParams.has('order')) {
-                const orderInput = document.createElement('input');
-                orderInput.type = 'hidden';
-                orderInput.name = 'order';
-                orderInput.value = currentParams.get('order');
-                form.appendChild(orderInput);
-            }
-            
-            form.submit();
+        <script>
+    function submitFormWithCurrentParams(changedElement) {
+        const form = document.getElementById('filter-form');
+        const currentParams = new URLSearchParams(window.location.search);
+        
+        // Conserver le nombre de lignes par page
+        if (currentParams.has('lignes')) {
+            const lignesInput = document.createElement('input');
+            lignesInput.type = 'hidden';
+            lignesInput.name = 'lignes';
+            lignesInput.value = currentParams.get('lignes');
+            form.appendChild(lignesInput);
         }
         
-        function validateAndSubmitExport(type) {
-            const checkboxes = document.querySelectorAll('input[name="selected_operations"]:checked');
-            const form = document.getElementById('export-form');
-            
-            if (type === 'selected' && checkboxes.length === 0) {
-                alert('Veuillez sélectionner au moins une opération à exporter');
-                return false;
-            }
-            
-            if (type === 'all') {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'export_all';
-                input.value = 'true';
-                form.appendChild(input);
-            } else {
-                const selectedIds = Array.from(checkboxes).map(cb => cb.value);
-                document.getElementById('selected-operations-input').value = selectedIds.join(',');
-            }
-            
-            form.submit();
+        // Conserver le tri actuel
+        if (currentParams.has('sort')) {
+            const sortInput = document.createElement('input');
+            sortInput.type = 'hidden';
+            sortInput.name = 'sort';
+            sortInput.value = currentParams.get('sort');
+            form.appendChild(sortInput);
         }
+        
+        if (currentParams.has('order')) {
+            const orderInput = document.createElement('input');
+            orderInput.type = 'hidden';
+            orderInput.name = 'order';
+            orderInput.value = currentParams.get('order');
+            form.appendChild(orderInput);
+        }
+        
+        form.submit();
+    }
     
-        // Script pour sélectionner/désélectionner toutes les cases à cocher
-        document.getElementById('select-all').addEventListener('click', function(event) {
-            let checkboxes = document.querySelectorAll('input[name="selected_operations"]');
-            checkboxes.forEach(checkbox => checkbox.checked = event.target.checked);
-        });
-    </script>
-{% endblock %}
+    function validateAndSubmitExport(type) {
+        const checkboxes = document.querySelectorAll('input[name="selected_operations"]:checked');
+        const form = document.getElementById('export-form');
+        
+        if (type === 'selected' && checkboxes.length === 0) {
+            alert('Veuillez sélectionner au moins une opération à exporter');
+            return false;
+        }
+        
+        if (type === 'all') {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'export_all';
+            input.value = 'true';
+            form.appendChild(input);
+        } else {
+            const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+            document.getElementById('selected-operations-input').value = selectedIds.join(',');
+        }
+        
+        form.submit();
+    }
+
+    // Script pour sélectionner/désélectionner toutes les cases à cocher
+    document.getElementById('select-all').addEventListener('click', function(event) {
+        let checkboxes = document.querySelectorAll('input[name="selected_operations"]');
+        checkboxes.forEach(checkbox => checkbox.checked = event.target.checked);
+    });
+
+    function toggleFilters() {
+        const filterForm = document.getElementById('filter-form');
+        const filterIcon = document.getElementById('filter-icon');
+        
+        filterForm.classList.toggle('hidden');
+        filterIcon.classList.toggle('rotate-180');
+    }
+</script>
+        {% endblock %}

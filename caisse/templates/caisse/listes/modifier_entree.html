@@ -66,8 +66,7 @@
                         class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full focus:ring-0">
                         <option value disabled>Choisissez une catégorie</option>
                         {% for categorie in categories_entree %}
-                        <option value="{{ categorie.id }}" {% if categorie.id ==
-                            entree.categorie_id %}selected{% endif %}>
+                        <option value="{{ categorie.id }}" {% if categorie.id == entree.categorie_id %}selected{% endif %}>
                             {{ categorie.name }}
                         </option>
                         {% endfor %}
