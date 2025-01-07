@@ -1,0 +1,10 @@
+### Opérations d'Entrée
+
+#### Créer une opération d'entrée
+
+## Profil Utilisateur
+
+### Obtenir le profil
+**GET** `/api/auth/profile/`
+
+**Headers requis :**

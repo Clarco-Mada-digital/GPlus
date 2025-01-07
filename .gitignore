@@ -101,7 +101,7 @@ out
 Next.js
 # https://nextjs.org/blog/next-9-1#public-directory-support
 # public
-
+static/css/dist/style.css
 # vuepress build output
 .vuepress/dist
 

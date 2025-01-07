@@ -32,6 +32,9 @@ urlpatterns = [
     path('caisse/', include("caisse.urls")),
     path('accounts/', include("accounts.urls")),
     path("__reload__/", include("django_browser_reload.urls")),
+    path('api/', include('caisse.api_urls')),
+    path('api/auth/', include('accounts.api_urls')),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
 ]
 
 
