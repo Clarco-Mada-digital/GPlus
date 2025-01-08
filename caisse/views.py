@@ -48,45 +48,43 @@ def superuser_required(view_func):
     return _wrapped_view
 
 # Vues principales
-
 @login_required
 def index(request):
     """Vue du tableau de bord"""
     today = timezone.now()
     
-    # Calculer le premier et dernier jour du mois actuel
-    first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    if today.month == 12:
-        last_day_of_month = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
-    else:
-        last_day_of_month = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
-
-    # Calculer les totaux du mois actuel
+    # Obtenir l'année sélectionnée (par défaut, l'année en cours)
+    selected_year = int(request.GET.get('year', today.year))
+    
+    # Calculer le premier et dernier jour de l'année sélectionnée
+    first_day_of_year = datetime(selected_year, 1, 1)
+    last_day_of_year = datetime(selected_year, 12, 31)
+    
+    # Calculer les totaux de l'année sélectionnée
     total_entrees_mois = OperationEntrer.objects.filter(
-        date_transaction__gte=first_day_of_month,
-        date_transaction__lte=last_day_of_month
+        date_transaction__gte=first_day_of_year,
+        date_transaction__lte=last_day_of_year
     ).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
 
     total_sorties_mois = OperationSortir.objects.filter(
-        date_de_sortie__gte=first_day_of_month,
-        date_de_sortie__lte=last_day_of_month
+        date_de_sortie__gte=first_day_of_year,
+        date_de_sortie__lte=last_day_of_year
     ).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
     
-    # Obtenir les 12 derniers mois
-    twelve_months_ago = today - timedelta(days=365)
-
-    # Données des entrées par mois
+    # Données des entrées par mois pour l'année sélectionnée
     entrees_par_mois = list(OperationEntrer.objects.filter(
-        date_transaction__gte=twelve_months_ago
+        date_transaction__gte=first_day_of_year,
+        date_transaction__lte=last_day_of_year
     ).annotate(
         mois=TruncMonth('date_transaction')
     ).values('mois').annotate(
         total=Sum('montant')
     ).order_by('mois'))
 
-    # Données des sorties par mois 
+    # Données des sorties par mois pour l'année sélectionnée
     sorties_par_mois = list(OperationSortir.objects.filter(
-        date_de_sortie__gte=twelve_months_ago
+        date_de_sortie__gte=first_day_of_year,
+        date_de_sortie__lte=last_day_of_year
     ).annotate(
         mois=TruncMonth('date_de_sortie')
     ).values('mois').annotate(
@@ -108,9 +106,9 @@ def index(request):
     
     # Calculer le solde initial
     solde_initial = (
-        OperationEntrer.objects.filter(date_transaction__lt=twelve_months_ago).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
+        OperationEntrer.objects.filter(date_transaction__lt=first_day_of_year).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
     ) - (
-        OperationSortir.objects.filter(date_de_sortie__lt=twelve_months_ago).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
+        OperationSortir.objects.filter(date_de_sortie__lt=first_day_of_year).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
     )
     
     solde_cumule = solde_initial
@@ -139,7 +137,10 @@ def index(request):
         })
 
     # Données pour le graphique des catégories de sorties
-    sorties_categories = list(OperationSortir.objects.values(
+    sorties_categories = list(OperationSortir.objects.filter(
+        date_de_sortie__gte=first_day_of_year,
+        date_de_sortie__lte=last_day_of_year
+    ).values(
         'categorie__name'
     ).annotate(
         total=Sum('montant')
@@ -155,19 +156,26 @@ def index(request):
     total_entrees = sum(entrees_dict.values(), Decimal('0'))
     total_sorties = sum(sorties_dict.values(), Decimal('0'))
 
+    # Liste des années disponibles pour le formulaire de sélection
+    years = range(today.year - 5, today.year + 1)  # Par exemple, les 5 dernières années
+
     # Formater les données pour le template
     context = {
         'solde_actuel': float(solde_cumule),
-        'total_entrees': float(total_entrees_mois),  # Total des entrées du mois actuel
-        'total_sorties': float(total_sorties_mois),  # Total des sorties du mois actuel
+        'total_entrees': float(total_entrees_mois),  # Total des entrées de l'année sélectionnée
+        'total_sorties': float(total_sorties_mois),  # Total des sorties de l'année sélectionnée
         'entrees_par_mois': json.dumps(formatted_entrees),
         'sorties_par_mois': json.dumps(formatted_sorties),
         'soldes_par_mois': json.dumps(soldes_par_mois),
         'sorties_categories': json.dumps(formatted_categories),
         'entrees_4_mois': json.dumps(formatted_entrees[-4:][::-1]) if formatted_entrees else json.dumps([]),
+        'years': years,
+        'selected_year': selected_year,
     }
 
     return render(request, "caisse/dashboard.html", context)
+
+
 
 @login_required
 def operations(request):
