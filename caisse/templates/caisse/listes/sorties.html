@@ -166,7 +166,7 @@
     <form method="post" id="export-form" action="{% url 'caisse:generer_excel_operations_sorties' %}">
         {% csrf_token %}
         <input type="hidden" id="selected-operations-input" name="selected_operations_ids">
-        <div class="table-container overflow-x-auto text-sm bg-white text-table text-medium dark:bg-secondary dark:text-white border-none rounded-lg">
+        <div class="{% cycle 'bg-white dark:bg-secondary' 'bg-gray-100 dark:bg-gray-700' %} border-b border-white dark:border-gray-800 hover:bg-gray-200 dark:hover:bg-gray-800">
             <!-- Version desktop du tableau -->
             <table class="w-full hidden md:table">
                 <thead class="text-table" >
@@ -237,7 +237,7 @@
                 <tbody class="text-liste dark:text-white font-medium">
                     {% for operation in page_obj %}
                     <tr :key="{{ operation.id }}" 
-                        class="{% cycle 'bg-white dark:bg-secondary' 'bg-gray-50 dark:bg-gray-800' %} border-b border-white dark:border-gray-800">
+                        class="{% cycle 'bg-white dark:bg-secondary' 'bg-gray-100 dark:bg-gray-800' %} border-b border-white dark:border-gray-800 hover:bg-gray-200">
                         <td class="px-4 py-2">
                             <input type="checkbox" name="selected_operations" value="{{ operation.id }}">
                         </td>

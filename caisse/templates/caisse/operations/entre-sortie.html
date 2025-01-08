@@ -48,14 +48,14 @@ class="container mx-auto p-6 dark:text-white">
     <div class="flex justify-between space-x-4 mb-10">
         <div></div>
         <div class="bg-white dark:bg-secondary rounded-xl p-1">
-            <button x-on:click="operation = 'entree'"
+            <button title="Opération entrée" x-on:click="operation = 'entree'"
                 :class="operation === 'entree' ? 'bg-green-100 hover:bg-green-100 text-green-700 font-bold py-1 px-4 rounded-xl' : 'bg-white dark:bg-secondary text-placeholder dark:text-white font-bold py-2 px-6 rounded-xl'">Entrées</button>
-            <button x-on:click="operation = 'sortie'"
+            <button title="Opération sortie" x-on:click="operation = 'sortie'"
                 :class="operation === 'sortie' ? 'bg-rose-100 hover:bg-rose-100 text-rose-500 font-bold py-1 px-4 rounded-xl' : 'bg-white dark:bg-secondary text-placeholder dark:text-white font-bold py-2 px-6 rounded-xl'">Sorties</button>
         </div>
 
         <div><a href="{% url 'caisse:listes' %}">
-                <button
+                <button title="Listes des Opérations"
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl">Listes
                     des Opérations</button>
             </a>
@@ -79,7 +79,7 @@ class="container mx-auto p-6 dark:text-white">
                             class="mb-10 flex w-[15%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <span
                                 class="flex select-none  items-center pl-3 dark:text-white/50 text-placeholder/50 sm:text-sm">Date:</span>
-                            <input type="date" autocomplete="off"
+                            <input title="Date" type="date" autocomplete="off"
                                 x-model="ligne.date" name="date"
                                 class="dateInput focus:ring-0 text-placeholder block flex-1 border-none w-full font-semibold bg-transparent py-1.5 pl-1 dark:text-white sm:text-sm sm:leading-6"
                                 required>
@@ -87,7 +87,7 @@ class="container mx-auto p-6 dark:text-white">
 
                         <div
                             class="mb-10 w-[45%] px-2 shadow-sm text-placeholder dark:text-white border-gray-300 border-b-2 dark:border-gray-700">
-                            <input type="text" x-model="ligne.designation"
+                            <input title="Désignation" type="text" x-model="ligne.designation"
                                 name="designation"
                                 placeholder="Désignation"
                                 class="block flex-1 focus:ring-0 dark:placeholder:text-white/50 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
@@ -96,14 +96,14 @@ class="container mx-auto p-6 dark:text-white">
 
                         <div
                             class="mb-10 w-[25%] shadow-sm border-gray-300 dark:text-white border-b-2 dark:border-gray-700">
-                            <input type="number" x-model="ligne.montant"
+                            <input title="Montant" type="number" x-model="ligne.montant"
                                 name="montant"
                                 placeholder="Montant"
                                 class="block flex-1 focus:ring-0 w-full dark:placeholder:text-white/50 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                         </div>
 
                         <div class="mb-10 w-[25%] shadow-sm border-gray-300 border-b-2 dark:text-white dark:border-gray-700 relative">
-                            <input type="text" 
+                            <input title="Catégorie" type="text" 
                                    x-model="ligne.categorie_nom"
                                    list="categories-entree-list"
                                    placeholder="Catégorie"
@@ -123,7 +123,7 @@ class="container mx-auto p-6 dark:text-white">
                             <!-- Boutons d'action -->
                             <div class="absolute -right-16 top-1/2 -translate-y-1/2 flex items-center gap-1">
                                 <!-- Bouton de duplication -->
-                                <button type="button" 
+                                <button title="Dupliquer" type="button" 
                                         @click="lignesEntrees.push({...ligne})"
                                         class="p-1 hover:scale-110 transition-transform">
                                     <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -138,7 +138,7 @@ class="container mx-auto p-6 dark:text-white">
                                     </svg>
                                 </button>
                             <!-- Bouton de suppression -->
-                                <button type="button" 
+                                <button title="Supprimer" type="button" 
                                 @click="lignesEntrees.splice(index, 1)" 
                                 x-show="lignesEntrees.length > 1 && index > 0">
                             <svg width="23" height="22" viewBox="0 0 23 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -156,7 +156,7 @@ class="container mx-auto p-6 dark:text-white">
                 </template>
 
                 <div class="mb-10">
-                    <button type="button"
+                    <button title="Ajouter une ligne" type="button"
                         x-on:click="lignesEntrees.length < maxLignes && lignesEntrees.push({ date: new Date().toISOString().split('T')[0], designation: '', montant: '', categorie: '', categorie_nom: '' })"
                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl flex items-center">
                         <svg width="20" height="20" viewBox="0 0 29 30"
@@ -172,7 +172,7 @@ class="container mx-auto p-6 dark:text-white">
                 </div>
 
                 <div class="flex justify-end">
-                    <button type="submit"
+                    <button title="Enregistrer" type="submit"
                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl">Enregistrer</button>
 
                 </div>
@@ -194,7 +194,7 @@ class="container mx-auto p-6 dark:text-white">
                             class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <span
                                 class="flex select-none items-center pl-3 dark:text-white/50 text-placeholder/50 sm:text-sm">Date:</span>
-                            <input type="date" name="date"
+                            <input title="Date" type="date" name="date"
                                 x-init="ligne.date = new Date().toISOString().split('T')[0]"
                                 x-model="ligne.date" id="datenow"
                                 autocomplete="off"
@@ -204,7 +204,7 @@ class="container mx-auto p-6 dark:text-white">
                         <!-- Désignation -->
                         <div
                             class="mb-10 flex w-[47%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
-                            <input type="text" name="designation" required
+                            <input title="Désignation" type="text" name="designation" required
                                 x-model="ligne.designation"
                                 placeholder="Désignation"
                                 class="block flex-1 focus:ring-0 dark:placeholder:text-white/50 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
@@ -212,7 +212,7 @@ class="container mx-auto p-6 dark:text-white">
 
                         <!-- Bénéficiaire -->
                         <div class="mb-10 flex w-[25%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
-                            <input type="text" 
+                            <input title="Bénéficiaire" type="text" 
                                    x-model="ligne.beneficiaire_nom"
                                    list="beneficiaires-list"
                                    placeholder="Bénéficiaire"
@@ -225,14 +225,14 @@ class="container mx-auto p-6 dark:text-white">
                             <datalist id="beneficiaires-list">
                                 {% for beneficiaire in beneficiaires %}
                                     <option data-id="{{ beneficiaire.id }}" 
-                                            value="{{ beneficiaire.name }}">{{ beneficiaire.name }}</option>
+                                            value="{{ beneficiaire }}">{{ beneficiaire }}</option>
                                 {% endfor %}
                             </datalist>
                         </div>
 
                         <!-- Fournisseur -->
                         <div class="mb-10 flex w-[20%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
-                            <input type="text" 
+                            <input title="Fournisseur" type="text" 
                                    x-model="ligne.fournisseur_nom"
                                    list="fournisseurs-list"
                                    placeholder="Fournisseur"
@@ -255,7 +255,7 @@ class="container mx-auto p-6 dark:text-white">
                             class="mb-10 flex w-[20%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
                             <span
                                 class="flex select-none items-center pl-3 dark:text-white/50 text-placeholder/50 sm:text-sm">Quantité:</span>
-                            <input type="number" name="quantite" required
+                            <input title="Quantité" type="number" name="quantite" required
                                 x-model="ligne.quantite" min="1"
                                 placeholder="Quantité"
                                 class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 sm:text-sm sm:leading-6"
@@ -265,7 +265,7 @@ class="container mx-auto p-6 dark:text-white">
                         <!-- Prix Unitaire -->
                         <div
                             class="mb-10 flex w-[25%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
-                            <input type="number" name="prixUnitaire"
+                            <input title="Prix Unitaire" type="number" name="prixUnitaire"
                                 x-model="ligne.prixUnitaire" required
                                 placeholder="Prix Unitaire"
                                 class="block flex-1 items-center dark:placeholder:text-white/50 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
@@ -275,7 +275,7 @@ class="container mx-auto p-6 dark:text-white">
 
                         <!-- Catégorie -->
                         <div class="mb-10 flex w-[20%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
-                            <input type="text" 
+                            <input title="Catégorie" type="text" 
                                    x-model="ligne.categorie_nom"
                                    list="categories-sortie-list"
                                    placeholder="Catégorie"
