@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY', 'django-insecure-xx3-u&#hmg3ylrp5a05gyh+31p&#@!h@-mf8_dbr*$7gc)3oek')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("PROJECT_ENV") == 'dev'
+DEBUG = True # env("PROJECT_ENV") == 'dev'
 
 ALLOWED_HOSTS = [] if env("PROJECT_ENV") == 'dev' else ['*']
 # Application definition
@@ -155,7 +155,7 @@ INTERNAL_IPS = [
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = 'assets'
-MEDIA_URL = '/media/'
+MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
