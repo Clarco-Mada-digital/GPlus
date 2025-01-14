@@ -31,7 +31,7 @@
         <a href="#">
         {% include 'components/Card.html' with title="Statistiques" description="Nouveau" notification_msg="Nouveau" image="static/images/statistique.png" %}
         </a>
-        <a href="#">
+        <a href="{% url 'facture:index' %}">
         {% include 'components/Card.html' with title="Facture" description="Nouveau" notification_msg="Nouveau" image="static/images/factures.png" %}
         </a>
         <a href="#">

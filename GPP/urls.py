@@ -31,6 +31,7 @@ urlpatterns = [
     path('switch-theme/', change_theme, name='change_theme'),
     path('caisse/', include("caisse.urls", namespace='caisse')),
     path("personnel/", include("personnel.urls", namespace='personnel')),
+    path("facture/", include("facture.urls", namespace='facture')),          # Pour la module du facture et devise
     path("__reload__/", include("django_browser_reload.urls")),
 ]
 
