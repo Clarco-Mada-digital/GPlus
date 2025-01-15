@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'personnel',
     'caisse',
     'facture',
+    'clients',
     'simple_history',
     'django.contrib.humanize',
 ]

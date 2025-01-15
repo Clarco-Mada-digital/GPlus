@@ -1,0 +1,260 @@
+{% extends '../layouts/client_layout.html' %} 
+{% block title_page %} Clients & Prospects {% endblock title_page %} 
+{% block content %}
+
+<div class="flex items-center justify-between w-full mt-40">
+  <div class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+      <div class="flex items-center justify-between mb-4">
+          <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white">List des clients</h5>
+          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          Voir plus
+          <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+          </svg>
+          </button>
+    </div>
+    <div class="flow-root">
+          <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+              <li class="py-3 sm:py-4">
+                  <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                          <img class="w-8 h-8 rounded-full" src="/static/images/Employee/Huge-icon/user/outline/user.svg" alt="profil image">
+                      </div>
+                      <div class="flex-1 min-w-0 ms-4">
+                          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              Neil Sims
+                          </p>
+                          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                              email@windster.com
+                          </p>
+                      </div>
+                      <div class="inline-flex items-center gap-1 text-base font-semibold text-gray-900 dark:text-white">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C6.5 3 2 6.58 2 11a7.22 7.22 0 0 0 2.75 5.5c0 .6-.42 2.17-2.75 4.5c2.37-.11 4.64-1 6.47-2.5c1.14.33 2.34.5 3.53.5c5.5 0 10-3.58 10-8s-4.5-8-10-8m0 14c-4.42 0-8-2.69-8-6s3.58-6 8-6s8 2.69 8 6s-3.58 6-8 6m5-5v-2h-2v2zm-4 0v-2h-2v2zm-4 0v-2H7v2z"/></svg>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="64" stroke-dashoffset="64" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/></path></svg>
+                      </div>
+                  </div>
+              </li>
+              <li class="py-3 sm:py-4">
+                  <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                          <img class="w-8 h-8 rounded-full" src="/static/images/Employee/Huge-icon/user/outline/user.svg" alt="profil image">
+                      </div>
+                      <div class="flex-1 min-w-0 ms-4">
+                          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              Neil Sims
+                          </p>
+                          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                              email@windster.com
+                          </p>
+                      </div>
+                      <div class="inline-flex items-center gap-1 text-base font-semibold text-gray-900 dark:text-white">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C6.5 3 2 6.58 2 11a7.22 7.22 0 0 0 2.75 5.5c0 .6-.42 2.17-2.75 4.5c2.37-.11 4.64-1 6.47-2.5c1.14.33 2.34.5 3.53.5c5.5 0 10-3.58 10-8s-4.5-8-10-8m0 14c-4.42 0-8-2.69-8-6s3.58-6 8-6s8 2.69 8 6s-3.58 6-8 6m5-5v-2h-2v2zm-4 0v-2h-2v2zm-4 0v-2H7v2z"/></svg>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="64" stroke-dashoffset="64" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/></path></svg>
+                      </div>
+                  </div>
+              </li>
+              <li class="py-3 sm:py-4">
+                  <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                          <img class="w-8 h-8 rounded-full" src="/static/images/Employee/Huge-icon/user/outline/user.svg" alt="profil image">
+                      </div>
+                      <div class="flex-1 min-w-0 ms-4">
+                          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              Neil Sims
+                          </p>
+                          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                              email@windster.com
+                          </p>
+                      </div>
+                      <div class="inline-flex items-center gap-1 text-base font-semibold text-gray-900 dark:text-white">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C6.5 3 2 6.58 2 11a7.22 7.22 0 0 0 2.75 5.5c0 .6-.42 2.17-2.75 4.5c2.37-.11 4.64-1 6.47-2.5c1.14.33 2.34.5 3.53.5c5.5 0 10-3.58 10-8s-4.5-8-10-8m0 14c-4.42 0-8-2.69-8-6s3.58-6 8-6s8 2.69 8 6s-3.58 6-8 6m5-5v-2h-2v2zm-4 0v-2h-2v2zm-4 0v-2H7v2z"/></svg>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="64" stroke-dashoffset="64" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/></path></svg>
+                      </div>
+                  </div>
+              </li>
+              <li class="py-3 sm:py-4">
+                  <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                          <img class="w-8 h-8 rounded-full" src="/static/images/Employee/Huge-icon/user/outline/user.svg" alt="profil image">
+                      </div>
+                      <div class="flex-1 min-w-0 ms-4">
+                          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              Neil Sims
+                          </p>
+                          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                              email@windster.com
+                          </p>
+                      </div>
+                      <div class="inline-flex items-center gap-1 text-base font-semibold text-gray-900 dark:text-white">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C6.5 3 2 6.58 2 11a7.22 7.22 0 0 0 2.75 5.5c0 .6-.42 2.17-2.75 4.5c2.37-.11 4.64-1 6.47-2.5c1.14.33 2.34.5 3.53.5c5.5 0 10-3.58 10-8s-4.5-8-10-8m0 14c-4.42 0-8-2.69-8-6s3.58-6 8-6s8 2.69 8 6s-3.58 6-8 6m5-5v-2h-2v2zm-4 0v-2h-2v2zm-4 0v-2H7v2z"/></svg>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="64" stroke-dashoffset="64" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/></path></svg>
+                      </div>
+                  </div>
+              </li>
+              <li class="py-3 sm:py-4">
+                  <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                          <img class="w-8 h-8 rounded-full" src="/static/images/Employee/Huge-icon/user/outline/user.svg" alt="profil image">
+                      </div>
+                      <div class="flex-1 min-w-0 ms-4">
+                          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              Neil Sims
+                          </p>
+                          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                              email@windster.com
+                          </p>
+                      </div>
+                      <div class="inline-flex items-center gap-1 text-base font-semibold text-gray-900 dark:text-white">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C6.5 3 2 6.58 2 11a7.22 7.22 0 0 0 2.75 5.5c0 .6-.42 2.17-2.75 4.5c2.37-.11 4.64-1 6.47-2.5c1.14.33 2.34.5 3.53.5c5.5 0 10-3.58 10-8s-4.5-8-10-8m0 14c-4.42 0-8-2.69-8-6s3.58-6 8-6s8 2.69 8 6s-3.58 6-8 6m5-5v-2h-2v2zm-4 0v-2h-2v2zm-4 0v-2H7v2z"/></svg>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="64" stroke-dashoffset="64" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/></path></svg>
+                      </div>
+                  </div>
+              </li>
+          </ul>
+    </div>
+  </div>
+
+  {% comment %} Charts {% endcomment %}
+  <div>
+    <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+  </div>
+  
+
+  <div class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+      <div class="flex items-center justify-between mb-4">
+          <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white">List des prospects</h5>
+          <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          Voir plus
+          <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+          </svg>
+          </button>
+    </div>
+    <div class="flow-root">
+          <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+              <li class="py-3 sm:py-4">
+                  <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                          <img class="w-8 h-8 rounded-full" src="/static/images/Employee/Huge-icon/user/outline/user.svg" alt="profil image">
+                      </div>
+                      <div class="flex-1 min-w-0 ms-4">
+                          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              Neil Sims
+                          </p>
+                          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                              email@windster.com
+                          </p>
+                      </div>
+                      <div class="inline-flex items-center gap-1 text-base font-semibold text-gray-900 dark:text-white">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C6.5 3 2 6.58 2 11a7.22 7.22 0 0 0 2.75 5.5c0 .6-.42 2.17-2.75 4.5c2.37-.11 4.64-1 6.47-2.5c1.14.33 2.34.5 3.53.5c5.5 0 10-3.58 10-8s-4.5-8-10-8m0 14c-4.42 0-8-2.69-8-6s3.58-6 8-6s8 2.69 8 6s-3.58 6-8 6m5-5v-2h-2v2zm-4 0v-2h-2v2zm-4 0v-2H7v2z"/></svg>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="64" stroke-dashoffset="64" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/></path></svg>
+                      </div>
+                  </div>
+              </li>
+              <li class="py-3 sm:py-4">
+                  <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                          <img class="w-8 h-8 rounded-full" src="/static/images/Employee/Huge-icon/user/outline/user.svg" alt="profil image">
+                      </div>
+                      <div class="flex-1 min-w-0 ms-4">
+                          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              Neil Sims
+                          </p>
+                          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                              email@windster.com
+                          </p>
+                      </div>
+                      <div class="inline-flex items-center gap-1 text-base font-semibold text-gray-900 dark:text-white">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C6.5 3 2 6.58 2 11a7.22 7.22 0 0 0 2.75 5.5c0 .6-.42 2.17-2.75 4.5c2.37-.11 4.64-1 6.47-2.5c1.14.33 2.34.5 3.53.5c5.5 0 10-3.58 10-8s-4.5-8-10-8m0 14c-4.42 0-8-2.69-8-6s3.58-6 8-6s8 2.69 8 6s-3.58 6-8 6m5-5v-2h-2v2zm-4 0v-2h-2v2zm-4 0v-2H7v2z"/></svg>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="64" stroke-dashoffset="64" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/></path></svg>
+                      </div>
+                  </div>
+              </li>
+              <li class="py-3 sm:py-4">
+                  <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                          <img class="w-8 h-8 rounded-full" src="/static/images/Employee/Huge-icon/user/outline/user.svg" alt="profil image">
+                      </div>
+                      <div class="flex-1 min-w-0 ms-4">
+                          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              Neil Sims
+                          </p>
+                          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                              email@windster.com
+                          </p>
+                      </div>
+                      <div class="inline-flex items-center gap-1 text-base font-semibold text-gray-900 dark:text-white">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C6.5 3 2 6.58 2 11a7.22 7.22 0 0 0 2.75 5.5c0 .6-.42 2.17-2.75 4.5c2.37-.11 4.64-1 6.47-2.5c1.14.33 2.34.5 3.53.5c5.5 0 10-3.58 10-8s-4.5-8-10-8m0 14c-4.42 0-8-2.69-8-6s3.58-6 8-6s8 2.69 8 6s-3.58 6-8 6m5-5v-2h-2v2zm-4 0v-2h-2v2zm-4 0v-2H7v2z"/></svg>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="64" stroke-dashoffset="64" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/></path></svg>
+                      </div>
+                  </div>
+              </li>
+              <li class="py-3 sm:py-4">
+                  <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                          <img class="w-8 h-8 rounded-full" src="/static/images/Employee/Huge-icon/user/outline/user.svg" alt="profil image">
+                      </div>
+                      <div class="flex-1 min-w-0 ms-4">
+                          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              Neil Sims
+                          </p>
+                          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                              email@windster.com
+                          </p>
+                      </div>
+                      <div class="inline-flex items-center gap-1 text-base font-semibold text-gray-900 dark:text-white">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C6.5 3 2 6.58 2 11a7.22 7.22 0 0 0 2.75 5.5c0 .6-.42 2.17-2.75 4.5c2.37-.11 4.64-1 6.47-2.5c1.14.33 2.34.5 3.53.5c5.5 0 10-3.58 10-8s-4.5-8-10-8m0 14c-4.42 0-8-2.69-8-6s3.58-6 8-6s8 2.69 8 6s-3.58 6-8 6m5-5v-2h-2v2zm-4 0v-2h-2v2zm-4 0v-2H7v2z"/></svg>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="64" stroke-dashoffset="64" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/></path></svg>
+                      </div>
+                  </div>
+              </li>
+              <li class="py-3 sm:py-4">
+                  <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                          <img class="w-8 h-8 rounded-full" src="/static/images/Employee/Huge-icon/user/outline/user.svg" alt="profil image">
+                      </div>
+                      <div class="flex-1 min-w-0 ms-4">
+                          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              Neil Sims
+                          </p>
+                          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                              email@windster.com
+                          </p>
+                      </div>
+                      <div class="inline-flex items-center gap-1 text-base font-semibold text-gray-900 dark:text-white">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C6.5 3 2 6.58 2 11a7.22 7.22 0 0 0 2.75 5.5c0 .6-.42 2.17-2.75 4.5c2.37-.11 4.64-1 6.47-2.5c1.14.33 2.34.5 3.53.5c5.5 0 10-3.58 10-8s-4.5-8-10-8m0 14c-4.42 0-8-2.69-8-6s3.58-6 8-6s8 2.69 8 6s-3.58 6-8 6m5-5v-2h-2v2zm-4 0v-2h-2v2zm-4 0v-2H7v2z"/></svg>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="64" stroke-dashoffset="64" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/></path></svg>
+                      </div>
+                  </div>
+              </li>
+          </ul>
+    </div>
+  </div>
+</div>
+
+ <script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Prospects', 'Clients'],
+            datasets: [{
+                label: 'Répartition',
+                data: [50, 50], // 50% clients et 50% prospects
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.6)', // Couleur claire pour Clients
+                    'rgba(255, 99, 132, 0.6)'   // Couleur claire pour Prospects
+                ],
+                borderWidth: 1 // Enlever la bordure
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: true // Enlever l'indicateur à gauche
+                }
+            }
+        }
+    });
+</script>
+{% endblock content %}

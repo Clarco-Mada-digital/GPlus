@@ -20,22 +20,22 @@
 
       <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
         <a href="{% url 'accounts:pricing_page' %}">
-        {% include 'components/Card.html' with title="Personelle" description="55 Personnes" notification_msg="Nouveau" image="static/images/User.png" %}
+        {% include 'components/Card.html' with title="Personelle" description="55 Personnes" notification_msg="Nouveau" image="static/images/User.svg" %}
         </a>
       </div>
       <h5 class="text-primary/75">Gestion des Finances </h5>
       <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
         <a href="{% url 'caisse:index' %}">
-        {% include 'components/Card.html' with title="Caisse" description="Nouveau" notification_msg="Nouveau" image="static/images/Comptabilite.png" %}
+        {% include 'components/Card.html' with title="Caisse" description="Nouveau" notification_msg="Nouveau" image="static/images/Comptabilite.svg" %}
         </a>
         <a href="#">
-        {% include 'components/Card.html' with title="Statistiques" description="Nouveau" notification_msg="Nouveau" image="static/images/statistique.png" %}
+        {% include 'components/Card.html' with title="Statistiques" description="Nouveau" notification_msg="Nouveau" image="static/images/statistique.svg" %}
         </a>
         <a href="{% url 'facture:index' %}">
-        {% include 'components/Card.html' with title="Facture" description="Nouveau" notification_msg="Nouveau" image="static/images/factures.png" %}
+        {% include 'components/Card.html' with title="Factures & Devis" description="Nouveau" notification_msg="Nouveau" image="static/images/factures.svg" %}
         </a>
-        <a href="#">
-        {% include 'components/Card.html' with title="Devis" description="Nouveau" notification_msg="Nouveau" image="static/images/devis.png" %}
+        <a href="{% url 'client:index' %}">
+        {% include 'components/Card.html' with title="Clients & Prospects" description="Nouveau" notification_msg="Nouveau" image="static/images/client.svg" %}
         </a>
       </div>
 

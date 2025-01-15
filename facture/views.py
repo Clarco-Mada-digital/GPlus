@@ -10,4 +10,4 @@ def index(request):
   context = {
     'years' : years,
   }
-  return render(request, "pages/index.html", context)
+  return render(request, "facture_pages/index.html", context)
