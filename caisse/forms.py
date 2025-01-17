@@ -23,7 +23,7 @@ class PersonnelForm(forms.ModelForm):
 class OperationEntrerForm(forms.ModelForm):
     class Meta:
         model = OperationEntrer
-        fields = ['description', 'montant', 'categorie', 'date_transaction']
+        fields = ['description', 'montant', 'categorie', 'date_transaction', 'benef', 'client']
 
 class OperationSortirForm(forms.ModelForm):
     class Meta:
