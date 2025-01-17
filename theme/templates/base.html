@@ -7,26 +7,28 @@
     <title>G+</title>
     {% tailwind_css %}
     <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+    <!-- Ajout du CDN de Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" defer></script>
   </head>
   <body>
     <div
       class="bg-blue-100 dark:bg-gray-700 h-screen flex items-center justify-center"
     >
       <div
-        class="bg-white overflow-y-hidden dark:bg-gray-800 flex-1 flex flex-col h-[90vh] lg:flex-row lg:space-x-2max-w-6xl sm:p-6 sm:my-2 sm:mx-4 sm:rounded-2xl"
+        class="bg-white overflow-y-auto dark:bg-gray-800 flex-1 flex flex-col h-[90vh] lg:space-x-2max-w-6xl sm:p-6 sm:my-2 sm:mx-4 sm:rounded-2xl"
       >
         {% comment %} Navigation {% endcomment %} 
         {% include "accounts/navigation.html" %} 
+        <div class="ml-40">
         {% block contentPage %} 
         
         {% endblock contentPage %}
+        </div>
       </div>
     </div>
   </body>
   <!-- Include Alpine.js -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js"  
-    defer
-  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>        
 </html>
 

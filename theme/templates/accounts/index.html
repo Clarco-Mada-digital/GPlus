@@ -7,7 +7,7 @@
     {% comment %} Header Page {% endcomment %}
     {% include 'accounts/header.html' with header_title="Applications" %} 
 
-    <div class="flex items-center justify-between mr-12">
+    <div class="flex items-center justify-between mr-12 my-5">
       <h4 class="py-4 text-black dark:text-white/50 font-extralight">Modules installées (9)</h4>
       <button class="hover:bg-primary hover:text-white border border-primary text-primary font-bold py-2 px-4 rounded inline-flex items-center">
          <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>        
@@ -18,13 +18,13 @@
     <div class="h-full overflow-auto" >    
       <h5 class="text-primary/75">Gestion des Ressources Humaines (RH) </h5>
 
-      <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
+      <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
         <a href="{% url 'accounts:pricing_page' %}">
         {% include 'components/Card.html' with title="Personelle" description="55 Personnes" notification_msg="Nouveau" image="static/images/User.svg" %}
         </a>
       </div>
       <h5 class="text-primary/75">Gestion des Finances </h5>
-      <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
+      <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
         <a href="{% url 'caisse:index' %}">
         {% include 'components/Card.html' with title="Caisse" description="Nouveau" notification_msg="Nouveau" image="static/images/Comptabilite.svg" %}
         </a>

@@ -1,6 +1,7 @@
-{% extends '../layouts/client_layout.html' %} 
-{% block title_page %} Clients & Prospects {% endblock title_page %} 
-{% block content %}
+{% extends 'base.html' %} 
+{% block contentPage %}
+
+{% include 'accounts/header.html' with header_title="Clients & Prospects" %}
 
 <div x-data="{view_list:true}" >
 
@@ -60,8 +61,21 @@
 
     <div x-show="view_list" class="relative overflow-x-auto shadow-md sm:rounded-lg my-4">
         <div class="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-700">
-            <label for="table-search" class="sr-only">recherche</label>
+            <div class="flex items-center gap-2 text-white mx-2">
+                <span class="px-5">Filtre : </span>
+                <div>
+                    <label for="underline_select" class="sr-only">type client select</label>
+                    <select id="underline_select" class="block py-2.5 px-0 text-sm text-gray-300 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-300 dark:bg-gray-700 dark:border-gray-300 focus:outline-none focus:ring-0 focus:border-gray-400 peer">
+                        <option value="client" selected>Client</option>
+                        <option value="prostpect">Prospect</option>
+                        <option value="fourniseur">Fourniseur</option>
+                        <option value="client-prospect">Client - Prospect</option>
+                        <option value="client-fourniseur">Client - Fourniseur</option>
+                    </select>
+                </div>                
+            </div>
             <div class="relative py-4 px-2">
+                <label for="table-search" class="sr-only">recherche</label>
                 <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
                     <svg class="w-4 h-4 mx-2 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
@@ -160,7 +174,7 @@
 
 <!-- Main modal -->
 <div id="new_client-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <div class="relative p-4 w-full max-w-lg max-h-full">
+    <div class="relative p-4 w-full max-w-[50vw] max-h-full">
         <!-- Modal content -->
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <!-- Modal header -->
@@ -215,6 +229,16 @@
                         <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
                         <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="exemple@gmail.com" required="">
                     </div>
+                    <div class="col-span-2">
+                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type du client</label>
+                        <select id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="client" selected>Client</option>
+                            <option value="prostpect">Prospect</option>
+                            <option value="fourniseur">Fourniseur</option>
+                            <option value="client-prospect">Client - Prospect</option>
+                            <option value="client-fourniseur">Client - Fourniseur</option>
+                        </select>
+                    </div>
                     <div class="col-span-2 sm:col-span-1">
                         <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Disponibilité : Début</label>
                         <input type="date" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="+261 xx xxx xx" required="">
@@ -260,4 +284,4 @@
 </div> 
 
 
-{% endblock content %}
+{% endblock contentPage %}
