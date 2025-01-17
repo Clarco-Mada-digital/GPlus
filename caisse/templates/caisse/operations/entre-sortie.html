@@ -12,7 +12,9 @@
         designation: '', 
         montant: '', 
         categorie: '',     
-        categorie_nom: ''   
+        categorie_nom: '',
+        benef: '',
+        client: ''
     }], 
     lignesSorties: [{ 
         date: new Date().toISOString().split('T')[0], 
@@ -49,9 +51,9 @@ class="container mx-auto p-6 dark:text-white">
         <div></div>
         <div class="bg-white dark:bg-secondary rounded-xl p-1">
             <button title="Opération entrée" x-on:click="operation = 'entree'"
-                :class="operation === 'entree' ? 'bg-green-100 hover:bg-green-100 text-green-700 font-bold py-1 px-4 rounded-xl' : 'bg-white dark:bg-secondary text-placeholder dark:text-white font-bold py-2 px-6 rounded-xl'">Entrées</button>
+                :class="operation === 'entree' ? 'bg-green-100 hover:bg-green-100 text-green-700 font-bold py-1 px-4 rounded-xl' : 'bg-white dark:bg-secondary text-green-700 font-bold py-2 px-6 rounded-xl'">Entrées</button>
             <button title="Opération sortie" x-on:click="operation = 'sortie'"
-                :class="operation === 'sortie' ? 'bg-rose-100 hover:bg-rose-100 text-rose-500 font-bold py-1 px-4 rounded-xl' : 'bg-white dark:bg-secondary text-placeholder dark:text-white font-bold py-2 px-6 rounded-xl'">Sorties</button>
+                :class="operation === 'sortie' ? 'bg-rose-100 hover:bg-rose-100 text-rose-500 font-bold py-1 px-4 rounded-xl' : 'bg-white dark:bg-secondary text-rose-500 font-bold py-2 px-6 rounded-xl'">Sorties</button>
         </div>
 
         <div><a href="{% url 'caisse:listes' %}">
@@ -92,6 +94,20 @@ class="container mx-auto p-6 dark:text-white">
                                 placeholder="Désignation"
                                 class="block flex-1 focus:ring-0 dark:placeholder:text-white/50 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
                                 required>
+                        </div>
+
+                        <div class="mb-10 w-[25%] shadow-sm border-gray-300 border-b-2 text-placeholder dark:text-white dark:border-gray-700">
+                            <input title="Bénéficiaire" type="text" 
+                                   x-model="ligne.benef"
+                                   placeholder="Bénéficiaire"
+                                   class="block flex-1 dark:placeholder:text-white/50 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
+                        </div>
+
+                        <div class="mb-10 w-[25%] shadow-sm border-gray-300 border-b-2 text-placeholder dark:text-white dark:border-gray-700">
+                            <input title="Client" type="text" 
+                                   x-model="ligne.client"
+                                   placeholder="Client"
+                                   class="block flex-1 dark:placeholder:text-white/50 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                         </div>
 
                         <div
@@ -216,7 +232,6 @@ class="container mx-auto p-6 dark:text-white">
                                    x-model="ligne.beneficiaire_nom"
                                    list="beneficiaires-list"
                                    placeholder="Bénéficiaire"
-                                   required
                                    @change="updateField('beneficiaires', $event.target.value, ligne, 'beneficiaire', 'beneficiaire_nom')"
                                    class="block flex-1 dark:placeholder:text-white/50 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                             <input type="hidden" 
@@ -236,7 +251,6 @@ class="container mx-auto p-6 dark:text-white">
                                    x-model="ligne.fournisseur_nom"
                                    list="fournisseurs-list"
                                    placeholder="Fournisseur"
-                                   required
                                    @change="updateField('fournisseurs', $event.target.value, ligne, 'fournisseur', 'fournisseur_nom')"
                                    class="block flex-1 dark:placeholder:text-white/50 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                             <input type="hidden" 
