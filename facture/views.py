@@ -11,3 +11,8 @@ def index(request):
     'years' : years,
   }
   return render(request, "facture_pages/index.html", context)
+
+
+def facture(request):
+  pass
+  return render(request, "facture_pages/facture.html")
