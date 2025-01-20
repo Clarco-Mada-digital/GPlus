@@ -18,7 +18,7 @@
             </button>
         </div>
 
-        <button type="button" data-modal-target="new_client-modal" data-modal-toggle="new_client-modal" class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">Nouveaux client</button>
+        <button type="button" data-modal-target="new_client-modal" data-modal-toggle="new_client-modal" class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">Nouveau client</button>
     </div>
 
     <div x-show="!view_list" class="flex items-center justify-start gap-2 flex-wrap">
@@ -239,37 +239,30 @@
                             <option value="client-fourniseur">Client - Fourniseur</option>
                         </select>
                     </div>
-                    <div class="col-span-2 sm:col-span-1">
-                        <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Disponibilité : Début</label>
-                        <input type="date" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="+261 xx xxx xx" required="">
-                    </div>
-                    <div class="col-span-2 sm:col-span-1">
-                        <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fin</label>
-                        <input type="date" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="+261 xx xxx xx" required="">
-                    </div>
-                    <div class="col-span-2 sm:col-span-1">
-                        <label for="start-time" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Heur : Début</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                            <input type="time" id="start-time" class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" min="09:00" max="18:00" value="00:00" required />
+                    {% comment %} Disponibilité {% endcomment %}
+                    <div class="mb-6 col-span-2">
+                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Disponibilité</label>
+                        
+                        <div class="flex items-center space-x-4 mb-4">
+                            <select id="day-selector" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value="">Sélectionner un jour</option>
+                                <option value="weekdays">Lundi - Vendredi</option>
+                                <option value="monday">Lundi</option>
+                                <option value="tuesday">Mardi</option>
+                                <option value="wednesday">Mercredi</option>
+                                <option value="thursday">Jeudi</option>
+                                <option value="friday">Vendredi</option>
+                                {% comment %} <option value="saturday">Samedi</option>
+                                <option value="sunday">Dimanche</option> {% endcomment %}
+                            </select>
                         </div>
-                    </div>
-                    <div class="col-span-2 sm:col-span-1">
-                        <label for="end-time" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fin:</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                            <input type="time" id="end-time" class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" min="09:00" max="18:00" value="00:00" required />
+
+                        <div id="days-container" class="space-y-4">
+                            <!-- Les jours sélectionnés seront ajoutés ici dynamiquement -->
                         </div>
-                    </div>
-                        <div class="col-span-2">
+                    </div>                   
+                    
+                    <div class="col-span-2">
                         <label for="message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description sur votre facture</label>
                         <textarea id="message" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Ecrirer ici ..."></textarea>          
                     </div>
@@ -288,5 +281,114 @@
         Alpine.store('view_list', true)
     })
 </script> {% endcomment %}
+ <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const daySelector = document.getElementById('day-selector');
+        const daysContainer = document.getElementById('days-container');
+        const selectedDays = new Set();
+
+        function createTimeInputRow(dayValue, dayLabel) {
+            return `
+                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex items-center mr-2 w-[15%]">
+                        <span class="text-sm font-medium text-gray-900 dark:text-gray-300">${dayLabel}</span>
+                    </div>
+                    <div class="flex items-center space-x-4 flex-1 w-[85%]">
+                        <div class="flex-1">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                        <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <input type="time" 
+                                        name="start-time-${dayValue}"
+                                        class="bg-white border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        value="09:00"
+                                        required>
+                            </div>
+                        </div>
+                        <span class="text-gray-500">à</span>
+                        <div class="flex-1">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                        <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <input type="time" 
+                                        name="end-time-${dayValue}"
+                                        class="bg-white border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        value="17:00"
+                                        required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <button type="button" class="delete-day inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 hover:text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100">
+                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="sr-only">Delete</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function addDayElement(dayValue, dayLabel) {
+            if (selectedDays.has(dayValue)) return;
+
+            selectedDays.add(dayValue);
+            const dayElement = document.createElement('div');
+            dayElement.innerHTML = createTimeInputRow(dayValue, dayLabel);
+
+            const deleteButton = dayElement.querySelector('.delete-day');
+            deleteButton.addEventListener('click', function() {
+                dayElement.remove();
+                selectedDays.delete(dayValue);
+                daySelector.value = '';
+            });
+
+            daysContainer.appendChild(dayElement);
+        }
+
+        daySelector.addEventListener('change', function() {
+            const selectedDay = this.value;
+            if (!selectedDay) return;
+
+            if (selectedDay === 'weekdays') {
+                // Nettoyer le conteneur existant
+                daysContainer.innerHTML = '';
+                selectedDays.clear();
+                
+                // Ajouter une seule ligne pour Lundi-Vendredi
+                const dayElement = document.createElement('div');
+                dayElement.innerHTML = createTimeInputRow('weekdays', 'Lundi - Vendredi');
+                
+                const deleteButton = dayElement.querySelector('.delete-day');
+                deleteButton.addEventListener('click', function() {
+                    dayElement.remove();
+                    selectedDays.clear();
+                    daySelector.value = '';
+                });
+
+                daysContainer.appendChild(dayElement);
+                selectedDays.add('weekdays');
+            } else {
+                // Si on a déjà Lundi-Vendredi, le supprimer
+                if (selectedDays.has('weekdays')) {
+                    daysContainer.innerHTML = '';
+                    selectedDays.clear();
+                }
+                // Ajouter un seul jour
+                const dayLabel = this.options[this.selectedIndex].text;
+                addDayElement(selectedDay, dayLabel);
+            }
+            
+            this.value = '';
+        });
+    });
+</script>
 
 {% endblock contentPage %}

@@ -17,7 +17,7 @@ from pathlib import Path
 import environ
 
 env = environ.Env(
-    SECRET_KEY=(str, "django-insecure-xx3-u&#hmg3ylrp5a05gyh+31p&#@!h@-mf8_dbr*$7gc)3oek")
+    # SECRET_KEY=(str, "django-insecure-xx3-u&#hmg3ylrp5a05gyh+31p&#@!h@-mf8_dbr*$7gc)3oek")
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -93,12 +93,12 @@ WSGI_APPLICATION = 'GPP.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {    
+DATABASES = {
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'gplus',
-    #     'USER': 'root',
-    #     'PASSWORD': '',
+    #     'NAME': env("DB_NAME"),
+    #     'USER': env("DB_USER"),
+    #     'PASSWORD': env("DB_PASS"),
     #     'HOST':'127.0.0.1',
     #     'PORT': '3306',
     #     'OPTIONS': {
