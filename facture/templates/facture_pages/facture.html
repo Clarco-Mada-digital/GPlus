@@ -1,11 +1,11 @@
 {% extends 'layouts/facture_layout.html' %} 
-{% block title_page %} Nouveaux facture {% endblock title_page %}
+{% block title_page %} Nouveaux facture&Devis {% endblock title_page %}
 {% block content %}
 
 <div x-data="{ facture_view: true }">
 
   <div class="flex w-full items-center justify-center">
-    <div class="my-10 inline-flex rounded-md shadow-sm" role="group">
+    <div class="my-4 inline-flex rounded-md shadow-sm" role="group">
       <button x-on:click="facture_view = true" type="button" :class="facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-blue-200 rounded-s-lg hover:bg-blue-300 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-blue-800 dark:border-blue-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white'">
         <svg class="w-3 h-3 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
           <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
@@ -22,41 +22,28 @@
     </div>
   </div>
 
-  <div x-show="facture_view" class="container w-full px-4 py-8">
+  <div x-show="facture_view" x-transition.duration.500ms class="container w-full px-4 py-8">
     <form id="factureForm" class="w-full bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
 
       <!-- Information du client -->
       <div class="mb-8">
         <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Information du client</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="nom">
-              Nom
-            </label>
+          <div>            
             <div class="relative mb-6">
               <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12q-1.65 0-2.825-1.175T8 8t1.175-2.825T12 4t2.825 1.175T16 8t-1.175 2.825T12 12m-8 6v-.8q0-.85.438-1.562T5.6 14.55q1.55-.775 3.15-1.162T12 13t3.25.388t3.15 1.162q.725.375 1.163 1.088T20 17.2v.8q0 .825-.587 1.413T18 20H6q-.825 0-1.412-.587T4 18"/></svg>
               </div>
-              <input type="text" id="input-group-1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@flowbite.com">
+              <select type="text" id="input-group-1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" >
+                <option selected>Client</option>                
+                {% for client in clients_list %}
+                  <option value={{ client.name }} > {{ client.name }} </option>
+                {% endfor %}
+              </select>
             </div>
           </div>
-          <div>
-            <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="email">
-              Email
-            </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" placeholder="email@exemple.com">
-          </div>
-          <div>
-            <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="telephone">
-              Téléphone
-            </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="telephone" type="tel" placeholder="+33 6 12 34 56 78">
-          </div>
-          <div>
-            <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="adresse">
-              Adresse
-            </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="adresse" type="text" placeholder="Adresse complète">
+          <div>            
+            <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date" placeholder="email@exemple.com">
           </div>
         </div>
       </div>
@@ -65,29 +52,40 @@
       <div class="mb-8">
         <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Détails de la facture</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+          <div class="col-span-2">
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="numero">
-              Numéro de facture
+              Intitulé
             </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="numero" type="text" placeholder="FAC-001">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="intutilé" type="text" placeholder="Ajouter un titre ici">
+          </div>
+          <div>
+            <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="reglement_facture">
+              Règlement
+            </label>
+            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="reglement_facture" type="tel">
+              <option selected>A Réception</option>
+              <option value="US">United States</option>
+            </select>
           </div>
           <div>
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="date">
-              Date de facturation
+              Condition
             </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date" type="date">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="condition" type="date">
           </div>
         </div>
       </div>
 
       <!-- Articles -->
       <div class="mb-8">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Articles</h2>
+        <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Ligne</h2>
         <div id="articles-container" class="space-y-4">
           <!-- Les articles seront ajoutés ici dynamiquement -->
         </div>
-        <button type="button" id="ajouterArticle" class="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
-          Ajouter un article
+        <button type="button" id="ajouterArticle" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">          
+          <svg class="w-3.5 h-3.5 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/>
+          </svg>
+          Ajouter une ligne
         </button>
       </div>
 
@@ -117,54 +115,54 @@
     </form>
   </div>
 
-  <div x-show="!facture_view" class="container mx-auto px-4 py-8">
-    <form class="bg-white dark:bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+  <div x-show="!facture_view" x-transition.duration.500ms class="container mx-auto px-4 py-8">
+    <form id="devisForm" class="w-full bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
       <!-- En-tête du devis -->
-      <div class="mb-8">
-        {% comment %} <h1 class="text-2xl font-bold mb-4 text-gray-700 dark:text-gray-200">Nouveau Devis</h1> {% endcomment %}
-        
+      <div class="mb-8">               
         <!-- Informations du client -->
-        <div class="mb-6">
-          <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Informations client</h2>
+        <div class="mb-8">
+          <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Information du client</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="nom-client">
-                Nom du client
-              </label>
-              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="nom-client" type="text" placeholder="Nom du client">
+            <div>            
+            <div class="relative mb-6">
+              <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12q-1.65 0-2.825-1.175T8 8t1.175-2.825T12 4t2.825 1.175T16 8t-1.175 2.825T12 12m-8 6v-.8q0-.85.438-1.562T5.6 14.55q1.55-.775 3.15-1.162T12 13t3.25.388t3.15 1.162q.725.375 1.163 1.088T20 17.2v.8q0 .825-.587 1.413T18 20H6q-.825 0-1.412-.587T4 18"/></svg>
+              </div>
+              <select type="text" id="input-group-1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" >
+                <option selected>Client</option>                
+                {% for client in clients_list %}
+                  <option value={{ client.name }} > {{ client.name }} </option>
+                {% endfor %}
+              </select>
             </div>
+          </div>
             <div>
-              <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="email-client">
-                Email
-              </label>
-              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email-client" type="email" placeholder="email@exemple.com">
-            </div>
-            <div>
-              <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="adresse-client">
-                Adresse
-              </label>
-              <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="adresse-client" placeholder="Adresse complète"></textarea>
-            </div>
-            <div>
-              <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="telephone-client">
-                Téléphone
-              </label>
-              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="telephone-client" type="tel" placeholder="Numéro de téléphone">
-            </div>
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date-client" type="date">
+            </div>            
           </div>
         </div>
 
         <!-- Informations du devis -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="numero-devis">
-              Numéro de devis
+          <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Détails du devis</h2>
+          <div class="col-span-2">
+            <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="adresse-client">
+              Intitulé
             </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="numero-devis" type="text" placeholder="DEV-001">
+            <input type='text' class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="adresse-client" placeholder="Ajouter un titre ici">
+          </div>
+          <div>
+            <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="telephone-client">
+              Règlement
+            </label>
+            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="telephone-client" type="tel" placeholder="Numéro de téléphone">
+              <option selected>A Réception</option>
+              <option value="US">United States</option>
+            </select>
           </div>
           <div>
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="date-devis">
-              Date du devis
+              Condition
             </label>
             <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date-devis" type="date">
           </div>
@@ -173,12 +171,14 @@
 
       <!-- Articles du devis -->
       <div class="mb-8">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Articles</h2>
+        <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Ligne</h2>
         <div id="articles-devis-container" class="space-y-4">
           <!-- Les articles seront ajoutés ici dynamiquement -->
         </div>
-        <button type="button" id="ajouterArticleDevis" class="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
-          Ajouter un article
+         <button type="button" id="ajouterArticleDevis" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">          
+          <svg class="w-3.5 h-3.5 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/>
+          </svg>
+          Ajouter une ligne
         </button>
       </div>
 
