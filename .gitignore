@@ -296,5 +296,7 @@ entire idea folder.
 #.idea/
 
 # style du theme du django tailwind
+media/
+migrations/
 theme/static/
 theme/static_src/
