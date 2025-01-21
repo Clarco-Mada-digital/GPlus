@@ -35,15 +35,15 @@
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12q-1.65 0-2.825-1.175T8 8t1.175-2.825T12 4t2.825 1.175T16 8t-1.175 2.825T12 12m-8 6v-.8q0-.85.438-1.562T5.6 14.55q1.55-.775 3.15-1.162T12 13t3.25.388t3.15 1.162q.725.375 1.163 1.088T20 17.2v.8q0 .825-.587 1.413T18 20H6q-.825 0-1.412-.587T4 18"/></svg>
               </div>
               <select type="text" id="input-group-1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" >
-                <option selected>Client</option>                
+                <option selected>...</option>                
                 {% for client in clients_list %}
-                  <option value={{ client.name }} > {{ client.name }} </option>
+                  <option value={{ client.id }} > {{ client.name }} </option>
                 {% endfor %}
               </select>
             </div>
           </div>
           <div>            
-            <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date" placeholder="email@exemple.com">
+            <input type="date" name="date-facture" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date" placeholder="email@exemple.com">
           </div>
         </div>
       </div>
@@ -56,14 +56,14 @@
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="numero">
               Intitulé
             </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="intutilé" type="text" placeholder="Ajouter un titre ici">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="intutilé" type="text" name="intitule" placeholder="Ajouter un titre ici">
           </div>
           <div>
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="reglement_facture">
               Règlement
             </label>
-            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="reglement_facture" type="tel">
-              <option selected>A Réception</option>
+            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="reglement_facture" name="reglement">
+              <option value="recepetion" selected>A Réception</option>
               <option value="US">United States</option>
             </select>
           </div>
@@ -71,7 +71,7 @@
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="date">
               Condition
             </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="condition" type="date">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="condition" name="condition" type="date">
           </div>
         </div>
       </div>
@@ -294,9 +294,7 @@
     // Écouteur pour le bouton d'ajout d'article
     ajouterArticleDevisBtn.addEventListener('click', creerArticleDevis);
   });
-</script>
 
-<script>
   document.addEventListener('DOMContentLoaded', function() {
       const articlesContainer = document.getElementById('articles-container');
       const ajouterArticleBtn = document.getElementById('ajouterArticle');

@@ -100,10 +100,13 @@
                         Nom
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Poste
+                        Nom commercial
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Status
+                        Contact
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Type du client
                     </th>
                     <th scope="col" class="px-6 py-3">
                         Action
@@ -124,28 +127,34 @@
                         <img class="w-10 h-10 rounded-full" src="{{ client.photo.url }}" alt="Jese image">
                         <div class="ps-3">
                             <div class="text-base font-semibold">{{ client.name }}</div>
-                            <div class="font-normal text-gray-500">{{ client.email }}</div>
+                            <div class="font-normal text-gray-500">{{ client.post }}</div>
                         </div>  
                     </th>
                     <td class="px-6 py-4">
-                        {{ client.post }}
+                        {{ client.commercial_name }}
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
+                            {{ client.email }}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
+                            {{ client.type_client }}
                         </div>
                     </td>
                     <td class="flex items-center gap-1 px-6 py-4">
                         <a href="mailto:{{ client.email }}" >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C6.5 3 2 6.58 2 11a7.22 7.22 0 0 0 2.75 5.5c0 .6-.42 2.17-2.75 4.5c2.37-.11 4.64-1 6.47-2.5c1.14.33 2.34.5 3.53.5c5.5 0 10-3.58 10-8s-4.5-8-10-8m0 14c-4.42 0-8-2.69-8-6s3.58-6 8-6s8 2.69 8 6s-3.58 6-8 6m5-5v-2h-2v2zm-4 0v-2h-2v2zm-4 0v-2H7v2z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C6.5 3 2 6.58 2 11a7.22 7.22 0 0 0 2.75 5.5c0 .6-.42 2.17-2.75 4.5c2.37-.11 4.64-1 6.47-2.5c1.14.33 2.34.5 3.53.5c5.5 0 10-3.58 10-8s-4.5-8-10-8m0 14c-4.42 0-8-2.69-8-6s3.58-6 8-6s8 2.69 8 6s-3.58 6-8 6m5-5v-2h-2v2zm-4 0v-2h-2v2zm-4 0v-2H7v2z"/></svg>
                         </a>
                         <a href="tel:{{ client.tel }}" >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="64" stroke-dashoffset="64" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-dasharray="64" stroke-dashoffset="64" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3c0.5 0 2.5 4.5 2.5 5c0 1 -1.5 2 -2 3c-0.5 1 0.5 2 1.5 3c0.39 0.39 2 2 3 1.5c1 -0.5 2 -2 3 -2c0.5 0 5 2 5 2.5c0 2 -1.5 3.5 -3 4c-1.5 0.5 -2.5 0.5 -4.5 0c-2 -0.5 -3.5 -1 -6 -3.5c-2.5 -2.5 -3 -4 -3.5 -6c-0.5 -2 -0.5 -3 0 -4.5c0.5 -1.5 2 -3 4 -3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/></path></svg>
                         </a>
                         <!-- Bouton Modifier -->
                         <button data-modal-target="edit-modal-{{ client.id }}" data-modal-toggle="edit-modal-{{ client.id }}" class="text-blue-500 hover:text-blue-700" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75l1.83-1.83z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83l3.75 3.75l1.83-1.83z"/></svg>
                         </button>
+
                         <!-- Modal Modification -->
                         <div id="edit-modal-{{ client.id }}" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
                             <div class="relative p-4 w-full max-w-[50vw] max-h-full">
@@ -213,12 +222,82 @@
                                                 <input type="email" name="email" id="email" value="{{ client.email }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="">
                                             </div>
                                             <div class="col-span-2">
-                                                <label for="tel" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Téléphone</label>
-                                                <input type="tel" name="tel" id="tel" value="{{ client.tel }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+                                                <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type du client</label>
+                                                <select name="type_client" id="type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                                    <option value="Client" {% if client.type_client == 'Client' %}selected{% endif %}>Client</option>
+                                                    <option value="Prospect" {% if client.type_client == 'Prospect' %}selected{% endif %}>Prospect</option>
+                                                    <option value="Fourniseur" {% if client.type_client == 'Fourniseur' %}selected{% endif %}>Fourniseur</option>
+                                                    <option value="Client-Prospect" {% if client.type_client == 'Client-Prospect' %}selected{% endif %}>Client - Prospect</option>
+                                                    <option value="Client-Fourniseur" {% if client.type_client == 'Client-Fourniseur' %}selected{% endif %}>Client - Fourniseur</option>
+                                                </select>
                                             </div>
+                                            {% comment %} Disponibilité {% endcomment %}
+                                            {% if client.disponibilite %}
+                                                <div class="col-span-2">
+                                                    <label for="disponibilite" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Disponibilité</label>
+                                                    <div class="col-span-2">
+                                                        <select id="select-jour" class="mb-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                                            <option value="">Sélectionner un jour</option>
+                                                            <option value="lundi">Lundi</option>
+                                                            <option value="mardi">Mardi</option>
+                                                            <option value="mercredi">Mercredi</option>
+                                                            <option value="jeudi">Jeudi</option>
+                                                            <option value="vendredi">Vendredi</option>
+                                                            <option value="samedi">Samedi</option>
+                                                            <option value="dimanche">Dimanche</option>
+                                                        </select>
+                                                        {% for jour, heures in client.disponibilite.items %}
+                                                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                                                <div class="flex items-center mr-2 w-[15%]">
+                                                                    <span class="text-sm font-medium text-gray-900 dark:text-gray-300">{{ jour }}</span>
+                                                                </div>
+                                                                <div class="flex items-center space-x-4 flex-1 w-[85%]">
+                                                                    <div class="flex-1">
+                                                                        <div class="relative">
+                                                                            <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                                                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                                                                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
+                                                                                </svg>
+                                                                            </div>
+                                                                            <input type="time" 
+                                                                                    name="start-time-{{ jour }}"
+                                                                                    class="bg-white border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                                                    value="{{ heures.start }}"
+                                                                                    required>
+                                                                        </div>
+                                                                    </div>
+                                                                    <span class="text-gray-500">à</span>
+                                                                    <div class="flex-1">
+                                                                        <div class="relative">
+                                                                            <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                                                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                                                                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
+                                                                                </svg>
+                                                                            </div>
+                                                                            <input type="time" 
+                                                                                    name="end-time-{{ jour }}"
+                                                                                    class="bg-white border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                                                    value="{{ heures.end }}"
+                                                                                    required>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ml-4">
+                                                                        <button type="button" class="delete-day inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 hover:text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100">
+                                                                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                                                                <path fill-rule="evenodd" d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z" clip-rule="evenodd"/>
+                                                                            </svg>
+                                                                            <span class="sr-only">Delete</span>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
                                             <div class="col-span-2">
-                                                <label for="post" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Poste</label>
-                                                <input type="text" name="post" id="post" value="{{ client.post }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                                <label for="message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description sur votre facture</label>
+                                                <textarea id="message" rows="4" name="description_facture" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Ecrirer ici ...">{{ client.description_facture }}</textarea>          
                                             </div>
                                         </div>
                                         <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -228,21 +307,9 @@
                                 </div>
                             </div>
                         </div>
-                        <script>
-                            function previewImage(input, previewId) {
-                                const preview = document.getElementById(previewId);
-                                if (input.files && input.files[0]) {
-                                    const reader = new FileReader();
-                                    reader.onload = function(e) {
-                                        preview.src = e.target.result;
-                                    }
-                                    reader.readAsDataURL(input.files[0]);
-                                }
-                            }
-                        </script>
                         <!-- Bouton Supprimer -->
                         <button data-modal-target="popup-modal-{{ client.id }}" data-modal-toggle="popup-modal-{{ client.id }}" class="text-red/50 hover:text-red/70" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                         </button>
 
                         <div id="popup-modal-{{ client.id }}" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">

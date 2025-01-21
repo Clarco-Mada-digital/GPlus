@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.utils import timezone
+from clients.models import Client
 import requests
 
 # Create your views here.
@@ -15,9 +16,8 @@ def index(request):
 
 
 def facture(request):
-  url = 'https://jsonplaceholder.typicode.com/users'
-  res = requests.get(url)
-  clients = res.json()
+  clients = Client.objects.all()
+  # clients = res.json()
   # print(clients)
   context = {
     "clients_list" : clients

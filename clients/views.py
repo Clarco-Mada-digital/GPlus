@@ -11,7 +11,7 @@ from .forms import ClientForm
 from .models import Client
 import json
 
-# Create your views here.
+
 def index(request):
   clients = Client.objects.all()
   count_prospect = Client.objects.filter(type_client='Prospect').count()
@@ -28,31 +28,36 @@ def index(request):
 
 # @login_required
 # defrelient(request):
-  clients = Client.objects.all()
-  context = {
-    "clients_list" : clients
-  }
-  return render(request, "client_pages/client.html", context)
+# clients = Client.objects.all()
+# context = {
+#   "clients_list" : clients
+# }
+# return render(request, "client_pages/client.html", context)
 
 
 @require_POST
 @csrf_exempt
 def new_client(request):
     if request.method == 'POST':
-      start_times = {}
+      horaires = {}
       form = ClientForm(request.POST, request.FILES)
       for key, value in request.POST.items():
         if key.startswith('start-time-'):
           # Extraire l'identifiant du jour à partir de la clé
           day_id = key.split('start-time-')[1]  # Récupère la partie après 'start-time-'
-          start_times[day_id] = value  # Ajoute au dictionnaire
+          horaires[day_id] = {'start': value}  # Ajoute l'heure de début au dictionnaire
+        elif key.startswith('end-time-'):
+          # Extraire l'identifiant du jour à partir de la clé
+          day_id = key.split('end-time-')[1]  # Récupère la partie après 'end-time-'
+          if day_id in horaires:
+            horaires[day_id]['end'] = value  # Ajoute l'heure de fin au dictionnaire existant
       print("Form data:", request.POST)  # Affiche les données reçues
       print("Form errors:", form.errors)  # Affiche les erreurs de validation      
       
       if form.is_valid():
           try:
               client = form.save(commit=False)
-              client.disponibilite = start_times
+              client.disponibilite = horaires
               client.save()
               messages.success(request, "Client ajouté avec succès.")
               return redirect('client:client')
@@ -68,36 +73,31 @@ def new_client(request):
             
     return redirect('client:client')
 
+
 @login_required
-@require_POST
-@csrf_exempt
 def edit_client(request, pk):
   try:
     client = get_object_or_404(Client, pk=pk)
-    data = json.loads(request.body)
-    
-    # Valider les données avant la mise à jour
-    form = ClientForm(data, instance=client)
-    if form.is_valid():
-      # Mise à jour des champs du client
-      for key, value in data.items():
-          if hasattr(client, key):
-              setattr(client, key, value)
-      
-      client.save()
-      messages.success(request, f"Le client '{client.name}' a été modifié avec succès.")
-    else:
-      error_messages = []
-      for field, errors in form.errors.items():
+    if request.method == 'POST':
+      form = ClientForm(request.POST, instance=client)
+      print(form)
+      if form.is_valid():
+        form.save()
+        messages.success(request, f"Le client '{client.name}' a été modifié avec succès.")
+        return redirect('client:client')
+      else:
+        error_messages = []
+        for field, errors in form.errors.items():
           error_messages.append(f"{field}: {', '.join(errors)}")
-      messages.error(request, "Erreurs dans le formulaire: " + " | ".join(error_messages))
-          
-  except json.JSONDecodeError:
-    messages.error(request, "Données JSON invalides")
+        messages.error(request, "Erreurs dans le formulaire: " + " | ".join(error_messages))
+    else:
+        form = ClientForm(instance=client)
+        
+    return render(request, 'client:client')
+      
   except Exception as e:
     messages.error(request, f"Erreur lors de la modification: {str(e)}")
-      
-  return redirect('client:client')  
+    return redirect('client:client')
 
   
 @login_required
