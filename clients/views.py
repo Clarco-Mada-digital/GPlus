@@ -9,6 +9,7 @@ from django.db.models import Q
 
 from .forms import ClientForm
 from .models import Client
+import datetime
 import json
 
 
@@ -78,13 +79,30 @@ def new_client(request):
 def edit_client(request, pk):
   try:
     client = get_object_or_404(Client, pk=pk)
+    horaires={}
     if request.method == 'POST':
-      form = ClientForm(request.POST, instance=client)
-      print(form)
+      form = ClientForm(request.POST, request.FILES, instance=client)
+      for key, value in request.POST.items():
+        if key.startswith('start-time-'):
+          # Extraire l'identifiant du jour à partir de la clé
+          day_id = key.split('start-time-')[1]  # Récupère la partie après 'start-time-'
+          horaires[day_id] = {'start': value}  # Ajoute l'heure de début au dictionnaire
+        elif key.startswith('end-time-'):
+          # Extraire l'identifiant du jour à partir de la clé
+          day_id = key.split('end-time-')[1]  # Récupère la partie après 'end-time-'
+          if day_id in horaires:
+            horaires[day_id]['end'] = value
       if form.is_valid():
-        form.save()
-        messages.success(request, f"Le client '{client.name}' a été modifié avec succès.")
-        return redirect('client:client')
+        try:
+          client_edit = form.save(commit=False)         
+          client_edit.disponibilite = horaires
+          client_edit.updated_at = datetime.datetime.now()
+          client_edit.save()
+          messages.success(request, f"Le client '{client.name}' a été modifié avec succès.")
+          return redirect('client:client')
+        except Exception as e:
+          print("Erreur lors de l'enregistrement:", str(e))
+          messages.error(request, f"Erreur lors de l'enregistrement: {str(e)}")
       else:
         error_messages = []
         for field, errors in form.errors.items():
