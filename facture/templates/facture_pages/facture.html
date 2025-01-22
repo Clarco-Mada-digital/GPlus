@@ -82,7 +82,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="col-span-2 flex justify-between items-center gap-2">
             <div class="w-3/4">
-              <input id="service_searche" class="shadow appearance-none border rounded w-full py-2 my-0 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="search-articles" type="text" name="search-articles" placeholder="Rechercher un article" @input.debounce.500ms="searchArticles($event.target.value)">
+              <input id="service_searche" class="shadow appearance-none border rounded w-full py-2 my-0 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="search-articles" type="text" name="search-articles" placeholder="Rechercher un article">
             </div>            
             <div class="w-1/4">
               <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
@@ -444,12 +444,18 @@
       });
 
 
-      document.getElementById('service_searche').addEventListener('change')
+      document.getElementById('service_searche').addEventListener('input', function(e) {
+        const valeur = e.target.value;
+        if (valeur.length > 3) {
+          setTimeout(() => {
+            console.log(valeur);
+            searchArticles(valeur);
+          }, 300);
+        }
+      });
 
 
     let servicesList =  data = JSON.parse("{{ services_json | escapejs }}")
-
-    let selectedArticles = [];
 
     function searchArticles(query) {
       const articlesContainer = document.getElementById('result-articles-container');
@@ -479,33 +485,77 @@
       
     }
 
-    function addArticle(id) {
-      const article = servicesList.find(service => service.id === id);
-      selectedArticles.push(article);
-      const ligneContainer = document.getElementById('articles-container');
-      const html = selectedArticles.map((article, index) => `
-        <div>
-          <span>${article.nom_service}</span> - Prix: <span>${article.prix_unitaire} €</span>
-          <button class="ml-2" onclick="removeArticle(${index})">Supprimer</button>
-        </div>
-      `).join('');
-      // ligneContainer.innerHTML = html;
-      creerArticle();
-    }
-
-    function removeArticle(index) {
-      selectedArticles.splice(index, 1);
-      const ligneContainer = document.getElementById('articles-container');
-      const html = selectedArticles.map((article, index) => `
-        <div>
-          <span>${article.nom_article}</span> - Prix: <span>${article.prix_unitaire} €</span>
-          <button class="ml-2" onclick="removeArticle(${index})">Supprimer</button>
-        </div>
-      `).join('');
-      ligneContainer.innerHTML = html;
-    }
+    
 
   });
+
+  const articlesContainer = document.getElementById('articles-container');
+  let servicesList =  data = JSON.parse("{{ services_json | escapejs }}")
+  let selectedArticles = [];
+  let serviceCount = 0
+
+  function creerLigneService(description="", prix_unitaire=0.00) {
+    serviceCount++;
+    const articleDiv = document.createElement('div');
+    articleDiv.className = 'grid grid-cols-12 gap-2 article-row';
+    articleDiv.dataset.articleId = serviceCount;
+
+    articleDiv.innerHTML = `
+        <div class="col-span-5">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-description" value="${description}"
+                  type="text" placeholder="Description" data-article-id="${serviceCount}">
+        </div>
+        <div class="col-span-2">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-quantite" 
+                  type="number" placeholder="Quantité" value="1" min="1" data-article-id="${serviceCount}">
+        </div>
+        <div class="col-span-2">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-prix" 
+                  type="number" step="0.01" placeholder="Prix" value="${prix_unitaire}" data-article-id="${serviceCount}">
+        </div>
+        <div class="col-span-2">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 article-total" 
+                  type="text" placeholder="Total" disabled data-article-id="${serviceCount}">
+        </div>
+        <div class="col-span-1 items-center">
+            <button type="button" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full supprimer-article" data-article-id="${serviceCount}">
+                <svg class="w-10 h-10 p-2 bg-red rounded-full" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/></svg>
+            </button>
+        </div>
+    `;
+
+    articlesContainer.appendChild(articleDiv);
+    //attacherEcouteurs(articleDiv);
+  }
+
+  function addArticle(id) {
+    const resultArticlesContainer = document.getElementById('result-articles-container');
+    const article = servicesList.find(service => service.id === id);
+    selectedArticles.push(article);
+    const ligneContainer = document.getElementById('articles-container');
+    const html = selectedArticles.map((article, index) => `
+      <div>
+        <span>${article.nom_service}</span> - Prix: <span>${article.prix_unitaire} €</span>
+        <button class="ml-2" onclick="removeArticle(${index})">Supprimer</button>
+      </div>
+    `).join('');
+    // ligneContainer.innerHTML = html;
+    creerLigneService(article.nom_service, article.prix_unitaire);
+    document.getElementById('service_searche').value = "";
+    resultArticlesContainer.style.display = 'none';
+  }
+
+  function removeArticle(index) {
+    selectedArticles.splice(index, 1);
+    const ligneContainer = document.getElementById('articles-container');
+    const html = selectedArticles.map((article, index) => `
+      <div>
+        <span>${article.nom_article}</span> - Prix: <span>${article.prix_unitaire} €</span>
+        <button class="ml-2" onclick="removeArticle(${index})">Supprimer</button>
+      </div>
+    `).join('');
+    ligneContainer.innerHTML = html;
+  }
 </script>
 
 {% endblock content %}

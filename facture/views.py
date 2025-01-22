@@ -112,13 +112,12 @@ def ajouter_service(request):
     form = ServiceForm(request.POST)
     if form.is_valid():
       form.save()
-      messages.success(request, "Article ajouté avec succès.")
-      return redirect(request, 'facture:facture')
+      messages.success(request, "Service ajouté avec succès.")
+      return redirect('facture:facture')
     else:
       messages.error(request, "Erreur lors de l'ajout de l'article. Veuillez vérifier les informations entrées.")
   else:
-    form = ServiceForm()
-  return redirect(request, 'facture:facture')
+    return redirect('facture:facture')
 
 @login_required
 def modifier_article(request, pk):
