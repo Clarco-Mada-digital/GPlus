@@ -7,8 +7,8 @@ urlpatterns = [
   # Mes differents urls pour le facture et devies
   path('', views.index, name="index"),
   path('new/', views.facture, name="facture"),
-  path('edit/<int:pk>/', views.modifier_facture, name="modifier_facture"),
-  path('del/<int:pk>/', views.supprimer_facture, name="supprimer_facture"),  
+  path('edit/<int:pk>/', views.modifier_facture, name="edit_facture"),
+  path('del/<int:pk>/', views.supprimer_facture, name="del_facture"),  
   path('new/service/', views.ajouter_service, name="new_service"), # Lien pur ajout d'service
   path('new/facture/', views.ajouter_facture, name="new_facture"), # Lien pur ajout de facture
   path('new/devis/', views.ajouter_Devis, name="new_devis"), # Lien pur ajout de facture

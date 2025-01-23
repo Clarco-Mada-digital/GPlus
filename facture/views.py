@@ -25,17 +25,7 @@ def index(request):
   all_facture = Facture.objects.all()
   
   factures = all_facture.filter(type="Facture")
-  devis = all_facture.filter(type="Devis")
-  # Facture filter
-  if fact_annee_filtre:
-    factures = factures.filter(date_facture__year=fact_annee_filtre, type="Facture")
-  if fact_mois_filtre:
-    factures = factures.filter(date_facture__month=int(fact_mois_filtre), type="Facture")
-  # Devis filter
-  if dev_annee_filtre:
-    devis = devis.filter(date_facture__year=dev_annee_filtre, type="Devis")
-  if dev_mois_filtre:
-    devis = devis.filter(date_facture__month=int(dev_mois_filtre), type="Devis")
+  devis = all_facture.filter(type="Devis")  
   
   mois_uniques = set(facture.date_facture.month for facture in factures)
   mois_uniques = sorted(mois_uniques, reverse=True)
@@ -55,6 +45,17 @@ def index(request):
   dev_annee_uniques = sorted(dev_annee_uniques, reverse=True)
   dev_annee_filtrable = [{"id": i, "nom": i} for i in dev_annee_uniques]
   
+  # Facture filter
+  if fact_annee_filtre:
+    factures = factures.filter(date_facture__year=fact_annee_filtre, type="Facture")
+  if fact_mois_filtre:
+    factures = factures.filter(date_facture__month=int(fact_mois_filtre), type="Facture")
+  # Devis filter
+  if dev_annee_filtre:
+    devis = devis.filter(date_facture__year=dev_annee_filtre, type="Devis")
+  if dev_mois_filtre:
+    devis = devis.filter(date_facture__month=int(dev_mois_filtre), type="Devis")
+    
   context = {
     'years' : years,
     'factures' : factures,
@@ -75,7 +76,7 @@ def index(request):
 def facture(request):
   clients = Client.objects.all()
   services = Service.objects.all()
-  services_list = list(services.values('id', 'nom_service', 'prix_unitaire', 'description'))
+  services_list = list(services.values('id', 'nom_service', 'prix_unitaire', 'description'))  
   for service in services_list:
       service['prix_unitaire'] = float(service['prix_unitaire'])  # Conversion
   context = {
@@ -119,17 +120,20 @@ def ajouter_facture(request):
       try:
         facture = form.save(commit=False)
         facture.services = services_data
+        facture.created_by = request.user
         # facture.type = "Facture"
+        dernier_id = Facture.objects.latest('id').id
         if facture.etat_facture == 'Brouillon':
-            facture.ref = '(FPROV' + str(timezone.now().year) + '-' + str(uuid.uuid4().int)[:6].zfill(6) +')'
+            facture.ref = '(FPROV' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6) +')'
         else:
-            facture.ref = 'F' + str(timezone.now().year) + '-' + str(uuid.uuid4().int)[:6].zfill(6)
+            facture.ref = 'F' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6)
         facture.save()
         messages.success(request, "Facture ajoutée avec succès.")
         return redirect('facture:facture')
       except Exception as e:
         print("Erreur lors de l'enregistrement:", str(e))
         messages.error(request, f"Erreur lors de l'enregistrement: {str(e)}")
+        return redirect('facture:facture')
     else:
       print("Erreurs de validation:", form.errors)
       messages.error(request, "Erreur lors de l'ajout de la facture. Veuillez vérifier les informations entrées.")
@@ -223,12 +227,14 @@ def supprimer_facture(request, pk):
   :param pk: La clé primaire de la facture à supprimer
   :return: La page de confirmation de suppression ou un message de succès si applicable
   """
-  facture = get_object_or_404(Facture, pk=pk)
-  if request.method == 'POST':
+  facture = get_object_or_404(Facture, pk=pk)  
+  try:
     facture.delete()
-    return render(request, "facture_pages/supprimer_facture.html", {"message": "Facture supprimée avec succès."})
-  else:
-    return render(request, "facture_pages/supprimer_facture.html", {"facture": facture})
+    messages.success(request, "Facture supprimée avec succès.")
+  except Exception as e:
+    print("Erreur lors de la suppression:", str(e))
+    messages.error(request, f"Erreur lors de la suppression: {str(e)}")
+  return redirect('facture:index')
 
 
 @login_required
