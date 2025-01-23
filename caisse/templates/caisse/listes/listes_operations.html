@@ -39,9 +39,9 @@
         <!-- Sélecteur pour le nombre de lignes par page -->
         <form method="get" class="flex items-center space-x-2">
             <label for="lignes">Nombre de lignes :</label>
-            <select me="lignes"
+            <select name="lignes"
                 class="border-none dark:bg-secondary focus:ring-0" id="lignes"
-                onchae="this.form.submit()">
+                onchange="this.form.submit()">
                 <option value="5" {% if lignes_par_page == '5' %}selected{%endif%}>5</option>
                 <option value="10" {% if lignes_par_page == '10' %}selected{% endif %}>10</option>
                 <option value="15" {% if lignes_par_page == '15' %}selected{% endif %}>15</option>

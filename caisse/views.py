@@ -277,7 +277,8 @@ def listes(request):
         sortie = sortie.filter(date_de_sortie__month=int(mois))
 
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 10
+    lignes_par_page = str(request.GET.get('lignes', 10)) # Valeur par défaut : 10
+    print(lignes_par_page)
     operations = sorted(
         chain(entree, sortie),
         key=lambda x: (
@@ -1149,7 +1150,8 @@ def liste_entrees(request):
     template = loader.get_template('caisse/listes/entrees.html')
 
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 10
+    lignes_par_page = str(request.GET.get('lignes', 10))  # Valeur par défaut : 10
+    print(lignes_par_page)
     paginator = Paginator(entrees, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -1161,7 +1163,7 @@ def liste_entrees(request):
         'prix': "Ar",
         'sort_by': sort_by,
         'ordre': ordre,
-        'lignes_par_page': request.GET.get('lignes', 10),
+        'lignes_par_page': lignes_par_page,
         'query': query,
         'categorie_id': categorie_id,
         'mois_liste': mois_liste, 
@@ -1246,7 +1248,7 @@ def liste_sorties(request):
     template = loader.get_template('caisse/listes/sorties.html')
 
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 10
+    lignes_par_page = str(request.GET.get('lignes', 10))  # Valeur par défaut : 10
     paginator = Paginator(sorties, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
