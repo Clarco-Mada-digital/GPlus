@@ -9,16 +9,20 @@
         <title>G+</title>
         {% tailwind_css %}
         <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+        {% comment %} <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" /> {% endcomment %}
         <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" defer></script>
         <!-- Ajout du CDN de Chart.js -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:wght@100..900&family=Urbanist:ital,wght@0,554;1,554&display=swap"
-            rel="stylesheet">
-            <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:wght@100..900&family=Urbanist:ital,wght@0,554;1,554&display=swap" rel="stylesheet">
+        <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+        <style>
+            [x-cloak] {
+                display: none;
+            }
+        </style>
     </head>
 
     <body>

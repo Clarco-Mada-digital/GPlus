@@ -11,5 +11,6 @@ urlpatterns = [
   path('del/<int:pk>/', views.supprimer_facture, name="supprimer_facture"),  
   path('new/service/', views.ajouter_service, name="new_service"), # Lien pur ajout d'service
   path('new/facture/', views.ajouter_facture, name="new_facture"), # Lien pur ajout de facture
+  path('new/devis/', views.ajouter_Devis, name="new_devis"), # Lien pur ajout de facture
   # path('settings/', views.ajouter_facture, name="new_facture"), # Lien pur ajout de facture
 ]

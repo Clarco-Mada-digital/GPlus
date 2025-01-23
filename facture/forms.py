@@ -4,7 +4,7 @@ from .models import Facture, Service
 class FactureForm(forms.ModelForm):
     class Meta:
         model = Facture
-        fields = ('intitule', 'reglement', 'condition', 'etat', 'montant', 'client', 'service')
+        fields = ('date_facture', 'intitule', 'reglement', 'condition', 'etat_facture', 'montant', 'client', 'services', 'type')
 
 class ServiceForm(forms.ModelForm):
     class Meta:

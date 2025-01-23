@@ -4,7 +4,7 @@
 
 <div x-data="{ facture_view: true }">
 
-  <div class="flex w-full items-center justify-center">
+  {% comment %} <div class="flex w-full items-center justify-center">
     <div class="my-4 inline-flex rounded-md shadow-sm" role="group">
       <button x-on:click="facture_view = true" type="button" :class="facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-blue-200 rounded-s-lg hover:bg-blue-300 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-blue-800 dark:border-blue-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white'">
         <svg class="w-3 h-3 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -20,10 +20,31 @@
         Devis
       </button>
     </div>
-  </div>
+  </div> {% endcomment %}
+  
 
-  <div x-show="facture_view" x-transition.duration.500ms class="container w-full px-4 py-8">
-    <form id="factureForm" class="w-full bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+  <div class="container w-full px-4 py-8">
+    <form id="factureForm" action="{% url 'facture:new_facture' %}" method="POST" class="w-full bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+      {% csrf_token %}
+
+      <div class="flex items-center justify-center">
+        <label x-on:click="facture_view = true" for="factForm" type="button" :class="facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-blue-200 rounded-s-lg hover:bg-blue-300 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-blue-800 dark:border-blue-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white'">
+        <svg class="w-3 h-3 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
+        </svg>
+        Facture
+        <input id="factForm" name="type" type="radio" class="hidden" value="Facture">
+      </label>
+      <label x-on:click="facture_view = false" for="devisForm" type="button" :class="!facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-blue-200 rounded-e-lg hover:bg-blue-300 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-blue-800 dark:border-blue-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white'">
+        <svg class="w-3 h-3 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M14.707 7.793a1 1 0 0 0-1.414 0L11 10.086V1.5a1 1 0 0 0-2 0v8.586L6.707 7.793a1 1 0 1 0-1.414 1.414l4 4a1 1 0 0 0 1.416 0l4-4a1 1 0 0 0-.002-1.414Z"/>
+          <path d="M18 12h-2.55l-2.975 2.975a3.5 3.5 0 0 1-4.95 0L4.55 12H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2Zm-3 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
+        </svg>
+        Devis
+        <input id="devisForm" name="type" type="radio" class="hidden" value="Devis">
+      </label>
+
+      </div>
 
       <!-- Information du client -->
       <div class="mb-8">
@@ -34,7 +55,7 @@
               <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12q-1.65 0-2.825-1.175T8 8t1.175-2.825T12 4t2.825 1.175T16 8t-1.175 2.825T12 12m-8 6v-.8q0-.85.438-1.562T5.6 14.55q1.55-.775 3.15-1.162T12 13t3.25.388t3.15 1.162q.725.375 1.163 1.088T20 17.2v.8q0 .825-.587 1.413T18 20H6q-.825 0-1.412-.587T4 18"/></svg>
               </div>
-              <select type="text" id="input-group-1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" >
+              <select type="text" id="input-group-1" name="client" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" >
                 <option selected>...</option>                
                 {% for client in clients_list %}
                   <option value={{ client.id }} > {{ client.name }} </option>
@@ -43,7 +64,7 @@
             </div>
           </div>
           <div>            
-            <input type="date" name="date-facture" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date" placeholder="email@exemple.com">
+            <input type="date" name="date_facture" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date">
           </div>
         </div>
       </div>
@@ -51,8 +72,8 @@
       <!-- Détails de la facture -->
       <div class="mb-8">
         <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Détails de la facture</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="col-span-2">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="col-span-3">
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="numero">
               Intitulé
             </label>
@@ -63,15 +84,37 @@
               Règlement
             </label>
             <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="reglement_facture" name="reglement">
-              <option value="recepetion" selected>A Réception</option>
-              <option value="US">United States</option>
+              <option value="A réception" selected>A Réception</option>
+              <option value="30 jours">30 jours</option>
+              <option value="30 jours fin de mois">30 jours fin de mois</option>
+              <option value="60 jours">60 jours</option>
+              <option value="60 jours fin de mois">60 jours fin de mois</option>
+              <option value="A commande">A commande</option>
+              <option value="A livraison">A livraison</option>
+              <option value="50/50">50/50</option>
+              <option value="10 jours">10 jours</option>
+              <option value="10 jours fin de mois">10 jours fin de mois</option>
+              <option value="14 jours">14 jours</option>
+              <option value="14 jours fin de mois">14 jours fin de mois</option>
             </select>
-          </div>
+          </div>          
           <div>
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="date">
               Condition
             </label>
             <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="condition" name="condition" type="date">
+          </div>
+          <div>
+            <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="reglement_facture">
+              Etat du facture
+            </label>
+            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="etat_facture" name="etat_facture">
+              <option value="Impayée">Impayée</option>
+              <option value="Payé">Payé</option>
+              <option value="En cours">En cours</option>
+              <option value="Brouillon">Brouillon</option>
+              <option value="Annulé">Annulé</option>
+            </select>
           </div>
         </div>
       </div>
@@ -82,7 +125,16 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="col-span-2 flex justify-between items-center gap-2">
             <div class="w-3/4">
-              <input id="service_searche" class="shadow appearance-none border rounded w-full py-2 my-0 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="search-articles" type="text" name="search-articles" placeholder="Rechercher un article">
+              <input 
+                id="service_searche" 
+                @keydown.enter.prevent="searchArticles($event.target.value)" 
+                @input.debounce.500ms="searchArticles($event.target.value)" 
+                class="shadow appearance-none border rounded w-full py-2 my-0 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                id="search-articles" 
+                type="text" 
+                name="search-articles" 
+                placeholder="Rechercher un article"
+              >
             </div>            
             <div class="w-1/4">
               <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
@@ -109,11 +161,12 @@
         <div class="w-full md:w-1/2 ml-auto">
           <div class="grid grid-cols-2 gap-4">
             <div class="text-right font-bold text-gray-700 dark:text-gray-200">Sous-total:</div>
-            <div class="text-right text-gray-700 dark:text-gray-200" id="sous-total">0.00 €</div>
+            <div class="text-right text-gray-700 dark:text-gray-200" id="sous-total">0.00 Ar</div>
             <div class="text-right font-bold text-gray-700 dark:text-gray-200">TVA (20%):</div>
-            <div class="text-right text-gray-700 dark:text-gray-200" id="tva">0.00 €</div>
+            <div class="text-right text-gray-700 dark:text-gray-200" id="tva">0.00 Ar</div>
             <div class="text-right font-bold text-lg text-gray-700 dark:text-gray-200">Total:</div>
-            <div class="text-right text-lg text-gray-700 dark:text-gray-200" id="total">0.00 €</div>
+            <div class="text-right text-lg text-gray-700 dark:text-gray-200" id="total">0.00 Ar</div>
+            <input class="hidden" type="number" name="montant" id="total_input" value="0.00" >
           </div>
         </div>
       </div>
@@ -174,7 +227,7 @@
     </div>
   </div>
 
-  <div x-show="!facture_view" x-transition.duration.500ms class="container mx-auto px-4 py-8">
+  <div class="container mx-auto px-4 py-8">
     <form id="devisForm" class="w-full bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
       <!-- En-tête du devis -->
       <div class="mb-8">               
@@ -269,7 +322,7 @@
 
 </div>
 
-<script>
+<script defer>
   document.addEventListener('DOMContentLoaded', function() {
     const articlesDevisContainer = document.getElementById('articles-devis-container');
     const ajouterArticleDevisBtn = document.getElementById('ajouterArticleDevis');
@@ -354,180 +407,132 @@
     ajouterArticleDevisBtn.addEventListener('click', creerArticleDevis);
   });
 
-  document.addEventListener('DOMContentLoaded', function() {
-      const articlesContainer = document.getElementById('articles-container');
-      const ajouterArticleBtn = document.getElementById('ajouterArticle');
-      let articleCount = 0;
-
-      // Fonction pour créer un nouvel article
-      function creerArticle() {
-          articleCount++;
-          const articleDiv = document.createElement('div');
-          articleDiv.className = 'grid grid-cols-12 gap-2 article-row';
-          articleDiv.dataset.articleId = articleCount;
-
-          articleDiv.innerHTML = `
-              <div class="col-span-5">
-                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-description" 
-                        type="text" placeholder="Description" data-article-id="${articleCount}">
-              </div>
-              <div class="col-span-2">
-                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-quantite" 
-                        type="number" placeholder="Quantité" value="1" min="1" data-article-id="${articleCount}">
-              </div>
-              <div class="col-span-2">
-                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-prix" 
-                        type="number" step="0.01" placeholder="Prix" value="0.00" data-article-id="${articleCount}">
-              </div>
-              <div class="col-span-2">
-                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 article-total" 
-                        type="text" placeholder="Total" disabled data-article-id="${articleCount}">
-              </div>
-              <div class="col-span-1 items-center">
-                  <button type="button" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full supprimer-article" data-article-id="${articleCount}">
-                      <svg class="w-10 h-10 p-2 bg-red rounded-full" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/></svg>
-                  </button>
-              </div>
-          `;
-
-          articlesContainer.appendChild(articleDiv);
-          attacherEcouteurs(articleDiv);
-      }
-
-      // Fonction pour attacher les écouteurs d'événements
-      function attacherEcouteurs(articleDiv) {
-          const quantiteInput = articleDiv.querySelector('.article-quantite');
-          const prixInput = articleDiv.querySelector('.article-prix');
-          const supprimerBtn = articleDiv.querySelector('.supprimer-article');
-
-          quantiteInput.addEventListener('input', calculerTotal);
-          prixInput.addEventListener('input', calculerTotal);
-          supprimerBtn.addEventListener('click', function() {
-              articleDiv.remove();
-              calculerTotal();
-          });
-      }
-
-      // Fonction pour calculer les totaux
-      function calculerTotal() {
-          let sousTotal = 0;
-          const articles = document.querySelectorAll('.article-row');
-
-          articles.forEach(article => {
-              const quantite = parseFloat(article.querySelector('.article-quantite').value) || 0;
-              const prix = parseFloat(article.querySelector('.article-prix').value) || 0;
-              const totalArticle = quantite * prix;
-              
-              article.querySelector('.article-total').value = totalArticle.toFixed(2) + ' €';
-              sousTotal += totalArticle;
-          });
-
-          const tva = sousTotal * 0.20;
-          const total = sousTotal + tva;
-
-          document.getElementById('sous-total').textContent = sousTotal.toFixed(2) + ' €';
-          document.getElementById('tva').textContent = tva.toFixed(2) + ' €';
-          document.getElementById('total').textContent = total.toFixed(2) + ' €';
-      }
-
-      // Ajouter un article par défaut au chargement
-      // creerArticle();
-
-      // Écouteur pour le bouton d'ajout d'article
-      ajouterArticleBtn.addEventListener('click', creerArticle);
-
-      // Écouteur pour le formulaire
-      document.getElementById('factureForm').addEventListener('submit', function(e) {
-          e.preventDefault();
-          // Ici, vous pouvez ajouter la logique pour envoyer les données au serveur
-          console.log('Formulaire soumis');
-      });
-
-
-      document.getElementById('service_searche').addEventListener('input', function(e) {
-        const valeur = e.target.value;
-        if (valeur.length > 3) {
-          setTimeout(() => {
-            console.log(valeur);
-            searchArticles(valeur);
-          }, 300);
-        }
-      });
-
-
-    let servicesList =  data = JSON.parse("{{ services_json | escapejs }}")
-
-    function searchArticles(query) {
-      const articlesContainer = document.getElementById('result-articles-container');
-      const searchQuery = query.trim();
-      if (searchQuery === '') {
-        articlesContainer.innerHTML = '';
-        articlesContainer.style.display = 'none';
-        return;
-      }
-      const filteredArticles = servicesList.filter(article => article.nom_service.toLowerCase().includes(searchQuery.toLowerCase()));
-      let html = '';
-      if (filteredArticles.length > 0) {
-        html = filteredArticles.map(article => `
-          <div class="cursor-pointer" onclick="addArticle(${article.id})">
-            <span>${article.nom_service}</span> - Prix unitaire: <span>${article.prix_unitaire}</span>
-          </div>
-        `).join('');
-      } else {
-        html = '<div>Aucun résultat trouvé</div>';
-      }
-      articlesContainer.innerHTML = html;
-      if (html === '') {
-        articlesContainer.style.display = 'none';
-      } else {
-        articlesContainer.style.display = 'block';
-      }
-      
-    }
-
-    
-
-  });
-
+  
   const articlesContainer = document.getElementById('articles-container');
-  let servicesList =  data = JSON.parse("{{ services_json | escapejs }}")
-  let selectedArticles = [];
-  let serviceCount = 0
+  const ajouterArticleBtn = document.getElementById('ajouterArticle');
+  let articleCount = 0;
 
-  function creerLigneService(description="", prix_unitaire=0.00) {
-    serviceCount++;
-    const articleDiv = document.createElement('div');
-    articleDiv.className = 'grid grid-cols-12 gap-2 article-row';
-    articleDiv.dataset.articleId = serviceCount;
+  // Fonction pour créer un nouvel service
+  function creerArticle(nom_service='', prix_unitaire=0.00) {
+      articleCount++;
+      const articleDiv = document.createElement('div');
+      articleDiv.className = 'grid grid-cols-12 gap-2 article-row';
+      articleDiv.dataset.articleId = articleCount;
 
-    articleDiv.innerHTML = `
-        <div class="col-span-5">
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-description" value="${description}"
-                  type="text" placeholder="Description" data-article-id="${serviceCount}">
-        </div>
-        <div class="col-span-2">
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-quantite" 
-                  type="number" placeholder="Quantité" value="1" min="1" data-article-id="${serviceCount}">
-        </div>
-        <div class="col-span-2">
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-prix" 
-                  type="number" step="0.01" placeholder="Prix" value="${prix_unitaire}" data-article-id="${serviceCount}">
-        </div>
-        <div class="col-span-2">
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 article-total" 
-                  type="text" placeholder="Total" disabled data-article-id="${serviceCount}">
-        </div>
-        <div class="col-span-1 items-center">
-            <button type="button" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full supprimer-article" data-article-id="${serviceCount}">
-                <svg class="w-10 h-10 p-2 bg-red rounded-full" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/></svg>
-            </button>
-        </div>
-    `;
+      articleDiv.innerHTML = `
+          <div class="col-span-5">
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-description" value="${nom_service}" name="description-${articleCount}"
+                    type="text" placeholder="Description" data-article-id="${articleCount}">
+          </div>
+          <div class="col-span-2">
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-quantite" name="quantite-${articleCount}"
+                    type="number" placeholder="Quantité" value="1" min="1" data-article-id="${articleCount}">
+          </div>          
+          <div class="flex col-span-2 h-10">
+            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+              Ar
+            </span>
+            <input type="number" step="0.01" placeholder="Prix" name="prix-${articleCount}" value="${prix_unitaire}" data-article-id="${articleCount}" class="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 article-prix" >
+          </div>
+          <div class="col-span-2">
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 article-total" 
+                    type="text" placeholder="Total" disabled data-article-id="${articleCount}">
+          </div>
+          <div class="col-span-1 items-center">
+              <button type="button" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full supprimer-article" data-article-id="${articleCount}">
+                  <svg class="w-10 h-10 p-2 bg-red rounded-full" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/></svg>
+              </button>
+          </div>
+      `;
 
-    articlesContainer.appendChild(articleDiv);
-    //attacherEcouteurs(articleDiv);
+      articlesContainer.appendChild(articleDiv);
+      calculerTotal();
+      attacherEcouteurs(articleDiv);
   }
 
+  // Fonction pour attacher les écouteurs d'événements
+  function attacherEcouteurs(articleDiv) {
+      const quantiteInput = articleDiv.querySelector('.article-quantite');
+      const prixInput = articleDiv.querySelector('.article-prix');
+      const supprimerBtn = articleDiv.querySelector('.supprimer-article');
+
+      quantiteInput.addEventListener('input', calculerTotal);
+      prixInput.addEventListener('input', calculerTotal);
+      supprimerBtn.addEventListener('click', function() {
+          articleDiv.remove();
+          calculerTotal();
+      });
+  }
+
+  // Fonction pour calculer les totaux
+  function calculerTotal() {
+      let sousTotal = 0;
+      const articles = document.querySelectorAll('.article-row');
+
+      articles.forEach(article => {
+          const quantite = parseFloat(article.querySelector('.article-quantite').value) || 0;
+          const prix = parseFloat(article.querySelector('.article-prix').value) || 0;
+          const totalArticle = quantite * prix;
+          
+          article.querySelector('.article-total').value = totalArticle.toFixed(2) + ' Ar';
+          sousTotal += totalArticle;
+      });
+
+      const tva = sousTotal * 0.20;
+      const total = sousTotal + tva;
+
+      document.getElementById('sous-total').textContent = sousTotal.toFixed(2) + ' Ar';
+      document.getElementById('tva').textContent = tva.toFixed(2) + ' Ar';
+      document.getElementById('total').textContent = total.toFixed(2) + ' Ar';
+      document.getElementById('total_input').value = total.toFixed(2);
+  }
+
+  // Ajouter un article par défaut au chargement
+  // creerArticle();
+
+  // Écouteur pour le bouton d'ajout d'article
+  ajouterArticleBtn.addEventListener('click', () => creerArticle());
+
+  // Écouteur pour le formulaire
+  //document.getElementById('factureForm').addEventListener('submit', function(e) {
+  //    e.preventDefault();
+      // Ici, vous pouvez ajouter la logique pour envoyer les données au serveur
+  //    console.log('Formulaire soumis');
+  //});
+   
+
+
+  let servicesList =  data = JSON.parse("{{ services_json | escapejs }}")
+  function searchArticles(query) {
+    const articlesContainer = document.getElementById('result-articles-container');
+    const searchQuery = query.trim();
+    if (searchQuery === '') {
+      articlesContainer.innerHTML = '';
+      articlesContainer.style.display = 'none';
+      return;
+    }
+    const filteredArticles = servicesList.filter(article => article.nom_service.toLowerCase().includes(searchQuery.toLowerCase()));
+    let html = '';
+    if (filteredArticles.length > 0) {
+      html = filteredArticles.map(article => `
+        <div class="cursor-pointer" onclick="addArticle(${article.id})">
+          <span>${article.nom_service}</span> - Prix unitaire: <span>${article.prix_unitaire}</span>
+        </div>
+      `).join('');
+    } else {
+      html = '<div>Aucun résultat trouvé</div>';
+    }
+    articlesContainer.innerHTML = html;
+    if (html === '') {
+      articlesContainer.style.display = 'none';
+    } else {
+      articlesContainer.style.display = 'block';
+    }
+    
+  }
+
+
+  let selectedArticles = [];
   function addArticle(id) {
     const resultArticlesContainer = document.getElementById('result-articles-container');
     const article = servicesList.find(service => service.id === id);
@@ -539,26 +544,11 @@
         <button class="ml-2" onclick="removeArticle(${index})">Supprimer</button>
       </div>
     `).join('');
-    // ligneContainer.innerHTML = html;
-    creerLigneService(article.nom_service, article.prix_unitaire);
+    creerArticle(article.nom_service, article.prix_unitaire)
     document.getElementById('service_searche').value = "";
     resultArticlesContainer.style.display = 'none';
   }
 
-  function removeArticle(index) {
-    selectedArticles.splice(index, 1);
-    const ligneContainer = document.getElementById('articles-container');
-    const html = selectedArticles.map((article, index) => `
-      <div>
-        <span>${article.nom_article}</span> - Prix: <span>${article.prix_unitaire} €</span>
-        <button class="ml-2" onclick="removeArticle(${index})">Supprimer</button>
-      </div>
-    `).join('');
-    ligneContainer.innerHTML = html;
-  }
 </script>
 
 {% endblock content %}
-
-
-
