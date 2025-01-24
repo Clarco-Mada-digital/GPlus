@@ -226,7 +226,7 @@
     const entreesParMois = JSON.parse('{{ entrees_par_mois|safe }}');
     const sortiesParMois = JSON.parse('{{ sorties_par_mois|safe }}');
     const soldesParMois = JSON.parse('{{ soldes_par_mois|safe }}');
-    const sortiesCategories = JSON.parse('{{ sorties_categories|safe }}');
+    const sortiesCategories = JSON.parse('{{ sorties_categories|escapejs }}');
     const entrees4Mois = JSON.parse('{{ entrees_4_mois|safe }}');
 
     // Graphique Résumé du mois
