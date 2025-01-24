@@ -18,7 +18,6 @@ def index(request):
   count_prospect = Client.objects.filter(type_client='Prospect').count()
   count_client = Client.objects.filter(type_client='Client').count()
   count_fourniseur = Client.objects.filter(type_client='Fourniseur').count()
-  print([client for client in clients])
   context = {
     "clients_list" : clients,
     "count_prospect": count_prospect,
@@ -26,14 +25,6 @@ def index(request):
     "count_fourniseur": count_fourniseur,
   }
   return render(request, "client_pages/index.html", context)
-
-# @login_required
-# defrelient(request):
-# clients = Client.objects.all()
-# context = {
-#   "clients_list" : clients
-# }
-# return render(request, "client_pages/client.html", context)
 
 
 @require_POST

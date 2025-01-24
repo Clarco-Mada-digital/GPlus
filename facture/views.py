@@ -76,7 +76,7 @@ def index(request):
 def facture(request):
   clients = Client.objects.all()
   services = Service.objects.all()
-  services_list = list(services.values('id', 'nom_service', 'prix_unitaire', 'description'))  
+  services_list = list(services.values('id', 'nom_service', 'prix_unitaire', 'description'))
   for service in services_list:
       service['prix_unitaire'] = float(service['prix_unitaire'])  # Conversion
   context = {
@@ -205,15 +205,17 @@ def modifier_facture(request, pk):
   :param pk: La clé primaire de la facture à modifier
   :return: La page de modification de facture avec le formulaire pré-rempli et un message de succès si applicable
   """
-  facture = get_object_or_404(Facture, pk=pk)
+  facture = get_object_or_404(Facture, pk=pk)  
   if request.method == 'POST':
     form = FactureForm(request.POST, instance=facture)
     if form.is_valid():
       form.save()
       return render(request, "facture_pages/modifier_facture.html", {"message": "Facture modifiée avec succès."})
   else:
+    user = request.user
     context = {
-      'facture': facture
+      'facture': facture,
+      'user': user
     }
     return render(request, 'facture_pages/edit_facture.html', context)
   

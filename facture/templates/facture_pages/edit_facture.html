@@ -1,5 +1,6 @@
 {% load tailwind_tags %}
 {% load static %}
+{% load humanize %}
 <!DOCTYPE html>
 <html lang="fr" class="{% if is_dark_theme %}dark{% endif %}">
 <head>
@@ -13,80 +14,352 @@
 </head>
 <body class="dark:bg-gray-800 dark:text-gray-300">
 <div class="flex h-screen" x-data="facture()">
+  
   <!-- Formulaire de modification de facture -->
-  <div class="w-1/4 bg-gray-700 dark:bg-gray-900 p-4 shadow-md">
+  <div class="w-1/3 bg-gray-700 dark:bg-gray-900 p-4 shadow-md">
     <h2 class="text-lg font-bold mb-4 dark:text-white">Modification de facture</h2>
     <form>
+
       <!-- Section info client -->
       <div class="bg-gray-600 dark:bg-gray-800 p-4 mb-4 rounded">
         <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info client</h3>
         <div class="mb-4">
-          <label for="client_name" class="block text-sm font-medium dark:text-gray-400">Nom du client</label>
-          <input type="text" id="client_name" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="client_name">
+          <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom du client</label>
+          <input type="text" id="client_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="client_name" />
         </div>
         <div class="mb-4">
-          <label for="client_email" class="block text-sm font-medium dark:text-gray-400">Email du client</label>
-          <input type="email" id="client_email" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="client_email">
+          <label for="client_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email du client</label>
+          <input type="email" id="client_email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="client_email">
         </div>
       </div>
       <!-- Section info facture -->
       <div class="bg-gray-600 dark:bg-gray-800 p-4 mb-4 rounded">
         <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info facture</h3>
         <div class="mb-4">
-          <label for="facture_date" class="block text-sm font-medium dark:text-gray-400">Date de la facture</label>
-          <input type="date" id="facture_date" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="facture_date">
+          <label for="facture_intitule" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Intitulé de la facture</label>
+          <input type="text" id="facture_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_intitule">          
         </div>
         <div class="mb-4">
-          <label for="facture_montant" class="block text-sm font-medium dark:text-gray-400">Montant de la facture</label>
-          <input type="number" id="facture_montant" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="facture_montant">
+          <label for="facture_montant" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Montant de la facture</label>
+          <input type="number" id="facture_montant" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_montant">
         </div>
+      <div class="mb-4">
+        <label for="facture_etat" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">État de la facture</label>
+        <select id="facture_etat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_etat">
+          <option value="Impayée">Impayée</option>
+          <option value="Payee">Payée</option>
+          <option value="Brouillon">Brouillon</option>
+          <option value="Annulee">Annulée</option>
+        </select>
       </div>
+      </div>
+
       <!-- Section detail du facture -->
       <div class="bg-gray-600 dark:bg-gray-800 p-4 mb-4 rounded">
         <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Détail du facture</h3>
-        <div class="mb-4">
-          <label for="facture_description" class="block text-sm font-medium dark:text-gray-400">Description de la facture</label>
-          <textarea id="facture_description" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="facture_description"></textarea>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="col-span-2 flex justify-between items-center gap-2">
+            <div class="w-2/3">
+              <input 
+                id="service_searche" 
+                @keydown.enter.prevent="searchArticles($event.target.value)" 
+                @input.debounce.500ms="searchArticles($event.target.value)" 
+                class="shadow appearance-none border rounded w-full py-2 my-0 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                id="search-articles" 
+                type="text" 
+                name="search-articles" 
+                placeholder="Rechercher un article"
+              >
+            </div>
+            <div class="w-1/3">
+              <input type="checkbox" id="calculate_with_tva" class='' value="true">
+              <label for="calculate_with_tva">Calculer avec tva</label>
+            </div>
+          </div>
         </div>
+        <div id="result-articles-container" class="relative hidden bg-gray-200 dark:bg-gray-700 dark:text-gray-200 p-5 my-4 space-y-4 rounded-lg shadow-md">
+          {% comment %} Le résultat affiché ici {% endcomment %}
+        </div>
+        <div id="articles-container" class="relative space-y-4 my-4">
+          {% comment %} Les articles affiche ici {% endcomment %}
+          {% for item, service in facture.services.items %}
+            <div class="grid grid-cols-12 gap-2 article-row" data-article-id="0">
+              <div class="col-span-5">
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-description" value="{{ service.description }}" name="description-${articleCount}"
+                      type="text" placeholder="Description" data-article-id="{{ item }}">
+              </div>
+              <div class="col-span-2">
+                  <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-quantite" name="quantite-{{ item }}"
+                        type="number" placeholder="Quantité" value="{{ service.quantite }}" min="1" data-article-id="{{ item }}">
+              </div>          
+              <div class="flex col-span-4 h-10">
+                <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                  Ar
+                </span>
+                <input type="number" step="0.01" placeholder="Prix" name="prix-{{ item }}" value="{{ service.prix|floatformat }}" data-article-id="{{ item }}" class="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 article-prix" >
+              </div>
+              <div class="col-span-1 items-center">
+                  <button type="button" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full supprimer-article" data-article-id="${articleCount}">
+                      <svg class="w-10 h-10 p-2 bg-red rounded-full" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/></svg>
+                  </button>
+              </div>
+            </div> 
+          {% endfor %}
+        </div>
+        <button type="button" id="ajouterArticle" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">          
+          <svg class="w-3.5 h-3.5 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/>
+          </svg>
+          Ajouter une ligne libre
+        </button>
       </div>
-      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700">Enregistrer</button>
+
+      <div class="flex items-center justify-between" >
+        <button type="button" class="bg-red/50 hover:bg-red/70 text-white font-bold py-2 px-4 rounded dark:bg-red/60 dark:hover:bg-red/70">Annuler</button>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700">Enregistrer</button>
+      </div>
     </form>
   </div>
+
   <!-- Prévisualisation de la facture -->
-  <div class="w-3/4 p-4">
+  <div class="w-2/3 p-4">
     <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la facture</h2>
-    <div class="bg-gray-700 dark:bg-gray-900 p-4 shadow-md rounded">
-      <div class="flex justify-between items-center mb-4">
+    <div class="bg-gray-700 dark:bg-gray-900 p-10 shadow-md rounded">
+      <div class="flex justify-center items-center mb-10">
+        <img src="/static/images/logo mada-digital.png" alt="profil image" class="w-32 h-32 mb-3 rounded-full shadow-lg object-cover">
+      </div>
+      <div class="flex justify-between items-center mb-10">
         <div>
-          <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info client</h3>
-          <p class="text-sm dark:text-gray-400">Nom du client : <span x-text="client_name"></span></p>
-          <p class="text-sm dark:text-gray-400">Email du client : <span x-text="client_email"></span></p>
+          {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info client</h3> {% endcomment %}
+          <p class="text-xl dark:text-gray-400">Nom d'entreprise : <span>MADA-Digital</span></p>
+          <p class="text-xl dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
+          <p class="text-xl dark:text-gray-400">Adresse : <span>12 rue de la boule</span></p>
+          <p class="text-xl dark:text-gray-400">Code postal : <span>75010 - Paris</span></p>
+          <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
+          <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>          
         </div>
         <div>
-          <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info facture</h3>
-          <p class="text-sm dark:text-gray-400">Date de la facture : <span x-text="facture_date"></span></p>
-          <p class="text-sm dark:text-gray-400">Montant de la facture : <span x-text="facture_montant"></span></p>
+          {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info facture</h3> {% endcomment %}
+          <p class="text-xl dark:text-gray-400">Nom d'entreprise : <span x-text="client_comercial_name"></span></p>
+          <p class="text-xl dark:text-gray-400">Nom du client : <span x-text="client_name"></span></p>
+          <p class="text-xl dark:text-gray-400">address du client : <span x-text="client_address"></span></p>
+          <p class="text-xl dark:text-gray-400">Code postal : <span x-text="client_code_postal"></span><span x-text="client_ville"></span></p>
+          <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
+          <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>         
         </div>
       </div>
-      <div class="mb-4">
-        <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Détail du facture</h3>
-        <p class="text-sm dark:text-gray-400">Description de la facture : <span x-text="facture_description"></span></p>
+      <div class="mb-4 mt-10">
+        {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Détail du facture</h3> {% endcomment %}
+        <p class="text-emerald-800 text-2xl dark:text-gray-400">Facture N° : <span x-text="facture_ref"></span></p>
+        <div class="flex items-center justify-around">
+          <p class="text-xl dark:text-gray-400">Date d'emission' : <span x-text="facture_emission_date"></span></p>
+          <p class="text-xl dark:text-gray-400">Règlement : <span x-text="facture_reglement"></span></p>
+        </div>
+        {% comment %} Tableau details de facture {% endcomment %}        
+
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-5">
+          <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+              <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr>
+                      <th scope="col" class="px-6 py-3">
+                          Désignation
+                      </th>
+                      <th scope="col" class="px-6 py-3">
+                          <div class="flex items-center">
+                              Prix unitaire
+                              <a href="#"><svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
+                              </svg>
+                            </a>
+                          </div>
+                      </th>
+                      <th scope="col" class="px-6 py-3">
+                          <div class="flex items-center">
+                              Quantité
+                              <a href="#"><svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
+                            </svg></a>
+                          </div>
+                      </th>
+                      <th scope="col" class="px-6 py-3">
+                          <div class="flex items-center">
+                              Montant HT
+                              <a href="#"><svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
+                            </svg></a>
+                          </div>
+                      </th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                      <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                          Apple MacBook Pro 17"
+                      </th>
+                      <td class="px-6 py-4">
+                          Silver
+                      </td>
+                      <td class="px-6 py-4">
+                          Laptop
+                      </td>
+                      <td class="px-6 py-4">
+                          $2999
+                      </td>
+                  </tr>
+                  <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                      <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                          Microsoft Surface Pro
+                      </th>
+                      <td class="px-6 py-4">
+                          White
+                      </td>
+                      <td class="px-6 py-4">
+                          Laptop PC
+                      </td>
+                      <td class="px-6 py-4">
+                          $1999
+                      </td>
+                  </tr>
+                  <tr class="bg-white dark:bg-gray-800">
+                      <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                          Magic Mouse 2
+                      </th>
+                      <td class="px-6 py-4">
+                          Black
+                      </td>
+                      <td class="px-6 py-4">
+                          Accessories
+                      </td>
+                      <td class="px-6 py-4">
+                          $99
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+          <!-- Total et Taxes -->
+          <div class="mb-8 mt-8">
+            <div class="w-full md:w-1/2 ml-auto">
+              <div class="grid grid-cols-2 gap-4">
+                <div class="text-right font-bold text-gray-700 dark:text-gray-200">Sous-total:</div>
+                <div class="text-right text-gray-700 dark:text-gray-200" id="sous-total">0.00 Ar</div>
+                <label for="calculate_with_tva" class="text-right font-bold text-gray-700 dark:text-gray-200">
+                  <input type="checkbox" id="calculate_with_tva" class='hidden' value="true">
+                  <span id="tva-label" class="">TVA (20%):</span>
+                </label>
+                <div class="text-right text-gray-700 dark:text-gray-200" id="tva">0.00 Ar</div>
+                <div class="text-right font-bold text-lg text-gray-700 dark:text-gray-200">Total:</div>
+                <div class="text-right text-lg text-gray-700 dark:text-gray-200" id="total">0.00 Ar</div>
+                <input class="hidden" type="number" name="montant" id="total_input" value="0.00" >
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+  
 </div>
 
 <script>
   // Alpine.js
   function facture() {
     return {
+      client_comercial_name: '{{ facture.client.commercial_name }}',
+      client_address: '{{ facture.client.adresse }}',
+      client_code_postal: '2343',
+      client_ville: 'Paris',
       client_name: '{{ facture.client.name }}',
       client_email: '{{ facture.client.email }}',
-      facture_date: '{{ facture.date_facture }}',
-      facture_montant: '{{ facture.montant }}',
-      facture_description: '',
+      facture_ref: '{{ facture.ref }}',
+      facture_intitule: '{{ facture.intitule }}',
+      facture_emission_date: '{{ facture.condition }}',
+      facture_reglement: '{{ facture.reglement }}',
+      facture_etat: '{{ facture.etat_facture }}',
+      facture_montant: '{{ facture.montant|floatformat }}',
     }
   }
+
+
+  
+  const articlesContainer = document.getElementById('articles-container');
+  const ajouterArticleBtn = document.getElementById('ajouterArticle');
+  let articleCount = 0;
+
+  // Fonction pour créer un nouvel service
+  function creerArticle(nom_service='', prix_unitaire=0.00) {
+      articleCount++;
+      const articleDiv = document.createElement('div');
+      articleDiv.className = 'grid grid-cols-12 gap-2 article-row';
+      articleDiv.dataset.articleId = articleCount;
+
+      articleDiv.innerHTML = `
+          <div class="col-span-5">
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-description" value="${nom_service}" name="description-${articleCount}"
+                    type="text" placeholder="Description" data-article-id="${articleCount}">
+          </div>
+          <div class="col-span-2">
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-quantite" name="quantite-${articleCount}"
+                    type="number" placeholder="Quantité" value="1" min="1" data-article-id="${articleCount}">
+          </div>          
+          <div class="flex col-span-4 h-10">
+            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+              Ar
+            </span>
+            <input type="number" step="0.01" placeholder="Prix" name="prix-${articleCount}" value="${prix_unitaire}" data-article-id="${articleCount}" class="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 article-prix" >
+          </div>
+          <div class="col-span-1 items-center">
+              <button type="button" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full supprimer-article" data-article-id="${articleCount}">
+                  <svg class="w-10 h-10 p-2 bg-red rounded-full" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/></svg>
+              </button>
+          </div>
+      `;
+
+      articlesContainer.appendChild(articleDiv);
+      calculerTotal();
+      attacherEcouteurs(articleDiv);
+  }
+
+  // Fonction pour attacher les écouteurs d'événements
+  function attacherEcouteurs(articleDiv) {
+      const quantiteInput = articleDiv.querySelector('.article-quantite');
+      const prixInput = articleDiv.querySelector('.article-prix');
+      const supprimerBtn = articleDiv.querySelector('.supprimer-article');
+
+      quantiteInput.addEventListener('input', calculerTotal);
+      prixInput.addEventListener('input', calculerTotal);
+      supprimerBtn.addEventListener('click', function() {
+          articleDiv.remove();
+          calculerTotal();
+      });
+  }
+
+  // Fonction pour calculer les totaux
+  function calculerTotal() {
+      let sousTotal = 0;
+      const articles = document.querySelectorAll('.article-row');
+
+      articles.forEach(article => {
+          const quantite = parseFloat(article.querySelector('.article-quantite').value) || 0;
+          const prix = parseFloat(article.querySelector('.article-prix').value) || 0;
+          const totalArticle = quantite * prix;
+          
+          //article.querySelector('.article-total').value = totalArticle.toFixed(2) + ' Ar';
+          sousTotal += totalArticle;
+      });
+
+      if (document.getElementById('calculate_with_tva').checked) {
+        tva = 0;
+      }else{
+        tva = sousTotal * 0.20;
+      }
+      const total = sousTotal + tva;
+      
+  }
+
+  // Ajouter un article par défaut au chargement
+  // creerArticle();
+
+  // Écouteur pour le bouton d'ajout d'article
+  ajouterArticleBtn.addEventListener('click', () => creerArticle());
 </script>
 </body>
 </html>
