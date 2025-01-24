@@ -51,7 +51,7 @@ class Facture(models.Model):
     updated_at = models.DateTimeField(null=True, default=timezone.now)
 
     def __str__(self):
-        return f"Facture {self.intitule} du {self.etat}"
+        return f"Facture {self.intitule} du {self.etat_facture}"
 
 class Service(models.Model):
     nom_service = models.CharField(max_length=200, verbose_name="Nom de l'article")

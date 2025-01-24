@@ -104,7 +104,7 @@
             </label>
             <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="condition" name="condition" type="date">
           </div>
-          <div>
+          <div x-show="facture_view">
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="reglement_facture">
               Etat du facture
             </label>
@@ -119,7 +119,7 @@
         </div>
       </div>
 
-      <!-- Articles -->        
+      <!-- Services -->        
       <div class="mb-8">
         <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Ligne</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -138,7 +138,7 @@
             </div>            
             <div class="w-1/4">
               <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
-                Ajouter un article
+                Ajouter un service
             </button>
             </div>
           </div>
@@ -162,7 +162,10 @@
           <div class="grid grid-cols-2 gap-4">
             <div class="text-right font-bold text-gray-700 dark:text-gray-200">Sous-total:</div>
             <div class="text-right text-gray-700 dark:text-gray-200" id="sous-total">0.00 Ar</div>
-            <div class="text-right font-bold text-gray-700 dark:text-gray-200">TVA (20%):</div>
+            <label for="calculate_with_tva" class="text-right font-bold text-gray-700 dark:text-gray-200">
+              <input type="checkbox" id="calculate_with_tva" class='hidden' value="true">
+              <span id="tva-label" class="">TVA (20%):</span>
+            </label>
             <div class="text-right text-gray-700 dark:text-gray-200" id="tva">0.00 Ar</div>
             <div class="text-right font-bold text-lg text-gray-700 dark:text-gray-200">Total:</div>
             <div class="text-right text-lg text-gray-700 dark:text-gray-200" id="total">0.00 Ar</div>
@@ -173,9 +176,9 @@
 
       <!-- Boutons d'action -->
       <div class="flex justify-end space-x-4">
-        <button type="button" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700">
+        <a href="{% url 'facture:index' %}" type="button" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700">
           Annuler
-        </button>
+        </a>
         <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700">
           Créer la facture
         </button>
@@ -183,7 +186,7 @@
     </form>
   </div>
 
-  {% comment %} Modal d'ajout d'article {% endcomment %}
+  {% comment %} Modal d'ajout de service {% endcomment %}
   <div id="ajouterArticleModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-[50vw] max-h-full">
       <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white dark:bg-gray-700 bg-clip-padding rounded-md outline-none text-current">
@@ -199,7 +202,7 @@
           </button>
         </div>
         <div class="modal-body relative p-4">
-          <form action="{% url 'facture:new_service' %}" method="POST" class="space-y-4 dark:text-white">
+          <form id="serviceForm" action="{% url 'facture:new_service' %}" method="POST" class="space-y-4 dark:text-white">
             {% csrf_token %}
             <div>
               <label for="nom_article" class="block text-sm font-medium text-gray-700 dark:text-white">Nom de service</label>
@@ -227,184 +230,21 @@
     </div>
   </div>
 
-  <div class="container mx-auto px-4 py-8">
-    <form id="devisForm" class="w-full bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
-      <!-- En-tête du devis -->
-      <div class="mb-8">               
-        <!-- Informations du client -->
-        <div class="mb-8">
-          <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Information du client</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>            
-            <div class="relative mb-6">
-              <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12q-1.65 0-2.825-1.175T8 8t1.175-2.825T12 4t2.825 1.175T16 8t-1.175 2.825T12 12m-8 6v-.8q0-.85.438-1.562T5.6 14.55q1.55-.775 3.15-1.162T12 13t3.25.388t3.15 1.162q.725.375 1.163 1.088T20 17.2v.8q0 .825-.587 1.413T18 20H6q-.825 0-1.412-.587T4 18"/></svg>
-              </div>
-              <select type="text" id="input-group-1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" >
-                <option selected>Client</option>                
-                {% for client in clients_list %}
-                  <option value={{ client.name }} > {{ client.name }} </option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-            <div>
-              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date-client" type="date">
-            </div>            
-          </div>
-        </div>
-
-        <!-- Informations du devis -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Détails du devis</h2>
-          <div class="col-span-2">
-            <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="adresse-client">
-              Intitulé
-            </label>
-            <input type='text' class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="adresse-client" placeholder="Ajouter un titre ici">
-          </div>
-          <div>
-            <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="telephone-client">
-              Règlement
-            </label>
-            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="telephone-client" type="tel" placeholder="Numéro de téléphone">
-              <option selected>A Réception</option>
-              <option value="US">United States</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="date-devis">
-              Condition
-            </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date-devis" type="date">
-          </div>
-        </div>
-      </div>
-
-      <!-- Articles du devis -->
-      <div class="mb-8">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Ligne</h2>
-        <div id="articles-devis-container" class="space-y-4">
-          <!-- Les articles seront ajoutés ici dynamiquement -->
-        </div>
-         <button type="button" id="ajouterArticleDevis" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">          
-          <svg class="w-3.5 h-3.5 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/>
-          </svg>
-          Ajouter une ligne
-        </button>
-      </div>
-
-      <!-- Total et Taxes -->
-      <div class="mb-8">
-        <div class="w-full md:w-1/2 ml-auto">
-          <div class="grid grid-cols-2 gap-4">
-            <div class="text-right font-bold text-gray-700 dark:text-gray-200">Sous-total:</div>
-            <div class="text-right text-gray-700 dark:text-gray-200" id="sous-total-devis">0.00 €</div>
-            <div class="text-right font-bold text-gray-700 dark:text-gray-200">TVA (20%):</div>
-            <div class="text-right text-gray-700 dark:text-gray-200" id="tva-devis">0.00 €</div>
-            <div class="text-right font-bold text-lg text-gray-700 dark:text-gray-200">Total:</div>
-            <div class="text-right text-lg text-gray-700 dark:text-gray-200" id="total-devis">0.00 €</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Boutons d'action -->
-      <div class="flex justify-end space-x-4">
-        <button type="button" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700">
-          Annuler
-        </button>
-        <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700">
-          Créer le devis
-        </button>
-      </div>
-    </form>
-  </div>
 
 </div>
 
 <script defer>
-  document.addEventListener('DOMContentLoaded', function() {
-    const articlesDevisContainer = document.getElementById('articles-devis-container');
-    const ajouterArticleDevisBtn = document.getElementById('ajouterArticleDevis');
-    let articleDevisCount = 0;
-
-    // Fonction pour créer un nouvel article
-    function creerArticleDevis() {
-      articleDevisCount++;
-      const articleDiv = document.createElement('div');
-      articleDiv.className = 'grid grid-cols-12 gap-2 article-devis-row';
-      articleDiv.dataset.articleId = articleDevisCount;
-
-      articleDiv.innerHTML = `
-        <div class="col-span-5">
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-devis-description" 
-                type="text" placeholder="Description" data-article-id="${articleDevisCount}">
-        </div>
-        <div class="col-span-2">
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-devis-quantite" 
-                type="number" placeholder="Quantité" value="1" min="1" data-article-id="${articleDevisCount}">
-        </div>
-        <div class="col-span-2">
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-devis-prix" 
-                type="number" step="0.01" placeholder="Prix" value="0.00" data-article-id="${articleDevisCount}">
-        </div>
-        <div class="col-span-2">
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 article-devis-total" 
-                type="text" placeholder="Total" disabled data-article-id="${articleDevisCount}">
-        </div>
-        <div class="col-span-1">
-          <button type="button" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full supprimer-article-devis" data-article-id="${articleDevisCount}">
-            <svg class="w-10 h-10 p-2 bg-red rounded-full" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/></svg>
-          </button>
-        </div>
-      `;
-
-      articlesDevisContainer.appendChild(articleDiv);
-      attacherEcouteursDevis(articleDiv);
-      calculerTotalDevis();
+  document.getElementById('date').value = new Date().toISOString().slice(0, 10);
+  
+  document.getElementById('calculate_with_tva').addEventListener('change', function() {
+    if (this.checked) {
+      document.getElementById('tva-label').classList.add('line-through');
+      document.getElementById('tva').classList.add('line-through');
+    } else {
+      document.getElementById('tva-label').classList.remove('line-through');
+      document.getElementById('tva').classList.remove('line-through');
     }
-
-    // Fonction pour attacher les écouteurs d'événements
-    function attacherEcouteursDevis(articleDiv) {
-      const quantiteInput = articleDiv.querySelector('.article-devis-quantite');
-      const prixInput = articleDiv.querySelector('.article-devis-prix');
-      const supprimerBtn = articleDiv.querySelector('.supprimer-article-devis');
-
-      quantiteInput.addEventListener('input', calculerTotalDevis);
-      prixInput.addEventListener('input', calculerTotalDevis);
-      supprimerBtn.addEventListener('click', function() {
-        articleDiv.remove();
-        calculerTotalDevis();
-      });
-    }
-
-    // Fonction pour calculer le total
-    function calculerTotalDevis() {
-      let sousTotal = 0;
-      const articles = document.querySelectorAll('.article-devis-row');
-      
-      articles.forEach(article => {
-        const quantite = parseFloat(article.querySelector('.article-devis-quantite').value) || 0;
-        const prix = parseFloat(article.querySelector('.article-devis-prix').value) || 0;
-        const total = quantite * prix;
-        
-        article.querySelector('.article-devis-total').value = total.toFixed(2) + ' €';
-        sousTotal += total;
-      });
-
-      const tva = sousTotal * 0.20;
-      const total = sousTotal + tva;
-
-      document.getElementById('sous-total-devis').textContent = sousTotal.toFixed(2) + ' €';
-      document.getElementById('tva-devis').textContent = tva.toFixed(2) + ' €';
-      document.getElementById('total-devis').textContent = total.toFixed(2) + ' €';
-    }
-
-    // Ajouter un article au chargement initial
-    // creerArticleDevis();
-
-    // Écouteur pour le bouton d'ajout d'article
-    ajouterArticleDevisBtn.addEventListener('click', creerArticleDevis);
+    calculerTotal();
   });
 
   
@@ -478,7 +318,11 @@
           sousTotal += totalArticle;
       });
 
-      const tva = sousTotal * 0.20;
+      if (document.getElementById('calculate_with_tva').checked) {
+        tva = 0;
+      }else{
+        tva = sousTotal * 0.20;
+      }
       const total = sousTotal + tva;
 
       document.getElementById('sous-total').textContent = sousTotal.toFixed(2) + ' Ar';
@@ -548,6 +392,26 @@
     document.getElementById('service_searche').value = "";
     resultArticlesContainer.style.display = 'none';
   }
+
+  document.getElementById('serviceForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var form = this;
+    var formData = new FormData(form);
+    fetch(form.action, {
+      method: form.method,
+      body: formData
+    }).then(response => {
+      if (response.ok) {
+        // Si la requête a réussi, fermez le modal
+        document.getElementById('ajouterArticleModal').classList.add('hidden');
+        // Rechargez la page pour afficher les nouveaux services
+        // window.location.reload();
+      } else {
+        // Si la requête a échoué, affichez une erreur
+        alert('Une erreur s\'est produite lors de l\'enregistrement du service.');
+      }
+    });
+  });
 
 </script>
 

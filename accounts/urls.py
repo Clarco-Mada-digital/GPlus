@@ -13,6 +13,6 @@ urlpatterns = [
     path("", index, name="index"),
     path("login", signup, name="login_user"),
     path("logout", logout_user, name="logout_user"),
-    path("princing", pricing, name="pricing_page"),
+    path("pricing", pricing, name="pricing_page"),
     path("settings", settings, name="settings_page"),
 ]

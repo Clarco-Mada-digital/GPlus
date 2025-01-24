@@ -1,0 +1,92 @@
+{% load tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" class="{% if is_dark_theme %}dark{% endif %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+    <title>Modification de facture</title>
+    {% tailwind_css %}
+    
+</head>
+<body class="dark:bg-gray-800 dark:text-gray-300">
+<div class="flex h-screen" x-data="facture()">
+  <!-- Formulaire de modification de facture -->
+  <div class="w-1/4 bg-gray-700 dark:bg-gray-900 p-4 shadow-md">
+    <h2 class="text-lg font-bold mb-4 dark:text-white">Modification de facture</h2>
+    <form>
+      <!-- Section info client -->
+      <div class="bg-gray-600 dark:bg-gray-800 p-4 mb-4 rounded">
+        <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info client</h3>
+        <div class="mb-4">
+          <label for="client_name" class="block text-sm font-medium dark:text-gray-400">Nom du client</label>
+          <input type="text" id="client_name" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="client_name" :value="{{ facture.client.name }}">
+        </div>
+        <div class="mb-4">
+          <label for="client_email" class="block text-sm font-medium dark:text-gray-400">Email du client</label>
+          <input type="email" id="client_email" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="client_email" :value="{{facture.client.email}}">
+        </div>
+      </div>
+      <!-- Section info facture -->
+      <div class="bg-gray-600 dark:bg-gray-800 p-4 mb-4 rounded">
+        <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info facture</h3>
+        <div class="mb-4">
+          <label for="facture_date" class="block text-sm font-medium dark:text-gray-400">Date de la facture</label>
+          <input type="date" id="facture_date" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="facture_date" :value="{{facture.date_facture|date:'Y-m-d'}}">
+        </div>
+        <div class="mb-4">
+          <label for="facture_montant" class="block text-sm font-medium dark:text-gray-400">Montant de la facture</label>
+          <input type="number" id="facture_montant" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="facture_montant" :value="{{facture.montant}}">
+        </div>
+      </div>
+      <!-- Section detail du facture -->
+      <div class="bg-gray-600 dark:bg-gray-800 p-4 mb-4 rounded">
+        <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Détail du facture</h3>
+        <div class="mb-4">
+          <label for="facture_description" class="block text-sm font-medium dark:text-gray-400">Description de la facture</label>
+          <textarea id="facture_description" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="facture_description" :value="{{facture.description}}"></textarea>
+        </div>
+      </div>
+      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700">Enregistrer</button>
+    </form>
+  </div>
+  <!-- Prévisualisation de la facture -->
+  <div class="w-3/4 p-4">
+    <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la facture</h2>
+    <div class="bg-gray-700 dark:bg-gray-900 p-4 shadow-md rounded">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info client</h3>
+          <p class="text-sm dark:text-gray-400">Nom du client : <span x-text="client_name"></span></p>
+          <p class="text-sm dark:text-gray-400">Email du client : <span x-text="client_email"></span></p>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info facture</h3>
+          <p class="text-sm dark:text-gray-400">Date de la facture : <span x-text="facture_date"></span></p>
+          <p class="text-sm dark:text-gray-400">Montant de la facture : <span x-text="facture_montant"></span></p>
+        </div>
+      </div>
+      <div class="mb-4">
+        <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Détail du facture</h3>
+        <p class="text-sm dark:text-gray-400">Description de la facture : <span x-text="facture_description"></span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Alpine.js
+  function facture() {
+    return {
+      client_name: '',
+      client_email: '',
+      facture_date: '',
+      facture_montant: '',
+      facture_description: '',
+    }
+  }
+</script>
+</body>
+</html>
