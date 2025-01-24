@@ -22,11 +22,11 @@
         <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info client</h3>
         <div class="mb-4">
           <label for="client_name" class="block text-sm font-medium dark:text-gray-400">Nom du client</label>
-          <input type="text" id="client_name" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="client_name" :value="{{ facture.client.name }}">
+          <input type="text" id="client_name" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="client_name">
         </div>
         <div class="mb-4">
           <label for="client_email" class="block text-sm font-medium dark:text-gray-400">Email du client</label>
-          <input type="email" id="client_email" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="client_email" :value="{{facture.client.email}}">
+          <input type="email" id="client_email" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="client_email">
         </div>
       </div>
       <!-- Section info facture -->
@@ -34,11 +34,11 @@
         <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info facture</h3>
         <div class="mb-4">
           <label for="facture_date" class="block text-sm font-medium dark:text-gray-400">Date de la facture</label>
-          <input type="date" id="facture_date" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="facture_date" :value="{{facture.date_facture|date:'Y-m-d'}}">
+          <input type="date" id="facture_date" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="facture_date">
         </div>
         <div class="mb-4">
           <label for="facture_montant" class="block text-sm font-medium dark:text-gray-400">Montant de la facture</label>
-          <input type="number" id="facture_montant" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="facture_montant" :value="{{facture.montant}}">
+          <input type="number" id="facture_montant" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="facture_montant">
         </div>
       </div>
       <!-- Section detail du facture -->
@@ -46,7 +46,7 @@
         <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Détail du facture</h3>
         <div class="mb-4">
           <label for="facture_description" class="block text-sm font-medium dark:text-gray-400">Description de la facture</label>
-          <textarea id="facture_description" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="facture_description" :value="{{facture.description}}"></textarea>
+          <textarea id="facture_description" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" x-model="facture_description"></textarea>
         </div>
       </div>
       <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700">Enregistrer</button>
@@ -80,10 +80,10 @@
   // Alpine.js
   function facture() {
     return {
-      client_name: '',
-      client_email: '',
-      facture_date: '',
-      facture_montant: '',
+      client_name: '{{ facture.client.name }}',
+      client_email: '{{ facture.client.email }}',
+      facture_date: '{{ facture.date_facture }}',
+      facture_montant: '{{ facture.montant }}',
       facture_description: '',
     }
   }

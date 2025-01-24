@@ -1816,6 +1816,10 @@ select {
   display: table;
 }
 
+.table-row {
+  display: table-row;
+}
+
 .flow-root {
   display: flow-root;
 }
