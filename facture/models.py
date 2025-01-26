@@ -46,6 +46,7 @@ class Facture(models.Model):
     # service = models.ManyToManyField('Service', verbose_name="Services", blank=True)
     services = models.JSONField(verbose_name="Services supplémentaires", blank=True, default=None)
     type = models.CharField(max_length=10, choices=TYPES_FACTURE_CHOICES, default="Facture", null=True, blank=True)
+    with_tva = models.BooleanField(default=False, verbose_name="TVA", blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name="Facture créer par ")
     created_at = models.DateTimeField(null=True, default=timezone.now)
     updated_at = models.DateTimeField(null=True, default=timezone.now)

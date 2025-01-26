@@ -163,7 +163,7 @@
             <div class="text-right font-bold text-gray-700 dark:text-gray-200">Sous-total:</div>
             <div class="text-right text-gray-700 dark:text-gray-200" id="sous-total">0.00 Ar</div>
             <label for="calculate_with_tva" class="text-right font-bold text-gray-700 dark:text-gray-200">
-              <input type="checkbox" id="calculate_with_tva" class='hidden' value="true">
+              <input type="checkbox" id="calculate_with_tva" name="with_tva" class='hidden' value="true">
               <span id="tva-label" class="">TVA (20%):</span>
             </label>
             <div class="text-right text-gray-700 dark:text-gray-200" id="tva">0.00 Ar</div>
@@ -374,7 +374,6 @@
     }
     
   }
-
 
   let selectedArticles = [];
   function addArticle(id) {

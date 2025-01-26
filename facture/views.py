@@ -75,7 +75,7 @@ def index(request):
 @login_required
 def facture(request):
   clients = Client.objects.all()
-  services = Service.objects.all()
+  services = Service.objects.all()  
   services_list = list(services.values('id', 'nom_service', 'prix_unitaire', 'description'))
   for service in services_list:
       service['prix_unitaire'] = float(service['prix_unitaire'])  # Conversion
@@ -98,9 +98,7 @@ def ajouter_facture(request):
   :return: La page de création de facture avec le formulaire et un message de succès ou d'erreur si applicable
   """
   if request.method == 'POST':
-    form = FactureForm(request.POST)   
-    
-    
+    form = FactureForm(request.POST) 
     
     services_data = {}
     for key, value in request.POST.items():
@@ -122,11 +120,18 @@ def ajouter_facture(request):
         facture.services = services_data
         facture.created_by = request.user
         # facture.type = "Facture"
-        dernier_id = Facture.objects.latest('id').id
-        if facture.etat_facture == 'Brouillon':
-            facture.ref = '(FPROV' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6) +')'
+        if Facture.objects.exists():
+            dernier_id = Facture.objects.latest('id').id
         else:
+            dernier_id = 0
+        if facture.etat_facture == 'Brouillon' and facture.type == 'Facture':
+            facture.ref = '(FPROV' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6) +')'
+        elif facture.etat_facture == 'Brouillon' and facture.type == 'Devis':
+            facture.ref = '(DPROV' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6) +')'
+        elif facture.type == 'Facture':
             facture.ref = 'F' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6)
+        else:
+            facture.ref = 'D' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6)
         facture.save()
         messages.success(request, "Facture ajoutée avec succès.")
         return redirect('facture:facture')
@@ -208,18 +213,53 @@ def modifier_facture(request, pk):
   facture = get_object_or_404(Facture, pk=pk)  
   if request.method == 'POST':
     form = FactureForm(request.POST, instance=facture)
+    services_data = {}
+    for key, value in request.POST.items():
+      if key.startswith('description-'):
+        service_id = key.split('description-')[1]
+        services_data[service_id] = {'description': value, 'quantite': 0, 'prix': 0.0}
+      elif key.startswith('quantite-'):
+        service_id = key.split('quantite-')[1]
+        if service_id in services_data:
+          services_data[service_id]['quantite'] = int(value)
+      elif key.startswith('prix-'):
+        service_id = key.split('prix-')[1]
+        if service_id in services_data:
+          services_data[service_id]['prix'] = float(value)
     if form.is_valid():
-      form.save()
-      return render(request, "facture_pages/modifier_facture.html", {"message": "Facture modifiée avec succès."})
-  else:
+      try:
+        facture = form.save(commit=False)
+        facture.services = services_data
+        # facture.type = "Facture"
+        if Facture.objects.exists():
+            dernier_id = Facture.objects.latest('id').id
+        else:
+            dernier_id = 0
+        if facture.ref.startswith('DPROV') or facture.ref.startswith('FPROV'):
+            if facture.etat_facture != 'Brouillon':
+              if facture.type == 'Facture':
+                facture.ref = 'F' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6)
+              else:
+                facture.ref = 'D' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6)
+        facture.save()
+        messages.success(request, "Facture ajoutée avec succès.")
+        return redirect('facture:facture')
+      except Exception as e:
+        print("Erreur lors de l'enregistrement:", str(e))
+        messages.error(request, f"Erreur lors de l'enregistrement: {str(e)}")
+        return redirect('facture:facture')
+  elif request.method == 'GET':
     user = request.user
+    services = Service.objects.all() 
+    services_list = list(services.values('id', 'nom_service', 'prix_unitaire', 'description'))
+    for service in services_list:
+      service['prix_unitaire'] = float(service['prix_unitaire'])  # Conversion
     context = {
       'facture': facture,
-      'user': user
+      'user': user,
+      "services_json" : json.dumps(services_list)
     }
     return render(request, 'facture_pages/edit_facture.html', context)
-  
-  return render(request, "facture_pages/modifier_facture.html", {"form": form})
 
 @login_required
 def supprimer_facture(request, pk):

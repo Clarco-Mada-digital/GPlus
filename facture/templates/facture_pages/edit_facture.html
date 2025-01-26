@@ -13,23 +13,63 @@
     
 </head>
 <body class="dark:bg-gray-800 dark:text-gray-300">
-<div class="flex h-screen" x-data="facture()">
+
+{% comment %} Message {% endcomment %}
+{% if messages %}
+  {% for message in messages %}
+      {% if message.tags == 'success' %}
+          <div id="toast-success" class="fixed top-5 right-5 flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
+              <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+                  <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+                  </svg>
+                  <span class="sr-only">Check icon</span>
+              </div>
+              <div class="ms-3 text-sm font-normal"> {{ message }}</div>
+              <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#toast-success" aria-label="Close">
+                  <span class="sr-only">Close</span>
+                  <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                  </svg>
+              </button>
+          </div>
+      {% else %}
+          <div id="toast-danger" class="fixed top-5 right-5 flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
+              <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red bg-red/70 rounded-lg dark:bg-red/70 dark:text-red-200">
+                  <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
+                  </svg>
+                  <span class="sr-only">Error icon</span>
+              </div>
+              <div class="ms-3 text-sm font-normal"> {{ message }} </div>
+              <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#toast-danger" aria-label="Close">
+                  <span class="sr-only">Close</span>
+                  <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                  </svg>
+              </button>
+          </div>
+      {% endif %}
+  {% endfor %}
+{% endif %}
+
+<div class="flex h-screen" x-data="facture()" x-init="initServicesFature()">
   
   <!-- Formulaire de modification de facture -->
   <div class="w-1/3 bg-gray-700 dark:bg-gray-900 p-4 shadow-md">
     <h2 class="text-lg font-bold mb-4 dark:text-white">Modification de facture</h2>
-    <form>
-
+    <form action="{% url 'facture:modifier_facture' facture.id %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
       <!-- Section info client -->
       <div class="bg-gray-600 dark:bg-gray-800 p-4 mb-4 rounded">
         <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info client</h3>
         <div class="mb-4">
           <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom du client</label>
-          <input type="text" id="client_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="client_name" />
+          <input type="text" id="client_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="client_name" disabled />
         </div>
         <div class="mb-4">
           <label for="client_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email du client</label>
-          <input type="email" id="client_email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="client_email">
+          <input type="email" id="client_email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="client_email" disabled>
         </div>
       </div>
       <!-- Section info facture -->
@@ -37,15 +77,15 @@
         <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info facture</h3>
         <div class="mb-4">
           <label for="facture_intitule" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Intitulé de la facture</label>
-          <input type="text" id="facture_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_intitule">          
+          <input type="text" id="facture_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_intitule" name="intitule">
         </div>
         <div class="mb-4">
-          <label for="facture_montant" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Montant de la facture</label>
-          <input type="number" id="facture_montant" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_montant">
+          <label for="facture_condition" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Condition de la facture</label>
+          <input type="date" id="facture_condition" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_condition" name="condition">
         </div>
       <div class="mb-4">
         <label for="facture_etat" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">État de la facture</label>
-        <select id="facture_etat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_etat">
+        <select id="facture_etat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_etat" name="etat_facture">
           <option value="Impayée">Impayée</option>
           <option value="Payee">Payée</option>
           <option value="Brouillon">Brouillon</option>
@@ -71,9 +111,9 @@
                 placeholder="Rechercher un article"
               >
             </div>
-            <div class="w-1/3">
-              <input type="checkbox" id="calculate_with_tva" class='' value="true">
-              <label for="calculate_with_tva">Calculer avec tva</label>
+            <div class="w-1/3 flex items-center gap-2">
+              <input type="checkbox" id="calculate_with_tva" class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" {% if facture.with_tva %} checked {% endif %} name="with_tva">
+              <label for="calculate_with_tva">Calculer sans tva</label>
             </div>
           </div>
         </div>
@@ -82,7 +122,7 @@
         </div>
         <div id="articles-container" class="relative space-y-4 my-4">
           {% comment %} Les articles affiche ici {% endcomment %}
-          {% for item, service in facture.services.items %}
+          {% comment %} {% for item, service in facture.services.items %}
             <div class="grid grid-cols-12 gap-2 article-row" data-article-id="0">
               <div class="col-span-5">
                 <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-description" value="{{ service.description }}" name="description-${articleCount}"
@@ -98,19 +138,24 @@
                 </span>
                 <input type="number" step="0.01" placeholder="Prix" name="prix-{{ item }}" value="{{ service.prix|floatformat }}" data-article-id="{{ item }}" class="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 article-prix" >
               </div>
-              <div class="col-span-1 items-center">
-                  <button type="button" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full supprimer-article" data-article-id="${articleCount}">
+              <div class="col-span-1 items-center">                  
+                  <button type="button" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full supprimer-article" data-article-id="{{ item }}" onclick="supprimerArticle(event, {{ item }})">
                       <svg class="w-10 h-10 p-2 bg-red rounded-full" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/></svg>
                   </button>
               </div>
             </div> 
-          {% endfor %}
+          {% endfor %} {% endcomment %}
         </div>
-        <button type="button" id="ajouterArticle" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">          
-          <svg class="w-3.5 h-3.5 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/>
-          </svg>
-          Ajouter une ligne libre
-        </button>
+        <div class="flex items-center justify-between">
+          <button type="button" id="ajouterArticle" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">          
+            <svg class="w-3.5 h-3.5 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/>
+            </svg>
+            Ajouter une ligne libre
+          </button>
+          <button type="button" id="appliquerModif" class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" @click="construireFactureServiceJson()">
+            Appliquer les modifications
+          </button>
+        </div>
       </div>
 
       <div class="flex items-center justify-between" >
@@ -121,7 +166,7 @@
   </div>
 
   <!-- Prévisualisation de la facture -->
-  <div class="w-2/3 p-4">
+  <div class="w-2/3 p-4" id="preview-facture">
     <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la facture</h2>
     <div class="bg-gray-700 dark:bg-gray-900 p-10 shadow-md rounded">
       <div class="flex justify-center items-center mb-10">
@@ -138,6 +183,9 @@
           <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>          
         </div>
         <div>
+          {% if facture.client.description_facture %}
+          <textarea id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-xl text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled>{{ facture.client.description_facture }}</textarea>
+          {% else %}
           {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info facture</h3> {% endcomment %}
           <p class="text-xl dark:text-gray-400">Nom d'entreprise : <span x-text="client_comercial_name"></span></p>
           <p class="text-xl dark:text-gray-400">Nom du client : <span x-text="client_name"></span></p>
@@ -145,19 +193,21 @@
           <p class="text-xl dark:text-gray-400">Code postal : <span x-text="client_code_postal"></span><span x-text="client_ville"></span></p>
           <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
           <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>         
+          <p class="text-xl dark:text-gray-400"><span>{{ facture.client.description_facture|safe }}</span></p> 
+          {% endif %}        
         </div>
       </div>
       <div class="mb-4 mt-10">
         {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Détail du facture</h3> {% endcomment %}
         <p class="text-emerald-800 text-2xl dark:text-gray-400">Facture N° : <span x-text="facture_ref"></span></p>
-        <div class="flex items-center justify-around">
+        <div class="flex items-center justify-start">
           <p class="text-xl dark:text-gray-400">Date d'emission' : <span x-text="facture_emission_date"></span></p>
-          <p class="text-xl dark:text-gray-400">Règlement : <span x-text="facture_reglement"></span></p>
+          <p class="text-xl dark:text-gray-400 ml-40">Règlement : <span x-text="facture_reglement"></span></p>
         </div>
-        {% comment %} Tableau details de facture {% endcomment %}        
 
+        {% comment %} Tableau details de facture {% endcomment %}
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-5">
-          <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <table class="w-full border border-gray-200 rounded-md dark:border-gray-700 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
               <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                       <th scope="col" class="px-6 py-3">
@@ -166,74 +216,38 @@
                       <th scope="col" class="px-6 py-3">
                           <div class="flex items-center">
                               Prix unitaire
-                              <a href="#"><svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-                              </svg>
-                            </a>
                           </div>
                       </th>
                       <th scope="col" class="px-6 py-3">
                           <div class="flex items-center">
                               Quantité
-                              <a href="#"><svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-                            </svg></a>
                           </div>
                       </th>
-                      <th scope="col" class="px-6 py-3">
+                      <th scope="col" class="px-6 py-3 text-right">
                           <div class="flex items-center">
                               Montant HT
-                              <a href="#"><svg class="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"/>
-                            </svg></a>
                           </div>
                       </th>
                   </tr>
               </thead>
-              <tbody>
-                  <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                      <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          Apple MacBook Pro 17"
-                      </th>
-                      <td class="px-6 py-4">
-                          Silver
-                      </td>
-                      <td class="px-6 py-4">
-                          Laptop
-                      </td>
-                      <td class="px-6 py-4">
-                          $2999
-                      </td>
-                  </tr>
-                  <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                      <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          Microsoft Surface Pro
-                      </th>
-                      <td class="px-6 py-4">
-                          White
-                      </td>
-                      <td class="px-6 py-4">
-                          Laptop PC
-                      </td>
-                      <td class="px-6 py-4">
-                          $1999
-                      </td>
-                  </tr>
-                  <tr class="bg-white dark:bg-gray-800">
-                      <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          Magic Mouse 2
-                      </th>
-                      <td class="px-6 py-4">
-                          Black
-                      </td>
-                      <td class="px-6 py-4">
-                          Accessories
-                      </td>
-                      <td class="px-6 py-4">
-                          $99
-                      </td>
-                  </tr>
+              <tbody id="facture-services-table-body">
+                {% comment %} Liste des services du facture ici {% endcomment %}
               </tbody>
+              <tfoot class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                    <th scope="row" class="px-6 py-4">
+                    </th>
+                    <th scope="row" class="px-6 py-4">
+                    </th>
+                    <th scope="row" class="px-6 py-4">
+                    </th>
+                    <th scope="row" class="px-6 py-2 text text-2xl font-bold text-gray-700 dark:text-gray-200">
+                        <div class="font-bold" id="total-montant">
+                            {% comment %} {{ facture.montant|floatformat }} Ar {% endcomment %}
+                        </div>
+                    </th>
+                </tr>
+            </tfoot>
           </table>
           <!-- Total et Taxes -->
           <div class="mb-8 mt-8">
@@ -259,6 +273,7 @@
   
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 <script>
   // Alpine.js
   function facture() {
@@ -267,7 +282,7 @@
       client_address: '{{ facture.client.adresse }}',
       client_code_postal: '2343',
       client_ville: 'Paris',
-      client_name: '{{ facture.client.name }}',
+      client_name: '{{ facture.client.name }} - {{ facture.client.commercial_name }}',
       client_email: '{{ facture.client.email }}',
       facture_ref: '{{ facture.ref }}',
       facture_intitule: '{{ facture.intitule }}',
@@ -275,10 +290,61 @@
       facture_reglement: '{{ facture.reglement }}',
       facture_etat: '{{ facture.etat_facture }}',
       facture_montant: '{{ facture.montant|floatformat }}',
+      facture_condition: '{{ facture.condition }}',
+      facture_description: '{{ facture.client.description_factue }}',
     }
   }
 
+  function initServicesFature() {
+    // Boucle sur les services de la facture pour les afficher
+    let facture_services = {{ facture.services|safe }};
+    let facture_services_json = {}
+    if (typeof facture_services === 'object') {
+      for (const key in facture_services) {
+        // Boucle sur les services de la facture pour les afficher
+        creerArticle(facture_services[key]['description'], facture_services[key]['prix']);
+        facture_services_json[key] = {
+          'description': facture_services[key]['description'],
+          'prix': facture_services[key]['prix'],
+          'quantite': facture_services[key]['quantite']
+        };
+      }
+    } else {
+      console.log("La variable facture_services n'est pas un objet.");
+    }     
+    updateTableServices(facture_services_json);
+  }
 
+  function updateTableServices(facture_services_json) {
+    const tableBody = document.getElementById('facture-services-table-body');
+    for (const key in facture_services_json) {
+      tableBody.innerHTML += `
+      <tr>
+        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            ${facture_services_json[key]['description']}
+        </th>
+        <td class="px-6 py-4">
+            ${facture_services_json[key]['prix']}
+        </td>
+        <td class="px-6 py-4">
+            ${facture_services_json[key]['quantite']}
+        </td>
+        <td class="px-6 py-4">
+        </td>
+      </tr>
+      `;
+      
+    }
+  }
+
+  function supprimerArticle(event, articleId) {
+    // Code pour supprimer l'article
+    console.log("Article supprimé : " + articleId);
+    // Récupération de l'élément parent de l'article
+    var articleRow = event.target.parentNode.parentNode.parentNode;
+    // Suppression de l'article
+    articleRow.remove();
+  }
   
   const articlesContainer = document.getElementById('articles-container');
   const ajouterArticleBtn = document.getElementById('ajouterArticle');
@@ -318,6 +384,28 @@
       attacherEcouteurs(articleDiv);
   }
 
+  function construireFactureServiceJson() {
+    let tableBody = document.getElementById('facture-services-table-body');
+    const articles = document.querySelectorAll('.article-row');
+    let factureServiceJson = [];
+
+    articles.forEach(article => {
+      const description = article.querySelector('.article-description').value;
+      const quantite = article.querySelector('.article-quantite').value;
+      const prix = article.querySelector('.article-prix').value;
+      const articleId = article.dataset.articleId;
+
+      factureServiceJson.push({
+        id: articleId,
+        description: description,
+        quantite: quantite,
+        prix: prix
+      });
+    });
+    tableBody.innerHTML = '';
+    updateTableServices(factureServiceJson);
+  }
+
   // Fonction pour attacher les écouteurs d'événements
   function attacherEcouteurs(articleDiv) {
       const quantiteInput = articleDiv.querySelector('.article-quantite');
@@ -331,6 +419,11 @@
           calculerTotal();
       });
   }
+
+  {% comment %} calculer avec tva {% endcomment %}
+  document.getElementById('calculate_with_tva').addEventListener('change', function() {    
+    calculerTotal();
+  });
 
   // Fonction pour calculer les totaux
   function calculerTotal() {
@@ -346,17 +439,70 @@
           sousTotal += totalArticle;
       });
 
-      if (document.getElementById('calculate_with_tva').checked) {
+      if (document.getElementById('calculate_with_tva').checked) {        
+        document.getElementById('tva-label').classList.add('line-through');
+        document.getElementById('tva').classList.add('line-through');        
         tva = 0;
       }else{
+        document.getElementById('tva-label').classList.remove('line-through');
+        document.getElementById('tva').classList.remove('line-through');
         tva = sousTotal * 0.20;
       }
       const total = sousTotal + tva;
+
+      document.getElementById('sous-total').textContent = sousTotal.toFixed(2) + ' Ar';
+      document.getElementById('tva').textContent = tva.toFixed(2) + ' Ar';
+      document.getElementById('total').textContent = total.toFixed(2) + ' Ar';
+      document.getElementById('total-montant').textContent = total.toFixed(2) + ' Ar';
+      document.getElementById('total_input').value = total.toFixed(2);
       
   }
 
-  // Ajouter un article par défaut au chargement
-  // creerArticle();
+  let servicesList =  data = JSON.parse("{{ services_json | escapejs }}")
+  function searchArticles(query) {
+    const articlesContainer = document.getElementById('result-articles-container');
+    const searchQuery = query.trim();
+    if (searchQuery === '') {
+      articlesContainer.innerHTML = '';
+      articlesContainer.style.display = 'none';
+      return;
+    }
+    const filteredArticles = servicesList.filter(article => article.nom_service.toLowerCase().includes(searchQuery.toLowerCase()));
+    let html = '';
+    if (filteredArticles.length > 0) {
+      html = filteredArticles.map(article => `
+        <div class="cursor-pointer" onclick="addArticle(${article.id})">
+          <span>${article.nom_service}</span> - Prix unitaire: <span>${article.prix_unitaire}</span>
+        </div>
+      `).join('');
+    } else {
+      html = '<div>Aucun résultat trouvé</div>';
+    }
+    articlesContainer.innerHTML = html;
+    if (html === '') {
+      articlesContainer.style.display = 'none';
+    } else {
+      articlesContainer.style.display = 'block';
+    }
+    
+  }
+
+  let selectedArticles = [];
+  function addArticle(id) {
+    const resultArticlesContainer = document.getElementById('result-articles-container');
+    const article = servicesList.find(service => service.id === id);
+    selectedArticles.push(article);
+    const ligneContainer = document.getElementById('articles-container');
+    const html = selectedArticles.map((article, index) => `
+      <div>
+        <span>${article.nom_service}</span> - Prix: <span>${article.prix_unitaire} €</span>
+        <button class="ml-2" onclick="removeArticle(${index})">Supprimer</button>
+      </div>
+    `).join('');
+    creerArticle(article.nom_service, article.prix_unitaire)
+    document.getElementById('service_searche').value = "";
+    resultArticlesContainer.style.display = 'none';
+  }
 
   // Écouteur pour le bouton d'ajout d'article
   ajouterArticleBtn.addEventListener('click', () => creerArticle());
