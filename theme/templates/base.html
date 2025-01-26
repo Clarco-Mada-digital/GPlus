@@ -74,6 +74,20 @@
     </div>
   </body>
   <!-- Include Alpine.js -->
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>        
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+  <script>
+  // Fonction pour faire disparaître les messages après 3 secondes
+    setTimeout(function() {
+        var toastSuccess = document.getElementById('toast-success');
+        var toastDanger = document.getElementById('toast-danger');
+        
+        if (toastSuccess) {
+            toastSuccess.style.display = 'none';
+        }
+        if (toastDanger) {
+            toastDanger.style.display = 'none';
+        }
+    }, 5000); // 3000 millisecondes = 3 secondes
+  </script>
 </html>
 

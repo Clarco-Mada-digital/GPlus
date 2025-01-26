@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" defer></script>
     <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
     <title>Modification de facture</title>
     {% tailwind_css %}
@@ -65,11 +66,8 @@
         <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info client</h3>
         <div class="mb-4">
           <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom du client</label>
-          <input type="text" id="client_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="client_name" disabled />
-        </div>
-        <div class="mb-4">
-          <label for="client_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email du client</label>
-          <input type="email" id="client_email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="client_email" disabled>
+          <input type="text" id="client_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="client_name" disabled name="client" />
+          <input type="hidden" name="client" value="{{ facture.client.id }}">
         </div>
       </div>
       <!-- Section info facture -->
@@ -83,16 +81,35 @@
           <label for="facture_condition" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Condition de la facture</label>
           <input type="date" id="facture_condition" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_condition" name="condition">
         </div>
-      <div class="mb-4">
-        <label for="facture_etat" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">État de la facture</label>
-        <select id="facture_etat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_etat" name="etat_facture">
-          <option value="Impayée">Impayée</option>
-          <option value="Payee">Payée</option>
-          <option value="Brouillon">Brouillon</option>
-          <option value="Annulee">Annulée</option>
-        </select>
+        <div class="mb-4">
+          <label for="facture_etat" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">État de la facture</label>
+          <select id="facture_etat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_etat" name="etat_facture">
+            <option value="Impayée">Impayée</option>
+            <option value="Payé">Payée</option>
+            <option value="En cours">En cours</option>
+            <option value="Brouillon">Brouillon</option>
+            <option value="Annulé">Annulée</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="facture_reglement" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Reglement</label>
+          <select id="facture_reglement" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_reglement" name="reglement">
+            <option value="A réception" selected>A Réception</option>
+            <option value="30 jours">30 jours</option>
+            <option value="30 jours fin de mois">30 jours fin de mois</option>
+            <option value="60 jours">60 jours</option>
+            <option value="60 jours fin de mois">60 jours fin de mois</option>
+            <option value="A commande">A commande</option>
+            <option value="A livraison">A livraison</option>
+            <option value="50/50">50/50</option>
+            <option value="10 jours">10 jours</option>
+            <option value="10 jours fin de mois">10 jours fin de mois</option>
+            <option value="14 jours">14 jours</option>
+            <option value="14 jours fin de mois">14 jours fin de mois</option>
+          </select>
+        </div>
       </div>
-      </div>
+      <input id="total_input" type="hidden" name="montant" value="{{ facture.montant|floatformat }}">
 
       <!-- Section detail du facture -->
       <div class="bg-gray-600 dark:bg-gray-800 p-4 mb-4 rounded">
@@ -159,7 +176,7 @@
       </div>
 
       <div class="flex items-center justify-between" >
-        <button type="button" class="bg-red/50 hover:bg-red/70 text-white font-bold py-2 px-4 rounded dark:bg-red/60 dark:hover:bg-red/70">Annuler</button>
+        <a href="{% url 'facture:index' %}" type="button" class="bg-red/50 hover:bg-red/70 text-white font-bold py-2 px-4 rounded dark:bg-red/60 dark:hover:bg-red/70">Annuler</a>
         <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700">Enregistrer</button>
       </div>
     </form>
@@ -201,7 +218,7 @@
         {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Détail du facture</h3> {% endcomment %}
         <p class="text-emerald-800 text-2xl dark:text-gray-400">Facture N° : <span x-text="facture_ref"></span></p>
         <div class="flex items-center justify-start">
-          <p class="text-xl dark:text-gray-400">Date d'emission' : <span x-text="facture_emission_date"></span></p>
+          <p class="text-xl dark:text-gray-400">Date d'emission : <span x-text="facture_emission_date"></span></p>
           <p class="text-xl dark:text-gray-400 ml-40">Règlement : <span x-text="facture_reglement"></span></p>
         </div>
 
@@ -506,6 +523,18 @@
 
   // Écouteur pour le bouton d'ajout d'article
   ajouterArticleBtn.addEventListener('click', () => creerArticle());
+  // Fonction pour faire disparaître les messages après 3 secondes
+  setTimeout(function() {
+    var toastSuccess = document.getElementById('toast-success');
+    var toastDanger = document.getElementById('toast-danger');
+    
+    if (toastSuccess) {
+        toastSuccess.style.display = 'none';
+    }
+    if (toastDanger) {
+        toastDanger.style.display = 'none';
+    }
+  }, 5000); // 3000 millisecondes = 3 secondes
 </script>
 </body>
 </html>

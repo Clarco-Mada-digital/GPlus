@@ -639,18 +639,6 @@
         });
     });
     
-    // Fonction pour faire disparaître les messages après 3 secondes
-    setTimeout(function() {
-        var toastSuccess = document.getElementById('toast-success');
-        var toastDanger = document.getElementById('toast-danger');
-        
-        if (toastSuccess) {
-            toastSuccess.style.display = 'none';
-        }
-        if (toastDanger) {
-            toastDanger.style.display = 'none';
-        }
-    }, 10000); // 3000 millisecondes = 3 secondes
 
     function previewImage(input) {
         const preview = document.getElementById('preview-image');

@@ -210,7 +210,7 @@ def modifier_facture(request, pk):
   :param pk: La clé primaire de la facture à modifier
   :return: La page de modification de facture avec le formulaire pré-rempli et un message de succès si applicable
   """
-  facture = get_object_or_404(Facture, pk=pk)  
+  facture = get_object_or_404(Facture, pk=pk)
   if request.method == 'POST':
     form = FactureForm(request.POST, instance=facture)
     services_data = {}
@@ -228,9 +228,10 @@ def modifier_facture(request, pk):
           services_data[service_id]['prix'] = float(value)
     if form.is_valid():
       try:
-        facture = form.save(commit=False)
+        # facture = form.save(commit=False)
         facture.services = services_data
-        # facture.type = "Facture"
+        facture.type = facture.type
+        facture.updated_at = timezone.now()
         if Facture.objects.exists():
             dernier_id = Facture.objects.latest('id').id
         else:
@@ -243,11 +244,15 @@ def modifier_facture(request, pk):
                 facture.ref = 'D' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6)
         facture.save()
         messages.success(request, "Facture ajoutée avec succès.")
-        return redirect('facture:facture')
+        return redirect(request.META.get('HTTP_REFERER'))
       except Exception as e:
         print("Erreur lors de l'enregistrement:", str(e))
         messages.error(request, f"Erreur lors de l'enregistrement: {str(e)}")
-        return redirect('facture:facture')
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+      print("Erreurs de validation:", form.errors)
+      messages.error(request, "Erreur lors de l'ajout de la facture. Veuillez vérifier les informations entrées.")
+      return redirect(request.META.get('HTTP_REFERER'))
   elif request.method == 'GET':
     user = request.user
     services = Service.objects.all() 
