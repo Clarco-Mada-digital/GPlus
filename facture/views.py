@@ -74,6 +74,9 @@ def index(request):
 
 @login_required
 def facture(request):
+  client_id = request.GET.get('client_id')
+  client = Client.objects.get(id=client_id)
+  
   clients = Client.objects.all()
   services = Service.objects.all()  
   services_list = list(services.values('id', 'nom_service', 'prix_unitaire', 'description'))
@@ -82,7 +85,8 @@ def facture(request):
   context = {
     "clients_list" : clients,
     "services_list" : services,
-    "services_json" : json.dumps(services_list)
+    "services_json" : json.dumps(services_list),
+    "client_selected" : client
   }
   return render(request, "facture_pages/facture.html", context)
 

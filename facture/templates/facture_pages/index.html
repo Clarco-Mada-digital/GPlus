@@ -103,8 +103,7 @@
             <th scope="col" class="px-6 py-3">Action</th>
           </tr>
         </thead>
-        <tbody>
-          
+        <tbody>          
           
           {% for facture in factures %}
           <tr class="bg-white border-b dark:bg-gray-800 even:dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50" data-mois="{{ facture.date_facture.month }}">
@@ -143,7 +142,7 @@
               <button data-modal-target="popup-modal-{{ facture.id }}" data-modal-toggle="popup-modal-{{ facture.id }}" type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
                 <svg class="w-7 h-7 text-red/70 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6q-.425 0-.712-.288T4 5t.288-.712T5 4h4q0-.425.288-.712T10 3h4q.425 0 .713.288T15 4h4q.425 0 .713.288T20 5t-.288.713T19 6v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zm-7 11q.425 0 .713-.288T11 16V9q0-.425-.288-.712T10 8t-.712.288T9 9v7q0 .425.288.713T11 17m4 0q.425 0 .713-.288T15 16V9q0-.425-.288-.712T14 8t-.712.288T13 9v7q0 .425.288.713T14 17M7 6v13z"/></svg>
               </button>
-              <button type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
+              <button data-modal-target="popup-modal-facture" data-modal-toggle="popup-modal-facture" type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
                 <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m19.675 20.375l.7-.7L18.5 17.8V15h-1v3.2zM18 23q-2.075 0-3.537-1.463T13 18t1.463-3.537T18 13t3.538 1.463T23 18t-1.463 3.538T18 23M7 9h10V7H7zm4.675 12H5q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v6.7q-.725-.35-1.463-.525T18 11q-.275 0-.513.012t-.487.063V11H7v2h6.125q-.45.425-.812.925T11.675 15H7v2h4.075q-.05.25-.062.488T11 18q0 .825.15 1.538T11.675 21"/></svg>
               </button>
             </td>
@@ -173,7 +172,8 @@
                     </div>
                 </div>
             </div>
-        </div>
+          </div>
+          
           {% endfor %}     
         </tbody>
       </table>
@@ -203,6 +203,127 @@
               </li>
           </ul>
       </nav>
+    </div>
+  </div>
+  
+  {% comment %} Modal facture view {% endcomment %}
+  <div id="popup-modal-facture" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-9/12 max-h-full mx-auto">
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="popup-modal-facture">
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+                <span class="sr-only">Fermer</span>
+            </button>
+            <div class="p-4 md:p-5">
+              <!-- Prévisualisation de la facture -->
+              <div class="p-4" id="preview-facture">
+                <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la facture</h2>
+                <div class="bg-gray-700 dark:bg-gray-900 p-10 shadow-md rounded">
+                  <div class="flex justify-center items-center mb-10">
+                    <img src="/static/images/logo mada-digital.png" alt="profil image" class="w-32 h-32 mb-3 rounded-full shadow-lg object-cover">
+                  </div>
+                  <div class="flex justify-between items-center mb-10">
+                    <div>
+                      {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info client</h3> {% endcomment %}
+                      <p class="text-xl dark:text-gray-400">Nom d'entreprise : <span>MADA-Digital</span></p>
+                      <p class="text-xl dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
+                      <p class="text-xl dark:text-gray-400">Adresse : <span>12 rue de la boule</span></p>
+                      <p class="text-xl dark:text-gray-400">Code postal : <span>75010 - Paris</span></p>
+                      <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
+                      <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>          
+                    </div>
+                    <div>
+                      {% comment %} {% if facture.client.description_facture %}
+                      <textarea id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-xl text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled>{{ facture.client.description_facture }}</textarea>
+                      {% else %} {% endcomment %}
+                      {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info facture</h3> {% endcomment %}
+                      <p class="text-xl dark:text-gray-400">Nom d'entreprise : <span x-text="client_comercial_name"></span></p>
+                      <p class="text-xl dark:text-gray-400">Nom du client : <span x-text="client_name"></span></p>
+                      <p class="text-xl dark:text-gray-400">address du client : <span x-text="client_address"></span></p>
+                      <p class="text-xl dark:text-gray-400">Code postal : <span x-text="client_code_postal"></span><span x-text="client_ville"></span></p>
+                      <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
+                      <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>         
+                      <p class="text-xl dark:text-gray-400"><span>{{ facture.client.description_facture|safe }}</span></p> 
+                      {% comment %} {% endif %}         {% endcomment %}
+                    </div>
+                  </div>
+                  <div class="mb-4 mt-10">
+                    {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Détail du facture</h3> {% endcomment %}
+                    <p class="text-emerald-800 text-2xl dark:text-gray-400">Facture N° : <span x-text="facture_ref"></span></p>
+                    <div class="flex items-center justify-start">
+                      <p class="text-xl dark:text-gray-400">Date d'emission : <span x-text="facture_emission_date"></span></p>
+                      <p class="text-xl dark:text-gray-400 ml-40">Règlement : <span x-text="facture_reglement"></span></p>
+                    </div>
+            
+                    {% comment %} Tableau details de facture {% endcomment %}
+                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-5">
+                      <table class="w-full border border-gray-200 rounded-md dark:border-gray-700 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                              <tr>
+                                  <th scope="col" class="px-6 py-3">
+                                      Désignation
+                                  </th>
+                                  <th scope="col" class="px-6 py-3">
+                                      <div class="flex items-center">
+                                          Prix unitaire
+                                      </div>
+                                  </th>
+                                  <th scope="col" class="px-6 py-3">
+                                      <div class="flex items-center">
+                                          Quantité
+                                      </div>
+                                  </th>
+                                  <th scope="col" class="px-6 py-3 text-right">
+                                      <div class="flex items-center">
+                                          Montant HT
+                                      </div>
+                                  </th>
+                              </tr>
+                          </thead>
+                          <tbody id="facture-services-table-body">
+                            {% comment %} Liste des services du facture ici {% endcomment %}
+                          </tbody>
+                          <tfoot class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                                <th scope="row" class="px-6 py-4">
+                                </th>
+                                <th scope="row" class="px-6 py-4">
+                                </th>
+                                <th scope="row" class="px-6 py-4">
+                                </th>
+                                <th scope="row" class="px-6 py-2 text text-2xl font-bold text-gray-700 dark:text-gray-200">
+                                    <div class="font-bold" id="total-montant">
+                                        {% comment %} {{ facture.montant|floatformat }} Ar {% endcomment %}
+                                    </div>
+                                </th>
+                            </tr>
+                        </tfoot>
+                      </table>
+                      <!-- Total et Taxes -->
+                      <div class="mb-8 mt-8">
+                        <div class="w-full md:w-1/2 ml-auto">
+                          <div class="grid grid-cols-2 gap-4">
+                            <div class="text-right font-bold text-gray-700 dark:text-gray-200">Sous-total:</div>
+                            <div class="text-right text-gray-700 dark:text-gray-200" id="sous-total">0.00 Ar</div>
+                            <label for="calculate_with_tva" class="text-right font-bold text-gray-700 dark:text-gray-200">
+                              <input type="checkbox" id="calculate_with_tva" class='hidden' value="true">
+                              <span id="tva-label" class="">TVA (20%):</span>
+                            </label>
+                            <div class="text-right text-gray-700 dark:text-gray-200" id="tva">0.00 Ar</div>
+                            <div class="text-right font-bold text-lg text-gray-700 dark:text-gray-200">Total:</div>
+                            <div class="text-right text-lg text-gray-700 dark:text-gray-200" id="total">0.00 Ar</div>
+                            <input class="hidden" type="number" name="montant" id="total_input" value="0.00" >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
     </div>
   </div>
 
@@ -394,9 +515,23 @@
 
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" defer></script>
 <script>
-  
+  // Alpine.js  
   function factDataComponent(){
     return {
+      client_comercial_name: '{{ facture.client.commercial_name }}',
+      client_address: '{{ facture.client.adresse }}',
+      client_code_postal: '2343',
+      client_ville: 'Paris',
+      client_name: '{{ facture.client.name }} - {{ facture.client.commercial_name }}',
+      client_email: '{{ facture.client.email }}',
+      facture_ref: '{{ facture.ref }}',
+      facture_intitule: '{{ facture.intitule }}',
+      facture_emission_date: '{{ facture.condition }}',
+      facture_reglement: '{{ facture.reglement }}',
+      facture_etat: '{{ facture.etat_facture }}',
+      facture_montant: '{{ facture.montant|floatformat }}',
+      facture_condition: '{{ facture.condition }}',
+      facture_description: '{{ facture.client.description_factue }}',
       facture_view: 'true',
       mois_actuel:'',
       init(){

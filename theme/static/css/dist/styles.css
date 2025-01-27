@@ -2149,6 +2149,22 @@ select {
   width: 100vw;
 }
 
+.w-\[50vw\] {
+  width: 50vw;
+}
+
+.w-\[50\%\] {
+  width: 50%;
+}
+
+.w-\[80vw\] {
+  width: 80vw;
+}
+
+.w-\[80\%\] {
+  width: 80%;
+}
+
 .min-w-0 {
   min-width: 0px;
 }
