@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
@@ -14,37 +15,37 @@ def index(request):
   today = timezone.now()
   years = range(today.year - 5, today.year + 1)
   mois = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
-  
+
   # Récupération du filtre depuis le front
   fact_annee_filtre = request.GET.get('fact_annee', None)
   fact_mois_filtre = request.GET.get('fact_mois', None)
   dev_annee_filtre = request.GET.get('dev_annee', None)
   dev_mois_filtre = request.GET.get('dev_mois', None)
-  
+
   # Filtrage des factures en fonction du filtre sélectionné
   all_facture = Facture.objects.all()
-  
+
   factures = all_facture.filter(type="Facture")
   devis = all_facture.filter(type="Devis")  
-  
-  mois_uniques = set(facture.date_facture.month for facture in factures)
+
+  mois_uniques = {facture.date_facture.month for facture in factures}
   mois_uniques = sorted(mois_uniques, reverse=True)
   mois_filtrable = [{"id": i, "nom": mois[i-1]} for i in mois_uniques]
-  
+
   # Pour devis
-  dev_mois_uniques = set(dev.date_facture.month for dev in devis)
+  dev_mois_uniques = {dev.date_facture.month for dev in devis}
   dev_mois_uniques = sorted(dev_mois_uniques, reverse=True)
   dev_mois_filtrable = [{"id": i, "nom": mois[i-1]} for i in dev_mois_uniques]
-  
-  annee_uniques = set(facture.date_facture.year for facture in factures)
+
+  annee_uniques = {facture.date_facture.year for facture in factures}
   annee_uniques = sorted(annee_uniques, reverse=True)
   annee_filtrable = [{"id": i, "nom": i} for i in annee_uniques]
-  
+
   # Pour devis
-  dev_annee_uniques = set(dev.date_facture.year for dev in devis)
+  dev_annee_uniques = {dev.date_facture.year for dev in devis}
   dev_annee_uniques = sorted(dev_annee_uniques, reverse=True)
   dev_annee_filtrable = [{"id": i, "nom": i} for i in dev_annee_uniques]
-  
+
   # Facture filter
   if fact_annee_filtre:
     factures = factures.filter(date_facture__year=fact_annee_filtre, type="Facture")
@@ -55,7 +56,7 @@ def index(request):
     devis = devis.filter(date_facture__year=dev_annee_filtre, type="Devis")
   if dev_mois_filtre:
     devis = devis.filter(date_facture__month=int(dev_mois_filtre), type="Devis")
-    
+
   context = {
     'years' : years,
     'factures' : factures,
@@ -73,12 +74,54 @@ def index(request):
   return render(request, "facture_pages/index.html", context)
 
 @login_required
+def get_on_facture(request):  # sourcery skip: avoid-builtin-shadow
+  """
+  Récupère une facture spécifique.
+
+  Cette fonction récupère une facture en fonction de son ID.
+
+  :param request: La requête HTTP.
+  :param id: L'ID de la facture à récupérer.
+  :return: Le rendu de la page avec le contexte de la facture.
+  """
+  # Récupérer l'ID de la facture depuis les paramètres GET
+  id = request.GET.get('id')
+
+  # Vérifier si l'ID est fourni et est un entier
+  if id is None or not id.isdigit():
+      return JsonResponse({'error': 'ID de facture invalide.'}, status=400)
+
+  # Récupérer la facture ou renvoyer une erreur 404 si elle n'existe pas
+  facture = get_object_or_404(Facture, pk=id)
+
+  # Retourner les détails de la facture sous forme de JSON
+  return JsonResponse({
+      'id': facture.id,
+      'client_comercial_name': facture.client.commercial_name,
+      'client_address': facture.client.adresse,
+      'client_code_postal': '2343',
+      'client_ville': 'Paris',
+      'client_name': facture.client.name,
+      'client_email': facture.client.email,
+      'client_desc_facture': facture.client.description_facture,
+      'facture_ref': facture.ref,
+      'facture_intitule': facture.intitule,
+      'facture_emission_date': facture.date_facture,
+      'facture_reglement': facture.reglement,
+      'facture_etat': facture.etat_facture,
+      'facture_montant': facture.montant,
+      'facture_condition': facture.condition,
+      'facture_with_tva': facture.with_tva,
+      'facture_services': json.dumps(list(facture.services.values())),
+      # Ajoutez d'autres champs nécessaires ici
+    })
+  
+@login_required
 def facture(request):
   client_id = request.GET.get('client_id')
-  client = Client.objects.get(id=client_id)
-  
+  client = Client.objects.get(id=client_id) if client_id else None
   clients = Client.objects.all()
-  services = Service.objects.all()  
+  services = Service.objects.all()
   services_list = list(services.values('id', 'nom_service', 'prix_unitaire', 'description'))
   for service in services_list:
       service['prix_unitaire'] = float(service['prix_unitaire'])  # Conversion
@@ -101,53 +144,51 @@ def ajouter_facture(request):
   :param request: La requête HTTP
   :return: La page de création de facture avec le formulaire et un message de succès ou d'erreur si applicable
   """
-  if request.method == 'POST':
-    form = FactureForm(request.POST) 
-    
-    services_data = {}
-    for key, value in request.POST.items():
-        if key.startswith('description-'):
-            service_id = key.split('description-')[1]
-            services_data[service_id] = {'description': value, 'quantite': 0, 'prix': 0.0}
-        elif key.startswith('quantite-'):
-            service_id = key.split('quantite-')[1]
-            if service_id in services_data:
-                services_data[service_id]['quantite'] = int(value)
-        elif key.startswith('prix-'):
-            service_id = key.split('prix-')[1]
-            if service_id in services_data:
-                services_data[service_id]['prix'] = float(value)
-    
-    if form.is_valid():
-      try:
-        facture = form.save(commit=False)
-        facture.services = services_data
-        facture.created_by = request.user
-        # facture.type = "Facture"
-        if Facture.objects.exists():
-            dernier_id = Facture.objects.latest('id').id
-        else:
-            dernier_id = 0
-        if facture.etat_facture == 'Brouillon' and facture.type == 'Facture':
-            facture.ref = '(FPROV' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6) +')'
-        elif facture.etat_facture == 'Brouillon' and facture.type == 'Devis':
-            facture.ref = '(DPROV' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6) +')'
-        elif facture.type == 'Facture':
-            facture.ref = 'F' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6)
-        else:
-            facture.ref = 'D' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6)
-        facture.save()
-        messages.success(request, "Facture ajoutée avec succès.")
-        return redirect('facture:facture')
-      except Exception as e:
-        print("Erreur lors de l'enregistrement:", str(e))
-        messages.error(request, f"Erreur lors de l'enregistrement: {str(e)}")
-        return redirect('facture:facture')
-    else:
-      print("Erreurs de validation:", form.errors)
-      messages.error(request, "Erreur lors de l'ajout de la facture. Veuillez vérifier les informations entrées.")
+  if request.method != 'POST':
+    return redirect('facture:facture')
+  form = FactureForm(request.POST) 
+
+  services_data = {}
+  for key, value in request.POST.items():
+      if key.startswith('description-'):
+          service_id = key.split('description-')[1]
+          services_data[service_id] = {'description': value, 'quantite': 0, 'prix': 0.0}
+      elif key.startswith('quantite-'):
+          service_id = key.split('quantite-')[1]
+          if service_id in services_data:
+              services_data[service_id]['quantite'] = int(value)
+      elif key.startswith('prix-'):
+          service_id = key.split('prix-')[1]
+          if service_id in services_data:
+              services_data[service_id]['prix'] = float(value)
+
+  if form.is_valid():
+    try:
+      facture = form.save(commit=False)
+      facture.services = services_data
+      facture.created_by = request.user
+      dernier_id = Facture.objects.latest('id').id if Facture.objects.exists() else 0
+      if facture.etat_facture == 'Brouillon' and facture.type == 'Facture':
+        facture.ref = (f'(FPROV{str(timezone.now().year)}-' +
+                       str(dernier_id + 1).zfill(6) + ')')
+      elif facture.etat_facture == 'Brouillon' and facture.type == 'Devis':
+        facture.ref = (
+            f'(DPROV{str(timezone.now().year)}-{str(dernier_id + 1).zfill(6)})'
+        )
+      elif facture.type == 'Facture':
+        facture.ref = f'F{str(timezone.now().year)}-{str(dernier_id + 1).zfill(6)}'
+      else:
+        facture.ref = f'D{str(timezone.now().year)}-{str(dernier_id + 1).zfill(6)}'
+      facture.save()
+      messages.success(request, "Facture ajoutée avec succès.")
+      return redirect('facture:facture')
+    except Exception as e:
+      print("Erreur lors de l'enregistrement:", e)
+      messages.error(request, f"Erreur lors de l'enregistrement: {str(e)}")
       return redirect('facture:facture')
   else:
+    print("Erreurs de validation:", form.errors)
+    messages.error(request, "Erreur lors de l'ajout de la facture. Veuillez vérifier les informations entrées.")
     return redirect('facture:facture')
 
 @login_required
@@ -161,46 +202,42 @@ def ajouter_Devis(request):
   :param request: La requête HTTP
   :return: La page de création de facture avec le formulaire et un message de succès ou d'erreur si applicable
   """
-  if request.method == 'POST':
-    form = FactureForm(request.POST)   
-    
-    
-    
-    services_data = {}
-    for key, value in request.POST.items():
-        if key.startswith('description-'):
-            service_id = key.split('description-')[1]
-            services_data[service_id] = {'description': value, 'quantite': 0, 'prix': 0.0}
-        elif key.startswith('quantite-'):
-            service_id = key.split('quantite-')[1]
-            if service_id in services_data:
-                services_data[service_id]['quantite'] = int(value)
-        elif key.startswith('prix-'):
-            service_id = key.split('prix-')[1]
-            if service_id in services_data:
-                services_data[service_id]['prix'] = float(value)
-    
-    if form.is_valid():
-      try:
-        facture = form.save(commit=False)
-        facture.services = services_data
-        facture.type = "Devis"
-        if facture.etat_facture == 'Brouillon':
-            facture.ref = '(FPROV' + str(timezone.now().year) + '-' + str(uuid.uuid4().int)[:6].zfill(6) +')'
-        else:
-            facture.ref = 'F' + str(timezone.now().year) + '-' + str(uuid.uuid4().int)[:6].zfill(6)
-        facture.save()
-        messages.success(request, "Facture ajoutée avec succès.")
-        return redirect('facture:facture')
-      except Exception as e:
-        print("Erreur lors de l'enregistrement:", str(e))
-        messages.error(request, f"Erreur lors de l'enregistrement: {str(e)}")
-    else:
-      print("Erreurs de validation:", form.errors)
-      messages.error(request, "Erreur lors de l'ajout de la facture. Veuillez vérifier les informations entrées.")
-      return redirect('facture:facture')
-  else:
+  if request.method != 'POST':
     return redirect('facture:facture')
+  form = FactureForm(request.POST)
+  services_data = {}
+  for key, value in request.POST.items():
+      if key.startswith('description-'):
+          service_id = key.split('description-')[1]
+          services_data[service_id] = {'description': value, 'quantite': 0, 'prix': 0.0}
+      elif key.startswith('quantite-'):
+          service_id = key.split('quantite-')[1]
+          if service_id in services_data:
+              services_data[service_id]['quantite'] = int(value)
+      elif key.startswith('prix-'):
+          service_id = key.split('prix-')[1]
+          if service_id in services_data:
+              services_data[service_id]['prix'] = float(value)
+
+  if form.is_valid():
+    try:
+      facture = form.save(commit=False)
+      facture.services = services_data
+      facture.type = "Devis"
+      facture.ref = (
+          f'(FPROV{str(timezone.now().year)}-{str(uuid.uuid4().int)[:6].zfill(6)})'
+          if facture.etat_facture == 'Brouillon' else
+          f'F{str(timezone.now().year)}-{str(uuid.uuid4().int)[:6].zfill(6)}')
+      facture.save()
+      messages.success(request, "Facture ajoutée avec succès.")
+      return redirect(request.META.get('HTTP_REFERER'))
+    except Exception as e:
+      print("Erreur lors de l'enregistrement:", e)
+      messages.error(request, f"Erreur lors de l'enregistrement: {str(e)}")
+  else:
+    print("Erreurs de validation:", form.errors)
+    messages.error(request, "Erreur lors de l'ajout de la facture. Veuillez vérifier les informations entrées.")
+    return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required
 def modifier_facture(request, pk):
@@ -342,7 +379,6 @@ def modifier_service(request, pk):
       messages.success(request, "Service modifié avec succès.")
       return redirect('facture:service')
   return redirect('facture:service')
-
 
 @login_required
 def supprimer_service(request, pk):

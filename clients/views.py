@@ -30,40 +30,40 @@ def index(request):
 @require_POST
 @csrf_exempt
 def new_client(request):
-    if request.method == 'POST':
-      horaires = {}
-      form = ClientForm(request.POST, request.FILES)
-      for key, value in request.POST.items():
-        if key.startswith('start-time-'):
-          # Extraire l'identifiant du jour à partir de la clé
-          day_id = key.split('start-time-')[1]  # Récupère la partie après 'start-time-'
-          horaires[day_id] = {'start': value}  # Ajoute l'heure de début au dictionnaire
-        elif key.startswith('end-time-'):
-          # Extraire l'identifiant du jour à partir de la clé
-          day_id = key.split('end-time-')[1]  # Récupère la partie après 'end-time-'
-          if day_id in horaires:
-            horaires[day_id]['end'] = value  # Ajoute l'heure de fin au dictionnaire existant
-      print("Form data:", request.POST)  # Affiche les données reçues
-      print("Form errors:", form.errors)  # Affiche les erreurs de validation      
-      
-      if form.is_valid():
-          try:
-              client = form.save(commit=False)
-              client.disponibilite = horaires
-              client.save()
-              messages.success(request, "Client ajouté avec succès.")
-              return redirect('client:client')
-          except Exception as e:
-              print("Erreur lors de l'enregistrement:", str(e))
-              messages.error(request, f"Erreur lors de l'enregistrement: {str(e)}")
-      else:
-          print("Erreurs de validation:", form.errors)
-          error_messages = []
-          for field, errors in form.errors.items():
-              error_messages.append(f"{field}: {', '.join(errors)}")
-          messages.error(request, "Erreurs dans le formulaire: " + " | ".join(error_messages))
-            
-    return redirect('client:client')
+  if request.method == 'POST':
+    horaires = {}
+    form = ClientForm(request.POST, request.FILES)
+    for key, value in request.POST.items():
+      if key.startswith('start-time-'):
+        # Extraire l'identifiant du jour à partir de la clé
+        day_id = key.split('start-time-')[1]  # Récupère la partie après 'start-time-'
+        horaires[day_id] = {'start': value}  # Ajoute l'heure de début au dictionnaire
+      elif key.startswith('end-time-'):
+        # Extraire l'identifiant du jour à partir de la clé
+        day_id = key.split('end-time-')[1]  # Récupère la partie après 'end-time-'
+        if day_id in horaires:
+          horaires[day_id]['end'] = value  # Ajoute l'heure de fin au dictionnaire existant
+    print("Form data:", request.POST)  # Affiche les données reçues
+    print("Form errors:", form.errors)  # Affiche les erreurs de validation      
+
+    if form.is_valid():
+      try:
+        client = form.save(commit=False)
+        client.disponibilite = horaires
+        client.save()
+        messages.success(request, "Client ajouté avec succès.")
+        return redirect('client:client')
+      except Exception as e:
+        print("Erreur lors de l'enregistrement:", e)
+        messages.error(request, f"Erreur lors de l'enregistrement: {str(e)}")
+    else:
+      print("Erreurs de validation:", form.errors)
+      error_messages = []
+      error_messages.extend(f"{field}: {', '.join(errors)}"
+                            for field, errors in form.errors.items())
+      messages.error(request, "Erreurs dans le formulaire: " + " | ".join(error_messages))
+
+  return redirect('client:client')
 
 
 @login_required
@@ -92,18 +92,18 @@ def edit_client(request, pk):
           messages.success(request, f"Le client '{client.name}' a été modifié avec succès.")
           return redirect('client:client')
         except Exception as e:
-          print("Erreur lors de l'enregistrement:", str(e))
+          print("Erreur lors de l'enregistrement:", e)
           messages.error(request, f"Erreur lors de l'enregistrement: {str(e)}")
       else:
         error_messages = []
-        for field, errors in form.errors.items():
-          error_messages.append(f"{field}: {', '.join(errors)}")
+        error_messages.extend(f"{field}: {', '.join(errors)}"
+                              for field, errors in form.errors.items())
         messages.error(request, "Erreurs dans le formulaire: " + " | ".join(error_messages))
     else:
-        form = ClientForm(instance=client)
-        
+      form = ClientForm(instance=client)
+
     return render(request, 'client:client')
-      
+
   except Exception as e:
     messages.error(request, f"Erreur lors de la modification: {str(e)}")
     return redirect('client:client')

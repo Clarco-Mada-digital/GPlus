@@ -4,7 +4,7 @@
 
 <div x-data="factDataComponent()" x-init="init()" x-cloak >
 
-{% comment %} Button toogle devis et facture {% endcomment %}
+  {% comment %} Button toogle devis et facture {% endcomment %}
   <div class="flex w-full items-center justify-center">
     <div class="my-4 inline-flex rounded-md shadow-sm" role="group">
       <button x-on:click="facture_view = true; saveFactView()" type="button" :class="facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-blue-200 rounded-s-lg hover:bg-blue-300 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-blue-800 dark:border-blue-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white'">
@@ -23,7 +23,7 @@
     </div>
   </div>
 
-
+  {% comment %} View facture {% endcomment %}
   <div x-show="facture_view" x-transition.duration.500ms  class="container mx-auto px-4 py-8">
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
       <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
@@ -232,21 +232,20 @@
                       <p class="text-xl dark:text-gray-400">Adresse : <span>12 rue de la boule</span></p>
                       <p class="text-xl dark:text-gray-400">Code postal : <span>75010 - Paris</span></p>
                       <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
-                      <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>          
+                      <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>
                     </div>
                     <div>
-                      {% comment %} {% if facture.client.description_facture %}
-                      <textarea id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-xl text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled>{{ facture.client.description_facture }}</textarea>
-                      {% else %} {% endcomment %}
+                      <textarea x-show="client_desc_facture" id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-xl text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled x-text="client_desc_facture"></textarea>
                       {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info facture</h3> {% endcomment %}
-                      <p class="text-xl dark:text-gray-400">Nom d'entreprise : <span x-text="client_comercial_name"></span></p>
-                      <p class="text-xl dark:text-gray-400">Nom du client : <span x-text="client_name"></span></p>
-                      <p class="text-xl dark:text-gray-400">address du client : <span x-text="client_address"></span></p>
-                      <p class="text-xl dark:text-gray-400">Code postal : <span x-text="client_code_postal"></span><span x-text="client_ville"></span></p>
-                      <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
-                      <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>         
-                      <p class="text-xl dark:text-gray-400"><span>{{ facture.client.description_facture|safe }}</span></p> 
-                      {% comment %} {% endif %}         {% endcomment %}
+                      <div x-show="!client_desc_facture">
+                        <p class="text-xl dark:text-gray-400">Nom d'entreprise : <span x-text="client_comercial_name"></span></p>
+                        <p class="text-xl dark:text-gray-400">Nom du client : <span x-text="client_name"></span></p>
+                        <p class="text-xl dark:text-gray-400">address du client : <span x-text="client_address"></span></p>
+                        <p class="text-xl dark:text-gray-400">Code postal : <span x-text="client_code_postal"></span> - <span x-text="client_ville"></span></p>
+                        <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
+                        <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>         
+                        <p class="text-xl dark:text-gray-400"><span>{{ facture.client.description_facture|safe }}</span></p> 
+                      </div>
                     </div>
                   </div>
                   <div class="mb-4 mt-10">
@@ -283,7 +282,21 @@
                               </tr>
                           </thead>
                           <tbody id="facture-services-table-body">
+                          <template x-for="service in facture_services">
                             {% comment %} Liste des services du facture ici {% endcomment %}
+                            <tr class="article-row">
+                              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white" x-text="service.description">
+                                  
+                              </th>
+                              <td class="px-6 py-4 article-prix" x-text="service.prix">
+                                  
+                              </td>
+                              <td class="px-6 py-4 article-quantite" data-value="service.quantite" x-text="service.quantite">
+                              </td>
+                              <td class="px-6 py-4 article-total" x-text="parseFloat(service.prix) * parseFloat(service.quantite)">
+                              </td>
+                            </tr>
+                          </template>
                           </tbody>
                           <tfoot class="bg-gray-50 dark:bg-gray-700">
                             <tr>
@@ -294,7 +307,7 @@
                                 <th scope="row" class="px-6 py-4">
                                 </th>
                                 <th scope="row" class="px-6 py-2 text text-2xl font-bold text-gray-700 dark:text-gray-200">
-                                    <div class="font-bold" id="total-montant">
+                                    <div class="font-bold" id="total-montant" x-text="facture_sous_total">
                                         {% comment %} {{ facture.montant|floatformat }} Ar {% endcomment %}
                                     </div>
                                 </th>
@@ -306,14 +319,11 @@
                         <div class="w-full md:w-1/2 ml-auto">
                           <div class="grid grid-cols-2 gap-4">
                             <div class="text-right font-bold text-gray-700 dark:text-gray-200">Sous-total:</div>
-                            <div class="text-right text-gray-700 dark:text-gray-200" id="sous-total">0.00 Ar</div>
-                            <label for="calculate_with_tva" class="text-right font-bold text-gray-700 dark:text-gray-200">
-                              <input type="checkbox" id="calculate_with_tva" class='hidden' value="true">
-                              <span id="tva-label" class="">TVA (20%):</span>
-                            </label>
-                            <div class="text-right text-gray-700 dark:text-gray-200" id="tva">0.00 Ar</div>
+                            <div class="text-right text-gray-700 dark:text-gray-200" id="sous-total" x-text="facture_sous_total">0.00 Ar</div>                              
+                            <div :class="!facture_with_tva ? '' : 'line-through'" class="text-right font-bold text-gray-700 dark:text-gray-200" id="tva-label" class="">TVA (20%):</div>
+                            <div :class="!facture_with_tva ? '' : 'line-through'" class="text-right text-gray-700 dark:text-gray-200" id="tva" x-text="facture_tva">0.00 Ar</div>
                             <div class="text-right font-bold text-lg text-gray-700 dark:text-gray-200">Total:</div>
-                            <div class="text-right text-lg text-gray-700 dark:text-gray-200" id="total">0.00 Ar</div>
+                            <div class="text-right text-lg text-gray-700 dark:text-gray-200" id="total" x-text="facture_montant">0.00 Ar</div>
                             <input class="hidden" type="number" name="montant" id="total_input" value="0.00" >
                           </div>
                         </div>
@@ -327,7 +337,7 @@
     </div>
   </div>
 
-
+  {% comment %} View Devis {% endcomment %}
   <div x-show="!facture_view" x-transition.duration.500ms  class="container mx-auto px-4 py-8">
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
       <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
@@ -448,7 +458,7 @@
               <button data-modal-target="popup-modal-{{ dev.id }}" data-modal-toggle="popup-modal-{{ dev.id }}" type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg focus:outline-none">
                 <svg class="w-7 h-7 text-red/70 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6q-.425 0-.712-.288T4 5t.288-.712T5 4h4q0-.425.288-.712T10 3h4q.425 0 .713.288T15 4h4q.425 0 .713.288T20 5t-.288.713T19 6v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zm-7 11q.425 0 .713-.288T11 16V9q0-.425-.288-.712T10 8t-.712.288T9 9v7q0 .425.288.713T11 17m4 0q.425 0 .713-.288T15 16V9q0-.425-.288-.712T14 8t-.712.288T13 9v7q0 .425.288.713T14 17M7 6v13z"/></svg>
               </button>
-              <button type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
+              <button @click="getFactureValue('{{dev.id}}')" data-modal-target="popup-modal-facture" data-modal-toggle="popup-modal-facture" type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
                 <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m19.675 20.375l.7-.7L18.5 17.8V15h-1v3.2zM18 23q-2.075 0-3.537-1.463T13 18t1.463-3.537T18 13t3.538 1.463T23 18t-1.463 3.538T18 23M7 9h10V7H7zm4.675 12H5q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v6.7q-.725-.35-1.463-.525T18 11q-.275 0-.513.012t-.487.063V11H7v2h6.125q-.45.425-.812.925T11.675 15H7v2h4.075q-.05.25-.062.488T11 18q0 .825.15 1.538T11.675 21"/></svg>
               </button>
             </td>
@@ -518,26 +528,88 @@
   // Alpine.js  
   function factDataComponent(){
     return {
-      client_comercial_name: '{{ facture.client.commercial_name }}',
-      client_address: '{{ facture.client.adresse }}',
+      client_comercial_name: '',
+      client_address: '',
       client_code_postal: '2343',
       client_ville: 'Paris',
-      client_name: '{{ facture.client.name }} - {{ facture.client.commercial_name }}',
-      client_email: '{{ facture.client.email }}',
-      facture_ref: '{{ facture.ref }}',
-      facture_intitule: '{{ facture.intitule }}',
-      facture_emission_date: '{{ facture.condition }}',
-      facture_reglement: '{{ facture.reglement }}',
-      facture_etat: '{{ facture.etat_facture }}',
-      facture_montant: '{{ facture.montant|floatformat }}',
-      facture_condition: '{{ facture.condition }}',
-      facture_description: '{{ facture.client.description_factue }}',
+      client_name: '',
+      client_email: '',
+      client_desc_facture: '',
+      facture_ref: '',
+      facture_intitule: '',
+      facture_emission_date: '',
+      facture_reglement: '',
+      facture_etat: '',
+      facture_montant: '',
+      facture_condition: '',
+      facture_description: '',
+      facture_with_tva: '',
+      facture_sous_total: '',
+      facture_services: '',
       facture_view: 'true',
       mois_actuel:'',
+      sousTotal: 0,
+      facture_tva: 0,
       init(){
         // Charger les données depuis localStorage
         this.facture_view = localStorage.getItem('facture_view') === 'true';
       },
+
+      calculerSousTotal(totalTTC, tva=0.20) {
+        const tauxTVA = tva; // 20%
+        const sousTotal = totalTTC / (1 + tauxTVA);
+        return sousTotal;
+      },
+
+      getFactureValue(id) {
+        // Récupérer l'URL de manière sécurisée
+        const url = "{% url 'facture:one_facture' %}";
+
+        fetch(`${url}?id=${id}`, {
+            method: 'GET',
+        })
+        .then(response => {
+          if (response.ok) {
+              // Si la requête a réussi, convertir la réponse en JSON
+              return response.json(); // Retourne une promesse
+          } else {
+              // Si la requête a échoué, affichez une erreur
+              throw new Error('Une erreur s\'est produite lors de l\'enregistrement du service.');
+          }
+        })
+        .then(data => {
+          // Ici, vous pouvez utiliser les données de la facture
+          this.client_comercial_name = data.client_comercial_name;
+          this.client_address = data.client_address;
+          this.client_code_postal = '2343';
+          this.client_ville = 'Paris';
+          this.client_name = data.client_name;
+          this.client_email = data.client_email;
+          this.client_desc_facture = data.client_desc_facture;
+          this.facture_ref = data.facture_ref;
+          this.facture_intitule = data.facture_intitule;
+          this.facture_emission_date = data.facture_emission_date;
+          this.facture_reglement = data.facture_reglement;
+          this.facture_etat = data.facture_etat;
+          this.facture_montant = `${data.facture_montant} Ar`;
+          this.facture_condition = data.facture_condition;  
+          this.facture_with_tva = data.facture_with_tva;
+          let services = data.facture_services;
+          this.facture_services = JSON.parse(services);          
+          tva = this.facture_with_tva ? 0 : 0.20;
+          
+          this.facture_sous_total = `${this.calculerSousTotal(parseFloat(this.facture_montant), tva)} Ar`;
+          this.facture_tva = `${parseFloat(this.facture_sous_total) * tva} Ar`;
+          // Fermez le modal ou effectuez d'autres actions avec les données
+          // window.location.reload(); // Décommentez si vous souhaitez recharger la page
+        })
+        .catch(error => {
+            // Gérer les erreurs de réseau
+            console.error('Erreur lors de la requête:', error);
+            alert('Une erreur de réseau s\'est produite.');
+        });
+      },
+
       saveFactView(){
         //Sauvegarder les données dans localStorage
         localStorage.setItem('facture_view', this.facture_view)
