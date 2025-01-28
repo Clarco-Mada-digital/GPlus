@@ -273,21 +273,22 @@ def modifier_facture(request, pk):
         facture.services = services_data
         facture.type = facture.type
         facture.updated_at = timezone.now()
-        if Facture.objects.exists():
-            dernier_id = Facture.objects.latest('id').id
-        else:
-            dernier_id = 0
-        if facture.ref.startswith('DPROV') or facture.ref.startswith('FPROV'):
-            if facture.etat_facture != 'Brouillon':
-              if facture.type == 'Facture':
-                facture.ref = 'F' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6)
-              else:
-                facture.ref = 'D' + str(timezone.now().year) + '-' + str(dernier_id + 1).zfill(6)
-        facture.save()
-        messages.success(request, "Facture ajoutée avec succès.")
+        numFact = facture.ref.split('-')[-1]
+        if (facture.ref.startswith('DPROV') or facture.ref.startswith('FPROV')) and facture.etat_facture != 'Brouillon':
+          facture.ref = (
+              f'F{str(timezone.now().year)}-{str(numFact).zfill(6)}'
+              if facture.type == 'Facture' else
+              f'D{str(timezone.now().year)}-{str(numFact).zfill(6)}')
+        elif (not facture.ref.startswith('DPROV') or not facture.ref.startswith('FPROV')) and facture.etat_facture == 'Brouillon':
+           facture.ref = (
+              f'FPROV{str(timezone.now().year)}-{str(numFact).zfill(6)}'
+              if facture.type == 'Facture' else
+              f'DPROV{str(timezone.now().year)}-{str(numFact).zfill(6)}')
+        form.save()
+        messages.success(request, "Modification du facture avec succsse")
         return redirect(request.META.get('HTTP_REFERER'))
       except Exception as e:
-        print("Erreur lors de l'enregistrement:", str(e))
+        print("Erreur lors de l'enregistrement:", e)
         messages.error(request, f"Erreur lors de l'enregistrement: {str(e)}")
         return redirect(request.META.get('HTTP_REFERER'))
     else:
