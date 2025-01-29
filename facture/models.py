@@ -40,7 +40,7 @@ class Facture(models.Model):
     condition = models.CharField(max_length=200, blank=True, verbose_name="Condition")
     # etat = models.CharField(max_length=200, verbose_name="Etat")
     montant = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Montant")
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="Client", null=True, blank=True)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="Client", null=True, blank=True, db_constraint=False)
     date_facture = models.DateField(verbose_name="Date du facture", default=timezone.now, blank=True)
     etat_facture = models.CharField(max_length=10, null=False, default='Non payé',choices=ETAT_FACTURE_CHOICES)
     # service = models.ManyToManyField('Service', verbose_name="Services", blank=True)

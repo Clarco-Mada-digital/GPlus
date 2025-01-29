@@ -145,6 +145,9 @@
               <button @click="getFactureValue('{{facture.id}}')" data-modal-target="popup-modal-facture" data-modal-toggle="popup-modal-facture" type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
                 <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m19.675 20.375l.7-.7L18.5 17.8V15h-1v3.2zM18 23q-2.075 0-3.537-1.463T13 18t1.463-3.537T18 13t3.538 1.463T23 18t-1.463 3.538T18 23M7 9h10V7H7zm4.675 12H5q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v6.7q-.725-.35-1.463-.525T18 11q-.275 0-.513.012t-.487.063V11H7v2h6.125q-.45.425-.812.925T11.675 15H7v2h4.075q-.05.25-.062.488T11 18q0 .825.15 1.538T11.675 21"/></svg>
               </button>
+              <a @click="generate_pdf('{{facture.id}}')" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg cursor-pointer">
+                <svg class="w-7 h-7 text-green-500" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M17.617 6.383a7.944 7.944 0 0 1-1.748 12.568a8.028 8.028 0 0 1-11.586-5.043a8.03 8.03 0 0 1 2.095-7.517c.451-.46-.256-1.168-.707-.707a8.946 8.946 0 0 0 9.756 14.586a8.946 8.946 0 0 0 2.9-14.594c-.451-.461-1.158.247-.707.707Z"/><path fill="currentColor" d="m15.355 10.6l-3 3a.5.5 0 0 1-.35.15a.5.5 0 0 1-.36-.15l-3-3a.5.5 0 0 1 .71-.71l2.14 2.14V3.555a.51.51 0 0 1 .5-.5a.5.5 0 0 1 .5.5v8.49l2.15-2.16a.5.5 0 0 1 .71.71Z"/></svg>
+              </a>
             </td>
           </tr>
 
@@ -220,7 +223,7 @@
               <!-- Prévisualisation de la facture -->
               <div class="p-4" id="preview-facture">
                 <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la facture</h2>
-                <div class="bg-gray-700 dark:bg-gray-900 p-10 shadow-md rounded">
+                <div id="facture_content" class="bg-gray-700 dark:bg-gray-900 p-10 m-0 shadow-md rounded">
                   <div class="flex justify-center items-center mb-10">
                     <img src="/static/images/logo mada-digital.png" alt="profil image" class="w-32 h-32 mb-3 rounded-full shadow-lg object-cover">
                   </div>
@@ -460,7 +463,10 @@
               </button>
               <button @click="getFactureValue('{{dev.id}}')" data-modal-target="popup-modal-facture" data-modal-toggle="popup-modal-facture" type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
                 <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m19.675 20.375l.7-.7L18.5 17.8V15h-1v3.2zM18 23q-2.075 0-3.537-1.463T13 18t1.463-3.537T18 13t3.538 1.463T23 18t-1.463 3.538T18 23M7 9h10V7H7zm4.675 12H5q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v6.7q-.725-.35-1.463-.525T18 11q-.275 0-.513.012t-.487.063V11H7v2h6.125q-.45.425-.812.925T11.675 15H7v2h4.075q-.05.25-.062.488T11 18q0 .825.15 1.538T11.675 21"/></svg>
-              </button>
+              </button>              
+              <a href="{% url 'facture:facture_pdf' %}?facture_id={{ dev.id }}" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
+                <svg class="w-7 h-7 text-green-500" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M17.617 6.383a7.944 7.944 0 0 1-1.748 12.568a8.028 8.028 0 0 1-11.586-5.043a8.03 8.03 0 0 1 2.095-7.517c.451-.46-.256-1.168-.707-.707a8.946 8.946 0 0 0 9.756 14.586a8.946 8.946 0 0 0 2.9-14.594c-.451-.461-1.158.247-.707.707Z"/><path fill="currentColor" d="m15.355 10.6l-3 3a.5.5 0 0 1-.35.15a.5.5 0 0 1-.36-.15l-3-3a.5.5 0 0 1 .71-.71l2.14 2.14V3.555a.51.51 0 0 1 .5-.5a.5.5 0 0 1 .5.5v8.49l2.15-2.16a.5.5 0 0 1 .71.71Z"/></svg>
+              </a>
             </td>
           </tr>          
           
@@ -524,6 +530,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
 <script>
   // Alpine.js  
   function factDataComponent(){
@@ -613,6 +620,27 @@
       saveFactView(){
         //Sauvegarder les données dans localStorage
         localStorage.setItem('facture_view', this.facture_view)
+      },
+            
+      // Create un pdf
+      generate_pdf(facture_id){
+        const element = document.getElementById('facture_content');
+        this.getFactureValue(facture_id);
+
+        setTimeout(()=>{
+          const options = {
+            margin: 1,
+            filename: 'my-document.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+          };
+
+
+          // Promise-based usage:
+          html2pdf().set(options).from(element).save();
+        }, 1000);       
+        
       }
     }
   }
@@ -663,5 +691,6 @@
     url.searchParams.set('dev_mois', filtreValue);
     window.location.href = url.href;
   });
+
 </script>
 {% endblock content %}

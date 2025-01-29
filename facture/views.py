@@ -1,11 +1,13 @@
+from io import BytesIO
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from clients.models import Client
 from .models import Service, Facture
 from .forms import FactureForm, ServiceForm
+from xhtml2pdf import pisa
 import json
 import uuid
 
@@ -328,6 +330,21 @@ def supprimer_facture(request, pk):
     print("Erreur lors de la suppression:", str(e))
     messages.error(request, f"Erreur lors de la suppression: {str(e)}")
   return redirect('facture:index')
+
+@login_required
+def generate_pdf(request):
+  # html = render(request, 'facture_pages/index.html')
+  facure_id = request.GET.get('facture_id')
+  html = "<div>Hello word</div>"
+  # Generate PDF using xhtml2pdf
+  result = pisa.CreatePDF(html, dest=BytesIO())
+  if result.err:
+    return HttpResponse(f'Error generating PDF: {result.err}')
+  response = HttpResponse(content_type='application/pdf')
+  response.write(result.dest.getvalue())
+  # return response
+  context = {"facture_generate" : facure_id}
+  return render(request, 'facture_pages/generate_pdf.html', context)
 
 @login_required
 def service(request):

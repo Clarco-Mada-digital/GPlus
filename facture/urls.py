@@ -10,6 +10,7 @@ urlpatterns = [
   path('onfacture/', views.get_on_facture, name="one_facture"),
   path('edit/<int:pk>/', views.modifier_facture, name="modifier_facture"),
   path('del/<int:pk>/', views.supprimer_facture, name="supprimer_facture"),  
+  path('generate_pdf/', views.generate_pdf, name="facture_pdf"),  # Generer un pdf du facture
   path('service/', views.service, name="service"),  # Lien pour la list des service
   path('new/service/', views.ajouter_service, name="new_service"), # Lien pur ajout d'service
   path('new/facture/', views.ajouter_facture, name="new_facture"), # Lien pur ajout de facture
