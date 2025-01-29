@@ -39,8 +39,9 @@ class Client(models.Model):
     """Meta definition for client."""
     verbose_name = 'client'
     verbose_name_plural = 'clients'
+    db_table = 'facture_facture'
 
   def __str__(self):
     """Unicode representation of client."""
-    display_name = self.commercial_name if self.commercial_name else self.name
+    display_name = self.commercial_name or self.name
     return f"{display_name} ({self.get_type_client_display()})"
