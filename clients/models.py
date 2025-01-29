@@ -31,7 +31,7 @@ class Client(models.Model):
   type_client = models.CharField(max_length=20, choices=TYPE_CHOICES, null=False, default='Client')
   disponibilite = models.JSONField(blank=True, default=None)
   description_facture = models.TextField(blank=True)
-  history = HistoricalRecords()
+  # history = HistoricalRecords()
   created_at = models.DateTimeField(default=timezone.now)
   updated_at = models.DateTimeField(default=timezone.now)
 
