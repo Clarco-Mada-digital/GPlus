@@ -33,6 +33,8 @@ from .models import UserActivity
 from functools import wraps
 from babel.dates import format_date
 from django.db.models import F
+from collections import defaultdict
+from django.utils.dateparse import parse_date
 
 User = get_user_model()
 
@@ -275,7 +277,8 @@ def listes(request):
         sortie = sortie.filter(date_de_sortie__month=int(mois))
 
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 10
+    lignes_par_page = str(request.GET.get('lignes', 10)) # Valeur par défaut : 10
+    print(lignes_par_page)
     operations = sorted(
         chain(entree, sortie),
         key=lambda x: (
@@ -547,34 +550,55 @@ def ajouts_entree(request):
     """
     categories_entree = Categorie.objects.filter(type='entree')
     
-    if request.method == 'POST' and 'date' in request.POST:
-        lignes_entrees = []
-        for i in range(len(request.POST.getlist('date'))):
-            date_operation = request.POST.getlist('date')[i]
-            designation = request.POST.getlist('designation')[i]
-            montant = request.POST.getlist('montant')[i]
-            categorie_id = request.POST.getlist('categorie')[i]
-    
-            try:
-                montant = float(montant)
-                categorie = Categorie.objects.get(id=categorie_id)
-    
-                operation_entree = OperationEntrer(
-                    date_transaction=date_operation,
-                    description=designation,
-                    montant=montant,
-                    categorie=categorie
-                )
-                operation_entree.save()
-                # Enregistrement de l'activité
-                UserActivity.objects.create(user=request.user, action='Création', description='a ajouté une opération entrée')
-                lignes_entrees.append(operation_entree)
-            except (ValueError, Categorie.DoesNotExist):
-                return render(request, 'caisse/operations/entre-sortie.html', {'error': 'Données invalides', 'categories_entree': categories_entree})
-        messages.success(request, "Le(s) opération(s) d'entrée a (ont) été ajoutée(s) avec succès.")    
-        return redirect('caisse:liste_entrees')
+    if request.method == 'POST':
+        dates = request.POST.getlist('date')
+        designations = request.POST.getlist('designation')
+        montants = request.POST.getlist('montant')
+        categories_ids = request.POST.getlist('categorie')
+        benefs = request.POST.getlist('benef')
+        clients = request.POST.getlist('client')
 
-    return render(request, 'caisse/operations/entre-sortie.html', {'categories_entree': categories_entree, 'operation': 'entree',})
+        # Vérifier la cohérence des données
+        if not all([dates, designations, montants, categories_ids]):
+            messages.error(request, "Veuillez remplir toutes les lignes du formulaire.")
+            return render(request, 'caisse/operations/entre-sortie.html', {
+                'categories_entree': categories_entree,
+                'operation': 'entree',
+            })
+
+        try:
+            for i in range(len(dates)):
+                # Validation des données individuelles
+                if not dates[i] or not designations[i] or not montants[i] or not categories_ids[i]:
+                    raise ValueError(f"Ligne {i+1} : Des champs obligatoires sont manquants.")
+                
+                montant = float(montants[i])
+                if montant < 0:
+                    raise ValueError(f"Ligne {i+1} : Le montant doit être positif.")
+
+                categorie = Categorie.objects.get(pk=categories_ids[i])
+
+                OperationEntrer.objects.create(
+                    date_transaction=parse_date(dates[i]),
+                    description=designations[i],
+                    montant=montant,
+                    categorie=categorie,
+                    benef=benefs[i] if benefs else "",
+                    client=clients[i] if clients else ""
+                )
+
+            messages.success(request, "Les opérations d'entrée ont été ajoutées avec succès.")
+            return redirect('caisse:liste_entrees')
+
+        except Categorie.DoesNotExist:
+            messages.error(request, "Une catégorie sélectionnée n'existe pas.")
+        except Exception as e:
+            messages.error(request, f"Erreur lors de l'ajout : {e}")
+
+    return render(request, 'caisse/operations/entre-sortie.html', {
+        'categories_entree': categories_entree,
+        'operation': 'entree',
+    })
 
 @login_required
 def ajouts_sortie(request):
@@ -597,7 +621,7 @@ def ajouts_sortie(request):
         for i in range(len(dates)):
             try:
                 # Validation de base des données
-                if not dates[i] or not designations[i] or not beneficiaires_ids[i] or not fournisseurs_ids[i]:
+                if not dates[i] or not designations[i] :
                     raise ValueError("Tous les champs doivent être remplis.")
 
                 date_operation = datetime.strptime(dates[i], '%Y-%m-%d').date()
@@ -611,11 +635,11 @@ def ajouts_sortie(request):
                 OperationSortir.objects.create(
                     date_de_sortie=date_operation,
                     description=designations[i],
-                    beneficiaire_id=int(beneficiaires_ids[i]),
-                    fournisseur_id=int(fournisseurs_ids[i]),
                     quantite=quantite,
                     montant=quantite * prix_unitaire,
-                    categorie_id=int(categories_ids[i])
+                    categorie_id=int(categories_ids[i]),
+                    beneficiaire_id=int(beneficiaires_ids[i]),
+                    fournisseur_id=int(fournisseurs_ids[i])
                 )
 
             except Exception as e:
@@ -1126,7 +1150,8 @@ def liste_entrees(request):
     template = loader.get_template('caisse/listes/entrees.html')
 
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 10
+    lignes_par_page = str(request.GET.get('lignes', 10))  # Valeur par défaut : 10
+    print(lignes_par_page)
     paginator = Paginator(entrees, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -1138,7 +1163,7 @@ def liste_entrees(request):
         'prix': "Ar",
         'sort_by': sort_by,
         'ordre': ordre,
-        'lignes_par_page': request.GET.get('lignes', 10),
+        'lignes_par_page': lignes_par_page,
         'query': query,
         'categorie_id': categorie_id,
         'mois_liste': mois_liste, 
@@ -1223,7 +1248,7 @@ def liste_sorties(request):
     template = loader.get_template('caisse/listes/sorties.html')
 
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 10)  # Valeur par défaut : 10
+    lignes_par_page = str(request.GET.get('lignes', 10))  # Valeur par défaut : 10
     paginator = Paginator(sorties, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

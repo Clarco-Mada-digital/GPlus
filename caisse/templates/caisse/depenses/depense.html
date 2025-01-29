@@ -1,5 +1,6 @@
 {% extends 'layout/layout.html' %}
 {% load static %}
+{%load custom_filters %}
 
 {% block title_page %}Détails des Dépenses{% endblock %}
 
@@ -52,7 +53,7 @@
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Total:</span>
                                     <span class="text-sm text-blue-600 dark:text-blue-400">
-                                        Ar {{ depense.total_depenses|floatformat:0 }}
+                                        Ar {{ depense.total_depenses|floatformat:0|space_separated }}
                                     </span>
                                 </div>
                                 <div class="flex justify-between">
@@ -75,7 +76,7 @@
                                     {{ depense.beneficiaire__personnel__first_name }}
                                 </div>
                                 <div class="px-4 py-3 text-sm text-blue-600 dark:text-blue-400 text-right">
-                                    Ar {{ depense.total_depenses|floatformat:0}}
+                                    Ar {{ depense.total_depenses|floatformat:0|space_separated}}
                                 </div>
                                 <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">
                                     {{ depense.categorie_plus_depensee }}
@@ -132,7 +133,7 @@
                                     <div class="flex justify-between">
                                         <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Total:</span>
                                         <span class="text-sm text-blue-600 dark:text-blue-400">
-                                            Ar {{ depense.total_depenses|floatformat:0 }}
+                                            Ar {{ depense.total_depenses|floatformat:0|space_separated }}
                                         </span>
                                     </div>
                                     <div class="flex justify-between">
@@ -149,7 +150,7 @@
                                         {{ depense.categorie__name }}
                                     </div>
                                     <div class="px-4 py-3 text-sm text-blue-600 dark:text-blue-400 text-right">
-                                        Ar {{ depense.total_depenses|floatformat:0}}
+                                        Ar {{ depense.total_depenses|floatformat:0|space_separated }}
                                     </div>
                                     <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-300 text-right">
                                         {{ depense.nombre_depenses }}
@@ -177,12 +178,12 @@
                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
                     Graphique par catégories
                 </h2>
-                <select id="graphiqueSelect"
+                {% comment %} <select id="graphiqueSelect"
                         class="px-4 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
                         onchange="updateGraphType(this.value)">
                     <option value="mensuel">Mensuel</option>
                     <option value="annuel">Annuel</option>
-                </select>
+                </select> {% endcomment %}
             </div>
             <div style="height: 400px;">
                 <canvas id="categoryChart"></canvas>

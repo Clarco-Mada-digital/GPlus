@@ -34,6 +34,10 @@
         font-style: normal;
         background-color: #F5F7FA;
     }
+    /* Position Z du menu de profil tout en haut à droite de la barre de menu horizontale */
+    .absolute.right-0.mt-2.w-48.bg-white.dark\:bg-gray-900.rounded-md.shadow-lg.py-1{
+        z-index: 2;
+    }
 
     
     h1,
@@ -53,7 +57,7 @@
     }
     </style>
 
-    <body>
+    <body class="dark:text-white">
         <div class="flex h-screen bg-gray-50 dark:bg-[#323D4E]">
             <!-- Sidebar (hidden on small screens) -->
             <aside id="sidebar"
@@ -72,7 +76,7 @@
 
                 </button>
 
-                <a href="{% url 'accounts:index' %}" class="px-6 ">
+                <div class="px-6 ">
                     <svg width="100" height="60"
                         xmlns="http://www.w3.org/20" viewBox="0 0 535 346"
                         fill="none"
@@ -92,11 +96,11 @@
                         </defs>
                     </svg>
 
-                </a>
+                </div>
 
                 <nav class="mt-4">
                     <a href="{% url 'caisse:index' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/' %}text-blue-600 bg-blue-100  rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary  rounded-lg{% endif %}">
+                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/' %}text-blue-600 bg-blue-100  rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary hover:bg-blue-50  rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                             fill="currentColor">

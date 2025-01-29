@@ -163,7 +163,7 @@
                     <canvas id="sortiesCategoriesChart"></canvas>
                 </div>
                 <div class="mt-4 text-end">
-                    <a href="{% url 'caisse:details_sorties' %}"
+                    <a href="{% url 'caisse:details_sorties' %}?year={{ selected_year }}"
                         class="inline-flex items-center text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300">
                         <span>Voir l'historique détaillé des sorties</span>
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -203,7 +203,7 @@
                     </table>
                 </div>
                 <div class="mt-4 text-end">
-                    <a href="{% url 'caisse:details_entrees' %}"
+                    <a href="{% url 'caisse:details_entrees' %}?year={{ selected_year }}"
                         class="inline-flex items-center text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300">
                         <span>Voir l'historique détaillé des entrées</span>
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -226,7 +226,7 @@
     const entreesParMois = JSON.parse('{{ entrees_par_mois|safe }}');
     const sortiesParMois = JSON.parse('{{ sorties_par_mois|safe }}');
     const soldesParMois = JSON.parse('{{ soldes_par_mois|safe }}');
-    const sortiesCategories = JSON.parse('{{ sorties_categories|safe }}');
+    const sortiesCategories = JSON.parse('{{ sorties_categories|escapejs }}');
     const entrees4Mois = JSON.parse('{{ entrees_4_mois|safe }}');
 
     // Graphique Résumé du mois

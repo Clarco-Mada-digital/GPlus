@@ -131,16 +131,17 @@ class Beneficiaire(models.Model):
 # Modèle pour les entrées
 class OperationEntrer(models.Model):
     
-    description = models.CharField(max_length=255)  # Nom de l'opération
+    description = models.CharField(max_length=75, null=False)  # Nom de l'opération
     montant = models.DecimalField(max_digits=10, decimal_places=0, default=0)  # Montant
     date = models.DateField(auto_now_add=True)  # Date de l'ajout dans l'application
     date_transaction = models.DateField(default=timezone.now) # Date de l'opération
-    categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, null=True)  # Clé étrangère vers Categorie
+    categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, null=False, default="")  # Clé étrangère vers Categorie
+    benef = models.CharField(max_length=100, default="", blank=True) #beneficiaire
+    client = models.CharField(max_length=75, default="", blank=True) #client
     history = HistoricalRecords()
-    
 
     def __str__(self):
-        return f"{self.description} - {self.montant}"  
+        return f"{self.description} - {self.montant} - {self.benef} - {self.client}"  
 
 # Modèle pour les soeries
 class OperationSortir(models.Model):
@@ -150,9 +151,9 @@ class OperationSortir(models.Model):
     date = models.DateField(auto_now_add=True)  # Date de l'ajout dans l'application
     date_de_sortie = models.DateField(default=timezone.now) #Date du moment où une sortie de la caisse s'est fait 
     quantite = models.DecimalField(max_digits=10, decimal_places=0, default=1) # Quantité de la chose acheté
-    categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, null=False)  # Clé étrangère vers Categorie
-    beneficiaire = models.ForeignKey(Beneficiaire, on_delete=models.PROTECT, null=False) #clé étrangère vers Personnel
-    fournisseur = models.ForeignKey(Fournisseur, on_delete=models.PROTECT, null=False) #clé étrangère vers Fournisseur
+    categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, default="", null=False)  # Clé étrangère vers Categorie
+    beneficiaire = models.ForeignKey(Beneficiaire, default="", on_delete=models.PROTECT, blank=True) #clé étrangère vers Personnel et Bénéficiaire
+    fournisseur = models.ForeignKey(Fournisseur, on_delete=models.PROTECT, blank=True) #clé étrangère vers Fournisseur
     history = HistoricalRecords() # Stocker l'historique par Django simple history
 
     # Affichage des données stockées 

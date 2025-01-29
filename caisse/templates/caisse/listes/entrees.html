@@ -18,7 +18,7 @@
             <a href="{% url 'caisse:liste_entrees' %}" class="font-bold px-3 py-2 rounded-lg bg-green-200 hover:bg-green-100 text-green-700 font-bold py-2 px-4 rounded">
                 Entrées
             </a>
-            <a href="{% url 'caisse:liste_sorties' %}" class="bg-white dark:bg-secondary text-secondary dark:text-white font-bold py-2 px-6 rounded">
+            <a href="{% url 'caisse:liste_sorties' %}" class="bg-white dark:bg-secondary text-rose-500 font-bold py-2 px-6 rounded">
                 Sorties
             </a>
         </div>
@@ -33,8 +33,10 @@
         <!-- Sélecteur pour le nombre de lignes par page -->
         <form method="get" class="flex items-center space-x-2">
             <label for="lignes">Nombre de lignes :</label>
-            <select name="lignes" class="border-none dark:bg-secondary focus:ring-0" id="lignes" onchange="this.form.submit()">
-                <option value="5" {% if lignes_par_page == '5' %}selected{% endif %}>5</option>
+            <select name="lignes"
+                class="border-none dark:bg-secondary focus:ring-0" id="lignes"
+                onchange="this.form.submit()">
+                <option value="5" {% if lignes_par_page == '5' %}selected{%endif%}>5</option>
                 <option value="10" {% if lignes_par_page == '10' %}selected{% endif %}>10</option>
                 <option value="15" {% if lignes_par_page == '15' %}selected{% endif %}>15</option>
                 <option value="30" {% if lignes_par_page == '30' %}selected{% endif %}>30</option>
@@ -219,6 +221,20 @@
                             {% endif %}
                         </th>
                         <th class="px-4 py-1 text-left">
+                            {% if request.GET.sort == 'beneficiaire' and request.GET.order == 'asc' %}
+                                <a href="?sort=beneficiaire&order=desc&lignes={{ lignes_par_page }}">Bénéficiaire ⬇</a>
+                            {% else %}
+                                <a href="?sort=beneficiaire&order=asc&lignes={{ lignes_par_page }}">Bénéficiaire ⬆</a>
+                            {% endif %}
+                        </th>
+                        <th class="px-4 py-1 text-left">
+                            {% if request.GET.sort == 'client' and request.GET.order == 'asc' %}
+                                <a href="?sort=client&order=desc&lignes={{ lignes_par_page }}">Client ⬇</a>
+                            {% else %}
+                                <a href="?sort=client&order=asc&lignes={{ lignes_par_page }}">Client ⬆</a>
+                            {% endif %}
+                        </th>
+                        <th class="px-4 py-1 text-left">
                             {% if request.GET.sort == 'date' and request.GET.order == 'asc' %}
                                 <a href="?sort=date&order=desc&lignes={{ lignes_par_page }}">Date ⬇</a>
                             {% else %}
@@ -256,6 +272,14 @@
                             {{ operation.description }}
                         </td>
                         <td class="py-1 px-4 ">{{ operation.categorie.name }}</td>
+                        <td class="px-4 py-2">
+                            {% if operation.benef %}
+                                {{ operation.benef }}
+                            {% else %}
+                                Non spécifié
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-2">{{ operation.client }}</td>
                         <td class="py-1 px-4">{{ operation.date_transaction }}</td>
                         <td class="py-1 px-4 text-center">{{ operation.montant|intcomma }} Ar</td>
                         <td class="py-1 px-4 text-right">
