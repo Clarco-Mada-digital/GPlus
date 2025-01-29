@@ -53,6 +53,9 @@ class Facture(models.Model):
 
     def __str__(self):
         return f"Facture {self.intitule} du {self.etat_facture}"
+    
+    class Meta:
+        db_table = 'facture_facture'
 
 class Service(models.Model):
     nom_service = models.CharField(max_length=200, verbose_name="Nom de l'article")

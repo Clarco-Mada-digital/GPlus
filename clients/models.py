@@ -39,7 +39,7 @@ class Client(models.Model):
     """Meta definition for client."""
     verbose_name = 'client'
     verbose_name_plural = 'clients'
-    db_table = 'facture_facture'
+    
 
   def __str__(self):
     """Unicode representation of client."""
