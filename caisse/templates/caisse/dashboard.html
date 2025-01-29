@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <!-- Cartes des totaux -->
-    <form method="get" action="{% url 'caisse:index' %}" class="mb-8">
+    <form method="get" action="{% url 'caisse:index' %}?year={{ selected_year }}" class="mb-8">
         <label for="year"
             class="text-sm text-gray-600 dark:text-white">Sélectionner une année
             :</label>
@@ -23,7 +23,7 @@
         </select>
     </form>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <a href="{% url 'caisse:details_solde' %}" class="block">
+        <a href="{% url 'caisse:details_solde' %}?year={{ selected_year }}" class="block">
             <div
                 class="bg-white dark:bg-secondary rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
                 <div class="flex items-center justify-center space-x-4">
@@ -54,7 +54,7 @@
             </div>
         </a>
 
-        <a href="{% url 'caisse:details_entrees' %}" class="block">
+        <a href="{% url 'caisse:details_entrees' %}?year={{ selected_year }}" class="block">
             <div
                 class="bg-white dark:bg-secondary rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
                 <div class="flex items-center justify-center space-x-4">
@@ -86,7 +86,7 @@
             </div>
         </a>
 
-        <a href="{% url 'caisse:details_sorties' %}" class="block">
+        <a href="{% url 'caisse:details_sorties' %}?year={{ selected_year }}" class="block">
             <div
                 class="bg-white dark:bg-secondary rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
                 <div class="flex items-center justify-center space-x-4">
