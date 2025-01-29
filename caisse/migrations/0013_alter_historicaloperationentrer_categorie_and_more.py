@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='historicaloperationentrer',
             name='categorie',
-            field=models.ForeignKey(blank=True, db_constraint=False, default='', null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='caisse.categorie'),
+            field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='caisse.categorie'),
         ),
         migrations.AlterField(
             model_name='operationentrer',
             name='categorie',
-            field=models.ForeignKey(default='', on_delete=django.db.models.deletion.PROTECT, to='caisse.categorie'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='caisse.categorie'),
         ),
     ]
