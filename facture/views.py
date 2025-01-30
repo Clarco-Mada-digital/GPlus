@@ -365,16 +365,15 @@ def ajouter_service(request):
   :param request: La requête HTTP
   :return: La page de création d'article avec le formulaire et un message de succès ou d'erreur si applicable
   """
-  if request.method == 'POST':
-    form = ServiceForm(request.POST)
-    if form.is_valid():
-      form.save()
-      messages.success(request, "Service ajouté avec succès.")
-      return redirect(request.META.get('HTTP_REFERER'))
-    else:
-      messages.error(request, "Erreur lors de l'ajout de l'article. Veuillez vérifier les informations entrées.")
-  else:
+  if request.method != 'POST':
     return redirect(request.META.get('HTTP_REFERER'))
+  form = ServiceForm(request.POST)
+  if form.is_valid():
+    form.save()
+    messages.success(request, "Service ajouté avec succès.")
+    return redirect(request.META.get('HTTP_REFERER'))
+  else:
+    messages.error(request, "Erreur lors de l'ajout de l'article. Veuillez vérifier les informations entrées.")
 
 @login_required
 def modifier_service(request, pk):
@@ -409,12 +408,12 @@ def supprimer_service(request, pk):
   :param pk: La clé primaire de la facture à supprimer
   :return: La page de confirmation de suppression ou un message de succès si applicable
   """
-  service = get_object_or_404(Service, pk=pk)  
+  service = get_object_or_404(Service, pk=pk)
   try:
     service.delete()
     messages.success(request, "Service supprimée avec succès.")
   except Exception as e:
-    print("Erreur lors de la suppression:", str(e))
+    print("Erreur lors de la suppression:", e)
     messages.error(request, f"Erreur lors de la suppression: {str(e)}")
   return redirect('facture:service')
 
