@@ -1,0 +1,256 @@
+{% load tailwind_tags %}
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>G+</title>
+        {% tailwind_css %}
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:wght@100..900&family=Urbanist:ital,wght@0,554;1,554&display=swap" rel="stylesheet">
+        <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+        <style>
+            [x-cloak] {
+                display: none;
+            }
+        </style>
+    </head>
+
+    <body id="content" x-data="factDataComponent()" x-init="init()" x-cloak>
+      <!-- Prévisualisation de la facture -->
+      <div class="w-full overflow-hidden min-h-screen" id="preview-facture">
+        <div class="bg-gray-700 dark:bg-gray-900 min-h-screen p-10 shadow-md rounded">
+          <div class="flex justify-center items-center mb-10">
+            <img src="/static/images/logo mada-digital.png" alt="profil image" class="w-32 h-32 mb-3 rounded-full shadow-lg object-cover">
+          </div>
+          <div class="flex justify-between items-center mb-10">
+            <div>
+              {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info client</h3> {% endcomment %}
+              <p class="text-xl dark:text-gray-400">Nom d'entreprise : <span>MADA-Digital</span></p>
+              <p class="text-xl dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
+              <p class="text-xl dark:text-gray-400">Adresse : <span>12 rue de la boule</span></p>
+              <p class="text-xl dark:text-gray-400">Code postal : <span>75010 - Paris</span></p>
+              <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
+              <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>
+            </div>
+            <div>
+              <textarea x-show="client_desc_facture" id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-xl text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled x-text="client_desc_facture"></textarea>
+              {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info facture</h3> {% endcomment %}
+              <div x-show="!client_desc_facture">
+                <p class="text-xl dark:text-gray-400">Nom d'entreprise : <span x-text="client_comercial_name"></span></p>
+                <p class="text-xl dark:text-gray-400">Nom du client : <span x-text="client_name"></span></p>
+                <p class="text-xl dark:text-gray-400">address du client : <span x-text="client_address"></span></p>
+                <p class="text-xl dark:text-gray-400">Code postal : <span x-text="client_code_postal"></span> - <span x-text="client_ville"></span></p>
+                <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
+                <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>         
+                <p class="text-xl dark:text-gray-400"><span>{{ facture.client.description_facture|safe }}</span></p> 
+              </div>
+            </div>
+          </div>
+          <div class="mb-4 mt-10">
+            {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Détail du facture</h3> {% endcomment %}
+            <p class="text-emerald-800 text-2xl dark:text-gray-400">Facture N° : <span x-text="facture_ref"></span></p>
+            <div class="flex items-center justify-start">
+              <p class="text-xl dark:text-gray-400">Date d'emission : <span x-text="facture_emission_date"></span></p>
+              <p class="text-xl dark:text-gray-400 ml-40">Règlement : <span x-text="facture_reglement"></span></p>
+            </div>
+
+            {% comment %} Tableau details de facture {% endcomment %}
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-5">
+              <table class="w-full border border-gray-200 rounded-md dark:border-gray-700 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                  <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                      <tr>
+                          <th scope="col" class="px-6 py-3">
+                              Désignation
+                          </th>
+                          <th scope="col" class="px-6 py-3">
+                              <div class="flex items-center">
+                                  Prix unitaire
+                              </div>
+                          </th>
+                          <th scope="col" class="px-6 py-3">
+                              <div class="flex items-center">
+                                  Quantité
+                              </div>
+                          </th>
+                          <th scope="col" class="px-6 py-3 text-right">
+                              <div class="flex items-center">
+                                  Montant HT
+                              </div>
+                          </th>
+                      </tr>
+                  </thead>
+                  <tbody id="facture-services-table-body">
+                  <template x-for="service in facture_services">
+                    {% comment %} Liste des services du facture ici {% endcomment %}
+                    <tr class="article-row">
+                      <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white" x-text="service.description">
+                          
+                      </th>
+                      <td class="px-6 py-4 article-prix" x-text="service.prix">
+                          
+                      </td>
+                      <td class="px-6 py-4 article-quantite" data-value="service.quantite" x-text="service.quantite">
+                      </td>
+                      <td class="px-6 py-4 article-total" x-text="parseFloat(service.prix) * parseFloat(service.quantite)">
+                      </td>
+                    </tr>
+                  </template>
+                  </tbody>
+                  <tfoot class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th scope="row" class="px-6 py-4">
+                        </th>
+                        <th scope="row" class="px-6 py-4">
+                        </th>
+                        <th scope="row" class="px-6 py-4">
+                        </th>
+                        <th scope="row" class="px-6 py-2 text text-2xl font-bold text-gray-700 dark:text-gray-200">
+                            <div class="font-bold" id="total-montant" x-text="facture_sous_total">
+                                {% comment %} {{ facture.montant|floatformat }} Ar {% endcomment %}
+                            </div>
+                        </th>
+                    </tr>
+                </tfoot>
+              </table>
+              <!-- Total et Taxes -->
+              <div class="mb-8 mt-8">
+                <div class="w-full md:w-1/2 ml-auto">
+                  <div class="grid grid-cols-2 gap-4">
+                    <div class="text-right font-bold text-gray-700 dark:text-gray-200">Sous-total:</div>
+                    <div class="text-right text-gray-700 dark:text-gray-200" id="sous-total" x-text="facture_sous_total">0.00 Ar</div>                              
+                    <div :class="!facture_with_tva ? '' : 'line-through'" class="text-right font-bold text-gray-700 dark:text-gray-200" id="tva-label" class="">TVA (20%):</div>
+                    <div :class="!facture_with_tva ? '' : 'line-through'" class="text-right text-gray-700 dark:text-gray-200" id="tva" x-text="facture_tva">0.00 Ar</div>
+                    <div class="text-right font-bold text-lg text-gray-700 dark:text-gray-200">Total:</div>
+                    <div class="text-right text-lg text-gray-700 dark:text-gray-200" id="total" x-text="facture_montant">0.00 Ar</div>
+                    <input class="hidden" type="number" name="montant" id="total_input" value="0.00" >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+    <!-- Your JavaScript code goes here -->
+    <script>
+      // Alpine.js
+      function factDataComponent(){
+        return {
+          client_comercial_name: '',
+          client_address: '',
+          client_code_postal: '2343',
+          client_ville: 'Paris',
+          client_name: '',
+          client_email: '',
+          client_desc_facture: '',
+          facture_ref: '',
+          facture_intitule: '',
+          facture_emission_date: '',
+          facture_reglement: '',
+          facture_etat: '',
+          facture_montant: '',
+          facture_condition: '',
+          facture_description: '',
+          facture_with_tva: '',
+          facture_sous_total: '',
+          facture_services: '',
+          facture_view: 'true',
+          mois_actuel:'',
+          sousTotal: 0,
+          facture_tva: 0,
+          init(){
+            // Charger les données depuis localStorage
+            this.facture_view = localStorage.getItem('facture_view') === 'true';
+          },
+
+          calculerSousTotal(totalTTC, tva=0.20) {
+            const tauxTVA = tva; // 20%
+            const sousTotal = totalTTC / (1 + tauxTVA);
+            return sousTotal;
+          },
+
+          getFactureValue({{facture_generate}}) {
+            // Récupérer l'URL de manière sécurisée
+            const url = "{% url 'facture:one_facture' %}";
+
+            fetch(`${url}?id=${id}`, {
+                method: 'GET',
+            })
+            .then(response => {
+              if (response.ok) {
+                  // Si la requête a réussi, convertir la réponse en JSON
+                  return response.json(); // Retourne une promesse
+              } else {
+                  // Si la requête a échoué, affichez une erreur
+                  throw new Error('Une erreur s\'est produite lors de l\'enregistrement du service.');
+              }
+            })
+            .then(data => {
+              // Ici, vous pouvez utiliser les données de la facture
+              this.client_comercial_name = data.client_comercial_name;
+              this.client_address = data.client_address;
+              this.client_code_postal = '2343';
+              this.client_ville = 'Paris';
+              this.client_name = data.client_name;
+              this.client_email = data.client_email;
+              this.client_desc_facture = data.client_desc_facture;
+              this.facture_ref = data.facture_ref;
+              this.facture_intitule = data.facture_intitule;
+              this.facture_emission_date = data.facture_emission_date;
+              this.facture_reglement = data.facture_reglement;
+              this.facture_etat = data.facture_etat;
+              this.facture_montant = `${data.facture_montant} Ar`;
+              this.facture_condition = data.facture_condition;  
+              this.facture_with_tva = data.facture_with_tva;
+              let services = data.facture_services;
+              this.facture_services = JSON.parse(services);          
+              tva = this.facture_with_tva ? 0 : 0.20;
+              
+              this.facture_sous_total = `${this.calculerSousTotal(parseFloat(this.facture_montant), tva)} Ar`;
+              this.facture_tva = `${parseFloat(this.facture_sous_total) * tva} Ar`;
+              // Fermez le modal ou effectuez d'autres actions avec les données
+              // window.location.reload(); // Décommentez si vous souhaitez recharger la page
+            })
+            .catch(error => {
+                // Gérer les erreurs de réseau
+                console.error('Erreur lors de la requête:', error);
+                alert('Une erreur de réseau s\'est produite.');
+            });
+          },
+
+          getFactureValue();
+
+          saveFactView(){
+            //Sauvegarder les données dans localStorage
+            localStorage.setItem('facture_view', this.facture_view)
+          }
+        }
+      }
+
+      window.onload = function() { 
+        const element = document.getElementById('content');
+        const options = {
+          margin: 1,
+          filename: 'my-document.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+
+        // Promise-based usage:
+        html2pdf().set(options).from(element).save();
+
+
+        // Old monolithic-style usage:
+        // html2pdf(element, options);
+      }
+    </script>
+  </html>
