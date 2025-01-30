@@ -55,7 +55,7 @@
               <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12q-1.65 0-2.825-1.175T8 8t1.175-2.825T12 4t2.825 1.175T16 8t-1.175 2.825T12 12m-8 6v-.8q0-.85.438-1.562T5.6 14.55q1.55-.775 3.15-1.162T12 13t3.25.388t3.15 1.162q.725.375 1.163 1.088T20 17.2v.8q0 .825-.587 1.413T18 20H6q-.825 0-1.412-.587T4 18"/></svg>
               </div>
-              <select id="input-group-1" name="client" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              <select id="input-group-1" name="client" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
                 <option value="">...</option>                
                 {% for client in clients_list %}
                   <option value="{{ client.id }}" {% if client == client_selected %}selected{% endif %}> {{ client.name }} </option>
@@ -64,7 +64,7 @@
             </div>
           </div>
           <div>            
-            <input type="date" name="date_facture" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date">
+            <input type="date" name="date_facture" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date" required>
           </div>
         </div>
       </div>
@@ -77,13 +77,13 @@
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="numero">
               Intitulé
             </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="intutilé" type="text" name="intitule" placeholder="Ajouter un titre ici">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="intutilé" type="text" name="intitule" placeholder="Ajouter un titre ici" required>
           </div>
           <div>
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="reglement_facture">
               Règlement
             </label>
-            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="reglement_facture" name="reglement">
+            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="reglement_facture" name="reglement" required>
               <option value="A réception" selected>A Réception</option>
               <option value="30 jours">30 jours</option>
               <option value="30 jours fin de mois">30 jours fin de mois</option>
@@ -102,13 +102,13 @@
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="date">
               Condition
             </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="condition" name="condition" type="date">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="condition" name="condition" type="date" required>
           </div>
           <div x-show="facture_view">
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="reglement_facture">
               Etat du facture
             </label>
-            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="etat_facture" name="etat_facture">
+            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="etat_facture" name="etat_facture" required>
               <option value="Impayée">Impayée</option>
               <option value="Payé">Payé</option>
               <option value="En cours">En cours</option>
@@ -179,8 +179,11 @@
         <a href="{% url 'facture:index' %}" type="button" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700">
           Annuler
         </a>
-        <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700">
+        <button x-show="facture_view" type="submit" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700">
           Créer la facture
+        </button>
+        <button x-show="!facture_view" type="submit" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700">
+          Créer la devis
         </button>
       </div>
     </form>
@@ -262,17 +265,17 @@
       articleDiv.innerHTML = `
           <div class="col-span-5">
               <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-description" value="${nom_service}" name="description-${articleCount}"
-                    type="text" placeholder="Description" data-article-id="${articleCount}">
+                    type="text" placeholder="Description" data-article-id="${articleCount}" required>
           </div>
           <div class="col-span-2">
               <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-quantite" name="quantite-${articleCount}"
-                    type="number" placeholder="Quantité" value="1" min="1" data-article-id="${articleCount}">
+                    type="number" placeholder="Quantité" value="1" min="1" data-article-id="${articleCount}" required>
           </div>          
           <div class="flex col-span-2 h-10">
             <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
               Ar
             </span>
-            <input type="number" step="0.01" placeholder="Prix" name="prix-${articleCount}" value="${prix_unitaire}" data-article-id="${articleCount}" class="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 article-prix" >
+            <input type="number" step="0.01" placeholder="Prix" name="prix-${articleCount}" value="${prix_unitaire}" data-article-id="${articleCount}" class="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 article-prix" required>
           </div>
           <div class="col-span-2">
               <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 article-total" 

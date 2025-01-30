@@ -273,7 +273,6 @@ def modifier_facture(request, pk):
       try:
         # facture = form.save(commit=False)
         facture.services = services_data
-        facture.type = facture.type
         facture.updated_at = timezone.now()
         numFact = facture.ref.split('-')[-1]
         if (facture.ref.startswith('DPROV') or facture.ref.startswith('FPROV')) and facture.etat_facture != 'Brouillon':

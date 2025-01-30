@@ -6,8 +6,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.0.0/dist/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.0.0/dist/flowbite.min.js" defer></script>
     <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
     <title>Modification de facture</title>
     {% tailwind_css %}
@@ -58,10 +59,21 @@
   
   <!-- Formulaire de modification de facture -->
   <div class="w-1/3 bg-gray-700 dark:bg-gray-900 p-4 shadow-md">
-    <h2 class="text-lg font-bold mb-4 dark:text-white">Modification de facture</h2>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold dark:text-white">Modification de la {{ facture.type }} </h2>
+      
+      {% if facture.type == 'Devis' %}
+        <label class="flex items-center gap-2" for="convert-facture">
+          <input type="checkbox" id="convert-facture" class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" x-model="facture_convert"> Converture en facture
+        </label>
+        <span x-text="facture_convert" ></span>
+      {% endif %}      
+        
+    </div>
     <form action="{% url 'facture:modifier_facture' facture.id %}" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       <!-- Section info client -->
+      <input type="hidden" name="type" :value="facture_convert ? 'Facture' : '{{ facture.type }}'" >
       <div class="bg-gray-600 dark:bg-gray-800 p-4 mb-4 rounded">
         <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info client</h3>
         <div class="mb-4">
@@ -192,34 +204,34 @@
       <div class="flex justify-between items-center mb-10">
         <div>
           {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info client</h3> {% endcomment %}
-          <p class="text-xl dark:text-gray-400">Nom d'entreprise : <span>MADA-Digital</span></p>
-          <p class="text-xl dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
-          <p class="text-xl dark:text-gray-400">Adresse : <span>12 rue de la boule</span></p>
-          <p class="text-xl dark:text-gray-400">Code postal : <span>75010 - Paris</span></p>
-          <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
-          <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>          
+          <p class="dark:text-gray-400">Nom d'entreprise : <span>MADA-Digital</span></p>
+          <p class="dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
+          <p class="dark:text-gray-400">Adresse : <span>12 rue de la boule</span></p>
+          <p class="dark:text-gray-400">Code postal : <span>75010 - Paris</span></p>
+          <p class="dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
+          <p class="dark:text-gray-400">N° STAT : <span>12345678901234</span></p>          
         </div>
         <div>
           {% if facture.client.description_facture %}
-          <textarea id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-xl text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled>{{ facture.client.description_facture }}</textarea>
+          <textarea id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled>{{ facture.client.description_facture }}</textarea>
           {% else %}
-          {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info facture</h3> {% endcomment %}
-          <p class="text-xl dark:text-gray-400">Nom d'entreprise : <span x-text="client_comercial_name"></span></p>
-          <p class="text-xl dark:text-gray-400">Nom du client : <span x-text="client_name"></span></p>
-          <p class="text-xl dark:text-gray-400">address du client : <span x-text="client_address"></span></p>
-          <p class="text-xl dark:text-gray-400">Code postal : <span x-text="client_code_postal"></span><span x-text="client_ville"></span></p>
-          <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
-          <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>         
-          <p class="text-xl dark:text-gray-400"><span>{{ facture.client.description_facture|safe }}</span></p> 
+          {% comment %} <h3 class="font-bold mb-2 dark:text-gray-400">Info facture</h3> {% endcomment %}
+          <p class="dark:text-gray-400">Nom d'entreprise : <span x-text="client_comercial_name"></span></p>
+          <p class="dark:text-gray-400">Nom du client : <span x-text="client_name"></span></p>
+          <p class="dark:text-gray-400">address du client : <span x-text="client_address"></span></p>
+          <p class="dark:text-gray-400">Code postal : <span x-text="client_code_postal"></span><span x-text="client_ville"></span></p>
+          <p class="dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
+          <p class="dark:text-gray-400">N° STAT : <span>12345678901234</span></p>         
+          <p class="dark:text-gray-400"><span>{{ facture.client.description_facture|safe }}</span></p> 
           {% endif %}        
         </div>
       </div>
       <div class="mb-4 mt-10">
         {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Détail du facture</h3> {% endcomment %}
-        <p class="text-emerald-800 text-2xl dark:text-gray-400">Facture N° : <span x-text="facture_ref"></span></p>
+        <p class="text-emerald-800 text-md font-bold">Facture N° : <span x-text="facture_ref"></span></p>
         <div class="flex items-center justify-start">
-          <p class="text-xl dark:text-gray-400">Date d'emission : <span x-text="facture_emission_date"></span></p>
-          <p class="text-xl dark:text-gray-400 ml-40">Règlement : <span x-text="facture_reglement"></span></p>
+          <p class="dark:text-gray-400">Date d'emission : <span x-text="facture_emission_date"></span></p>
+          <p class="dark:text-gray-400 ml-40">Règlement : <span x-text="facture_reglement"></span></p>
         </div>
 
         {% comment %} Tableau details de facture {% endcomment %}
@@ -248,7 +260,7 @@
                   </tr>
               </thead>
               <tbody id="facture-services-table-body">
-                {% comment %} Liste des services du facture ici {% endcomment %}
+              {% comment %} Liste des services du facture ici {% endcomment %}
               </tbody>
               <tfoot class="bg-gray-50 dark:bg-gray-700">
                 <tr>
@@ -258,7 +270,7 @@
                     </th>
                     <th scope="row" class="px-6 py-4">
                     </th>
-                    <th scope="row" class="px-6 py-2 text text-2xl font-bold text-gray-700 dark:text-gray-200">
+                    <th scope="row" class="px-6 py-2 text text-xl font-bold text-gray-700 dark:text-gray-200">
                         <div class="font-bold" id="total-montant">
                             {% comment %} {{ facture.montant|floatformat }} Ar {% endcomment %}
                         </div>
@@ -270,15 +282,15 @@
           <div class="mb-8 mt-8">
             <div class="w-full md:w-1/2 ml-auto">
               <div class="grid grid-cols-2 gap-4">
-                <div class="text-right font-bold text-gray-700 dark:text-gray-200">Sous-total:</div>
+                <div class="text-right text-gray-700 dark:text-gray-200">Sous-total:</div>
                 <div class="text-right text-gray-700 dark:text-gray-200" id="sous-total">0.00 Ar</div>
-                <label for="calculate_with_tva" class="text-right font-bold text-gray-700 dark:text-gray-200">
+                <label for="calculate_with_tva" class="text-right text-gray-700 dark:text-gray-200">
                   <input type="checkbox" id="calculate_with_tva" class='hidden' value="true">
                   <span id="tva-label" class="">TVA (20%):</span>
                 </label>
                 <div class="text-right text-gray-700 dark:text-gray-200" id="tva">0.00 Ar</div>
-                <div class="text-right font-bold text-lg text-gray-700 dark:text-gray-200">Total:</div>
-                <div class="text-right text-lg text-gray-700 dark:text-gray-200" id="total">0.00 Ar</div>
+                <div class="text-right font-bold text-gray-700 dark:text-gray-200">Total:</div>
+                <div class="text-right font-bold text-gray-700 dark:text-gray-200" id="total">0.00 Ar</div>
                 <input class="hidden" type="number" name="montant" id="total_input" value="0.00" >
               </div>
             </div>
@@ -309,6 +321,8 @@
       facture_montant: '{{ facture.montant|floatformat }}',
       facture_condition: '{{ facture.condition }}',
       facture_description: '{{ facture.client.description_factue }}',
+      facture_type: '{{ facture.type }}',
+      facture_convert:false,
     }
   }
 
@@ -437,7 +451,7 @@
       });
   }
 
-  {% comment %} calculer avec tva {% endcomment %}
+  // calculer avec tva
   document.getElementById('calculate_with_tva').addEventListener('change', function() {    
     calculerTotal();
   });

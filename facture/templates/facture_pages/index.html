@@ -230,33 +230,33 @@
                   <div class="flex justify-between items-center mb-10">
                     <div>
                       {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info client</h3> {% endcomment %}
-                      <p class="text-xl dark:text-gray-400">Nom d'entreprise : <span>MADA-Digital</span></p>
-                      <p class="text-xl dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
-                      <p class="text-xl dark:text-gray-400">Adresse : <span>12 rue de la boule</span></p>
-                      <p class="text-xl dark:text-gray-400">Code postal : <span>75010 - Paris</span></p>
-                      <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
-                      <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>
+                      <p class="dark:text-gray-400">Nom d'entreprise : <span>MADA-Digital</span></p>
+                      <p class="dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
+                      <p class="dark:text-gray-400">Adresse : <span>12 rue de la boule</span></p>
+                      <p class="dark:text-gray-400">Code postal : <span>75010 - Paris</span></p>
+                      <p class="dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
+                      <p class="dark:text-gray-400">N° STAT : <span>12345678901234</span></p>
                     </div>
                     <div>
-                      <textarea x-show="client_desc_facture" id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-xl text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled x-text="client_desc_facture"></textarea>
-                      {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info facture</h3> {% endcomment %}
+                      <textarea x-show="client_desc_facture" id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled x-text="client_desc_facture"></textarea>
+                      {% comment %} <h3 class="font-bold mb-2 dark:text-gray-400">Info facture</h3> {% endcomment %}
                       <div x-show="!client_desc_facture">
-                        <p class="text-xl dark:text-gray-400">Nom d'entreprise : <span x-text="client_comercial_name"></span></p>
-                        <p class="text-xl dark:text-gray-400">Nom du client : <span x-text="client_name"></span></p>
-                        <p class="text-xl dark:text-gray-400">address du client : <span x-text="client_address"></span></p>
-                        <p class="text-xl dark:text-gray-400">Code postal : <span x-text="client_code_postal"></span> - <span x-text="client_ville"></span></p>
-                        <p class="text-xl dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
-                        <p class="text-xl dark:text-gray-400">N° STAT : <span>12345678901234</span></p>         
-                        <p class="text-xl dark:text-gray-400"><span>{{ facture.client.description_facture|safe }}</span></p> 
+                        <p class="dark:text-gray-400">Nom d'entreprise : <span x-text="client_comercial_name"></span></p>
+                        <p class="dark:text-gray-400">Nom du client : <span x-text="client_name"></span></p>
+                        <p class="dark:text-gray-400">address du client : <span x-text="client_address"></span></p>
+                        <p class="dark:text-gray-400">Code postal : <span x-text="client_code_postal"></span> - <span x-text="client_ville"></span></p>
+                        <p class="dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
+                        <p class="dark:text-gray-400">N° STAT : <span>12345678901234</span></p>         
+                        <p class="dark:text-gray-400"><span>{{ facture.client.description_facture|safe }}</span></p> 
                       </div>
                     </div>
                   </div>
                   <div class="mb-4 mt-10">
                     {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Détail du facture</h3> {% endcomment %}
-                    <p class="text-emerald-800 text-2xl dark:text-gray-400">Facture N° : <span x-text="facture_ref"></span></p>
+                    <p class="text-emerald-800 text-md font-bold">Facture N° : <span x-text="facture_ref"></span></p>
                     <div class="flex items-center justify-start">
-                      <p class="text-xl dark:text-gray-400">Date d'emission : <span x-text="facture_emission_date"></span></p>
-                      <p class="text-xl dark:text-gray-400 ml-40">Règlement : <span x-text="facture_reglement"></span></p>
+                      <p class="dark:text-gray-400">Date d'emission : <span x-text="facture_emission_date"></span></p>
+                      <p class="dark:text-gray-400 ml-40">Règlement : <span x-text="facture_reglement"></span></p>
                     </div>
             
                     {% comment %} Tableau details de facture {% endcomment %}
@@ -317,16 +317,17 @@
                             </tr>
                         </tfoot>
                       </table>
+
                       <!-- Total et Taxes -->
                       <div class="mb-8 mt-8">
                         <div class="w-full md:w-1/2 ml-auto">
                           <div class="grid grid-cols-2 gap-4">
                             <div class="text-right font-bold text-gray-700 dark:text-gray-200">Sous-total:</div>
-                            <div class="text-right text-gray-700 dark:text-gray-200" id="sous-total" x-text="facture_sous_total">0.00 Ar</div>                              
-                            <div :class="!facture_with_tva ? '' : 'line-through'" class="text-right font-bold text-gray-700 dark:text-gray-200" id="tva-label" class="">TVA (20%):</div>
+                            <div class="text-right font-bold text-gray-700 dark:text-gray-200" id="sous-total" x-text="facture_sous_total">0.00 Ar</div>                              
+                            <div :class="!facture_with_tva ? '' : 'line-through'" class="text-right text-gray-700 dark:text-gray-200" id="tva-label" class="">TVA (20%):</div>
                             <div :class="!facture_with_tva ? '' : 'line-through'" class="text-right text-gray-700 dark:text-gray-200" id="tva" x-text="facture_tva">0.00 Ar</div>
-                            <div class="text-right font-bold text-lg text-gray-700 dark:text-gray-200">Total:</div>
-                            <div class="text-right text-lg text-gray-700 dark:text-gray-200" id="total" x-text="facture_montant">0.00 Ar</div>
+                            <div class="text-right font-bold text-gray-700 dark:text-gray-200">Total:</div>
+                            <div class="text-right font-bold text-gray-700 dark:text-gray-200" id="total" x-text="facture_montant">0.00 Ar</div>
                             <input class="hidden" type="number" name="montant" id="total_input" value="0.00" >
                           </div>
                         </div>
