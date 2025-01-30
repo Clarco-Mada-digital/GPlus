@@ -747,10 +747,11 @@ def modifier_sortie(request, pk):
 
 #Suppression des entrées
 @login_required
-def supprimer_entree(request, pk):
+def supprimer_entree(request, page_name, pk):
     """
     Supprime une opération d'entrée ou de sortie en fonction de son ID.
     """
+    print(page_name)
 
     operation = OperationEntrer.objects.get(pk=pk)
     
@@ -758,14 +759,16 @@ def supprimer_entree(request, pk):
     UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé une opération entrée')
     messages.success(request, "L'opération a été supprimée avec succès.")
     
-    return redirect('caisse:listes')
+    return redirect(f'caisse:{page_name}')
 
 #Suppression des sorties
 @login_required
-def supprimer_sortie(request, pk):
+def supprimer_sortie(request, page_name, pk):
     """
     Supprime une opération d'entrée ou de sortie en fonction de son ID.
     """
+
+    print(page_name)
 
     operation = OperationSortir.objects.get(pk=pk)
     
@@ -773,7 +776,7 @@ def supprimer_sortie(request, pk):
     UserActivity.objects.create(user=request.user, action='Suprression', description='a supprimé une opération sortie')
     messages.success(request, "L'opération a été supprimée avec succès.")
     
-    return redirect('caisse:listes')
+    return redirect(f'caisse:{page_name}')
 
 # Add this new view
 @login_required

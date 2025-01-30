@@ -35,8 +35,8 @@ urlpatterns = [
     path('sorties/', views.liste_sorties, name='liste_sorties'),  # Affiche la liste des sorties financières
     path('operations/modifier/entree/<int:pk>/', views.modifier_entree, name='modifier_entree'),  # Modifie une entrée financière existante
     path('operations/modifier/sortie/<int:pk>/', views.modifier_sortie, name='modifier_sortie'),  # Modifie une sortie financière existante
-    path('caisse/operations/supprimer_entrer/<int:pk>/', views.supprimer_entree, name="supprimer_entree"),  # Supprime une entrée financière
-    path('caisse/operations/supprimer_sortir/<int:pk>/', views.supprimer_sortie, name="supprimer_sortie"),  # Supprime une sortie financière
+    path('caisse/operations/supprimer_entrer/<str:page_name>/<int:pk>/', views.supprimer_entree, name="supprimer_entree"),  # Supprime une entrée financière
+    path('caisse/operations/supprimer_sortir/<str:page_name>/<int:pk>/', views.supprimer_sortie, name="supprimer_sortie"),  # Supprime une sortie financière
 
     path('operations/', views.operations, name="operations"),  # Nouvelle URL
     
