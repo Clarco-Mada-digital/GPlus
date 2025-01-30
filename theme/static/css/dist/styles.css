@@ -2780,10 +2780,6 @@ select {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
-.to-blue-200 {
-  --tw-gradient-to: #bfdbfe var(--tw-gradient-to-position);
-}
-
 .bg-cover {
   background-size: cover;
 }
@@ -3272,11 +3268,6 @@ select {
 .text-rose-500 {
   --tw-text-opacity: 1;
   color: rgb(244 63 94 / var(--tw-text-opacity));
-}
-
-.text-secondary {
-  --tw-text-opacity: 1;
-  color: rgb(39 49 66 / var(--tw-text-opacity));
 }
 
 .text-slate-600 {

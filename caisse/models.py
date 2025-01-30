@@ -95,8 +95,8 @@ class Personnel(models.Model):
 
 # Modèle Fournisseur
 class Fournisseur(models.Model):
-    name = models.CharField(max_length=50)
-    contact = models.CharField(max_length=15)  # Contact comme numéro de téléphone
+    name = models.CharField(max_length=50, null=True, blank=True, default="")
+    contact = models.CharField(max_length=15,  null=True, blank=True, default="")  # Contact comme numéro de téléphone
     history = HistoricalRecords()
 
     def __str__(self):
