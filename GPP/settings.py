@@ -94,21 +94,21 @@ WSGI_APPLICATION = 'GPP.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': env("DB_NAME"),
-    #     'USER': env("DB_USER"),
-    #     'PASSWORD': env("DB_PASS"),
-    #     'HOST':'127.0.0.1',
-    #     'PORT': '3306',
-    #     'OPTIONS': {
-    #         'sql_mode': 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION',
-    #     }
-    # },
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': env("DB_NAME"),
+        'USER': env("DB_USER"),
+        'PASSWORD': env("DB_PASS"),
+        'HOST':'127.0.0.1',
+        'PORT': '3306',
+        'OPTIONS': {
+            'sql_mode': 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION',
+        }
     },
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # },
 }
 
 
