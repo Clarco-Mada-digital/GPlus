@@ -1321,6 +1321,10 @@ select {
   position: relative;
 }
 
+.sticky {
+  position: sticky;
+}
+
 .inset-0 {
   inset: 0px;
 }
@@ -1456,6 +1460,10 @@ select {
 
 .float-right {
   float: right;
+}
+
+.m-0 {
+  margin: 0px;
 }
 
 .m-1 {
@@ -1822,6 +1830,10 @@ select {
 
 .grid {
   display: grid;
+}
+
+.contents {
+  display: contents;
 }
 
 .hidden {
@@ -2342,6 +2354,10 @@ select {
 
 .flex-wrap {
   flex-wrap: wrap;
+}
+
+.content-start {
+  align-content: flex-start;
 }
 
 .items-start {
@@ -3014,6 +3030,10 @@ select {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
+.to-blue-200 {
+  --tw-gradient-to: #bfdbfe var(--tw-gradient-to-position);
+}
+
 .bg-cover {
   background-size: cover;
 }
@@ -3309,6 +3329,10 @@ select {
   vertical-align: middle;
 }
 
+.font-serif {
+  font-family: Montserrat, serif;
+}
+
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
@@ -3317,6 +3341,11 @@ select {
 .text-3xl {
   font-size: 1.875rem;
   line-height: 2.25rem;
+}
+
+.text-5xl {
+  font-size: 3rem;
+  line-height: 1;
 }
 
 .text-base {
@@ -3402,6 +3431,10 @@ select {
 
 .leading-tight {
   line-height: 1.25;
+}
+
+.tracking-normal {
+  letter-spacing: 0em;
 }
 
 .tracking-wider {

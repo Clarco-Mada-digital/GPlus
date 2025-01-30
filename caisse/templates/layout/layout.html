@@ -121,7 +121,7 @@
                         <span class="ml-3">Opérations</span>
                     </a>
                     <a href="{% url 'caisse:listes' %}"
-                    class="flex items-center px-4 py-2 mt-2 {% if '/caisse/listes/' in request.path %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary rounded-lg{% endif %}">
+                    class="flex items-center px-4 py-2 mt-2 {% if '/caisse/listes/' in request.path or  '/caisse/entrees/' in request.path or '/caisse/sorties/' in request.path %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-5 w-5 mr-2" viewBox="0 0 20 20"
                             fill="currentColor">
