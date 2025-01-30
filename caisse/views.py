@@ -566,6 +566,8 @@ def ajouts_entree(request):
                 'operation': 'entree',
             })
 
+        print(benefs, clients)            
+
         try:
             for i in range(len(dates)):
                 # Validation des données individuelles
