@@ -136,14 +136,14 @@ class OperationEntrer(models.Model):
     date = models.DateField(auto_now_add=True)  # Date de l'ajout dans l'application
     date_transaction = models.DateField(default=timezone.now) # Date de l'opération
     categorie = models.ForeignKey(Categorie, on_delete=models.PROTECT, null=False, default="")  # Clé étrangère vers Categorie
-    benef = models.CharField(max_length=100, default="", blank=True) #beneficiaire
+    beneficiaire = models.ForeignKey(Beneficiaire, default="", on_delete=models.PROTECT, blank=True) #beneficiaire
     client = models.CharField(max_length=75, default="", blank=True) #client
     history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.description} - {self.montant} - {self.benef} - {self.client}"  
 
-# Modèle pour les soeries
+# Modèle pour les sorties
 class OperationSortir(models.Model):
     
     description = models.CharField(max_length=255)  # Nom de l'opération

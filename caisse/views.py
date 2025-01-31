@@ -555,8 +555,10 @@ def ajouts_entree(request):
         designations = request.POST.getlist('designation')
         montants = request.POST.getlist('montant')
         categories_ids = request.POST.getlist('categorie')
-        benefs = request.POST.getlist('benef')
+        beneficiaires_ids = request.POST.get('beneficiaire-entree')
         clients = request.POST.getlist('client')
+
+        print(beneficiaires_ids, Beneficiaire.objects.get(id=beneficiaires_ids))
 
         # Vérifier la cohérence des données
         if not all([dates, designations, montants, categories_ids]):
@@ -566,36 +568,32 @@ def ajouts_entree(request):
                 'operation': 'entree',
             })
 
-        print(benefs, clients)            
+        # try:
+        for i in range(len(dates)):
+            # Validation des données individuelles
+            if not dates[i] or not designations[i] or not montants[i] or not categories_ids[i]:
+                raise ValueError(f"Ligne {i+1} : Des champs obligatoires sont manquants.")
+            
+            montant = float(montants[i])
+            if montant < 0:
+                raise ValueError(f"Ligne {i+1} : Le montant doit être positif.")
 
-        try:
-            for i in range(len(dates)):
-                # Validation des données individuelles
-                if not dates[i] or not designations[i] or not montants[i] or not categories_ids[i]:
-                    raise ValueError(f"Ligne {i+1} : Des champs obligatoires sont manquants.")
-                
-                montant = float(montants[i])
-                if montant < 0:
-                    raise ValueError(f"Ligne {i+1} : Le montant doit être positif.")
+            OperationEntrer.objects.create(
+                date_transaction=parse_date(dates[i]),
+                description=designations[i],
+                montant=montant,
+                categorie_id=int(categories_ids[i]),
+                beneficiaire_id=int(beneficiaires_ids),
+                client=clients[i] if clients else ""
+            )
 
-                categorie = Categorie.objects.get(pk=categories_ids[i])
+        messages.success(request, "Les opérations d'entrée ont été ajoutées avec succès.")
+        return redirect('caisse:liste_entrees')
 
-                OperationEntrer.objects.create(
-                    date_transaction=parse_date(dates[i]),
-                    description=designations[i],
-                    montant=montant,
-                    categorie=categorie,
-                    benef=benefs[i] if benefs else "",
-                    client=clients[i] if clients else ""
-                )
-
-            messages.success(request, "Les opérations d'entrée ont été ajoutées avec succès.")
-            return redirect('caisse:liste_entrees')
-
-        except Categorie.DoesNotExist:
-            messages.error(request, "Une catégorie sélectionnée n'existe pas.")
-        except Exception as e:
-            messages.error(request, f"Erreur lors de l'ajout : {e}")
+        # except Categorie.DoesNotExist:
+        #     messages.error(request, "Une catégorie sélectionnée n'existe pas.")
+        # except Exception as e:
+        #     messages.error(request, f"Erreur lors de l'ajout : {e}")
 
     return render(request, 'caisse/operations/entre-sortie.html', {
         'categories_entree': categories_entree,
@@ -614,7 +612,7 @@ def ajouts_sortie(request):
     if request.method == 'POST':
         dates = request.POST.getlist('date')
         designations = request.POST.getlist('designation')
-        beneficiaires_ids = request.POST.getlist('beneficiaire')
+        beneficiaires_ids = request.POST.getlist('beneficiaire-sortie')
         fournisseurs_ids = request.POST.getlist('fournisseur')
         quantites = request.POST.getlist('quantite')
         prix_unitaires = request.POST.getlist('prixUnitaire')

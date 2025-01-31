@@ -61,10 +61,24 @@ class CategorieDetailSerializer(serializers.ModelSerializer):
 # Sérialiseur pour le modèle OperationEntrer
 class OperationEntrerSerializer(serializers.ModelSerializer):
     categorie = CategorieSerializer(read_only=True)
+    beneficiaire = serializers.SerializerMethodField()
 
     class Meta:
         model = OperationEntrer
-        fields = ['id', 'description', 'montant', 'date', 'date_transaction', 'categorie']
+        fields = ['id', 'description', 'montant', 'date', 'date_transaction', 'categorie', 'beneficiaire', 'client']
+
+    def get_beneficiaire(self, obj):
+        if obj.beneficiaire.personnel:
+            return {
+                "id": obj.beneficiaire.personnel.id,
+                "name": f"{obj.beneficiaire.personnel.last_name} {obj.beneficiaire.personnel.first_name}"
+            }
+        elif obj.beneficiaire.name:
+            return {
+                "id": obj.beneficiaire.id,
+                "name": obj.beneficiaire.name
+            }
+        return None
 
 # Sérialiseur pour le modèle OperationSortir
 class OperationSortirSerializer(serializers.ModelSerializer):
@@ -237,9 +251,10 @@ class OperationSortirCreateSerializer(serializers.ModelSerializer):
 class OperationEntrerCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = OperationEntrer
-        fields = ['description', 'montant', 'date_transaction', 'categorie']
+        fields = ['description', 'montant', 'date_transaction', 'categorie', 'beneficiaire', 'client']
         extra_kwargs = {
-            'categorie': {'write_only': True}
+            'categorie': {'write_only': True},
+            'beneficiaire': {'write_only': True}
         }
 
     def validate(self, data):
