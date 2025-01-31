@@ -14,7 +14,7 @@ Elle permet le traîtement des JSONs
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = User # Modèle User de Django
+        model = User
         fields = ['id', 'username', 'first_name', 'last_name']
 
 
@@ -30,7 +30,7 @@ class FactureListSerializer(serializers.ModelSerializer):
 # Utilisée pour sérialiser les détails d'une facture
 class FactureDetailSerializer(serializers.ModelSerializer):
 
-    created_by = serializers.SerializerMethodField() # Vas permettre l'obtention des information de l'utilisateur
+    created_by = serializers.SerializerMethodField() # Vas permettre l'obtention des information de l'utilisateur à l'auteur de la facture
 
     class Meta:
         model = Facture
