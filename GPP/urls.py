@@ -24,6 +24,8 @@ from django.contrib.auth import views as auth_views
 from theme.views import change_theme
 from caisse.views import index
 
+from facture.api.urls import router
+
 
 urlpatterns = [
     path("", include("accounts.urls", namespace='accounts')),
@@ -34,6 +36,8 @@ urlpatterns = [
     path("facture/", include("facture.urls", namespace='facture')),          # Pour la module du facture et devise
     path("client/", include("clients.urls", namespace='client')),          # Pour la module du clients et prospects
     path("__reload__/", include("django_browser_reload.urls")),
+
+    path('api/', include(router.urls)) # API base url
 ]
 
 
