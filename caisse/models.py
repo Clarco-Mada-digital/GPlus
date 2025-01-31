@@ -116,10 +116,10 @@ class Beneficiaire(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        if self.personnel:
+        if self.name != None :
+            return str(self.name)
+        elif self.personnel != None:
             return str(self.personnel)
-        elif self.name:
-            return self.name
         else:
             return "Beneficiaire sans nom ni personnel"
 
