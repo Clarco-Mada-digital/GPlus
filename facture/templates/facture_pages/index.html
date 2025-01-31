@@ -608,10 +608,13 @@
           this.facture_services = JSON.parse(services);          
           tva = this.facture_with_tva ? 0 : 0.20;
           
-          this.facture_sous_total = `${this.calculerSousTotal(parseFloat(this.facture_montant), tva)} Ar`;
-          this.facture_tva = `${parseFloat(this.facture_sous_total) * tva} Ar`;
+          this.facture_sous_total = this.calculerSousTotal(parseFloat(this.facture_montant), tva);
+          this.facture_tva = `${numStr(parseFloat(this.facture_sous_total) * tva, ' ')} Ar`;
           // Fermez le modal ou effectuez d'autres actions avec les données
           // window.location.reload(); // Décommentez si vous souhaitez recharger la page
+          // Pour Affichage des montants
+          this.facture_sous_total = numStr(this.facture_sous_total, ' ') + ' Ar';
+          this.facture_montant = numStr(this.facture_montant, ' ') + ' Ar';
         })
         .catch(error => {
             // Gérer les erreurs de réseau
@@ -693,7 +696,7 @@
     var url = new URL(window.location.href);
     url.searchParams.set('dev_mois', filtreValue);
     window.location.href = url.href;
-  });
+  }); 
 
 </script>
 {% endblock content %}
