@@ -672,13 +672,17 @@ def modifier_entree(request, pk):
         date_transaction = request.POST.get('date')
         description = request.POST.get('description')
         montant = request.POST.get('montant')
+        beneficiaire_id = request.POST.get('beneficiaire')
         categorie_id = request.POST.get('categorie')
+        client = request.POST.get('client')
 
         # Mettre à jour l'objet entrée
         entree.date_transaction = date_transaction
         entree.description = description
         entree.montant = montant
+        entree.beneficiaire_id = beneficiaire_id
         entree.categorie_id = categorie_id
+        entree.client = client
 
         # Sauvegarder les modifications
         entree.save()
@@ -695,6 +699,7 @@ def modifier_entree(request, pk):
     context = {
         'entree': entree,
         'categories_entree': Categorie.objects.filter(type='entree'),
+        'beneficiaires': Beneficiaire.objects.all(),
     }
 
     # Rendre le template avec le contexte

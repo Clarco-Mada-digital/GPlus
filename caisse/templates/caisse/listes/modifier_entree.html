@@ -51,6 +51,29 @@
                         class="block flex-1 focus:ring-0 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                         required>
                 </div>
+                
+                <!-- Bénéficiaire -->
+                <div class="mb-4 w-[25%] shadow-sm border-gray-500 border-b-2">
+                    <select name="beneficiaire"
+                    class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full focus:ring-0 dark:bg-secondary dark:text-white dark:placeholder:text-gray-500">
+                    <option value disabled>Choisissez un bénéficiaire</option>
+                    {% for beneficiaire in beneficiaires %}
+                    <option value="{{ beneficiaire.id }}" {% if beneficiaire.id == entree.beneficiaire_id %}selected{% endif %}>
+                        {{ beneficiaire }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Client -->
+                <div
+                    class="mb-4 w-[45%] px-2 shadow-sm border-gray-500 border-b-2">
+                    <input type="text" name="client"
+                        value="{{ entree.client }}"
+                        placeholder="Client"
+                        class="block flex-1 focus:ring-0 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                        required>
+                </div>
 
                 <!-- Montant -->
                 <div class="mb-4 w-[25%] shadow-sm border-gray-500 border-b-2">
@@ -63,7 +86,7 @@
                 <!-- Catégorie -->
                 <div class="mb-4 w-[25%] shadow-sm border-gray-500 border-b-2">
                     <select name="categorie"
-                        class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full focus:ring-0">
+                        class="block flex-1 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full focus:ring-0 dark:bg-secondary dark:text-white dark:placeholder:text-gray-500">
                         <option value disabled>Choisissez une catégorie</option>
                         {% for categorie in categories_entree %}
                         <option value="{{ categorie.id }}" {% if categorie.id == entree.categorie_id %}selected{% endif %}>

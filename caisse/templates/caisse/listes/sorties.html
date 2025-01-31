@@ -265,8 +265,8 @@
                         </td>
                         <td class="py-1 px-4">{{ operation.categorie.name }}</td>
                         <td class="py-1 px-4">
-                            {% if operation.beneficiaire.name %}
-                                {{ operation.beneficiaire.name }}
+                            {% if operation.beneficiaire %}
+                                {{ operation.beneficiaire }}
                             {% else %}
                                 Bénéficiaire non spécifié
                             {% endif %}
