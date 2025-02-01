@@ -1,31 +1,27 @@
 from rest_framework import serializers
 
-from accounts.models import User
 from facture.models import Facture
 
-
-"""
-Les classes sérialiseurs est utilisée pour sérialiser les donnée envoyer ou reçu vie à l'api
-Elle permet le traîtement des JSONs
-"""
-
-#### Serialisateurs de User #####
-
-class UserSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'first_name', 'last_name']
+from facture.api.serializers.client import ClientListSerializer
+from facture.api.serializers.user import UserSerializer
 
 
-#### Serialisateurs de Facture #####
-
-# Utilisée pour sérialiser la liste des factures
+# Utilisée pour sérialiser la liste de facture
 class FactureListSerializer(serializers.ModelSerializer):
     
+    client = serializers.SerializerMethodField()
+
     class Meta:
         model = Facture
-        fields = ['id', 'ref', 'intitule', 'type', 'montant', 'etat_facture', 'date_facture']
+        fields = ['id', 'ref', 'intitule', 'type', 'montant', 'etat_facture', 'date_facture', 'client']
+
+    def get_client(self, instance):
+        queryset = instance.client
+        if queryset:   
+            serializer = ClientListSerializer(queryset)
+            return serializer.data
+        return None
+
 
 # Utilisée pour sérialiser les détails d'une facture
 class FactureDetailSerializer(serializers.ModelSerializer):

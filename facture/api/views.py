@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
 
-from facture.api.serializers import FactureListSerializer, FactureDetailSerializer
+from facture.api.serializers.facture import FactureListSerializer, FactureDetailSerializer
 
 from facture.models import Facture
 
