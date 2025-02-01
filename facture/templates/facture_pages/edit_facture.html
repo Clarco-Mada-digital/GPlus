@@ -198,8 +198,8 @@
   <div class="w-2/3 p-4" id="preview-facture">
     <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la facture</h2>
     <div class="bg-gray-700 dark:bg-gray-900 p-10 shadow-md rounded">
-      <div class="flex justify-center items-center mb-10">
-        <img src="/static/images/Logo mada-digital.png" alt="profil image" class="w-32 h-32 mb-3 rounded-full shadow-lg object-cover">
+      <div class="flex items-center">
+        <img src="/static/images/Logo mada-digital.png" alt="profil image" class="w-32 h-32 shadow-lg object-cover">
       </div>
       <div class="flex justify-between items-center mb-10">
         <div>
@@ -352,15 +352,16 @@
       tableBody.innerHTML += `
       <tr>
         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-            ${facture_services_json[key]['description']}
+          ${facture_services_json[key]['description']}
         </th>
         <td class="px-6 py-4">
-            ${numStr(facture_services_json[key]['prix'], ' ')}
+          ${numStr(facture_services_json[key]['prix'], ' ')}
         </td>
         <td class="px-6 py-4">
-            ${facture_services_json[key]['quantite']}
+          ${facture_services_json[key]['quantite']}
         </td>
         <td class="px-6 py-4">
+          ${numStr(facture_services_json[key]['prix'] * facture_services_json[key]['quantite'], ' ')}
         </td>
       </tr>
       `;
@@ -498,9 +499,9 @@
       const total = sousTotal + tva;
 
       document.getElementById('sous-total').textContent = numStr(sousTotal.toFixed(2), ' ') + ' Ar';
-      document.getElementById('tva').textContent = tva.toFixed(2) + ' Ar';
+      document.getElementById('tva').textContent = numStr(tva.toFixed(2), ' ') + ' Ar';
       document.getElementById('total').textContent = numStr(total.toFixed(2), ' ') + ' Ar';
-      document.getElementById('total-montant').textContent = numStr(total.toFixed(2), ' ') + ' Ar';
+      document.getElementById('total-montant').textContent = numStr(sousTotal.toFixed(2), ' ') + ' Ar';
       document.getElementById('total_input').value = total.toFixed(2);
       
   }
