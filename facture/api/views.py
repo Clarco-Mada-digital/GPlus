@@ -26,5 +26,5 @@ class FactureViewset(MultipleSerializerMixin, ModelViewSet): #! MultipleSerializ
     detail_serializer_class = FactureDetailSerializer # Sérialize pour les detailles d'une facture
 
     def get_queryset(self):
-        return Facture.objects.all()
+        return Facture.objects.all().order_by('-id')
 
