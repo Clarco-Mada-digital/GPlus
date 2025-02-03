@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework', ## Django REST Framework pour gerer les APIs
+    'rest_framework', # Django REST Framework pour gerer les APIs
+    'rest_framework_simplejwt', # JWT pour l'Autorisation vie a API
     "django_browser_reload",
     'tailwind',
     'theme',

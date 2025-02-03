@@ -1,4 +1,5 @@
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.permissions import IsAuthenticated
 
 from .serializers.facture import FactureListSerializer, FactureDetailSerializer
 from .serializers.client import ClientListSerializer
@@ -28,6 +29,9 @@ class FactureViewset(MultipleSerializerMixin, ModelViewSet): #! MultipleSerializ
     """
     FactureViewset: Utilisée pour gérer les factures
     """
+
+    permission_classes = [IsAuthenticated] #! On définit les permissions pour cette vue
+
     serializer_class = FactureListSerializer # Serializer par défaut, pour la List des factures
     detail_serializer_class = FactureDetailSerializer # Sérialize pour les detailles d'une facture
 
@@ -39,6 +43,9 @@ class ClientViewSet(ReadOnlyModelViewSet):
     """
     ClientViewSet: Utilisée pour gérer les clients
     """
+
+    permission_classes = [IsAuthenticated] #! On définit les permissions pour cette vue
+
     serializer_class = ClientListSerializer # Serializer par défaut, pour la List des factures
 
     def get_queryset(self):

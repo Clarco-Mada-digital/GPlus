@@ -6,4 +6,4 @@ from facture.api.views import ClientViewSet
 router = routers.SimpleRouter()
 
 router.register('facture', FactureViewset, basename='facture')
-router.register('facture-client', ClientViewSet, basename='facture-client')
+router.register('facture-client', ClientViewSet, basename='facture_client')

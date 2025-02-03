@@ -17,13 +17,14 @@ class FactureListSerializer(serializers.ModelSerializer):
         model = Facture
         fields = [
             'id', 'ref', 'intitule', 'type', 'client', 
-            'date_facture', 'reglement', 'condition', 
+            'date_facture', 'reglement', 'condition', 'created_by',
             'etat_facture', 'services', 'with_tva', 'montant'
         ]
-        read_only_fields = ['ref'] # Empêche la modification de ces champs
+        read_only_fields = ['ref', 'created_by'] # Empêche la modification de ces champs
 
     def create(self, validated_data): # Surcharge de la méthode create pour générer la référence de la facture
         validated_data['ref'] = self.generate_ref(validated_data)
+        validated_data['created_by'] = self.context['request'].user.id
         return super().create(validated_data)
 
     def generate_ref(self, data): # Génère la référence de la facture
