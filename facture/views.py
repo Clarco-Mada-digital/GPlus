@@ -15,7 +15,11 @@ import uuid
 # Create your views here.
 @login_required(login_url="accounts:login_user")
 def index(request):
-  today = timezone.now()
+  """Affiche la page d'index des factures.
+
+  Récupère et filtre les factures et les devis en fonction des paramètres de
+  recherche, puis les pagine pour l'affichage.
+  """
   mois = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
 
   # Récupération du filtre depuis le front
@@ -135,6 +139,11 @@ def get_on_facture(request):  # sourcery skip: avoid-builtin-shadow
   
 @login_required(login_url="accounts:login_user")
 def facture(request):
+  """Affiche la page de création de facture.
+
+  Récupère la liste des clients et des services, et les convertit en JSON pour
+  les utiliser dans le template 'facture_pages/facture.html'.
+  """
   client_id = request.GET.get('client_id')
   client = Client.objects.get(id=client_id) if client_id else None
   clients = Client.objects.all()
@@ -347,6 +356,11 @@ def supprimer_facture(request, pk):
 
 @login_required(login_url="accounts:login_user")
 def generate_pdf(request):
+  """Génère un PDF.
+
+  Génère un PDF à partir d'un contenu HTML et le renvoie en tant que réponse
+  HTTP.  Pour le moment, génère un PDF avec un contenu de test.
+  """
   # html = render(request, 'facture_pages/index.html')
   facure_id = request.GET.get('facture_id')
   html = "<div>Hello word</div>"
@@ -362,6 +376,11 @@ def generate_pdf(request):
 
 @login_required(login_url="accounts:login_user")
 def service(request):
+  """Affiche la page des services.
+
+  Récupère et filtre les services en fonction d'un terme de recherche, puis
+  les pagine pour l'affichage dans le template 'facture_pages/service.html'.
+  """
   if request.GET.get('search'):
     filter_search = request.GET.get('search')
     all_services = Service.objects.filter(nom_service__contains=filter_search)
@@ -441,15 +460,6 @@ def supprimer_service(request, pk):
     print("Erreur lors de la suppression:", e)
     messages.error(request, f"Erreur lors de la suppression: {str(e)}")
   return redirect('facture:service')
-
-# @login_required
-# def service(request):
-#   services = Service.objects.all()
-  
-#   context={
-#     'services':services,
-#   }
-#   return render(request, "facture_pages/service.html", context)
 
 @login_required(login_url="accounts:login_user")
 def modifier_article(request, pk):

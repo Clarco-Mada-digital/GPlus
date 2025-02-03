@@ -13,8 +13,14 @@ from .models import Client
 import datetime
 import json
 
-
+@login_required(login_url="accounts:login_user")
 def index(request):
+  """Affiche la page d'accueil avec des statistiques sur les clients.
+
+  Récupère tous les clients, compte le nombre de prospects, de clients et de
+  fournisseurs, et affiche le template 'client_pages/index.html' avec ces
+  données.
+  """
   clients = Client.objects.all()
   count_prospect = Client.objects.filter(type_client='Prospect').count()
   count_client = Client.objects.filter(type_client='Client').count()
@@ -27,10 +33,14 @@ def index(request):
   }
   return render(request, "client_pages/index.html", context)
 
-
 @require_POST
 @csrf_exempt
 def new_client(request):
+  """Crée un nouveau client.
+
+  Traite les données du formulaire POST, gère les horaires et enregistre le nouveau client dans la base de données. 
+  Redirige vers la liste des clients après l'enregistrement.
+  """
   if request.method == 'POST':
     horaires = {}
     form = ClientForm(request.POST, request.FILES)
@@ -66,9 +76,14 @@ def new_client(request):
 
   return redirect('client:client')
 
-
-@login_required
+@login_required(login_url="accounts:login_user")
 def edit_client(request, pk):
+  """Modifie un client existant.
+
+  Récupère le client avec la clé primaire (pk), traite les données du formulaire
+  si la méthode est POST, met à jour les informations du client et redirige vers
+  la liste des clients. Affiche le formulaire de modification si la méthode est GET.
+  """
   try:
     client = get_object_or_404(Client, pk=pk)
     horaires={}
@@ -109,10 +124,15 @@ def edit_client(request, pk):
     messages.error(request, f"Erreur lors de la modification: {str(e)}")
     return redirect('client:client')
 
-  
 @login_required
 @csrf_exempt
 def supprimer_client(request, pk):
+  """Supprime un client.
+
+  Récupère le client avec la clé primaire donnée (pk), le supprime de la base de
+  données et redirige vers la liste des clients. 
+  Gère les exceptions et affiche un message d'erreur si nécessaire.
+  """
   try:
     client = get_object_or_404(Client, pk=pk)
     nom_client = client.name # Sauvegarde le nom avant suppression
@@ -123,48 +143,54 @@ def supprimer_client(request, pk):
     messages.error(request, f"Erreur lors de la suppression du client: {str(e)}")
     return redirect('client:client')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def client_list(request):
-    # Récupérer le type de client et le terme de recherche depuis l'URL
-    type_client = request.GET.get('type')
-    search_query = request.GET.get('search', '')
+  """Affiche la liste des clients.
+
+  Récupère et filtre les clients en fonction du type et du terme de recherche.
+  Calcule les statistiques des clients et pagine les résultats. Affiche la
+  liste dans le template 'client_pages/client.html'.
+  """
+  # Récupérer le type de client et le terme de recherche depuis l'URL
+  type_client = request.GET.get('type')
+  search_query = request.GET.get('search', '')
     
     # Commencer avec tous les clients
-    clients = Client.objects.all()
-    
-    # Filtrer par type si spécifié
-    if type_client:
-        clients = clients.filter(type_client=type_client)
-        
-    # Filtrer par terme de recherche si présent
-    if search_query:      
-      clients = clients.filter(
-          Q(name__icontains=search_query) |
-          Q(commercial_name__icontains=search_query) |
-          Q(email__icontains=search_query) |
-          Q(tel__icontains=search_query)
-      )
-    # Statistiques pour la navigation
-    types_clients = Client.objects.values_list('type_client', flat=True).distinct()
-    stats_clients = {
-        'total': Client.objects.count(),
-        'types': {}
-    }
-    
-    for type_client in types_clients:
-        count = Client.objects.filter(type_client=type_client).count()
-        stats_clients['types'][type_client] = count
-        
-    paginator = Paginator(clients, 10) # Afficher les resultat par 10
+  clients = Client.objects.all()
   
-    page = request.GET.get('page')
-    clients = paginator.get_page(page)
-    clients_range = range(1, clients.paginator.num_pages +1)
+  # Filtrer par type si spécifié
+  if type_client:
+      clients = clients.filter(type_client=type_client)
+      
+  # Filtrer par terme de recherche si présent
+  if search_query:      
+    clients = clients.filter(
+        Q(name__icontains=search_query) |
+        Q(commercial_name__icontains=search_query) |
+        Q(email__icontains=search_query) |
+        Q(tel__icontains=search_query)
+    )
+  # Statistiques pour la navigation
+  types_clients = Client.objects.values_list('type_client', flat=True).distinct()
+  stats_clients = {
+      'total': Client.objects.count(),
+      'types': {}
+  }
+  
+  for type_client in types_clients:
+      count = Client.objects.filter(type_client=type_client).count()
+      stats_clients['types'][type_client] = count
+      
+  paginator = Paginator(clients, 10) # Afficher les resultat par 10
 
-    context = {
-        'clients_list': clients,
-        'stats_clients': stats_clients,
-        'search_query': search_query,  # Pour conserver la valeur dans le formulaire
-        'clients_range': clients_range,
-    }
-    return render(request, 'client_pages/client.html', context)
+  page = request.GET.get('page')
+  clients = paginator.get_page(page)
+  clients_range = range(1, clients.paginator.num_pages +1)
+
+  context = {
+      'clients_list': clients,
+      'stats_clients': stats_clients,
+      'search_query': search_query,  # Pour conserver la valeur dans le formulaire
+      'clients_range': clients_range,
+  }
+  return render(request, 'client_pages/client.html', context)
