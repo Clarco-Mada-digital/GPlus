@@ -35,10 +35,15 @@
               Filtre par mois
             </option>
             {% for mois in fact_mois_filtrable|slice:5 %}
-              <option 
+            <option 
+              
+              {% if mois_filtre == mois.id %}
+                selected
+              {% endif %}
+                
               value="{{ mois.id }}">
                 {{ mois.nom }}
-              </option>
+            </option>
             {% endfor %}
           </select>
           <select id="fact_filtre_annee" name="filtre" class="text-gray-500 bg-white border border-gray-300 w-40 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
@@ -46,7 +51,11 @@
               Filtre par année
             </option>          
             {% for annee in fact_annee_filtrable|slice:5 %}
-              <option value="{{ annee.id }}">
+              <option 
+              {% if annee_filtre == annee.id %}
+                selected
+              {% endif %}
+              value="{{ annee.id }}">
                 {{ annee.nom }}
               </option>
             {% endfor %}
@@ -76,7 +85,9 @@
             </svg>
           </div>
           <input
-            type="text"
+            @keydown.enter="window.location.href = '{% url 'facture:index' %}?fact_search=' + encodeURIComponent(fact_search)"
+            x-model="fact_search"
+            type="search"
             id="table-search"
             class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Rechercher des articles"
@@ -181,30 +192,34 @@
           {% endfor %}     
         </tbody>
       </table>
-      <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between py-5" aria-label="Table navigation">
-          <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Affichage <span class="font-semibold text-gray-900 dark:text-white">1-8</span> sur <span class="font-semibold text-gray-900 dark:text-white">1000</span></span>
+      <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between py-5 px-2" aria-label="Table navigation">
+          <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Affichage du Page <span class="font-semibold text-gray-900 dark:text-white"> {{ factures.number }} </span> sur <span class="font-semibold text-gray-900 dark:text-white">{{ factures.paginator.num_pages }}</span></span>
           <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+            {% if factures.has_previous %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Prev</a>
+                  <a href="?page_facture={{ factures.previous_page_number }}" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" >Prev</a>
               </li>
+            {% else %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+                <button type="button" disabled class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed" >Prev</button>
               </li>
+            {% endif %}
+            
+            {% comment %} {% for item in serv_rang %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
-              </li>
+                <a href="?page={{ services.page }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ item }}</a>
+              </li>              
+            {% endfor %} {% endcomment %}
+              
+            {% if factures.has_next %}
               <li>
-                  <a href="#" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+                <a href="?page_facture={{ factures.next_page_number }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Suiv</a>
               </li>
+            {% else %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
+                <button type="button" disabled class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed">Suiv</button>
               </li>
-              <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
-              </li>
-              <li>
-          <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Suiv</a>
-              </li>
+            {% endif %}
           </ul>
       </nav>
     </div>
@@ -356,8 +371,10 @@
               </option>
               {% for mois in dev_mois_filtrable|slice:5 %}
                 <option 
-                  selected="selected" if dev_mois_filtre == mois.id else ""
-                   value="{{ mois.id }}">
+                  {% if dev_mois_filtre == mois.id %}
+                    selected
+                  {% endif %}
+                  value="{{ mois.id }}">
                   {{ mois.nom }}
                 </option>
               {% endfor %}
@@ -368,7 +385,9 @@
               </option>          
               {% for annee in dev_annee_filtrable|slice:5 %}
                 <option 
-                  selected if dev_annee_filtre == mois.id else ""
+                  {% if dev_annee_filtre == annee.id %}
+                    selected
+                  {% endif %}
                   value="{{ annee.id }}">                
                   {{ annee.nom }}
                 </option>
@@ -399,7 +418,9 @@
             </svg>
           </div>
           <input
-            type="text"
+            @keydown.enter="window.location.href = '{% url 'facture:index' %}?dev_search=' + encodeURIComponent(dev_search)"
+            x-model="dev_search"
+            type="search"
             id="table-search"
             class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Rechercher des articles"
@@ -503,30 +524,34 @@
 
         </tbody>
       </table>
-      <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between py-5" aria-label="Table navigation">
-          <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Affichage <span class="font-semibold text-gray-900 dark:text-white">1-8</span> sur <span class="font-semibold text-gray-900 dark:text-white">1000</span></span>
+      <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between py-5 px-2" aria-label="Table navigation">
+          <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Affichage du Page <span class="font-semibold text-gray-900 dark:text-white"> {{ devis.number }} </span> sur <span class="font-semibold text-gray-900 dark:text-white">{{ devis.paginator.num_pages }}</span></span>
           <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+            {% if devis.has_previous %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Prev</a>
+                  <a href="?page_dev={{ devis.previous_page_number }}" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" >Prev</a>
               </li>
+            {% else %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+                <button type="button" disabled class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed" >Prev</button>
               </li>
+            {% endif %}
+            
+            {% comment %} {% for item in serv_rang %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
-              </li>
+                <a href="?page={{ services.page }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ item }}</a>
+              </li>              
+            {% endfor %} {% endcomment %}
+              
+            {% if devis.has_next %}
               <li>
-                  <a href="#" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+                <a href="?page_dev={{ devis.next_page_number }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Suiv</a>
               </li>
+            {% else %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
+                <button type="button" disabled class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed">Suiv</button>
               </li>
-              <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
-              </li>
-              <li>
-          <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Suiv</a>
-              </li>
+            {% endif %}
           </ul>
       </nav>
     </div>
@@ -539,6 +564,9 @@
   // Alpine.js  
   function factDataComponent(){
     return {
+      search:'',
+      fact_search:'{{ fact_search }}',
+      dev_search:'{{ dev_search }}',
       client_comercial_name: '',
       client_address: '',
       client_code_postal: '2343',

@@ -2,6 +2,7 @@ from io import BytesIO
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.contrib import messages
 from django.utils import timezone
 from clients.models import Client
@@ -12,17 +13,18 @@ import json
 import uuid
 
 # Create your views here.
-@login_required
+@login_required(login_url="accounts:login_user")
 def index(request):
   today = timezone.now()
-  years = range(today.year - 5, today.year + 1)
   mois = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
 
   # Récupération du filtre depuis le front
-  fact_annee_filtre = request.GET.get('fact_annee', None)
-  fact_mois_filtre = request.GET.get('fact_mois', None)
-  dev_annee_filtre = request.GET.get('dev_annee', None)
-  dev_mois_filtre = request.GET.get('dev_mois', None)
+  fact_annee_filtre = request.GET.get('fact_annee', 0)
+  fact_mois_filtre = request.GET.get('fact_mois', 0)
+  fact_search = request.GET.get('fact_search', "")
+  dev_annee_filtre = request.GET.get('dev_annee', 0)
+  dev_mois_filtre = request.GET.get('dev_mois', 0)
+  dev_search = request.GET.get('dev_search', "")
 
   # Filtrage des factures en fonction du filtre sélectionné
   all_facture = Facture.objects.all()
@@ -53,29 +55,42 @@ def index(request):
     factures = factures.filter(date_facture__year=fact_annee_filtre, type="Facture")
   if fact_mois_filtre:
     factures = factures.filter(date_facture__month=int(fact_mois_filtre), type="Facture")
+  if fact_search:
+    factures = factures.filter(intitule__contains=fact_search, type="Facture")
   # Devis filter
   if dev_annee_filtre:
     devis = devis.filter(date_facture__year=dev_annee_filtre, type="Devis")
   if dev_mois_filtre:
     devis = devis.filter(date_facture__month=int(dev_mois_filtre), type="Devis")
+  if dev_search:
+    devis = devis.filter(intitule__contains=dev_search, type="Devis")
+    
+  
+  paginator_fact = Paginator(factures, 10) # Afficher les resultat par 10
+  paginator_dev = Paginator(devis, 10) # Afficher les resultat par 10
+  page_facture = request.GET.get('page_facture')
+  factures = paginator_fact.get_page(page_facture)
+  page_dev = request.GET.get('page_dev')
+  devis = paginator_dev.get_page(page_dev)
 
   context = {
-    'years' : years,
     'factures' : factures,
     'devis' : devis,
     'fact_mois_filtrable': mois_filtrable,
     'dev_mois_filtrable': dev_mois_filtrable,
     'fact_annee_filtrable': annee_filtrable,
     'dev_annee_filtrable': dev_annee_filtrable,
-    'annee_filtre': fact_annee_filtre,
-    'mois_filtre': fact_mois_filtre,
+    'annee_filtre': int(fact_annee_filtre),
+    'mois_filtre': int(fact_mois_filtre),
     # Pour affichage dans le filtre
-    'dev_mois_filtre': dev_mois_filtre,
-    "dev_annee_filtre":dev_annee_filtre
+    'dev_mois_filtre': int(dev_mois_filtre),
+    "dev_annee_filtre": int(dev_annee_filtre),
+    "fact_search":fact_search,
+    "dev_search":dev_search
   }
   return render(request, "facture_pages/index.html", context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def get_on_facture(request):  # sourcery skip: avoid-builtin-shadow
   """
   Récupère une facture spécifique.
@@ -118,7 +133,7 @@ def get_on_facture(request):  # sourcery skip: avoid-builtin-shadow
       # Ajoutez d'autres champs nécessaires ici
     })
   
-@login_required
+@login_required(login_url="accounts:login_user")
 def facture(request):
   client_id = request.GET.get('client_id')
   client = Client.objects.get(id=client_id) if client_id else None
@@ -135,7 +150,7 @@ def facture(request):
   }
   return render(request, "facture_pages/facture.html", context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def ajouter_facture(request):
   """
   Vue pour l'ajout d'une nouvelle facture.
@@ -193,7 +208,7 @@ def ajouter_facture(request):
     messages.error(request, "Erreur lors de l'ajout de la facture. Veuillez vérifier les informations entrées.")
     return redirect('facture:facture')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def ajouter_Devis(request):
   """
   Vue pour l'ajout d'une nouvelle facture.
@@ -241,7 +256,7 @@ def ajouter_Devis(request):
     messages.error(request, "Erreur lors de l'ajout de la facture. Veuillez vérifier les informations entrées.")
     return redirect(request.META.get('HTTP_REFERER'))
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def modifier_facture(request, pk):
   """
   Vue pour la modification d'une facture.
@@ -309,7 +324,7 @@ def modifier_facture(request, pk):
     }
     return render(request, 'facture_pages/edit_facture.html', context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def supprimer_facture(request, pk):
   """
   Vue pour la suppression d'une facture.
@@ -330,7 +345,7 @@ def supprimer_facture(request, pk):
     messages.error(request, f"Erreur lors de la suppression: {str(e)}")
   return redirect('facture:index')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def generate_pdf(request):
   # html = render(request, 'facture_pages/index.html')
   facure_id = request.GET.get('facture_id')
@@ -345,16 +360,26 @@ def generate_pdf(request):
   context = {"facture_generate" : facure_id}
   return render(request, 'facture_pages/generate_pdf.html', context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def service(request):
-  services = Service.objects.all()
+  if request.GET.get('search'):
+    filter_search = request.GET.get('search')
+    all_services = Service.objects.filter(nom_service__contains=filter_search)
+  else:
+    all_services = Service.objects.all()
+  paginator = Paginator(all_services, 10) # Afficher les resultat par 10
+  
+  page = request.GET.get('page')
+  services = paginator.get_page(page)
+  serv_rang = range(1, services.paginator.num_pages +1)
   
   context={
     'services':services,
+    'serv_rang':serv_rang,
   }
   return render(request, "facture_pages/service.html", context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def ajouter_service(request):
   """
   Vue pour l'ajout d'un nouvel article.
@@ -375,7 +400,7 @@ def ajouter_service(request):
   else:
     messages.error(request, "Erreur lors de l'ajout de l'article. Veuillez vérifier les informations entrées.")
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def modifier_service(request, pk):
   """
   Vue pour la modification d'une facture.
@@ -396,7 +421,7 @@ def modifier_service(request, pk):
       return redirect('facture:service')
   return redirect('facture:service')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def supprimer_service(request, pk):
   """
   Vue pour la suppression d'une service.
@@ -417,16 +442,16 @@ def supprimer_service(request, pk):
     messages.error(request, f"Erreur lors de la suppression: {str(e)}")
   return redirect('facture:service')
 
-@login_required
-def service(request):
-  services = Service.objects.all()
+# @login_required
+# def service(request):
+#   services = Service.objects.all()
   
-  context={
-    'services':services,
-  }
-  return render(request, "facture_pages/service.html", context)
+#   context={
+#     'services':services,
+#   }
+#   return render(request, "facture_pages/service.html", context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def modifier_article(request, pk):
   """
   Vue pour la modification d'un article.
@@ -448,7 +473,7 @@ def modifier_article(request, pk):
     form = ServiceForm(instance=article)
   return render(request, "facture_pages/modifier_article.html", {"form": form})
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def supprimer_article(request, pk):
   """
   Vue pour la suppression d'un article.

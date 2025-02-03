@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
@@ -153,10 +154,17 @@ def client_list(request):
     for type_client in types_clients:
         count = Client.objects.filter(type_client=type_client).count()
         stats_clients['types'][type_client] = count
+        
+    paginator = Paginator(clients, 10) # Afficher les resultat par 10
+  
+    page = request.GET.get('page')
+    clients = paginator.get_page(page)
+    clients_range = range(1, clients.paginator.num_pages +1)
 
     context = {
         'clients_list': clients,
         'stats_clients': stats_clients,
         'search_query': search_query,  # Pour conserver la valeur dans le formulaire
+        'clients_range': clients_range,
     }
     return render(request, 'client_pages/client.html', context)
