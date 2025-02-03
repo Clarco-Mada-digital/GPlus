@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from facture.api.serializers.facture import FactureListSerializer, FactureDetailSerializer
-from facture.api.serializers.client import ClientListSerializer
+from .serializers.facture import FactureListSerializer, FactureDetailSerializer
+from .serializers.client import ClientListSerializer
 
 from facture.models import Facture
 from clients.models import Client

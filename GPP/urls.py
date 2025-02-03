@@ -21,10 +21,11 @@ from django.contrib import admin
 from django.urls import include, path
 from django.contrib.auth import views as auth_views
 
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .api.urls import router as api_router
+
 from theme.views import change_theme
 from caisse.views import index
-
-from facture.api.urls import router
 
 
 urlpatterns = [
@@ -37,7 +38,11 @@ urlpatterns = [
     path("client/", include("clients.urls", namespace='client')),          # Pour la module du clients et prospects
     path("__reload__/", include("django_browser_reload.urls")),
 
-    path('api/', include(router.urls)) # API base url
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # JWT token, necessaire pour acceder a l'API
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # JWT token refresh, necessaire pour acceder a l'API
+
+    # API base url
+    path('api/', include(api_router.urls)), 
 ]
 
 

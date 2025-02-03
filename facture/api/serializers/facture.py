@@ -2,8 +2,9 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from facture.models import Facture
-from facture.api.serializers.user import UserSerializer
-from facture.api.serializers.client import ClientDetailSerializer
+
+from .user import UserSerializer
+from .client import ClientDetailSerializer
 
 # Utilisée pour sérialiser la liste de facture
 class FactureListSerializer(serializers.ModelSerializer):
