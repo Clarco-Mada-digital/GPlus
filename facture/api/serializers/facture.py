@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from facture.models import Facture
 from facture.api.serializers.user import UserSerializer
+from facture.api.serializers.client import ClientDetailSerializer
 
 # Utilisée pour sérialiser la liste de facture
 class FactureListSerializer(serializers.ModelSerializer):
@@ -13,7 +14,11 @@ class FactureListSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Facture
-        fields = ['id', 'ref', 'intitule', 'type', 'client', 'date_facture', 'reglement', 'condition', 'etat_facture', 'services', 'with_tva', 'montant']
+        fields = [
+            'id', 'ref', 'intitule', 'type', 'client', 
+            'date_facture', 'reglement', 'condition', 
+            'etat_facture', 'services', 'with_tva', 'montant'
+        ]
         read_only_fields = ['ref'] # Empêche la modification de ces champs
 
     def create(self, validated_data): # Surcharge de la méthode create pour générer la référence de la facture
@@ -39,13 +44,29 @@ class FactureListSerializer(serializers.ModelSerializer):
 
 # Utilisée pour sérialiser les détails d'une facture
 class FactureDetailSerializer(serializers.ModelSerializer):
-
+    """
+    FactureDetailSerializer: Utilisée pour sérialiser les détails d'une facture
+    Gère les requêtes GET, PUT et DELETE sur /api/facture/<pk>/
+    Pour une requête PUT & DELETE il est escentiel de mettre le '/' à la fin de l'url api/facture/<pk> sinon il y aura une erreur
+    """
     created_by = serializers.SerializerMethodField() # Vas permettre l'obtention des information de l'utilisateur à l'auteur de la facture
-
+    client = serializers.SerializerMethodField() # Vas permettre l'obtention des information du client de la facture
+    
     class Meta:
         model = Facture
-        fields = ['id', 'ref', 'intitule', 'type', 'montant', 'etat_facture', 'date_facture',
-                  'services', 'with_tva', 'created_by']
+        fields = [
+            'id', 'ref', 'intitule', 'type', 'client', 'date_facture', 
+            'reglement', 'condition', 'etat_facture', 'services', 
+            'with_tva', 'created_by',  'montant'
+        ]
+        read_only_fields = ['ref', 'created_by', 'client'] # Empêche la modification de ces champs
+
+    def get_client(self, instance): # Methode qui selectionne le client de la facture
+        queryset = instance.client
+        if queryset:
+            serializer = ClientDetailSerializer(queryset) # Sérialise l'instance de 'client' par le ClientDetailSerializer
+            return serializer.data
+        return None
 
     def get_created_by(self, instance): # Methode qui selectionnel l'utilisateur qui à créer la facture
         queryset = instance.created_by # Fait référence au propriéte "created_by" défini au debut de la class

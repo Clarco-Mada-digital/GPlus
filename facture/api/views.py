@@ -1,15 +1,18 @@
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from facture.api.serializers.facture import FactureListSerializer, FactureDetailSerializer
+from facture.api.serializers.client import ClientListSerializer
 
 from facture.models import Facture
+from clients.models import Client
 
-"""
-Cette classe mixin permet de définir un sérialiseur différent pour les vues de détail.
-Si l'action est 'retrieve' (récupérer un objet unique), elle utilise la classe de sérialiseur
-spécifiée dans 'detail_serializer_class'. Sinon, elle utilise la classe de sérialiseur par défaut.
-"""
+
 class MultipleSerializerMixin:
+    """
+    Cette classe mixin permet de définir un sérialiseur différent pour les vues de détail.
+    Si l'action est 'retrieve' (récupérer un objet unique), elle utilise la classe de sérialiseur
+    spécifiée dans 'detail_serializer_class'. Sinon, elle utilise la classe de sérialiseur par défaut.
+    """
 
     detail_serializer_class = None
 
@@ -20,11 +23,24 @@ class MultipleSerializerMixin:
         # Sinon, utiliser la classe de sérialiseur par défaut
         return super().get_serializer_class()
     
-class FactureViewset(MultipleSerializerMixin, ModelViewSet): #! MultipleSerializerMixin doit être mis avant tout autre class
 
+class FactureViewset(MultipleSerializerMixin, ModelViewSet): #! MultipleSerializerMixin doit être mis avant tout autre class
+    """
+    FactureViewset: Utilisée pour gérer les factures
+    """
     serializer_class = FactureListSerializer # Serializer par défaut, pour la List des factures
     detail_serializer_class = FactureDetailSerializer # Sérialize pour les detailles d'une facture
 
     def get_queryset(self):
         return Facture.objects.all().order_by('-id')
+
+
+class ClientViewSet(ReadOnlyModelViewSet):
+    """
+    ClientViewSet: Utilisée pour gérer les clients
+    """
+    serializer_class = ClientListSerializer # Serializer par défaut, pour la List des factures
+
+    def get_queryset(self):
+        return Client.objects.all()
 
