@@ -306,6 +306,7 @@
           calculerTotal();
       });
   }
+  
 
   // Fonction pour calculer les totaux
   function calculerTotal() {
@@ -317,7 +318,7 @@
           const prix = parseFloat(article.querySelector('.article-prix').value) || 0;
           const totalArticle = quantite * prix;
           
-          article.querySelector('.article-total').value = totalArticle.toFixed(2) + ' Ar';
+          article.querySelector('.article-total').value = numStr(totalArticle.toFixed(2), ' ') + ' Ar';
           sousTotal += totalArticle;
       });
 
@@ -328,9 +329,9 @@
       }
       const total = sousTotal + tva;
 
-      document.getElementById('sous-total').textContent = sousTotal.toFixed(2) + ' Ar';
-      document.getElementById('tva').textContent = tva.toFixed(2) + ' Ar';
-      document.getElementById('total').textContent = total.toFixed(2) + ' Ar';
+      document.getElementById('sous-total').textContent = numStr(sousTotal.toFixed(2), ' ') + ' Ar';
+      document.getElementById('tva').textContent = numStr(tva.toFixed(2), ' ') + ' Ar';
+      document.getElementById('total').textContent = numStr(total.toFixed(2), ' ') + ' Ar';
       document.getElementById('total_input').value = total.toFixed(2);
   }
 

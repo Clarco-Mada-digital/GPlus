@@ -1,4 +1,5 @@
 {% extends 'layouts/facture_layout.html' %} 
+{% load humanize %}
 {% block title_page %} Facture & Devis {% endblock title_page %} 
 {% block content %}
 
@@ -34,10 +35,15 @@
               Filtre par mois
             </option>
             {% for mois in fact_mois_filtrable|slice:5 %}
-              <option 
+            <option 
+              
+              {% if mois_filtre == mois.id %}
+                selected
+              {% endif %}
+                
               value="{{ mois.id }}">
                 {{ mois.nom }}
-              </option>
+            </option>
             {% endfor %}
           </select>
           <select id="fact_filtre_annee" name="filtre" class="text-gray-500 bg-white border border-gray-300 w-40 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
@@ -45,7 +51,11 @@
               Filtre par année
             </option>          
             {% for annee in fact_annee_filtrable|slice:5 %}
-              <option value="{{ annee.id }}">
+              <option 
+              {% if annee_filtre == annee.id %}
+                selected
+              {% endif %}
+              value="{{ annee.id }}">
                 {{ annee.nom }}
               </option>
             {% endfor %}
@@ -75,7 +85,9 @@
             </svg>
           </div>
           <input
-            type="text"
+            @keydown.enter="window.location.href = '{% url 'facture:index' %}?fact_search=' + encodeURIComponent(fact_search)"
+            x-model="fact_search"
+            type="search"
             id="table-search"
             class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Rechercher des articles"
@@ -134,7 +146,7 @@
             <td class="px-6 py-4">{{ facture.reglement }}</td>
             <td class="px-6 py-4">{{ facture.condition }}</td>
             <td class="px-6 py-4">{{ facture.etat_facture }}</td>
-            <td class="px-6 py-4">Ar {{ facture.montant }}</td>
+            <td class="px-6 py-4">Ar {{ facture.montant|intcomma }}</td>
             <td class="px-6 py-4 flex items-center">
               <a href="{% url 'facture:edit_facture' facture.id %}" target='_blank' type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
                 <svg class="w-7 h-7 text-blue-700 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h8.925l-2 2H5v14h14v-6.95l2-2V19q0 .825-.587 1.413T19 21zm4-6v-4.25l9.175-9.175q.3-.3.675-.45t.75-.15q.4 0 .763.15t.662.45L22.425 3q.275.3.425.663T23 4.4t-.137.738t-.438.662L13.25 15zM21.025 4.4l-1.4-1.4zM11 13h1.4l5.8-5.8l-.7-.7l-.725-.7L11 11.575zm6.5-6.5l-.725-.7zl.7.7z"/></svg>
@@ -180,30 +192,34 @@
           {% endfor %}     
         </tbody>
       </table>
-      <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between py-5" aria-label="Table navigation">
-          <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Affichage <span class="font-semibold text-gray-900 dark:text-white">1-8</span> sur <span class="font-semibold text-gray-900 dark:text-white">1000</span></span>
+      <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between py-5 px-2" aria-label="Table navigation">
+          <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Affichage du Page <span class="font-semibold text-gray-900 dark:text-white"> {{ factures.number }} </span> sur <span class="font-semibold text-gray-900 dark:text-white">{{ factures.paginator.num_pages }}</span></span>
           <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+            {% if factures.has_previous %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Prev</a>
+                  <a href="?page_facture={{ factures.previous_page_number }}" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" >Prev</a>
               </li>
+            {% else %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+                <button type="button" disabled class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed" >Prev</button>
               </li>
+            {% endif %}
+            
+            {% comment %} {% for item in serv_rang %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
-              </li>
+                <a href="?page={{ services.page }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ item }}</a>
+              </li>              
+            {% endfor %} {% endcomment %}
+              
+            {% if factures.has_next %}
               <li>
-                  <a href="#" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+                <a href="?page_facture={{ factures.next_page_number }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Suiv</a>
               </li>
+            {% else %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
+                <button type="button" disabled class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed">Suiv</button>
               </li>
-              <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
-              </li>
-              <li>
-          <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Suiv</a>
-              </li>
+            {% endif %}
           </ul>
       </nav>
     </div>
@@ -297,7 +313,7 @@
                               </td>
                               <td class="px-6 py-4 article-quantite" data-value="service.quantite" x-text="service.quantite">
                               </td>
-                              <td class="px-6 py-4 article-total" x-text="parseFloat(service.prix) * parseFloat(service.quantite)">
+                              <td class="px-6 py-4 article-total" x-text="numStr(parseFloat(service.prix) * parseFloat(service.quantite), ' ')">
                               </td>
                             </tr>
                           </template>
@@ -355,8 +371,10 @@
               </option>
               {% for mois in dev_mois_filtrable|slice:5 %}
                 <option 
-                  selected="selected" if dev_mois_filtre == mois.id else ""
-                   value="{{ mois.id }}">
+                  {% if dev_mois_filtre == mois.id %}
+                    selected
+                  {% endif %}
+                  value="{{ mois.id }}">
                   {{ mois.nom }}
                 </option>
               {% endfor %}
@@ -367,7 +385,9 @@
               </option>          
               {% for annee in dev_annee_filtrable|slice:5 %}
                 <option 
-                  selected if dev_annee_filtre == mois.id else ""
+                  {% if dev_annee_filtre == annee.id %}
+                    selected
+                  {% endif %}
                   value="{{ annee.id }}">                
                   {{ annee.nom }}
                 </option>
@@ -398,7 +418,9 @@
             </svg>
           </div>
           <input
-            type="text"
+            @keydown.enter="window.location.href = '{% url 'facture:index' %}?dev_search=' + encodeURIComponent(dev_search)"
+            x-model="dev_search"
+            type="search"
             id="table-search"
             class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Rechercher des articles"
@@ -502,30 +524,34 @@
 
         </tbody>
       </table>
-      <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between py-5" aria-label="Table navigation">
-          <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Affichage <span class="font-semibold text-gray-900 dark:text-white">1-8</span> sur <span class="font-semibold text-gray-900 dark:text-white">1000</span></span>
+      <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between py-5 px-2" aria-label="Table navigation">
+          <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Affichage du Page <span class="font-semibold text-gray-900 dark:text-white"> {{ devis.number }} </span> sur <span class="font-semibold text-gray-900 dark:text-white">{{ devis.paginator.num_pages }}</span></span>
           <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+            {% if devis.has_previous %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Prev</a>
+                  <a href="?page_dev={{ devis.previous_page_number }}" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" >Prev</a>
               </li>
+            {% else %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+                <button type="button" disabled class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed" >Prev</button>
               </li>
+            {% endif %}
+            
+            {% comment %} {% for item in serv_rang %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
-              </li>
+                <a href="?page={{ services.page }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ item }}</a>
+              </li>              
+            {% endfor %} {% endcomment %}
+              
+            {% if devis.has_next %}
               <li>
-                  <a href="#" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+                <a href="?page_dev={{ devis.next_page_number }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Suiv</a>
               </li>
+            {% else %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
+                <button type="button" disabled class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed">Suiv</button>
               </li>
-              <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
-              </li>
-              <li>
-          <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Suiv</a>
-              </li>
+            {% endif %}
           </ul>
       </nav>
     </div>
@@ -538,6 +564,9 @@
   // Alpine.js  
   function factDataComponent(){
     return {
+      search:'',
+      fact_search:'{{ fact_search }}',
+      dev_search:'{{ dev_search }}',
       client_comercial_name: '',
       client_address: '',
       client_code_postal: '2343',
@@ -601,17 +630,20 @@
           this.facture_emission_date = data.facture_emission_date;
           this.facture_reglement = data.facture_reglement;
           this.facture_etat = data.facture_etat;
-          this.facture_montant = `${data.facture_montant} Ar`;
+          this.facture_montant = `${data.facture_montant}`;
           this.facture_condition = data.facture_condition;  
           this.facture_with_tva = data.facture_with_tva;
           let services = data.facture_services;
           this.facture_services = JSON.parse(services);          
           tva = this.facture_with_tva ? 0 : 0.20;
           
-          this.facture_sous_total = `${this.calculerSousTotal(parseFloat(this.facture_montant), tva)} Ar`;
-          this.facture_tva = `${parseFloat(this.facture_sous_total) * tva} Ar`;
+          this.facture_sous_total = this.calculerSousTotal(parseFloat(this.facture_montant), tva);
+          this.facture_tva = `${numStr(parseFloat(this.facture_sous_total) * tva, ' ')} Ar`;
           // Fermez le modal ou effectuez d'autres actions avec les données
           // window.location.reload(); // Décommentez si vous souhaitez recharger la page
+          // Pour Affichage des montants
+          this.facture_sous_total = numStr(this.facture_sous_total, ' ') + ' Ar';
+          this.facture_montant = numStr(this.facture_montant, ' ') + ' Ar';
         })
         .catch(error => {
             // Gérer les erreurs de réseau
@@ -693,7 +725,7 @@
     var url = new URL(window.location.href);
     url.searchParams.set('dev_mois', filtreValue);
     window.location.href = url.href;
-  });
+  }); 
 
 </script>
 {% endblock content %}

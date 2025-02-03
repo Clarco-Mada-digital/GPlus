@@ -1,6 +1,7 @@
 {% load tailwind_tags %}
 {% load static %}
 {% load humanize %}
+{% load currency_format %}
 <!DOCTYPE html>
 <html lang="fr" class="{% if is_dark_theme %}dark{% endif %}">
     <head>
@@ -326,6 +327,22 @@
                     toastDanger.style.display = 'none';
                 }
             }, 5000); // 3000 millisecondes = 3 secondes
+
+            // Pour la separateur du milieu.
+            function numStr(a, b) {
+                a = '' + a;
+                b = b || ' ';
+                var c = '',
+                    d = 0;
+                while (a.match(/^0[0-9]/)) {
+                a = a.substr(1);
+                }
+                for (var i = a.length-1; i >= 0; i--) {
+                c = (d != 0 && d % 3 == 0) ? a[i] + b + c : a[i] + c;
+                d++;
+                }
+                return c;
+            }
         </script>
     </body>
 </html>
