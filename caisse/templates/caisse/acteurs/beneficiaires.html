@@ -157,9 +157,9 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <h3 class="text-lg font-semibold dark:text-white"
-                            x-text="beneficiaire.name || (personnels.find(p => p.id === beneficiaire.personnel_id)?.first_name + ' ' + personnels.find(p => p.id === beneficiaire.personnel_id)?.last_name)"></h3>
+                            x-text="beneficiaire.name || (personnels.find(p => p.id === beneficiaire.personnel)?.first_name + ' ' + personnels.find(p => p.id === beneficiaire.personnel)?.last_name)"></h3>
                         <p class="text-gray-500 dark:text-gray-400"
-                            x-text="beneficiaire.personnel_id ? 'Personnel interne' : 'Bénéficiaire externe'"></p>
+                            x-text="beneficiaire.personnel ? 'Personnel interne' : 'Bénéficiaire externe'"></p>
                     </div>
                     <div class="flex space-x-2">
                         <a
