@@ -287,7 +287,7 @@
                                 <div class="h-10 bg-table dark:bg-gray-600" style="width: 1px;"></div>
     
                                 <!-- Icône de suppression -->
-                                <a href="{% url 'caisse:supprimer_sortie' 'liste_sorties' operation.id %}" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie ?');">
+                                <a href="{% url 'caisse:supprimer_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie ?');">
                                     <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M13.097 15.7002H4.51158C3.83421 15.7002 3.2851 15.1629 3.2851 14.5002V3.7002H14.3234V14.5002C14.3234 15.1629 13.7743 15.7002 13.097 15.7002Z" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
                                         <path d="M6.96576 12.1003V7.30029" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
@@ -368,7 +368,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                             </svg>
                         </a>
-                        <a href="{% url 'caisse:supprimer_sortie' 'liste_sorties' operation.id %}" 
+                        <a href="{% url 'caisse:supprimer_sortie' operation.id %}" 
                            class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie ?');">
                             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">

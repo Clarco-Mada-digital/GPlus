@@ -560,8 +560,6 @@ def ajouts_entree(request):
         beneficiaires_ids = request.POST.get('beneficiaire-entree')
         clients = request.POST.getlist('client')
 
-        print(beneficiaires_ids, Beneficiaire.objects.get(id=beneficiaires_ids))
-
         # Vérifier la cohérence des données
         if not all([dates, designations, montants, categories_ids]):
             messages.error(request, "Veuillez remplir toutes les lignes du formulaire.")
@@ -754,36 +752,36 @@ def modifier_sortie(request, pk):
 
 #Suppression des entrées
 @login_required
-def supprimer_entree(request, page_name, pk):
+def supprimer_entree(request, pk):
     """
     Supprime une opération d'entrée ou de sortie en fonction de son ID.
     """
-    print(page_name)
 
     operation = OperationEntrer.objects.get(pk=pk)
     
     operation.delete()
     UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé une opération entrée')
     messages.success(request, "L'opération a été supprimée avec succès.")
+
+    ligne = request.GET.get('lignes')
+    print(ligne)
+    print(request.META.get('HTTP_REFERER'))
     
-    return redirect(f'caisse:{page_name}')
+    return redirect(request.META.get('HTTP_REFERER'))
 
 #Suppression des sorties
 @login_required
-def supprimer_sortie(request, page_name, pk):
+def supprimer_sortie(request, pk):
     """
     Supprime une opération d'entrée ou de sortie en fonction de son ID.
     """
-
-    print(page_name)
 
     operation = OperationSortir.objects.get(pk=pk)
     
     operation.delete()
     UserActivity.objects.create(user=request.user, action='Suprression', description='a supprimé une opération sortie')
     messages.success(request, "L'opération a été supprimée avec succès.")
-    
-    return redirect(f'caisse:{page_name}')
+    return redirect(request.META.get('HTTP_REFERER'))
 
 # Add this new view
 @login_required
@@ -1163,7 +1161,6 @@ def liste_entrees(request):
 
     # Pagination
     lignes_par_page = str(request.GET.get('lignes', 10))  # Valeur par défaut : 10
-    print(lignes_par_page)
     paginator = Paginator(entrees, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
