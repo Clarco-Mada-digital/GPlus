@@ -1100,6 +1100,7 @@ def liste_entrees(request):
     # Récupérer les filtres de recherche et de triage
     query = request.GET.get('q')
     categorie_id = request.GET.get('categorie')
+    beneficiaire_id = request.GET.get('beneficiaire')
     mois = request.GET.get('mois')
     sort_by = request.GET.get('sort', 'date')  # Trier par date par défaut
     ordre = request.GET.get('order', 'desc')  # Ordre décroissant par défaut
@@ -1153,6 +1154,7 @@ def liste_entrees(request):
         
     # Récupérer uniquement les catégories de type "entrée" pour les options de filtrage
     categories = Categorie.objects.filter(type="entree")
+    beneficiaires = Beneficiaire.objects.all()
     
     # Charger le template
     template = loader.get_template('caisse/listes/entrees.html')
@@ -1168,12 +1170,14 @@ def liste_entrees(request):
     context = {
         'page_obj': page_obj,
         'categories': categories,
+        'beneficiaires': beneficiaires,
         'prix': "Ar",
         'sort_by': sort_by,
         'ordre': ordre,
         'lignes_par_page': lignes_par_page,
         'query': query,
         'categorie_id': categorie_id,
+        'beneficiaire_id': beneficiaire_id,
         'mois_liste': mois_liste, 
         'mois': mois, 
     }

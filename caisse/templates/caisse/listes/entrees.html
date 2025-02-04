@@ -114,7 +114,7 @@
                         <option value="">Bénéficiaires</option>
                         {% for beneficiaire in beneficiaires %}
                         <option value="{{ beneficiaire.id }}" {% if request.GET.beneficiaire == beneficiaire.id|stringformat:"s" %}selected{% endif %}>
-                            {{ beneficiaire.name }}
+                            {{ beneficiaire }}
                         </option>
                         {% endfor %}
                     </select>

@@ -4627,14 +4627,6 @@ select {
   --tw-ring-offset-color: #1f2937;
 }
 
-.dark\:placeholder\:text-white\/50:is(.dark *)::-moz-placeholder {
-  color: rgb(255 255 255 / 0.5);
-}
-
-.dark\:placeholder\:text-white\/50:is(.dark *)::placeholder {
-  color: rgb(255 255 255 / 0.5);
-}
-
 .dark\:placeholder\:text-gray-500:is(.dark *)::-moz-placeholder {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity));
@@ -4643,6 +4635,14 @@ select {
 .dark\:placeholder\:text-gray-500:is(.dark *)::placeholder {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity));
+}
+
+.dark\:placeholder\:text-white\/50:is(.dark *)::-moz-placeholder {
+  color: rgb(255 255 255 / 0.5);
+}
+
+.dark\:placeholder\:text-white\/50:is(.dark *)::placeholder {
+  color: rgb(255 255 255 / 0.5);
 }
 
 .odd\:dark\:bg-gray-900:is(.dark *):nth-child(odd) {
