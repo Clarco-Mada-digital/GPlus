@@ -144,6 +144,7 @@ def facture(request):
   Récupère la liste des clients et des services, et les convertit en JSON pour
   les utiliser dans le template 'facture_pages/facture.html'.
   """
+  front_view = request.GET.get('view', 'facture')
   client_id = request.GET.get('client_id')
   client = Client.objects.get(id=client_id) if client_id else None
   clients = Client.objects.all()
@@ -152,6 +153,7 @@ def facture(request):
   for service in services_list:
       service['prix_unitaire'] = float(service['prix_unitaire'])  # Conversion
   context = {
+    "front_view": front_view,
     "clients_list" : clients,
     "services_list" : services,
     "services_json" : json.dumps(services_list),
@@ -500,3 +502,8 @@ def supprimer_article(request, pk):
     article.delete()
     return render(request, "facture_pages/supprimer_article.html", {"message": "Article supprimé avec succès."})
   return render(request, "facture_pages/supprimer_article.html", {"article": article})
+
+
+@login_required(login_url="accounts:login_user")
+def settings(request):
+  return render(request, "facture_pages/settings.html")

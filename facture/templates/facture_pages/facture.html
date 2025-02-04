@@ -2,7 +2,7 @@
 {% block title_page %} Nouveaux facture&Devis {% endblock title_page %}
 {% block content %}
 
-<div x-data="{ facture_view: true }">
+<div x-data="factDataComponent()" x-init="init()" x-cloak>
 
   {% comment %} <div class="flex w-full items-center justify-center">
     <div class="my-4 inline-flex rounded-md shadow-sm" role="group">
@@ -35,7 +35,7 @@
         Facture
         <input id="factForm" name="type" type="radio" class="hidden" value="Facture">
       </label>
-      <label x-on:click="facture_view = false" for="devisForm" type="button" :class="!facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-blue-200 rounded-e-lg hover:bg-blue-300 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-blue-800 dark:border-blue-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white'">
+      <label x-on:click="facture_view = false" for="devisForm" type="button" :class="!facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-emerald-200 rounded-e-lg hover:bg-emerald-300 hover:text-emerald-700 focus:z-10 focus:text-emerald-700 dark:bg-emerald-800 dark:border-emerald-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-emerald-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:text-emerald-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-emerald-500 dark:focus:text-white'">
         <svg class="w-3 h-3 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
           <path d="M14.707 7.793a1 1 0 0 0-1.414 0L11 10.086V1.5a1 1 0 0 0-2 0v8.586L6.707 7.793a1 1 0 1 0-1.414 1.414l4 4a1 1 0 0 0 1.416 0l4-4a1 1 0 0 0-.002-1.414Z"/>
           <path d="M18 12h-2.55l-2.975 2.975a3.5 3.5 0 0 1-4.95 0L4.55 12H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2Zm-3 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
@@ -71,7 +71,8 @@
 
       <!-- Détails de la facture -->
       <div class="mb-8">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Détails de la facture</h2>
+        <h2 x-show="facture_view" class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Détails de la facture</h2>
+        <h2 x-show="!facture_view" class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Détails du devis</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="col-span-3">
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="numero">
@@ -137,7 +138,7 @@
               >
             </div>            
             <div class="w-1/4">
-              <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
+              <button type="button" :class="facture_view ? 'bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700' : 'bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700'" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
                 Ajouter un service
             </button>
             </div>
@@ -149,7 +150,7 @@
         <div id="articles-container" class="relative space-y-4 my-4">
           {% comment %} Les articles affiche ici {% endcomment %}
         </div>
-        <button type="button" id="ajouterArticle" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">          
+        <button type="button" id="ajouterArticle" :class="facture_view ? 'text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800' : 'text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800'">          
           <svg class="w-3.5 h-3.5 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/>
           </svg>
           Ajouter une ligne libre
@@ -176,13 +177,13 @@
 
       <!-- Boutons d'action -->
       <div class="flex justify-end space-x-4">
-        <a href="{% url 'facture:index' %}" type="button" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700">
+        <a href="{% url 'facture:index' %}" type="button" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red/60 dark:bg-red/60 dark:hover:bg-red/70">
           Annuler
         </a>
-        <button x-show="facture_view" type="submit" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700">
+        <button x-show="facture_view" type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
           Créer la facture
         </button>
-        <button x-show="!facture_view" type="submit" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700">
+        <button x-show="!facture_view" type="submit" class="bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700">
           Créer la devis
         </button>
       </div>
@@ -237,6 +238,17 @@
 </div>
 
 <script defer>
+// Alpine.js  
+  function factDataComponent(){
+    return {
+      front_view: "{{ front_view }}",
+      init(){
+        // Charger les données depuis localStorage
+        this.facture_view = this.front_view == 'facture' ? true : false;
+      },
+    }
+  }
+
   document.getElementById('date').value = new Date().toISOString().slice(0, 10);
   
   document.getElementById('calculate_with_tva').addEventListener('change', function() {

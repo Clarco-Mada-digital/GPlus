@@ -300,3 +300,7 @@ media/
 migrations/
 theme/static/
 theme/static_src/
+
+# Pour mes doc de sauvegard
+sauvegard/
+*.sql
