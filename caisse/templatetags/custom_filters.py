@@ -15,12 +15,3 @@ def to_json(value):
         'is_staff': value.is_staff,
         'is_active': value.is_active
     }, cls=DjangoJSONEncoder)
-
-# Custom filter to format numbers with space separator
-@register.filter
-def space_separated(value):
-    try:
-        value = int(value)
-        return f"{value:,}".replace(",", " ")
-    except (ValueError, TypeError):
-        return value

@@ -329,13 +329,16 @@ def depenses(request):
 
     # Dépenses par employé
     depenses_par_employe = operations.values(
-        'beneficiaire__personnel__first_name', 
-        'beneficiaire__personnel__last_name'
+        'beneficiaire'
     ).annotate(
         total_depenses=Sum('montant'),
         nombre_depenses=Count('id'),
         categorie_plus_depensee=models.F('categorie__name')
     ).order_by('-total_depenses')
+    for index in range(len(depenses_par_employe)):
+        depenses_par_employe[index]['beneficiaire'] = Beneficiaire.objects.get(id=int(depenses_par_employe[index]['beneficiaire']))
+    
+    print(depenses_par_employe)
 
     # Dépenses par catégorie
     depenses_par_categorie = operations.values(
