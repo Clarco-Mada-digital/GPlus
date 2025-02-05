@@ -171,3 +171,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 NPM_BIN_PATH = "/home/malcovys/.nvm/versions/node/v22.11.0/bin/npm"
 
 AUTH_USER_MODEL = "accounts.user"
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication', # Classe d'authentifaction pour Rest Framework
+    ]
+}
