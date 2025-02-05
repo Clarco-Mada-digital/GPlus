@@ -1,4 +1,5 @@
 from django.http import HttpResponse, JsonResponse
+from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -1480,9 +1481,26 @@ def beneficiaires(request):
     """
     beneficiaires = Beneficiaire.objects.all()
     personnels = Personnel.objects.all()
-    
+    sort_by = request.GET.get('sort')
+    order = request.GET.get('order')
+
+    print(sort_by, order)
+
     beneficiaires_json = json.loads(serialize('json', beneficiaires))
     personnels_json = json.loads(serialize('json', personnels))
+    valeur = [(str(beneficiaire), beneficiaire.id) for beneficiaire in beneficiaires]
+    if sort_by and order:
+        if order == 'asc':
+            valeur.sort()
+        elif order == 'desc':
+            valeur.sort(reverse=True)
+        else:
+            messages.error(request, "Ordre de tri non valide.")
+            return redirect('caisse:beneficiaires')
+
+    beneficiaires_sorted = sorted(beneficiaires, key=lambda b: next((i for i, v in enumerate(valeur) if v[1] == b.id), len(valeur)))
+    print(beneficiaires_sorted)
+    beneficiaires_json = json.loads(serialize('json', beneficiaires_sorted))
     
     context = {
         'beneficiaires': json.dumps([{**item['fields'], 'id': item['pk']} for item in beneficiaires_json]),
@@ -1528,37 +1546,43 @@ def creer_beneficiaire(request):
 @login_required
 @require_POST
 @csrf_exempt
-def modifier_beneficiaire(request, pk):
+def modifier_beneficiaire(request: WSGIRequest, pk):
     beneficiaire = get_object_or_404(Beneficiaire, pk=pk)
-    data = json.loads(request.body)
+    import urllib.parse
+
+    # La chaîne de requête encodée en URL
+    query_string = request.body
+
+    print(query_string)
+
+    # Décoder la chaîne de requête
+    decoded_string = query_string.decode('utf-8')
+    data = urllib.parse.parse_qs(decoded_string)
     
     try:
-        personnel_id = data.get('personnel_id')
-        if personnel_id:
-            beneficiaire.personnel = Personnel.objects.get(pk=personnel_id)
-            beneficiaire.name = None
-        else:
-            beneficiaire.personnel = None
-            beneficiaire.name = data.get('name')
-            
-        beneficiaire.save()
-        
-        UserActivity.objects.create(
-            user=request.user, 
-            action='Modification', 
-            description='a modifié un bénéficiaire'
-        )
-        
-        return JsonResponse({
-            'success': True,
-            'beneficiaire': {
-                'id': beneficiaire.id,
-                'personnel_id': personnel_id,
-                'name': beneficiaire.name or f"{beneficiaire.personnel.first_name} {beneficiaire.personnel.last_name}"
-            }
-        })
+        personnel_id = int(data.get('personnel_id')[0])
+        beneficiaire.personnel = Personnel.objects.get(id=personnel_id)
+        beneficiaire.name = None
+
+    except TypeError:
+        beneficiaire.personnel = None
+        beneficiaire.name = data.get('name')[0]
+
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+        messages.error(request, f"Erreur lors de la modification du bénéficiaire.")
+        return redirect(request.META.get('HTTP_REFERER'))
+        
+    beneficiaire.save()
+    
+    UserActivity.objects.create(
+        user=request.user, 
+        action='Modification', 
+        description='a modifié un bénéficiaire'
+    )
+
+    messages.success(request, "Bénéficiaire modifié avec succès.")
+    
+    return redirect('caisse:beneficiaires')
 
 @login_required
 @require_POST
@@ -1583,6 +1607,7 @@ def editer_beneficiaire(request, pk):
     personnels = Personnel.objects.all()
     
     context = {
+        'id': int(pk),
         'beneficiaire': beneficiaire,
         'personnels': personnels,
     }

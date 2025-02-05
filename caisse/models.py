@@ -141,7 +141,7 @@ class OperationEntrer(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return f"{self.description} - {self.montant} - {self.benef} - {self.client}"  
+        return f"{self.description} - {self.montant} - {self.beneficiaire} - {self.client}"  
 
 # Modèle pour les sorties
 class OperationSortir(models.Model):
