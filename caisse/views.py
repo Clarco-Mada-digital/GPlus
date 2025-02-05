@@ -278,7 +278,6 @@ def listes(request):
 
     # Pagination
     lignes_par_page = str(request.GET.get('lignes', 10)) # Valeur par défaut : 10
-    print(lignes_par_page)
     operations = sorted(
         chain(entree, sortie),
         key=lambda x: (
@@ -764,8 +763,6 @@ def supprimer_entree(request, pk):
     messages.success(request, "L'opération a été supprimée avec succès.")
 
     ligne = request.GET.get('lignes')
-    print(ligne)
-    print(request.META.get('HTTP_REFERER'))
     
     return redirect(request.META.get('HTTP_REFERER'))
 

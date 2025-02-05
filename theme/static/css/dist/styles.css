@@ -1426,6 +1426,10 @@ select {
   z-index: 10;
 }
 
+.z-20 {
+  z-index: 20;
+}
+
 .z-30 {
   z-index: 30;
 }
@@ -1438,8 +1442,8 @@ select {
   z-index: 50;
 }
 
-.z-20 {
-  z-index: 20;
+.-z-10 {
+  z-index: -10;
 }
 
 .col-span-1 {
@@ -1956,6 +1960,10 @@ select {
   max-height: 100%;
 }
 
+.max-h-\[calc\(100vh-250px\)\] {
+  max-height: calc(100vh - 250px);
+}
+
 .min-h-64 {
   min-height: 16rem;
 }
@@ -2212,6 +2220,10 @@ select {
 
 .max-w-xs {
   max-width: 20rem;
+}
+
+.max-w-\[100px\] {
+  max-width: 100px;
 }
 
 .flex-1 {
@@ -3371,6 +3383,14 @@ select {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-\[10px\] {
+  font-size: 10px;
+}
+
+.text-\[11px\] {
+  font-size: 11px;
 }
 
 .font-bold {
@@ -5154,6 +5174,10 @@ select {
     display: flex;
   }
 
+  .lg\:h-5 {
+    height: 1.25rem;
+  }
+
   .lg\:w-1\/2 {
     width: 50%;
   }
@@ -5164,6 +5188,18 @@ select {
 
   .lg\:w-7\/12 {
     width: 58.333333%;
+  }
+
+  .lg\:w-full {
+    width: 100%;
+  }
+
+  .lg\:w-5 {
+    width: 1.25rem;
+  }
+
+  .lg\:max-w-\[200px\] {
+    max-width: 200px;
   }
 
   .lg\:grid-cols-3 {
@@ -5180,6 +5216,10 @@ select {
 
   .lg\:flex-col {
     flex-direction: column;
+  }
+
+  .lg\:gap-2 {
+    gap: 0.5rem;
   }
 
   .lg\:space-x-0 > :not([hidden]) ~ :not([hidden]) {
@@ -5202,6 +5242,21 @@ select {
   .lg\:py-10 {
     padding-top: 2.5rem;
     padding-bottom: 2.5rem;
+  }
+
+  .lg\:text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .lg\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .lg\:text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
   }
 }
 
