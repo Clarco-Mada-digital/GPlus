@@ -1,8 +1,11 @@
 <!-- templates/dashboard.htm  %}-->
 {% extends 'layout/layout.html' %}
+{% load static %}
 {% load humanize %}
 {% block title_page %}Tableau De Bord{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/custom_scrollbar.css' %}">
+
 <div class="container mx-auto px-4 py-8">
     <!-- Cartes des totaux -->
     <form method="get" action="{% url 'caisse:index' %}?year={{ selected_year }}" class="mb-8">
@@ -151,15 +154,14 @@
     <!-- Graphiques inférieurs -->
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
+        <!-- Statistiques des sorties par catégories -->
         <div class>
             <h2
-                class="text-lg font-semibold mb-4 text-gray-800 dark:text-white underline decoration underline-offset-4">Statistiques
-                des sorties par
-                catégories</h2>
+                class="text-lg font-semibold mb-4 text-gray-800 dark:text-white underline decoration underline-offset-4">
+                Statistiques des sorties par catégories</h2>
             <div class="bg-white dark:bg-secondary rounded-2xl p-6">
 
-                <div class="h-[250px]">
+                <div class="h-[300px]">
                     <canvas id="sortiesCategoriesChart"></canvas>
                 </div>
                 <div class="mt-4 text-end">
@@ -177,11 +179,131 @@
                 </div>
             </div>
         </div>
+
+        <!-- Visualisation des sorties par mois -->
         <div class>
             <h2
-                class="text-lg font-semibold mb-4 text-gray-800 dark:text-white underline decoration underline-offset-4">Visualisation
-                des entrées de
-                ces 4 derniers mois</h2>
+                class="text-lg font-semibold mb-4 text-gray-800 dark:text-white underline decoration underline-offset-4">
+                Visualisation des sorties par mois
+            </h2>
+            <div class="bg-white dark:bg-secondary rounded-2xl p-6">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr
+                                class="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-white">
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
+                                <th
+                                    class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Montant</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div class="overflow-y-auto" style="height: 260px;">
+                        <table class="min-w-full">                            
+                            <tbody
+                                class="bg-white dark:bg-secondary dark:text-white divide-y divide-gray-200 dark:divide-gray-700"
+                                id="sortiesParMois">
+                                <!-- Rempli par JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mt-4 text-end">
+                    <a href="{% url 'caisse:details_sorties' %}?year={{ selected_year }}"
+                        class="inline-flex items-center text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300">
+                        <span>Voir l'historique détaillé des sorties</span>
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 ml-2" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques des entrées par catégories -->
+        <div class>
+            <h2
+                class="text-lg font-semibold mb-4 text-gray-800 dark:text-white underline decoration underline-offset-4">
+                Statistiques des entrées par catégories
+            </h2>
+            <div class="bg-white dark:bg-secondary rounded-2xl p-6">
+
+                <div class="h-[300px]">
+                    <canvas id="entreesCategoriesChart"></canvas>
+                </div>
+                <div class="mt-4 text-end">
+                    <a href="{% url 'caisse:details_entrees' %}?year={{ selected_year }}"
+                        class="inline-flex items-center text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300">
+                        <span>Voir l'historique détaillé des entrées</span>
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 ml-2" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualisation des entrées par mois -->
+        <div class>
+            <h2
+            class="text-lg font-semibold mb-4 text-gray-800 dark:text-white underline decoration underline-offset-4">
+            Visualisation des entrées par mois
+            </h2>
+            <div class="bg-white dark:bg-secondary rounded-2xl p-6">
+
+            <div>
+                <table class="min-w-full">
+                <thead>
+                    <tr
+                    class="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-white">
+                    <th
+                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
+                    <th
+                        class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Montant</th>
+                    </tr>
+                </thead>
+                </table>
+                <div class="overflow-y-auto" style="height: 260px;">
+                    <table class="min-w-full">
+                        <tbody
+                            class="bg-white dark:bg-secondary dark:text-white divide-y divide-gray-200 dark:divide-gray-700"
+                            id="entreesParMois">
+                            <!-- Rempli par JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-4 text-end">
+                <a href="{% url 'caisse:details_entrees' %}?year={{ selected_year }}"
+                class="inline-flex items-center text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300">
+                <span>Voir l'historique détaillé des entrées</span>
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 ml-2" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                    clip-rule="evenodd" />
+                </svg>
+                </a>
+            </div>
+            </div>
+        </div>
+
+        <!-- Visualisation des entrées de 4 derniers mois -->
+        <div class>
+            <h2
+                class="text-lg font-semibold mb-4 text-gray-800 dark:text-white underline decoration underline-offset-4">
+                Visualisation des entrées de 4 derniers mois
+            </h2>
             <div class="bg-white dark:bg-secondary rounded-2xl p-6">
 
                 <div class="overflow-x-auto">
@@ -217,6 +339,48 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Visualisation des sorties de 4 derniers mois -->
+        <div class>
+            <h2
+                class="text-lg font-semibold mb-4 text-gray-800 dark:text-white underline decoration underline-offset-4">
+                Visualisation des sorties de 4 derniers mois
+            </h2>
+            <div class="bg-white dark:bg-secondary rounded-2xl p-6">
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr
+                                class="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-white">
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Date</th>
+                                <th
+                                    class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Montant</th>
+                            </tr>
+                        </thead>
+                        <tbody
+                            class="bg-white dark:bg-secondary dark:text-white divide-y divide-gray-200 dark:divide-gray-700"
+                            id="sorties4Mois">
+                            <!-- Rempli par JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4 text-end">
+                    <a href="{% url 'caisse:details_sorties' %}?year={{ selected_year }}"
+                        class="inline-flex items-center text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300">
+                        <span>Voir l'historique détaillé des sorties</span>
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 ml-2" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -227,7 +391,9 @@
     const sortiesParMois = JSON.parse('{{ sorties_par_mois|safe }}');
     const soldesParMois = JSON.parse('{{ soldes_par_mois|safe }}');
     const sortiesCategories = JSON.parse('{{ sorties_categories|escapejs }}');
+    const entreesCategories = JSON.parse('{{ entrees_categories|escapejs }}');
     const entrees4Mois = JSON.parse('{{ entrees_4_mois|safe }}');
+    const sorties4Mois = JSON.parse('{{ sorties_4_mois|safe }}');
 
     // Graphique Résumé du mois
     new Chart(document.getElementById('resumeMoisChart'), {
@@ -312,8 +478,8 @@
     // Créer une variable pour stocker l'instance du graphique
     let sortiesCategoriesChart;
 
-    // Fonction pour créer la configuration du graphique
-    function createChartConfig() {
+    // Fonction pour créer la configuration du graphique de sorties
+    function sortiesChartConfig() {
         const isDarkMode = document.documentElement.classList.contains('dark');
         const textColor = isDarkMode ? '#FFFFFF' : '#374151';
 
@@ -380,26 +546,112 @@
             }
         };
     }
+    
+    // Fonction pour créer la configuration du graphique d'entrées
+    function entreesChartConfig() {
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        const textColor = isDarkMode ? '#FFFFFF' : '#374151';
 
-    // Initialiser le graphique
+        return {
+            type: 'doughnut',
+            data: {
+                labels: entreesCategories.map(item => item.categorie),
+                datasets: [{
+                    data: entreesCategories.map(item => item.total),
+                    backgroundColor: [
+                        '#4040FF',    // Bleu principal
+                        '#16DBCC',    // Turquoise
+                        '#FF82AC',    // Rose
+                        '#FFB800',    // Orange
+                    ],
+                    borderWidth: 0,
+                    borderRadius: 10,
+                    spacing: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        position: 'left',
+                        labels: {
+                            color: textColor,
+                            usePointStyle: false,
+                            padding: 15,
+                            font: {
+                                size: 15,
+                                weight: 'bold'
+                            },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const value = data.datasets[0].data[i];
+                                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        
+                                        return {
+                                            text: `${label} ${percentage}%`,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            index: i,
+                                            fontColor: textColor // Forcer la couleur du texte
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
+                    },
+                    tooltip: {
+                        titleColor: textColor,
+                        bodyColor: textColor,
+                        backgroundColor: isDarkMode ? '#1f2937' : '#fff',
+                        borderColor: isDarkMode ? '#374151' : '#e5e7eb',
+                        displayColors: true
+                    }
+                }
+            }
+        };
+    }
+
+    // Initialiser le graphique de sorties
     sortiesCategoriesChart = new Chart(
         document.getElementById('sortiesCategoriesChart'),
-        createChartConfig()
+        sortiesChartConfig()
     );
 
-    // Ajouter un écouteur pour le changement de thème
+    // Ajouter un écouteur pour le changement de thème du graphique de sorties
     document.addEventListener('dark-mode', function() {
         if (sortiesCategoriesChart) {
             sortiesCategoriesChart.destroy();
         }
         sortiesCategoriesChart = new Chart(
             document.getElementById('sortiesCategoriesChart'),
-            createChartConfig()
+            sortiesChartConfig()
+        );
+    });
+    
+    // Initialiser le graphique d'entrées
+    sortiesCategoriesChart = new Chart(
+        document.getElementById('entreesCategoriesChart'),
+        entreesChartConfig()
+    );
+
+    // Ajouter un écouteur pour le changement de thème du graphique d'entrées
+    document.addEventListener('dark-mode', function() {
+        if (entreesCategoriesChart) {
+            entreesCategoriesChart.destroy();
+        }
+        entreesCategoriesChart = new Chart(
+            document.getElementById('entreesCategoriesChart'),
+            entreesChartConfig()
         );
     });
 
-    // Remplir le tableau des 4 derniers mois
-    const tableBody = document.getElementById('entrees4mois');
+    // Remplir le tableau des entrées des 4 derniers mois
+    const entrees4MoisElement = document.getElementById('entrees4mois');
     if (entrees4Mois && entrees4Mois.length > 0) {
         entrees4Mois.forEach(entree => {
             const row = document.createElement('tr');
@@ -411,7 +663,7 @@
                     Ar ${entree.total.toLocaleString('fr-FR')}
                 </td>
             `;
-            tableBody.appendChild(row);
+            entrees4MoisElement.appendChild(row);
         });
     } else {
         // Afficher un message si aucune donnée n'est disponible
@@ -421,7 +673,85 @@
                 Aucune entrée pour les 4 derniers mois
             </td>
         `;
-        tableBody.appendChild(row);
+        entrees4MoisElement.appendChild(row);
+    }
+    
+    // Remplir le tableau des sorties des 4 derniers mois
+    const sorties4MoisElement = document.getElementById('sorties4Mois');
+    if (sorties4Mois && sorties4Mois.length > 0) {
+        sorties4Mois.forEach(sortie => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    ${sortie.mois}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right dark:text-gray-400 transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    Ar ${sortie.total.toLocaleString('fr-FR')}
+                </td>
+            `;
+            sorties4MoisElement.appendChild(row);
+        });
+    } else {
+        // Afficher un message si aucune donnée n'est disponible
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-white">
+                Aucune entrée pour les 4 derniers mois
+            </td>
+        `;
+        sorties4MoisElement.appendChild(row);
+    }
+    
+    // Remplir le tableau des entrées par mois
+    const entreesParMoisElement = document.getElementById('entreesParMois');
+    if (entreesParMois && entreesParMois.length > 0) {
+        entreesParMois.forEach(entree => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    ${entree.mois}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right dark:text-gray-400 transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    Ar ${entree.total.toLocaleString('fr-FR')}
+                </td>
+            `;
+            entreesParMoisElement.appendChild(row);
+        });
+    } else {
+        // Afficher un message si aucune donnée n'est disponible
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-white">
+                Aucune entrée pour les 4 derniers mois
+            </td>
+        `;
+        entreesParMoisElement.appendChild(row);
+    }
+    
+    // Remplir le tableau des sorties par mois
+    const sortiesParMoisElement = document.getElementById('sortiesParMois');
+    if (sortiesParMois && sortiesParMois.length > 0) {
+        sortiesParMois.forEach(sortie => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    ${sortie.mois}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right dark:text-gray-400 transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    Ar ${sortie.total.toLocaleString('fr-FR')}
+                </td>
+            `;
+            sortiesParMoisElement.appendChild(row);
+        });
+    } else {
+        // Afficher un message si aucune donnée n'est disponible
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-white">
+                Aucune entrée pour les 4 derniers mois
+            </td>
+        `;
+        sortiesParMoisElement.appendChild(row);
     }
 </script>
 {% endblock %}

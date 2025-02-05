@@ -1956,12 +1956,116 @@ select {
   height: 100svh;
 }
 
+.h-\[\] {
+  height: ;
+}
+
+.h-\[300\] {
+  height: 300;
+}
+
+.h-\[210px\] {
+  height: 210px;
+}
+
+.h-\[200px\] {
+  height: 200px;
+}
+
+.h-\[212px\] {
+  height: 212px;
+}
+
+.h-\[2x\] {
+  height: 2x;
+}
+
+.h-\[20x\] {
+  height: 20x;
+}
+
+.h-\[250x\] {
+  height: 250x;
+}
+
+.h-\[250px-10\] {
+  height: 250px-10;
+}
+
+.h-\[260px\] {
+  height: 260px;
+}
+
+.h-\[200\] {
+  height: 200;
+}
+
+.h-\[2\] {
+  height: 2;
+}
+
+.h-\[225\] {
+  height: 225;
+}
+
+.h-\[225px\] {
+  height: 225px;
+}
+
+.h-\[150\] {
+  height: 150;
+}
+
+.h-\[150px\] {
+  height: 150px;
+}
+
+.h-\[0px\] {
+  height: 0px;
+}
+
+.h-\[290px\] {
+  height: 290px;
+}
+
+.h-\[340px\] {
+  height: 340px;
+}
+
+.h-\[350px\] {
+  height: 350px;
+}
+
+.h-\[500px\] {
+  height: 500px;
+}
+
 .max-h-full {
   max-height: 100%;
 }
 
 .max-h-\[calc\(100vh-250px\)\] {
   max-height: calc(100vh - 250px);
+}
+
+.max-h-96 {
+  max-height: 24rem;
+}
+
+.max-h-\[300px\] {
+  max-height: 300px;
+}
+
+.max-h-\[50\] {
+  max-height: 50;
+}
+
+.max-h-\[200px\] {
+  max-height: 200px;
+}
+
+.max-h-\[250px\] {
+  max-height: 250px;
 }
 
 .min-h-64 {

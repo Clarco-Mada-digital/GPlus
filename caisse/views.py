@@ -147,16 +147,32 @@ def index(request):
     ).annotate(
         total=Sum('montant')
     ).order_by('-total')[:5])
+    
+    # Données pour le graphique des catégories d'entrées
+    entrees_categories = list(OperationEntrer.objects.filter(
+        date_transaction__gte=first_day_of_year,
+        date_transaction__lte=last_day_of_year
+    ).values(
+        'categorie__name'
+    ).annotate(
+        total=Sum('montant')
+    ).order_by('-total')[:5])
 
-    # Formater les données des catégories
-    formatted_categories = [{
+    # Formater les données des sorties par catégories
+    formatted_sorties_categories = [{
         'categorie': item['categorie__name'],
         'total': float(item['total'] or Decimal('0'))
     } for item in sorties_categories]
+    
+    # Formater les données des entrées par catégories
+    formatted_entrees_categories = [{
+        'categorie': item['categorie__name'],
+        'total': float(item['total'] or Decimal('0'))
+    } for item in entrees_categories]
 
     # Calculer les totaux pour le contexte
-    total_entrees = sum(entrees_dict.values(), Decimal('0'))
-    total_sorties = sum(sorties_dict.values(), Decimal('0'))
+    # total_entrees = sum(entrees_dict.values(), Decimal('0'))
+    # total_sorties = sum(sorties_dict.values(), Decimal('0'))
 
     # Liste des années disponibles pour le formulaire de sélection
     years = range(today.year - 5, today.year + 1)  # Par exemple, les 5 dernières années
@@ -166,11 +182,13 @@ def index(request):
         'solde_actuel': float(solde_cumule),
         'total_entrees': float(total_entrees_mois),  # Total des entrées de l'année sélectionnée
         'total_sorties': float(total_sorties_mois),  # Total des sorties de l'année sélectionnée
-        'entrees_par_mois': json.dumps(formatted_entrees),
-        'sorties_par_mois': json.dumps(formatted_sorties),
+        'entrees_par_mois': json.dumps(formatted_entrees[::-1]),
+        'sorties_par_mois': json.dumps(formatted_sorties[::-1]),
         'soldes_par_mois': json.dumps(soldes_par_mois),
-        'sorties_categories': json.dumps(formatted_categories),
+        'sorties_categories': json.dumps(formatted_sorties_categories),
+        'entrees_categories': json.dumps(formatted_entrees_categories),
         'entrees_4_mois': json.dumps(formatted_entrees[-4:][::-1]) if formatted_entrees else json.dumps([]),
+        'sorties_4_mois': json.dumps(formatted_sorties[-4:][::-1]) if formatted_sorties else json.dumps([]),
         'years': years,
         'selected_year': selected_year,
     }
