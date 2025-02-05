@@ -2,13 +2,14 @@ from io import BytesIO
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Count, Sum
 from clients.models import Client
-from .models import Service, Facture
-from .forms import FactureForm, ServiceForm
+from .models import Service, Facture, Entreprise
+from .forms import FactureForm, ServiceForm, EntrepriseForm
 from xhtml2pdf import pisa
 from datetime import datetime, timedelta
 import json
@@ -34,6 +35,7 @@ def index(request):
 
   # Filtrage des factures en fonction du filtre sélectionné
   all_facture = Facture.objects.all()
+  entreprise = Entreprise.objects.get(pk=1) 
 
   factures = all_facture.filter(type="Facture")
   devis = all_facture.filter(type="Devis")  
@@ -102,6 +104,7 @@ def index(request):
     'dev_annee_filtrable': dev_annee_filtrable,
     'annee_filtre': int(fact_annee_filtre),
     'mois_filtre': int(fact_mois_filtre),
+    'entreprise': entreprise,
     # Pour affichage dans le filtre
     'dev_mois_filtre': int(dev_mois_filtre),
     "dev_annee_filtre": int(dev_annee_filtre),
@@ -146,7 +149,7 @@ def get_on_facture(request):  # sourcery skip: avoid-builtin-shadow
       'client_desc_facture': facture.client.description_facture,
       'facture_ref': facture.ref,
       'facture_intitule': facture.intitule,
-      'facture_emission_date': facture.date_facture,
+      'facture_date': facture.date_facture,
       'facture_reglement': facture.reglement,
       'facture_etat': facture.etat_facture,
       'facture_montant': facture.montant,
@@ -345,13 +348,15 @@ def modifier_facture(request, pk):
   elif request.method == 'GET':
     user = request.user
     services = Service.objects.all() 
+    entreprise = Entreprise.objects.get(pk=1) 
     services_list = list(services.values('id', 'nom_service', 'prix_unitaire', 'description'))
     for service in services_list:
       service['prix_unitaire'] = float(service['prix_unitaire'])  # Conversion
     context = {
       'facture': facture,
       'user': user,
-      "services_json" : json.dumps(services_list)
+      "services_json" : json.dumps(services_list),
+      "entreprise": entreprise
     }
     return render(request, 'facture_pages/edit_facture.html', context)
 
@@ -523,11 +528,13 @@ def supprimer_article(request, pk):
     return render(request, "facture_pages/supprimer_article.html", {"message": "Article supprimé avec succès."})
   return render(request, "facture_pages/supprimer_article.html", {"article": article})
 
-
 @login_required(login_url="accounts:login_user")
 def settings(request):
-  return render(request, "facture_pages/settings.html")
-
+  entreprise = Entreprise.objects.get(pk=1) if Entreprise.objects.exists() else None
+  context = {
+    'entreprise' : entreprise 
+  }
+  return render(request, "facture_pages/settings.html", context)
 
 # Partie Statistique
 @login_required(login_url="accounts:login_user")
@@ -566,3 +573,26 @@ def statistique_facture(request):
 
   # Retourner les résultats sous forme de JSON
   return JsonResponse(resultats, safe=False)
+
+@login_required(login_url="accounts:login_user")
+@require_POST
+def modifier_entreprise(request):
+  if Entreprise.objects.exists():
+    entreprise = get_object_or_404(Entreprise, pk=1)
+    form = EntrepriseForm(request.POST, instance=entreprise)
+  else:
+    form = EntrepriseForm(request.POST)
+  
+  if form.is_valid():
+    try:
+      entreprise = form.save(commit=False)
+      print(entreprise)
+      if 'logo' in request.FILES:
+        entreprise.logo = request.FILES['logo']
+      entreprise.save()
+      messages.success(request, "Modification avec success")
+    except Exception as e:
+      print('error' + e)
+  else:
+    print("Erreurs de validation:", form.errors)
+  return redirect(request.META.get('HTTP_REFERER')) 

@@ -314,18 +314,20 @@
                 <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la facture</h2>
                 <div class="dark:bg-gray-900 shadow-md rounded">
                 <div  id="facture_content" class="p-10 m-0">
-                  <div class="flex items-center">
-                    <img src="/static/images/Logo mada-digital.png" alt="profil image" class="w-32 shadow-lg object-cover">
-                  </div>
-                  <div class="flex justify-between items-center mb-4">
+                  {% if entreprise.logo %}
+                    <div class="flex items-center">
+                      <img src="{{ entreprise.logo.url }}" alt="profil image" class="h-32 shadow-lg object-cover">
+                    </div>
+                  {% endif %}
+                  <div class="flex justify-between items-center mb-10">
                     <div>
                       {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info client</h3> {% endcomment %}
-                      <p class="text-gray-900 dark:text-gray-400">Nom d'entreprise : <span>MADA-Digital</span></p>
-                      <p class="text-gray-900 dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
-                      <p class="text-gray-900 dark:text-gray-400">Adresse : <span>12 rue de la boule</span></p>
-                      <p class="text-gray-900 dark:text-gray-400">Code postal : <span>75010 - Paris</span></p>
-                      <p class="text-gray-900 dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
-                      <p class="text-gray-900 dark:text-gray-400">N° STAT : <span>12345678901234</span></p>
+                      <p class="dark:text-gray-400">Nom d'entreprise : <span>{{ entreprise.nom }}</span></p>
+                      <p class="dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
+                      <p class="dark:text-gray-400">Adresse : <span>{{ entreprise.adresse }}</span></p>
+                      <p class="dark:text-gray-400">Code postal : <span>{{ entreprise.code_postal}} - {{ entreprise.region }}</span></p>
+                      <p class="dark:text-gray-400">N° NIF : <span>{{ entreprise.nif }}</span></p>
+                      <p class="dark:text-gray-400">N° STAT : <span>{{ entreprise.stat }}</span></p>          
                     </div>
                     <div>
                       <pre x-show="client_desc_facture" id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled x-text="client_desc_facture"></pre>
@@ -345,8 +347,9 @@
                     {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Détail du facture</h3> {% endcomment %}
                     <p class="text-emerald-800 text-md font-bold">Facture N° : <span x-text="facture_ref"></span></p>
                     <div class="flex items-center justify-start text-inherit">
-                      <p>Date d'emission : <span x-text="facture_emission_date"></span></p>
-                      <p class="ml-40">Règlement : <span x-text="facture_reglement"></span></p>
+                      <p class="dark:text-gray-400">Date facturation : <span x-text="facture_date"></span></p>
+                      <p class="dark:text-gray-400 ml-5">Date échéance : <span x-text="facture_condition"></span></p>
+                      <p class="dark:text-gray-400 ml-40">Règlement : <span x-text="facture_reglement"></span></p>
                     </div>
             
                     {% comment %} Tableau details de facture {% endcomment %}
@@ -656,6 +659,7 @@
       client_email: '',
       client_desc_facture: '',
       facture_ref: '',
+      facture_date: '',
       facture_intitule: '',
       facture_emission_date: '',
       facture_reglement: '',
@@ -817,8 +821,9 @@
           this.client_email = data.client_email;
           this.client_desc_facture = data.client_desc_facture;
           this.facture_ref = data.facture_ref;
+          this.facture_date = data.facture_date;
           this.facture_intitule = data.facture_intitule;
-          this.facture_emission_date = data.facture_emission_date;
+          this.facture_date = data.facture_date;
           this.facture_reglement = data.facture_reglement;
           this.facture_etat = data.facture_etat;
           this.facture_montant = `${data.facture_montant}`;

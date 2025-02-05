@@ -1,3 +1,5 @@
+import re
+from django.forms import ValidationError
 from django.db import models
 from clients.models import Client
 from accounts.models import User
@@ -41,7 +43,7 @@ class Facture(models.Model):
     ref = models.CharField(max_length=200, verbose_name="Réf. du facture", null=True)
     intitule = models.CharField(max_length=200, verbose_name="Intitulé du facture")
     reglement = models.CharField(max_length=200, blank=True, choices=REGLEMENT_CHOICES, verbose_name="Règlement")
-    condition = models.CharField(max_length=200, blank=True, verbose_name="Condition")
+    condition = models.DateField(blank=True, verbose_name="Condition")
     condition_reglement = models.CharField(max_length=200, choices=CONDITION_REGLEMENT_CHOICES, null=True, default=None, blank=True, verbose_name="Condition de règlement")
     montant = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Montant")
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="Client", null=True, blank=True, db_constraint=False)
@@ -69,3 +71,28 @@ class Service(models.Model):
     def __str__(self):
         return f"{self.nom_service} - Prix unitaire: {self.prix_unitaire}"
 
+class Entreprise(models.Model):    
+    logo = models.ImageField(upload_to='photos/', blank=True)
+    nom = models.CharField(max_length=200, verbose_name="Nom d'entreprise")
+    tel = models.CharField(max_length=15, default="+261", verbose_name="Téléphone")
+    email = models.EmailField()
+    adresse = models.CharField(max_length=100, null=True, verbose_name="Adresse")
+    region = models.CharField(max_length=100, null=True, verbose_name="Région")
+    code_postal = models.CharField(max_length=10, null=True, blank=True, verbose_name="Code postal")
+    nif = models.CharField(max_length=100, blank=True, verbose_name="NIF")
+    stat = models.CharField(max_length=100, blank=True, verbose_name="STAT")
+    taux_tva = models.DecimalField(max_digits=100, decimal_places=2,verbose_name="Taux TVA")
+
+    def clean(self):
+
+    # Validation du numéro de téléphone
+        if not re.match(r'^\+?[0-9]{10,15}$', self.tel):
+            raise ValidationError('Le numéro de téléphone doit comporter entre 10 et 15 chiffres.')
+
+    def __str__(self):
+        return f"Entreprise : {self.nom}"
+
+    class Meta:
+        managed = True
+        verbose_name = 'Entreprise'
+        verbose_name_plural = 'Entreprises'

@@ -198,18 +198,20 @@
   <div class="w-2/3 p-4" id="preview-facture">
     <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la facture</h2>
     <div class="bg-gray-700 dark:bg-gray-900 p-10 shadow-md rounded">
+      {% if entreprise.logo %}
       <div class="flex items-center">
-        <img src="/static/images/Logo mada-digital.png" alt="profil image" class="h-32 shadow-lg object-cover">
+        <img src="{{ entreprise.logo.url }}" alt="profil image" class="h-32 shadow-lg object-cover">
       </div>
+      {% endif %}
       <div class="flex justify-between items-center mb-10">
         <div>
           {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info client</h3> {% endcomment %}
-          <p class="dark:text-gray-400">Nom d'entreprise : <span>MADA-Digital</span></p>
+          <p class="dark:text-gray-400">Nom d'entreprise : <span>{{ entreprise.nom }}</span></p>
           <p class="dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
-          <p class="dark:text-gray-400">Adresse : <span>12 rue de la boule</span></p>
-          <p class="dark:text-gray-400">Code postal : <span>75010 - Paris</span></p>
-          <p class="dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
-          <p class="dark:text-gray-400">N° STAT : <span>12345678901234</span></p>          
+          <p class="dark:text-gray-400">Adresse : <span>{{ entreprise.adresse }}</span></p>
+          <p class="dark:text-gray-400">Code postal : <span>{{ entreprise.code_postal}} - {{ entreprise.region }}</span></p>
+          <p class="dark:text-gray-400">N° NIF : <span>{{ entreprise.nif }}</span></p>
+          <p class="dark:text-gray-400">N° STAT : <span>{{ entreprise.stat }}</span></p>          
         </div>
         <div>
           {% if facture.client.description_facture %}
