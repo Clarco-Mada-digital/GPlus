@@ -6,6 +6,11 @@ from facture.models import Facture
 from .user import UserSerializer
 from .client import ClientDetailSerializer
 
+class FactureDateSerializer(serializers.Serializer):
+    year = serializers.IntegerField()
+    month = serializers.IntegerField()
+    
+
 # Utilisée pour sérialiser la liste de facture
 class FactureListSerializer(serializers.ModelSerializer):
     """
