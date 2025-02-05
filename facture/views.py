@@ -5,10 +5,12 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.utils import timezone
+from django.db.models import Count, Sum
 from clients.models import Client
 from .models import Service, Facture
 from .forms import FactureForm, ServiceForm
 from xhtml2pdf import pisa
+from datetime import datetime, timedelta
 import json
 import uuid
 
@@ -77,6 +79,20 @@ def index(request):
   page_dev = request.GET.get('page_dev')
   devis = paginator_dev.get_page(page_dev)
 
+  # Partie statistique
+  # Nombre de factures impayées
+  factures_impayees = Facture.objects.filter(etat_facture='impayée').count()
+  factures_brouillon = Facture.objects.filter(etat_facture='Brouillon').count()
+  # Nombre de factures par type
+  factures_par_type = (
+    Facture.objects
+    .values('type')  # Grouper par type de facture
+    .annotate(nombre=Count('id'))  # Compter le nombre de factures pour chaque type
+  )
+
+  # Préparer les données pour la réponse JSON
+  factures_par_type = {item['type']: item['nombre'] for item in factures_par_type},
+
   context = {
     'factures' : factures,
     'devis' : devis,
@@ -90,7 +106,10 @@ def index(request):
     'dev_mois_filtre': int(dev_mois_filtre),
     "dev_annee_filtre": int(dev_annee_filtre),
     "fact_search":fact_search,
-    "dev_search":dev_search
+    "dev_search":dev_search,
+    "factures_impayees":factures_impayees,
+    "factures_brouillon":factures_brouillon,
+    "factures_par_type":factures_par_type,
   }
   return render(request, "facture_pages/index.html", context)
 
@@ -195,6 +214,7 @@ def ajouter_facture(request):
       facture = form.save(commit=False)
       facture.services = services_data
       facture.created_by = request.user
+      facture.etat_facture = 'impayée'
       dernier_id = Facture.objects.latest('id').id if Facture.objects.exists() else 0
       if facture.etat_facture == 'Brouillon' and facture.type == 'Facture':
         facture.ref = (f'(FPROV{str(timezone.now().year)}-' +
@@ -207,7 +227,7 @@ def ajouter_facture(request):
         facture.ref = f'F{str(timezone.now().year)}-{str(dernier_id + 1).zfill(6)}'
       else:
         facture.ref = f'D{str(timezone.now().year)}-{str(dernier_id + 1).zfill(6)}'
-      facture.save()
+      facture_created = facture.save()
       messages.success(request, "Facture ajoutée avec succès.")
       return redirect('facture:facture')
     except Exception as e:
@@ -217,7 +237,7 @@ def ajouter_facture(request):
   else:
     print("Erreurs de validation:", form.errors)
     messages.error(request, "Erreur lors de l'ajout de la facture. Veuillez vérifier les informations entrées.")
-    return redirect('facture:facture')
+    return redirect('facture:edit_facture', facture_created.id)
 
 @login_required(login_url="accounts:login_user")
 def ajouter_Devis(request):
@@ -507,3 +527,42 @@ def supprimer_article(request, pk):
 @login_required(login_url="accounts:login_user")
 def settings(request):
   return render(request, "facture_pages/settings.html")
+
+
+# Partie Statistique
+@login_required(login_url="accounts:login_user")
+def statistique_facture(request):
+  # Calculer l'année actuelle et les cinq dernières années
+  annee_actuelle = datetime.now().year
+  annee_limite = annee_actuelle - 5
+
+  # Regrouper les factures par année et mois, et calculer le montant total
+  statistiques = (
+    Facture.objects
+    .filter(date_facture__year__gte=annee_limite)  # Filtrer les factures des cinq dernières années
+    .filter(type="Facture")  
+    .values('date_facture__year', 'date_facture__month')  # Grouper par année et mois
+    .annotate(
+      montant_total=Sum('montant'),  # Somme des montants
+      nombre_factures=Count('id')   # Compter le nombre de factures
+    )  # Calculer le total des montants
+    .order_by('date_facture__year', 'date_facture__month')  # Trier par année et mois
+  )
+
+  # Transformer les données en un format lisible
+  resultats = {}
+  for stat in statistiques:
+    annee = stat['date_facture__year']
+    mois = stat['date_facture__month']
+    montant_total = float(stat['montant_total'])  # Convertir Decimal en float
+    nombre_factures = stat['nombre_factures']
+    
+    if mois not in resultats:  # Initialiser les données par mois
+      resultats[mois] = {'montants': {}, 'factures': {}}
+
+    resultats[mois]['montants'][annee] = montant_total
+    resultats[mois]['factures'][annee] = nombre_factures
+      
+
+  # Retourner les résultats sous forme de JSON
+  return JsonResponse(resultats, safe=False)

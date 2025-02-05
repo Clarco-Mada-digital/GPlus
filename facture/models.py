@@ -29,20 +29,24 @@ REGLEMENT_CHOICES = [
     ('14 jours', '14 jours'),
     ('14 jours fin de mois', '14 jours fin de mois'),
 ]
-
-
-
+CONDITION_REGLEMENT_CHOICES = [
+    ('Carte bancaire', 'Carte bancaire'),
+    ('Chèque', 'Chèque'),
+    ('Espèce', 'Espèce'),
+    ('Ordre de prélèvement', 'Ordre de prélèvement'),
+    ('Virement bancaire', 'Virement bancaire'),
+]
 
 class Facture(models.Model):
     ref = models.CharField(max_length=200, verbose_name="Réf. du facture", null=True)
     intitule = models.CharField(max_length=200, verbose_name="Intitulé du facture")
     reglement = models.CharField(max_length=200, blank=True, choices=REGLEMENT_CHOICES, verbose_name="Règlement")
     condition = models.CharField(max_length=200, blank=True, verbose_name="Condition")
-    # etat = models.CharField(max_length=200, verbose_name="Etat")
+    condition_reglement = models.CharField(max_length=200, choices=CONDITION_REGLEMENT_CHOICES, null=True, default=None, blank=True, verbose_name="Condition de règlement")
     montant = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Montant")
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="Client", null=True, blank=True, db_constraint=False)
     date_facture = models.DateField(verbose_name="Date du facture", default=timezone.now, blank=True)
-    etat_facture = models.CharField(max_length=10, null=False, default='Non payé',choices=ETAT_FACTURE_CHOICES)
+    etat_facture = models.CharField(max_length=10, null=False, blank=True, default='Brouillon',choices=ETAT_FACTURE_CHOICES)
     # service = models.ManyToManyField('Service', verbose_name="Services", blank=True)
     services = models.JSONField(verbose_name="Services supplémentaires", blank=True, default=None)
     type = models.CharField(max_length=10, choices=TYPES_FACTURE_CHOICES, default="Facture", null=True, blank=True)

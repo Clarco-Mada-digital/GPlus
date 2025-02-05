@@ -1,9 +1,75 @@
 {% extends 'layouts/facture_layout.html' %} 
 {% load humanize %}
-{% block title_page %} Facture & Devis {% endblock title_page %} 
+{% block title_page %} Facture - Devis {% endblock title_page %} 
 {% block content %}
 
 <div x-data="factDataComponent()" x-init="init()" x-cloak >
+  
+
+  {% comment %} Charts {% endcomment %}
+  <div class="min-h-screen flex flex-col justify-evenly">
+    <h2 class="text-3xl font-bold uppercase text-center dark:text-white -mt-9">Tablea de bord</h2>    
+    <div class="flex items-center ml-auto w-[35rem] bg-white border rounded-sm overflow-hidden shadow -mt-9">
+      <div class="p-4 bg-green-400">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" color="currentColor"><path d="M19.5 16v-3.994c0-1.486 0-2.23-.256-2.91c-.255-.68-.745-1.24-1.723-2.358L16 5H8L6.48 6.738C5.5 7.856 5.01 8.416 4.755 9.096s-.256 1.424-.256 2.91V16c0 2.828 0 4.243.879 5.121S7.672 22 10.5 22h3c2.828 0 4.243 0 5.121-.879c.879-.878.879-2.293.879-5.121"/><path d="M9.5 15.683c0 1.23 1.854 2.237 3.633 1.672s1.517-2.23.913-2.884s-1.491-.544-2.506-.596c-2.281-.116-2.442-2.303-.595-3.168c1.355-.635 3.093.18 3.293 1.293m-2.267-2.5v.978m0 7.242v.78M7.5 2h9c.466 0 .699 0 .883.076a1 1 0 0 1 .54.541c.077.184.077.417.077.883s0 .699-.076.883a1 1 0 0 1-.541.54C17.199 5 16.966 5 16.5 5h-9c-.466 0-.699 0-.883-.076a1 1 0 0 1-.54-.541C6 4.199 6 3.966 6 3.5s0-.699.076-.883a1 1 0 0 1 .541-.54C6.801 2 7.034 2 7.5 2"/></g></svg>
+      </div>
+      <div class="px-4 text-gray-700">
+        <h3 class="text-xl tracking-wider">Facture</h3>
+        <span class="bg-pink-100 text-pink-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-lg dark:bg-gray-700 dark:text-pink-400 border border-pink-400">
+          <svg class="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z"/>
+          </svg>
+          {{ factures_impayees }} impayée
+          </span>
+        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-lg dark:bg-gray-700 dark:text-yellow-400 border border-yellow-400">
+          <svg class="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z"/>
+          </svg>
+          {{ factures_brouillon }} non finalisé
+          </span>
+      </div>
+    </div>
+    <div class="flex w-full items-center justify-between">
+      <canvas id="montantsFactureChart" style="width:100%;max-width:650px;max-height:500px"></canvas>
+      <canvas id="numbersFactureChart" style="width:100%;max-width:650px;max-height:500px"></canvas>
+    </div>
+    <div class="flex w-full items-center gap-2"> 
+      <div class="w-full relative overflow-x-auto shadow-md sm:rounded-lg">
+          <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+              <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr>
+                      <th scope="col" class="px-6 py-3">
+                          Année
+                      </th>
+                      <th scope="col" class="px-6 py-3">
+                          Nb de factures
+                      </th>
+                      <th scope="col" class="px-6 py-3">
+                          Montant total Ar
+                      </th>
+                      <th scope="col" class="px-6 py-3">
+                          Montant moyen Ar
+                      </th>
+                  </tr>
+              </thead>
+              <tbody>
+                <template x-for="stat in data_facture">
+                  <tr :class="stat.montant_moyen < 600000 ? 'text-red' : '' " class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+                      <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap" x-text="stat.annee">
+                      </th>
+                      <td class="px-6 py-4" x-text="numStr(stat.nombre_total_factures, ' ')">                        
+                      </td>
+                      <td class="px-6 py-4" x-text="numStr(stat.montant_total, ' ')">                        
+                      </td>
+                      <td class="px-6 py-4" x-text="numStr(stat.montant_moyen, ' ')">                        
+                      </td>
+                  </tr>
+                </template>
+              </tbody>
+          </table>
+      </div>
+    </div>
+  </div>
 
   {% comment %} Button toogle devis et facture {% endcomment %}
   <div class="flex w-full items-center justify-center">
@@ -579,6 +645,7 @@
   function factDataComponent(){
     return {
       search:'',
+      data_facture:'',
       fact_search:'{{ fact_search }}',
       dev_search:'{{ dev_search }}',
       client_comercial_name: '',
@@ -603,9 +670,119 @@
       mois_actuel:'',
       sousTotal: 0,
       facture_tva: 0,
-      init(){
+      init (){
         // Charger les données depuis localStorage
         this.facture_view = localStorage.getItem('facture_view') === 'true';
+
+        // Partie chart statistique
+        // Récupérer les données via une requête AJAX
+        fetch("{% url 'facture:statistiques_facture' %}")
+          .then(response => response.json())
+          .then(data => {
+            const moisLabels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+            // Préparer les datasets pour les montants
+            const montantsDatasets = [];
+            const facturesDatasets = [];
+
+            // Préparer les années à afficher
+            const annees = new Set();
+            Object.keys(data).forEach(mois => {
+              Object.keys(data[mois].montants).forEach(annee => annees.add(annee));
+            });
+
+            // Générer les couleurs et datasets
+            [...annees].forEach(annee => {
+              const montants = Array(12).fill(0);
+              const factures = Array(12).fill(0);
+
+              Object.keys(data).forEach(mois => {
+                const index = parseInt(mois) - 1;
+
+                // Remplir les montants
+                if (data[mois].montants[annee] !== undefined) {
+                    montants[index] = data[mois].montants[annee];
+                }
+                // Remplir les factures
+                if (data[mois].factures[annee] !== undefined) {
+                    factures[index] = data[mois].factures[annee];
+                }
+              });
+
+              // Ajouter au dataset des montants
+              montantsDatasets.push({
+                label: `Montant ${annee}`,
+                data: montants,
+                borderColor: this.getRandomColor(),
+                backgroundColor: 'rgba(0, 0, 0, 0)',
+                tension: 0.4
+              });
+
+              // Ajouter au dataset des factures
+              facturesDatasets.push({
+                label: `Factures ${annee}`,
+                data: factures,
+                backgroundColor: this.getRandomColor()
+              });
+            });
+
+            // Graphique 1 : Montant total
+            const ctxMontant = document.getElementById('montantsFactureChart').getContext('2d');
+            new Chart(ctxMontant, {
+              type: 'line',
+              data: {
+                labels: moisLabels,
+                datasets: montantsDatasets
+              },
+              options: {
+                responsive: true,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: 'Montant Total des Factures par Mois'
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    title: {
+                      display: true,
+                      text: 'Montant (Ar)'
+                    }
+                  }
+                }
+              }
+          });
+
+            // Graphique 2 : Nombre de factures
+            const ctxFactures = document.getElementById('numbersFactureChart').getContext('2d');
+            new Chart(ctxFactures, {
+              type: 'bar',
+              data: {
+                labels: moisLabels,
+                datasets: facturesDatasets
+              },
+              options: {
+                responsive: true,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: 'Nombre de Factures par Mois'
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    title: {
+                      display: true,
+                      text: 'Nombre de Factures'
+                    }
+                  }
+                }
+              }
+            });
+
+            this.data_facture = this.calculerResume(data)
+          });
       },
 
       calculerSousTotal(totalTTC, tva=0.20) {
@@ -690,6 +867,50 @@
           html2pdf().set(options).from(element).save();
         }, 1000);       
         
+      },
+
+      calculerResume(data) {
+        const resume = {};
+
+        // Parcourir chaque mois (clé dans le JSON)
+        for (const mois in data) {
+          const montants = data[mois].montants; // Montants par année pour ce mois
+          const factures = data[mois].factures; // Nombre de factures par année pour ce mois
+
+          // Parcourir chaque année dans les montants
+          for (const annee in montants) {
+            // Si l'année n'est pas encore dans le résumé, l'initialiser
+            if (!resume[annee]) {
+              resume[annee] = {
+                annee: parseInt(annee),
+                nombre_total_factures: 0,
+                montant_total: 0,
+                montant_moyen: 0
+              };
+            }
+            // Ajouter les montants et factures de ce mois à l'année correspondante
+            resume[annee].montant_total += montants[annee];
+            resume[annee].nombre_total_factures += factures[annee];
+            }
+          }
+
+          // Calculer le montant moyen pour chaque année
+          for (const annee in resume) {
+              const totalFactures = resume[annee].nombre_total_factures;
+              const montantTotal = resume[annee].montant_total;
+
+              resume[annee].montant_moyen = totalFactures > 0 ? (montantTotal / totalFactures).toFixed(2) : 0;
+          }
+
+        return Object.values(resume); // Retourner le résumé sous forme de tableau
+      },
+
+      // Fonction pour générer des couleurs aléatoires
+      getRandomColor(){
+          const r = Math.floor(Math.random() * 255);
+          const g = Math.floor(Math.random() * 255);
+          const b = Math.floor(Math.random() * 255);
+          return `rgba(${r}, ${g}, ${b}, 0.6)`;
       }
     }
   }
