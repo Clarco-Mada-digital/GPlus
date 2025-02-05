@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders', # CORS
     'rest_framework', # Django REST Framework pour gerer les APIs
     'rest_framework_simplejwt', # JWT pour l'Autorisation vie a API
     "django_browser_reload",
@@ -62,6 +63,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware', # CORS
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -91,6 +93,24 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'GPP.wsgi.application'
+
+
+# rest_framework configs
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication', # Classe d'authentifaction pour Rest Framework
+    ]
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=60),  # A Modifier en Prod
+}
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = ['*']
+CORS_ALLOW_METHODS = ['*']
 
 
 # Database
@@ -172,13 +192,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 NPM_BIN_PATH = "/home/malcovys/.nvm/versions/node/v22.11.0/bin/npm"
 
 AUTH_USER_MODEL = "accounts.user"
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication', # Classe d'authentifaction pour Rest Framework
-    ]
-}
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=60),
-}
