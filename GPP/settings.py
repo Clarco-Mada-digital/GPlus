@@ -35,7 +35,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("PROJECT_ENV") == 'dev'
 
-ALLOWED_HOSTS = [] if env("PROJECT_ENV") == 'dev' else ['*']
+ALLOWED_HOSTS = ['*'] if env("PROJECT_ENV") == 'dev' else ['*'] # petite modif ici
 # Application definition
 
 INSTALLED_APPS = [
