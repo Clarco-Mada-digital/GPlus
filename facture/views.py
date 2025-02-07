@@ -348,7 +348,7 @@ def modifier_facture(request, pk):
   elif request.method == 'GET':
     user = request.user
     services = Service.objects.all() 
-    entreprise = Entreprise.objects.get(pk=1) 
+    entreprise = Entreprise.objects.get(pk=1) if Entreprise.objects.exists() else None
     services_list = list(services.values('id', 'nom_service', 'prix_unitaire', 'description'))
     for service in services_list:
       service['prix_unitaire'] = float(service['prix_unitaire'])  # Conversion
@@ -372,12 +372,12 @@ def supprimer_facture(request, pk):
   :param pk: La clé primaire de la facture à supprimer
   :return: La page de confirmation de suppression ou un message de succès si applicable
   """
-  facture = get_object_or_404(Facture, pk=pk)  
+  facture = get_object_or_404(Facture, pk=pk)
   try:
     facture.delete()
     messages.success(request, "Facture supprimée avec succès.")
   except Exception as e:
-    print("Erreur lors de la suppression:", str(e))
+    print(f"Erreur lors de la suppression: {e}")
     messages.error(request, f"Erreur lors de la suppression: {str(e)}")
   return redirect('facture:index')
 
@@ -582,7 +582,7 @@ def modifier_entreprise(request):
     form = EntrepriseForm(request.POST, instance=entreprise)
   else:
     form = EntrepriseForm(request.POST)
-  
+
   if form.is_valid():
     try:
       entreprise = form.save(commit=False)
@@ -592,7 +592,7 @@ def modifier_entreprise(request):
       entreprise.save()
       messages.success(request, "Modification avec success")
     except Exception as e:
-      print('error' + e)
+      print(f'error{e}')
   else:
     print("Erreurs de validation:", form.errors)
   return redirect(request.META.get('HTTP_REFERER')) 
