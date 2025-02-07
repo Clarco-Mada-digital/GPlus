@@ -35,9 +35,9 @@ def index(request):
 
   # Filtrage des factures en fonction du filtre sélectionné
   all_facture = Facture.objects.all()
-  entreprise = Entreprise.objects.get(pk=1) 
+  entreprise = Entreprise.objects.get(pk=1) if Entreprise.objects.exists() else None 
 
-  factures = all_facture.filter(type="Facture")
+  factures = all_facture.filter(type="Facture").order_by('-date_facture')
   devis = all_facture.filter(type="Devis")  
 
   mois_uniques = {facture.date_facture.month for facture in factures}

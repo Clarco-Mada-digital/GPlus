@@ -7,7 +7,7 @@
   
 
   {% comment %} Charts {% endcomment %}
-  <div class="min-h-screen flex flex-col justify-evenly">
+  <div class="container mx-auto px-4 pb-8 min-h-screen flex flex-col justify-evenly">
     <h2 class="text-3xl font-bold uppercase text-center dark:text-white -mt-9">Tableau de bord</h2>    
     <div class="flex items-center ml-auto w-[35rem] bg-white border rounded-sm overflow-hidden shadow -mt-5">
       <div class="p-4 bg-green-400">
@@ -191,7 +191,7 @@
         <tbody>          
           
           {% for facture in factures %}
-          <tr class="bg-white border-b dark:bg-gray-800 even:dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50" data-mois="{{ facture.date_facture.month }}">
+          <tr class="bg-white border-b dark:bg-gray-800 even:dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50" data-mois="{{ facture.date_facture.month }}" data-annee="{{ facture.date_facture.year }}">
             <td colspan="8" class="w-4 p-4 text-center text-blue-500 font-bold text-xl capitalize">
               {{ facture.date_facture|date:"F" }}
             </td>
@@ -921,24 +921,38 @@
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    const moisNodes = document.querySelectorAll('[data-mois]');
-    const moisValues = Array.from(moisNodes).map(node => node.getAttribute('data-mois'));    
-    const uniqueMois = [...new Set(moisValues)];
+    // Sélectionner tous les éléments avec les attributs data-mois et data-annee
+    const moisNodes = document.querySelectorAll('[data-mois][data-annee]');
+
+    // Extraire les combinaisons uniques de mois et année
+    const moisAnneeValues = Array.from(moisNodes).map(node => {
+      return `${node.getAttribute('data-mois')}-${node.getAttribute('data-annee')}`;
+    });
+
+    // Utiliser un Set pour identifier les combinaisons uniques
+    const uniqueMoisAnnee = [...new Set(moisAnneeValues)];
+
+    // Parcourir les éléments et masquer les doublons
     moisNodes.forEach((node, index) => {
-      if (moisValues.indexOf(moisValues[index]) !== index) {
+      const currentMoisAnnee = moisAnneeValues[index];
+      if (moisAnneeValues.indexOf(currentMoisAnnee) !== index) {
+        // Si ce mois-année est un doublon, masquer l'élément
         node.style.display = 'none';
       }
     });
 
-    const devMoisNodes = document.querySelectorAll('[data-dev-mois]');
-    const devMoisValues = Array.from(devMoisNodes).map(node => node.getAttribute('data-dev-mois'));
-    const devUniqueMois = [...new Set(devMoisValues)];
+    const devMoisNodes = document.querySelectorAll('[data-dev-mois][data-dev-annee]');
+    const devMoisAnneeValues = Array.from(moisNodes).map(node => {
+      return `${node.getAttribute('data-dev-mois')}-${node.getAttribute('data-dev-annee')}`;
+    });
+    const devUniqueMoisAnnee = [...new Set(devMoisAnneeValues)];
     devMoisNodes.forEach((node, index) => {
-      if (devMoisValues.indexOf(devMoisValues[index]) !== index) {
+      const devcurrentMoisAnnee = devMoisAnneeValues[index];
+      if (devMoisAnneeValues.indexOf(devcurrentMoisAnnee) !== index) {
+        // Si ce mois-année est un doublon, masquer l'élément
         node.style.display = 'none';
       }
-    });
-    
+    });    
     
   });
 
