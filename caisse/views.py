@@ -1,3 +1,4 @@
+import django.db.models.deletion
 from django.http import HttpResponse, JsonResponse
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import render, redirect, get_object_or_404
@@ -36,6 +37,9 @@ from babel.dates import format_date
 from django.db.models import F
 from collections import defaultdict
 from django.utils.dateparse import parse_date
+
+import urllib.parse
+
 
 User = get_user_model()
 
@@ -1483,12 +1487,10 @@ def beneficiaires(request):
     personnels = Personnel.objects.all()
     sort_by = request.GET.get('sort')
     order = request.GET.get('order')
-
-    print(sort_by, order)
-
-    beneficiaires_json = json.loads(serialize('json', beneficiaires))
-    personnels_json = json.loads(serialize('json', personnels))
+    
     valeur = [(str(beneficiaire), beneficiaire.id) for beneficiaire in beneficiaires]
+
+    # Trier les bénéficiaires par ordre alphabétique
     if sort_by and order:
         if order == 'asc':
             valeur.sort()
@@ -1499,29 +1501,32 @@ def beneficiaires(request):
             return redirect('caisse:beneficiaires')
 
     beneficiaires_sorted = sorted(beneficiaires, key=lambda b: next((i for i, v in enumerate(valeur) if v[1] == b.id), len(valeur)))
-    print(beneficiaires_sorted)
-    beneficiaires_json = json.loads(serialize('json', beneficiaires_sorted))
     
     context = {
-        'beneficiaires': json.dumps([{**item['fields'], 'id': item['pk']} for item in beneficiaires_json]),
-        'personnels': json.dumps([{**item['fields'], 'id': item['pk']} for item in personnels_json]),
+        'beneficiaires': beneficiaires_sorted,
+        'personnels': personnels,
     }
+
     return render(request, "caisse/acteurs/beneficiaires.html", context)
 
 @login_required
 @require_POST
 @csrf_exempt
-def creer_beneficiaire(request):
-    data = json.loads(request.body)
-    personnel_id = data.get('personnel_id')
-    name = data.get('name')
+def creer_beneficiaire(request: WSGIRequest):
+    query_string = request.body
+
+    # Décoder la chaîne de requête
+    decoded_string = query_string.decode('utf-8')
+    data = urllib.parse.parse_qs(decoded_string)
+    personnel_id = data.get('personnel_id', [None])[0]
+    name = data.get('name')[0]
     
     try:
         personnel = None
         if personnel_id:
             personnel = Personnel.objects.get(pk=personnel_id)
         
-        beneficiaire = Beneficiaire.objects.create(
+        Beneficiaire.objects.create(
             personnel=personnel,
             name=name if not personnel else None
         )
@@ -1531,29 +1536,22 @@ def creer_beneficiaire(request):
             action='Création', 
             description='a créé un nouveau bénéficiaire'
         )
+
+        messages.success(request, "Bénéficiaire créé avec succès.")
         
-        return JsonResponse({
-            'success': True,
-            'beneficiaire': {
-                'id': beneficiaire.id,
-                'personnel_id': personnel_id,
-                'name': name if not personnel else f"{personnel.first_name} {personnel.last_name}"
-            }
-        })
+        return redirect('caisse:beneficiaires')
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+        messages.error(request, f"Erreur lors de la création du bénéficiaire.")
+        return redirect('caisse:beneficiaires') 
 
 @login_required
 @require_POST
 @csrf_exempt
 def modifier_beneficiaire(request: WSGIRequest, pk):
     beneficiaire = get_object_or_404(Beneficiaire, pk=pk)
-    import urllib.parse
 
     # La chaîne de requête encodée en URL
     query_string = request.body
-
-    print(query_string)
 
     # Décoder la chaîne de requête
     decoded_string = query_string.decode('utf-8')
@@ -1585,7 +1583,6 @@ def modifier_beneficiaire(request: WSGIRequest, pk):
     return redirect('caisse:beneficiaires')
 
 @login_required
-@require_POST
 @csrf_exempt
 def supprimer_beneficiaire(request, pk):
     beneficiaire = get_object_or_404(Beneficiaire, pk=pk)
@@ -1597,9 +1594,13 @@ def supprimer_beneficiaire(request, pk):
             action='Suppression', 
             description='a supprimé un bénéficiaire'
         )
-        return JsonResponse({'success': True})
+        messages.success(request, "Bénéficiaire supprimé avec succès.")
+    except django.db.models.deletion.ProtectedError:
+        messages.error(request, "Impossible de supprimer ce bénéficiaire car il est lié à des opérations.")
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+        messages.error(request, f"Erreur lors de la suppression du bénéficiaire.")
+    
+    return redirect('caisse:beneficiaires')
 
 @login_required
 def editer_beneficiaire(request, pk):
