@@ -1503,7 +1503,25 @@ def beneficiaires(request):
             messages.error(request, "Ordre de tri non valide.")
             return redirect('caisse:beneficiaires')
 
+
+    # Classification des opérations de chaque bénéficiaire
+    operations_par_beneficiaire = defaultdict(lambda: {'entrees': 0, 'sorties': 0})
+    
+    for entree in OperationEntrer.objects.all():
+        if entree.beneficiaire:
+            operations_par_beneficiaire[entree.beneficiaire.id]['entrees'] += 1
+    
+    for sortie in OperationSortir.objects.all():
+        if sortie.beneficiaire:
+            operations_par_beneficiaire[sortie.beneficiaire.id]['sorties'] += 1
+    
+    for beneficiaire in beneficiaires:
+        beneficiaire.operations = operations_par_beneficiaire[beneficiaire.id]
+
+    
     beneficiaires_sorted = sorted(beneficiaires, key=lambda b: next((i for i, v in enumerate(valeur) if v[1] == b.id), len(valeur)))
+
+    print(beneficiaires_sorted[0].operations)
     
     context = {
         'beneficiaires': beneficiaires_sorted,
