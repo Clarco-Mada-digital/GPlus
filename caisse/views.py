@@ -289,6 +289,7 @@ def listes(request):
     # Filtre par bénéficiaire (uniquement pour les sorties)
     if beneficiaire_id and beneficiaire_id.isdigit():  # Vérifier que c'est un nombre
         sortie = sortie.filter(beneficiaire_id=beneficiaire_id)
+        entree = entree.filter(beneficiaire_id=beneficiaire_id)
 
     # Filtre par fournisseur (uniquement pour les sorties)
     if fournisseur_id and fournisseur_id.isdigit():  # Vérifier que c'est un nombre
@@ -1153,6 +1154,8 @@ def liste_entrees(request):
         )
     if categorie_id and categorie_id.isdigit():  # Vérifier que c'est un nombre
         entrees = entrees.filter(categorie_id=categorie_id)
+    if beneficiaire_id:
+        entrees = entrees.filter(beneficiaire_id=beneficiaire_id)
     # Filtre par mois
     if mois and mois.isdigit():  # Vérifier que c'est un nombre
         entrees = entrees.filter(date_transaction__month=int(mois))
