@@ -81,7 +81,7 @@ class Entreprise(models.Model):
     code_postal = models.CharField(max_length=10, null=True, blank=True, verbose_name="Code postal")
     nif = models.CharField(max_length=100, blank=True, verbose_name="NIF")
     stat = models.CharField(max_length=100, blank=True, verbose_name="STAT")
-    taux_tva = models.DecimalField(max_digits=10, decimal_places=2,verbose_name="Taux TVA")
+    taux_tva = models.DecimalField(max_digits=10, decimal_places=2, default=20, null=True, blank=True, verbose_name="Taux TVA")
 
     def clean(self):
 

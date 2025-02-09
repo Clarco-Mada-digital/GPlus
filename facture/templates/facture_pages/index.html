@@ -314,11 +314,16 @@
                 <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la facture</h2>
                 <div class="dark:bg-gray-900 shadow-md rounded">
                 <div  id="facture_content" class="p-10 m-0">
+                  <div class="flex items-center justify-between">
                   {% if entreprise.logo %}
                     <div class="flex items-center">
                       <img src="{{ entreprise.logo.url }}" alt="profil image" class="h-32 shadow-lg object-cover">
                     </div>
-                  {% endif %}
+                  {% endif %}                  
+                    <div x-show="client_logo != ''" class="flex items-center">
+                      <img :src="client_logo" alt="profil image" class="h-32 shadow-lg object-cover">
+                    </div>
+                  </div>
                   <div class="flex justify-between items-center mb-10">
                     <div>
                       {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info client</h3> {% endcomment %}
@@ -653,6 +658,7 @@
       dev_search:'{{ dev_search }}',
       client_comercial_name: '',
       client_address: '',
+      client_logo: '',
       client_code_postal: '2343',
       client_ville: 'Paris',
       client_name: '',
@@ -813,6 +819,7 @@
         })
         .then(data => {
           // Ici, vous pouvez utiliser les données de la facture
+          this.client_logo = data.client_logo;
           this.client_comercial_name = data.client_comercial_name;
           this.client_address = data.client_address;
           this.client_code_postal = '2343';
