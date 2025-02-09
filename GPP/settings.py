@@ -96,7 +96,6 @@ WSGI_APPLICATION = 'GPP.wsgi.application'
 
 
 # rest_framework configs
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication', # Classe d'authentifaction pour Rest Framework
@@ -104,8 +103,9 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=60),  # A Modifier en Prod
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=1),  # A Modifier en Prod
 }
+
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True

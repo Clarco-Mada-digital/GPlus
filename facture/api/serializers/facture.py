@@ -29,7 +29,7 @@ class FactureListSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data): # Surcharge de la méthode create pour générer la référence de la facture
         validated_data['ref'] = self.generate_ref(validated_data)
-        validated_data['created_by'] = self.context['request'].user.id
+        validated_data['created_by'] = self.context['request'].user
         return super().create(validated_data)
 
     def generate_ref(self, data): # Génère la référence de la facture

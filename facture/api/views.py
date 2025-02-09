@@ -1,6 +1,10 @@
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from django.db.models.functions import ExtractYear, ExtractMonth
+
 
 from .serializers.facture import FactureListSerializer, FactureDetailSerializer, FactureDateSerializer
 from .serializers.client import ClientListSerializer
@@ -10,66 +14,49 @@ from clients.models import Client
 
 from datetime import datetime
 
-class MultipleSerializerMixin:
-    """
-    Cette classe mixin permet de définir un sérialiseur différent pour les vues de détail.
-    Si l'action est 'retrieve' (récupérer un objet unique), elle utilise la classe de sérialiseur
-    spécifiée dans 'detail_serializer_class'. Sinon, elle utilise la classe de sérialiseur par défaut.
-    """
-
-    detail_serializer_class = None
-
-    def get_serializer_class(self):
-        # Si l'action est 'retrieve' et qu'une classe de sérialiseur de détail est définie, l'utiliser
-        if self.action == 'retrieve' and self.detail_serializer_class is not None:
-            return self.detail_serializer_class
-        # Sinon, utiliser la classe de sérialiseur par défaut
-        return super().get_serializer_class()
-    
-
-class FactureViewset(ModelViewSet): #! MultipleSerializerMixin doit être mis avant tout autre class
+class FactureViewset(ModelViewSet):
     """
     FactureViewset: Utilisée pour gérer les factures
     """
-
     permission_classes = [IsAuthenticated] #! On définit les permissions pour cette vue
-
     serializer_class = FactureListSerializer # Serializer par défaut, pour la List des factures
     detail_serializer_class = FactureDetailSerializer # Sérialize pour les detailles d'une facture
-    date_serializer_class = FactureDateSerializer # Permet d'obtenir une overview de l'historique des factures
 
     def get_queryset(self):
-        # Vérifie la présence du paramètre `date_facture`, Format attendu YYYY-MM
+        # Si /facture?date_facture=YYYY-MM
         date_facture = self.request.query_params.get('date_facture')
         if date_facture: 
-            try:
+            try: # Factures en fonction de leurs date de creation
                 date_filter = datetime.strptime(date_facture, '%Y-%m')
                 return Facture.objects.filter(date_facture__year=date_filter.year, date_facture__month=date_filter.month).order_by('-id')
             except ValueError:
-                raise ValueError("Format de date incorrect, attendu YYYY-MM")
+                raise ValidationError("Format de date incorrect, attendu YYYY-MM")
         
-        # Retourne les dates distinctes uniquement
-        return Facture.objects.annotate(year=ExtractYear('date_facture'), month=ExtractMonth('date_facture')).values('year', 'month').distinct().order_by('-year', '-month')
+        # Sinon
+        return Facture.objects.all().order_by('-id') # Toute les factures
     
+    # Selectionne le serialiseur adequat
     def get_serializer_class(self):
-        # details '/factutre/<pk>/'
-        if self.action == 'retrieve':
+        if self.action == 'retrieve': # /factutre/<pk>/
             return self.detail_serializer_class
         
-        # Utilise FactureDateSerializer si aucune date_facture n'est fournie
-        if not self.request.query_params.get('date_facture'):
-            return self.date_serializer_class
-        
-        return super().get_serializer_class()
+        return super().get_serializer_class() # /facture/
+    
+    # Permet d'obtenir la liste des sections par des factures
+    @action(detail=False, methods=['get'], serializer_class=FactureDateSerializer)
+    def historique_dates(self, request):
+        dates = Facture.objects.annotate(
+            year=ExtractYear('date_facture'),
+            month=ExtractMonth('date_facture')
+        ).values('year', 'month').distinct().order_by('-year', '-month')
+        return Response(dates)
 
 
 class ClientViewSet(ReadOnlyModelViewSet):
     """
     ClientViewSet: Utilisée pour gérer les clients
     """
-
     permission_classes = [IsAuthenticated] #! On définit les permissions pour cette vue
-
     serializer_class = ClientListSerializer # Serializer par défaut, pour la List des factures
 
     def get_queryset(self):
