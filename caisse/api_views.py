@@ -22,7 +22,7 @@ from babel.dates import format_date
 
 # Vues pour le modèle Categorie
 class CategorieListCreate(generics.ListCreateAPIView):
-    queryset = Categorie.objects.all()
+    queryset = Categorie.objects.all().order_by('-id')
     serializer_class = CategorieSerializer
 
 
@@ -37,8 +37,7 @@ class CategorieDetailView(generics.RetrieveAPIView):
 
 # Vues pour le modèle OperationEntrer
 class OperationEntrerListCreate(generics.ListCreateAPIView):
-    queryset = OperationEntrer.objects.all()
-
+    queryset = OperationEntrer.objects.all().order_by('-date_transaction')
     filterset_fields = ['categorie', 'date_transaction']
     search_fields = ['description']
 
@@ -53,8 +52,7 @@ class OperationEntrerRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView
     
 # Vues pour le modèle OperationSortir
 class OperationSortirListCreate(generics.ListCreateAPIView):
-    queryset = OperationSortir.objects.all()
-
+    queryset = OperationSortir.objects.all().order_by('-date_de_sortie')
     filterset_fields = ['categorie', 'date_de_sortie', 'fournisseur', 'beneficiaire']
     search_fields = ['description']
 
@@ -69,7 +67,7 @@ class OperationSortirRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView
 
 # Vues pour le modèle Personnel
 class PersonnelListCreate(generics.ListCreateAPIView):
-    queryset = Personnel.objects.all()
+    queryset = Personnel.objects.all().order_by('-id')
     serializer_class = PersonnelSerializer
 
 class PersonnelRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
@@ -78,7 +76,7 @@ class PersonnelRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
 # Vues pour le modèle Fournisseur
 class FournisseurListCreate(generics.ListCreateAPIView):
-    queryset = Fournisseur.objects.all()
+    queryset = Fournisseur.objects.all().order_by('-id')
     serializer_class = FournisseurSerializer
 
 class FournisseurRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
@@ -87,7 +85,7 @@ class FournisseurRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
 # Vues pour le modèle Beneficiaire
 class BeneficiaireListCreate(generics.ListCreateAPIView):
-    queryset = Beneficiaire.objects.all()
+    queryset = Beneficiaire.objects.all().order_by('-id')
     serializer_class = BeneficiaireSerializer
 
 class BeneficiaireRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
