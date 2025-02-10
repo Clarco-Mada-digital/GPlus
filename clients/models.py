@@ -20,7 +20,7 @@ class Client(models.Model):
     (CP, 'Client-Prospect'),
     (CF, 'Client-Fourniseur')
   ]
-  photo = models.ImageField(upload_to='photos/', blank=True , default="photos/pdp_defaut.png")
+  photo = models.ImageField(upload_to='photos/', blank=True , null=True)
   name = models.CharField(max_length=50)
   commercial_name = models.CharField(max_length=50, blank=True)
   post = models.CharField(max_length=50)
