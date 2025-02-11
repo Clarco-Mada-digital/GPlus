@@ -5,11 +5,11 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from django.db.models.functions import ExtractYear, ExtractMonth
 
-
 from .serializers.facture import FactureListSerializer, FactureDetailSerializer, FactureDateSerializer
 from .serializers.client import ClientListSerializer
+from .serializers.entreprise import EntrepriseSerializer
 
-from facture.models import Facture
+from facture.models import Facture, Entreprise
 from clients.models import Client
 
 from datetime import datetime
@@ -61,4 +61,14 @@ class ClientViewSet(ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return Client.objects.all()
+    
 
+class EntrepriseViewSet(ReadOnlyModelViewSet):
+    """
+    EntrepriseViewSet: Utilisée pour obtnenir les infos de l'entreprise
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = EntrepriseSerializer
+
+    def get_queryset(self):
+        return Entreprise.objects.all()
