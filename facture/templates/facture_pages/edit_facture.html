@@ -343,7 +343,7 @@
     if (typeof facture_services === 'object') {
       for (const key in facture_services) {
         // Boucle sur les services de la facture pour les afficher
-        creerArticle(facture_services[key]['description'], facture_services[key]['prix']);
+        creerArticle(facture_services[key]['description'], facture_services[key]['prix'], facture_services[key]['quantite']);
         facture_services_json[key] = {
           'description': facture_services[key]['description'],
           'prix': facture_services[key]['prix'],
@@ -393,7 +393,7 @@
   let articleCount = 0;
 
   // Fonction pour créer un nouvel service
-  function creerArticle(nom_service='', prix_unitaire=0.00) {
+  function creerArticle(nom_service='', prix_unitaire=0.00, quantite=1) {
       articleCount++;
       const articleDiv = document.createElement('div');
       articleDiv.className = 'grid grid-cols-12 gap-2 article-row';
@@ -406,7 +406,7 @@
           </div>
           <div class="col-span-2">
               <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-quantite" name="quantite-${articleCount}"
-                    type="number" placeholder="Quantité" value="1" min="1" data-article-id="${articleCount}">
+                    type="number" placeholder="Quantité" value="${quantite}" min="1" data-article-id="${articleCount}">
           </div>          
           <div class="flex col-span-4 h-10">
             <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
