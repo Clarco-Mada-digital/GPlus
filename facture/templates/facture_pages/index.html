@@ -1,9 +1,75 @@
 {% extends 'layouts/facture_layout.html' %} 
 {% load humanize %}
-{% block title_page %} Facture & Devis {% endblock title_page %} 
+{% block title_page %} Facture - Devis {% endblock title_page %} 
 {% block content %}
 
 <div x-data="factDataComponent()" x-init="init()" x-cloak >
+  
+
+  {% comment %} Charts {% endcomment %}
+  <div class="container mx-auto px-4 pb-8 min-h-screen flex flex-col justify-evenly">
+    <h2 class="text-3xl font-bold uppercase text-center dark:text-white -mt-9">Tableau de bord</h2>    
+    <div class="flex items-center ml-auto w-[35rem] bg-white border rounded-sm overflow-hidden shadow -mt-5">
+      <div class="p-4 bg-green-400">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" color="currentColor"><path d="M19.5 16v-3.994c0-1.486 0-2.23-.256-2.91c-.255-.68-.745-1.24-1.723-2.358L16 5H8L6.48 6.738C5.5 7.856 5.01 8.416 4.755 9.096s-.256 1.424-.256 2.91V16c0 2.828 0 4.243.879 5.121S7.672 22 10.5 22h3c2.828 0 4.243 0 5.121-.879c.879-.878.879-2.293.879-5.121"/><path d="M9.5 15.683c0 1.23 1.854 2.237 3.633 1.672s1.517-2.23.913-2.884s-1.491-.544-2.506-.596c-2.281-.116-2.442-2.303-.595-3.168c1.355-.635 3.093.18 3.293 1.293m-2.267-2.5v.978m0 7.242v.78M7.5 2h9c.466 0 .699 0 .883.076a1 1 0 0 1 .54.541c.077.184.077.417.077.883s0 .699-.076.883a1 1 0 0 1-.541.54C17.199 5 16.966 5 16.5 5h-9c-.466 0-.699 0-.883-.076a1 1 0 0 1-.54-.541C6 4.199 6 3.966 6 3.5s0-.699.076-.883a1 1 0 0 1 .541-.54C6.801 2 7.034 2 7.5 2"/></g></svg>
+      </div>
+      <div class="px-4 text-gray-700">
+        <h3 class="text-xl tracking-wider">Facture</h3>
+        <span class="bg-pink-100 text-pink-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-lg dark:bg-gray-700 dark:text-pink-400 border border-pink-400">
+          <svg class="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z"/>
+          </svg>
+          {{ factures_impayees }} impayée
+          </span>
+        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-lg dark:bg-gray-700 dark:text-yellow-400 border border-yellow-400">
+          <svg class="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z"/>
+          </svg>
+          {{ factures_brouillon }} non finalisé
+          </span>
+      </div>
+    </div>
+    <div class="flex w-full items-center justify-between">
+      <canvas id="montantsFactureChart" style="width:100%;max-width:650px;max-height:500px"></canvas>
+      <canvas id="numbersFactureChart" style="width:100%;max-width:650px;max-height:500px"></canvas>
+    </div>
+    <div class="flex w-full items-center gap-2"> 
+      <div class="w-full relative overflow-x-auto shadow-md sm:rounded-lg">
+          <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+              <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr>
+                      <th scope="col" class="px-6 py-3">
+                          Année
+                      </th>
+                      <th scope="col" class="px-6 py-3">
+                          Nb de factures
+                      </th>
+                      <th scope="col" class="px-6 py-3">
+                          Montant total Ar
+                      </th>
+                      <th scope="col" class="px-6 py-3">
+                          Montant moyen Ar
+                      </th>
+                  </tr>
+              </thead>
+              <tbody>
+                <template x-for="stat in data_facture">
+                  <tr :class="stat.montant_moyen < 600000 ? 'text-red' : '' " class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+                      <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap" x-text="stat.annee">
+                      </th>
+                      <td class="px-6 py-4" x-text="numStr(stat.nombre_total_factures, ' ')">                        
+                      </td>
+                      <td class="px-6 py-4" x-text="numStr(stat.montant_total, ' ')">                        
+                      </td>
+                      <td class="px-6 py-4" x-text="numStr(stat.montant_moyen, ' ')">                        
+                      </td>
+                  </tr>
+                </template>
+              </tbody>
+          </table>
+      </div>
+    </div>
+  </div>
 
   {% comment %} Button toogle devis et facture {% endcomment %}
   <div class="flex w-full items-center justify-center">
@@ -14,7 +80,7 @@
         </svg>
         Facture
       </button>
-      <button x-on:click="facture_view = false; saveFactView()" type="button" :class="!facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-blue-200 rounded-e-lg hover:bg-blue-300 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-blue-800 dark:border-blue-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white'">
+      <button x-on:click="facture_view = false; saveFactView()" type="button" :class="!facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-emerald-200 rounded-e-lg hover:bg-emerald-300 hover:text-emerald-700 focus:z-10 focus:text-emerald-700 dark:bg-emerald-800 dark:border-emerald-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-emerald-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:text-emerald-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-emerald-500 dark:focus:text-white'">
         <svg class="w-3 h-3 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
           <path d="M14.707 7.793a1 1 0 0 0-1.414 0L11 10.086V1.5a1 1 0 0 0-2 0v8.586L6.707 7.793a1 1 0 1 0-1.414 1.414l4 4a1 1 0 0 0 1.416 0l4-4a1 1 0 0 0-.002-1.414Z"/>
           <path d="M18 12h-2.55l-2.975 2.975a3.5 3.5 0 0 1-4.95 0L4.55 12H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2Zm-3 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
@@ -66,6 +132,7 @@
           </form>        
           </div>
         <label for="table-search" class="sr-only">Rechercher</label>
+        <div class="flex items-center gap-2">
         <div class="relative">
           <div
             class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none"
@@ -92,6 +159,12 @@
             class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Rechercher des articles"
           />
+          
+        </div>
+        <a href="{% url 'facture:facture' %}" type="button" class="flex items-center bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/></svg>
+          Nouvelle facture
+        </a>
         </div>
       </div>
       <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -118,7 +191,7 @@
         <tbody>          
           
           {% for facture in factures %}
-          <tr class="bg-white border-b dark:bg-gray-800 even:dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50" data-mois="{{ facture.date_facture.month }}">
+          <tr class="bg-white border-b dark:bg-gray-800 even:dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50" data-mois="{{ facture.date_facture.month }}" data-annee="{{ facture.date_facture.year }}">
             <td colspan="8" class="w-4 p-4 text-center text-blue-500 font-bold text-xl capitalize">
               {{ facture.date_facture|date:"F" }}
             </td>
@@ -241,18 +314,25 @@
                 <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la facture</h2>
                 <div class="dark:bg-gray-900 shadow-md rounded">
                 <div  id="facture_content" class="p-10 m-0">
-                  <div class="flex items-center">
-                    <img src="/static/images/Logo mada-digital.png" alt="profil image" class="w-32 shadow-lg object-cover">
+                  <div class="flex items-center justify-between">
+                  {% if entreprise.logo %}
+                    <div class="flex items-center">
+                      <img src="{{ entreprise.logo.url }}" alt="profil image" class="h-32 shadow-lg object-cover">
+                    </div>
+                  {% endif %}                  
+                    <div x-show="client_logo != ''" class="flex items-center">
+                      <img :src="client_logo" alt="profil image" class="h-32 shadow-lg object-cover">
+                    </div>
                   </div>
-                  <div class="flex justify-between items-center mb-4">
+                  <div class="flex justify-between items-center mb-10">
                     <div>
                       {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info client</h3> {% endcomment %}
-                      <p class="text-gray-900 dark:text-gray-400">Nom d'entreprise : <span>MADA-Digital</span></p>
-                      <p class="text-gray-900 dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
-                      <p class="text-gray-900 dark:text-gray-400">Adresse : <span>12 rue de la boule</span></p>
-                      <p class="text-gray-900 dark:text-gray-400">Code postal : <span>75010 - Paris</span></p>
-                      <p class="text-gray-900 dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
-                      <p class="text-gray-900 dark:text-gray-400">N° STAT : <span>12345678901234</span></p>
+                      <p class="dark:text-gray-400">Nom d'entreprise : <span>{{ entreprise.nom }}</span></p>
+                      <p class="dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
+                      <p class="dark:text-gray-400">Adresse : <span>{{ entreprise.adresse }}</span></p>
+                      <p class="dark:text-gray-400">Code postal : <span>{{ entreprise.code_postal}} - {{ entreprise.region }}</span></p>
+                      <p class="dark:text-gray-400">N° NIF : <span>{{ entreprise.nif }}</span></p>
+                      <p class="dark:text-gray-400">N° STAT : <span>{{ entreprise.stat }}</span></p>          
                     </div>
                     <div>
                       <pre x-show="client_desc_facture" id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled x-text="client_desc_facture"></pre>
@@ -272,8 +352,9 @@
                     {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Détail du facture</h3> {% endcomment %}
                     <p class="text-emerald-800 text-md font-bold">Facture N° : <span x-text="facture_ref"></span></p>
                     <div class="flex items-center justify-start text-inherit">
-                      <p>Date d'emission : <span x-text="facture_emission_date"></span></p>
-                      <p class="ml-40">Règlement : <span x-text="facture_reglement"></span></p>
+                      <p class="dark:text-gray-400">Date facturation : <span x-text="facture_date"></span></p>
+                      <p class="dark:text-gray-400 ml-5">Date échéance : <span x-text="facture_condition"></span></p>
+                      <p class="dark:text-gray-400 ml-40">Règlement : <span x-text="facture_reglement"></span></p>
                     </div>
             
                     {% comment %} Tableau details de facture {% endcomment %}
@@ -399,6 +480,7 @@
           </form>        
           </div>
         <label for="table-search" class="sr-only">Rechercher</label>
+        <div class="flex items-center gap-2">
         <div class="relative">
           <div
             class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none"
@@ -422,9 +504,15 @@
             x-model="dev_search"
             type="search"
             id="table-search"
-            class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
             placeholder="Rechercher des articles"
           />
+        </div>
+        
+        <a href="{% url 'facture:facture' %}?view='devis'" class="flex items-center bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/></svg>
+          Nouveau devis
+        </a>
         </div>
       </div>
       <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -435,7 +523,7 @@
                 <input
                   id="checkbox-all-search"
                   type="checkbox"
-                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                 <label for="checkbox-all-search" class="sr-only">checkbox</label>
               </div>
             </th>
@@ -452,7 +540,7 @@
           {% for dev in devis %}
           <tr
             class="bg-white border-b dark:bg-gray-800 even:dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50" data-dev-mois="{{ dev.date_facture.month }}">
-            <td colspan="7" class="w-4 p-4 text-center text-blue-500 font-bold text-xl capitalize">
+            <td colspan="7" class="w-4 p-4 text-center text-emerald-500 font-bold text-xl capitalize">
               {{ dev.date_facture|date:"F" }}
             </td>
           </tr>
@@ -463,7 +551,7 @@
                 <input
                   id="checkbox-table-search-1"
                   type="checkbox"
-                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 />
                 <label for="checkbox-table-search-1" class="sr-only"
                   >checkbox</label
@@ -565,16 +653,19 @@
   function factDataComponent(){
     return {
       search:'',
+      data_facture:'',
       fact_search:'{{ fact_search }}',
       dev_search:'{{ dev_search }}',
       client_comercial_name: '',
       client_address: '',
+      client_logo: '',
       client_code_postal: '2343',
       client_ville: 'Paris',
       client_name: '',
       client_email: '',
       client_desc_facture: '',
       facture_ref: '',
+      facture_date: '',
       facture_intitule: '',
       facture_emission_date: '',
       facture_reglement: '',
@@ -589,9 +680,119 @@
       mois_actuel:'',
       sousTotal: 0,
       facture_tva: 0,
-      init(){
+      init (){
         // Charger les données depuis localStorage
         this.facture_view = localStorage.getItem('facture_view') === 'true';
+
+        // Partie chart statistique
+        // Récupérer les données via une requête AJAX
+        fetch("{% url 'facture:statistiques_facture' %}")
+          .then(response => response.json())
+          .then(data => {
+            const moisLabels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+            // Préparer les datasets pour les montants
+            const montantsDatasets = [];
+            const facturesDatasets = [];
+
+            // Préparer les années à afficher
+            const annees = new Set();
+            Object.keys(data).forEach(mois => {
+              Object.keys(data[mois].montants).forEach(annee => annees.add(annee));
+            });
+
+            // Générer les couleurs et datasets
+            [...annees].forEach(annee => {
+              const montants = Array(12).fill(0);
+              const factures = Array(12).fill(0);
+
+              Object.keys(data).forEach(mois => {
+                const index = parseInt(mois) - 1;
+
+                // Remplir les montants
+                if (data[mois].montants[annee] !== undefined) {
+                    montants[index] = data[mois].montants[annee];
+                }
+                // Remplir les factures
+                if (data[mois].factures[annee] !== undefined) {
+                    factures[index] = data[mois].factures[annee];
+                }
+              });
+
+              // Ajouter au dataset des montants
+              montantsDatasets.push({
+                label: `Montant ${annee}`,
+                data: montants,
+                borderColor: this.getRandomColor(),
+                backgroundColor: 'rgba(0, 0, 0, 0)',
+                tension: 0.4
+              });
+
+              // Ajouter au dataset des factures
+              facturesDatasets.push({
+                label: `Factures ${annee}`,
+                data: factures,
+                backgroundColor: this.getRandomColor()
+              });
+            });
+
+            // Graphique 1 : Montant total
+            const ctxMontant = document.getElementById('montantsFactureChart').getContext('2d');
+            new Chart(ctxMontant, {
+              type: 'line',
+              data: {
+                labels: moisLabels,
+                datasets: montantsDatasets
+              },
+              options: {
+                responsive: true,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: 'Montant Total des Factures par Mois'
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    title: {
+                      display: true,
+                      text: 'Montant (Ar)'
+                    }
+                  }
+                }
+              }
+          });
+
+            // Graphique 2 : Nombre de factures
+            const ctxFactures = document.getElementById('numbersFactureChart').getContext('2d');
+            new Chart(ctxFactures, {
+              type: 'bar',
+              data: {
+                labels: moisLabels,
+                datasets: facturesDatasets
+              },
+              options: {
+                responsive: true,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: 'Nombre de Factures par Mois'
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    title: {
+                      display: true,
+                      text: 'Nombre de Factures'
+                    }
+                  }
+                }
+              }
+            });
+
+            this.data_facture = this.calculerResume(data)
+          });
       },
 
       calculerSousTotal(totalTTC, tva=0.20) {
@@ -618,6 +819,7 @@
         })
         .then(data => {
           // Ici, vous pouvez utiliser les données de la facture
+          this.client_logo = data.client_logo;
           this.client_comercial_name = data.client_comercial_name;
           this.client_address = data.client_address;
           this.client_code_postal = '2343';
@@ -626,8 +828,9 @@
           this.client_email = data.client_email;
           this.client_desc_facture = data.client_desc_facture;
           this.facture_ref = data.facture_ref;
+          this.facture_date = data.facture_date;
           this.facture_intitule = data.facture_intitule;
-          this.facture_emission_date = data.facture_emission_date;
+          this.facture_date = data.facture_date;
           this.facture_reglement = data.facture_reglement;
           this.facture_etat = data.facture_etat;
           this.facture_montant = `${data.facture_montant}`;
@@ -676,29 +879,87 @@
           html2pdf().set(options).from(element).save();
         }, 1000);       
         
+      },
+
+      calculerResume(data) {
+        const resume = {};
+
+        // Parcourir chaque mois (clé dans le JSON)
+        for (const mois in data) {
+          const montants = data[mois].montants; // Montants par année pour ce mois
+          const factures = data[mois].factures; // Nombre de factures par année pour ce mois
+
+          // Parcourir chaque année dans les montants
+          for (const annee in montants) {
+            // Si l'année n'est pas encore dans le résumé, l'initialiser
+            if (!resume[annee]) {
+              resume[annee] = {
+                annee: parseInt(annee),
+                nombre_total_factures: 0,
+                montant_total: 0,
+                montant_moyen: 0
+              };
+            }
+            // Ajouter les montants et factures de ce mois à l'année correspondante
+            resume[annee].montant_total += montants[annee];
+            resume[annee].nombre_total_factures += factures[annee];
+            }
+          }
+
+          // Calculer le montant moyen pour chaque année
+          for (const annee in resume) {
+              const totalFactures = resume[annee].nombre_total_factures;
+              const montantTotal = resume[annee].montant_total;
+
+              resume[annee].montant_moyen = totalFactures > 0 ? (montantTotal / totalFactures).toFixed(2) : 0;
+          }
+
+        return Object.values(resume); // Retourner le résumé sous forme de tableau
+      },
+
+      // Fonction pour générer des couleurs aléatoires
+      getRandomColor(){
+          const r = Math.floor(Math.random() * 255);
+          const g = Math.floor(Math.random() * 255);
+          const b = Math.floor(Math.random() * 255);
+          return `rgba(${r}, ${g}, ${b}, 0.6)`;
       }
     }
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    const moisNodes = document.querySelectorAll('[data-mois]');
-    const moisValues = Array.from(moisNodes).map(node => node.getAttribute('data-mois'));    
-    const uniqueMois = [...new Set(moisValues)];
+    // Sélectionner tous les éléments avec les attributs data-mois et data-annee
+    const moisNodes = document.querySelectorAll('[data-mois][data-annee]');
+
+    // Extraire les combinaisons uniques de mois et année
+    const moisAnneeValues = Array.from(moisNodes).map(node => {
+      return `${node.getAttribute('data-mois')}-${node.getAttribute('data-annee')}`;
+    });
+
+    // Utiliser un Set pour identifier les combinaisons uniques
+    const uniqueMoisAnnee = [...new Set(moisAnneeValues)];
+
+    // Parcourir les éléments et masquer les doublons
     moisNodes.forEach((node, index) => {
-      if (moisValues.indexOf(moisValues[index]) !== index) {
+      const currentMoisAnnee = moisAnneeValues[index];
+      if (moisAnneeValues.indexOf(currentMoisAnnee) !== index) {
+        // Si ce mois-année est un doublon, masquer l'élément
         node.style.display = 'none';
       }
     });
 
-    const devMoisNodes = document.querySelectorAll('[data-dev-mois]');
-    const devMoisValues = Array.from(devMoisNodes).map(node => node.getAttribute('data-dev-mois'));
-    const devUniqueMois = [...new Set(devMoisValues)];
+    const devMoisNodes = document.querySelectorAll('[data-dev-mois][data-dev-annee]');
+    const devMoisAnneeValues = Array.from(moisNodes).map(node => {
+      return `${node.getAttribute('data-dev-mois')}-${node.getAttribute('data-dev-annee')}`;
+    });
+    const devUniqueMoisAnnee = [...new Set(devMoisAnneeValues)];
     devMoisNodes.forEach((node, index) => {
-      if (devMoisValues.indexOf(devMoisValues[index]) !== index) {
+      const devcurrentMoisAnnee = devMoisAnneeValues[index];
+      if (devMoisAnneeValues.indexOf(devcurrentMoisAnnee) !== index) {
+        // Si ce mois-année est un doublon, masquer l'élément
         node.style.display = 'none';
       }
-    });
-    
+    });    
     
   });
 

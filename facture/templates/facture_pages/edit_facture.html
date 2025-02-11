@@ -91,7 +91,7 @@
         </div>
         <div class="mb-4">
           <label for="facture_condition" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Condition de la facture</label>
-          <input type="date" id="facture_condition" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_condition" name="condition">
+          <input type="date" id="facture_condition" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_emission_date" name="condition">
         </div>
         <div class="mb-4">
           <label for="facture_etat" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">État de la facture</label>
@@ -198,22 +198,29 @@
   <div class="w-2/3 p-4" id="preview-facture">
     <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la facture</h2>
     <div class="bg-gray-700 dark:bg-gray-900 p-10 shadow-md rounded">
+      <div class="flex items-center justify-between">
+      {% if entreprise.logo %}
       <div class="flex items-center">
-        <img src="/static/images/Logo mada-digital.png" alt="profil image" class="w-32 h-32 shadow-lg object-cover">
+        <img src="{{ entreprise.logo.url }}" alt="profil image" class="h-32 shadow-lg object-cover">
       </div>
+      {% endif %}
+      <div x-show="client_logo != ''" class="flex items-center">
+        <img :src="client_logo" alt="logo de client" class="h-32 shadow-lg object-cover">
+      </div>
+    </div>
       <div class="flex justify-between items-center mb-10">
         <div>
           {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info client</h3> {% endcomment %}
-          <p class="dark:text-gray-400">Nom d'entreprise : <span>MADA-Digital</span></p>
+          <p class="dark:text-gray-400">Nom d'entreprise : <span>{{ entreprise.nom }}</span></p>
           <p class="dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
-          <p class="dark:text-gray-400">Adresse : <span>12 rue de la boule</span></p>
-          <p class="dark:text-gray-400">Code postal : <span>75010 - Paris</span></p>
-          <p class="dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
-          <p class="dark:text-gray-400">N° STAT : <span>12345678901234</span></p>          
+          <p class="dark:text-gray-400">Adresse : <span>{{ entreprise.adresse }}</span></p>
+          <p class="dark:text-gray-400">Code postal : <span>{{ entreprise.code_postal}} - {{ entreprise.region }}</span></p>
+          <p class="dark:text-gray-400">N° NIF : <span>{{ entreprise.nif }}</span></p>
+          <p class="dark:text-gray-400">N° STAT : <span>{{ entreprise.stat }}</span></p>          
         </div>
         <div>
           {% if facture.client.description_facture %}
-          <textarea id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled>{{ facture.client.description_facture }}</textarea>
+          <pre id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled>{{ facture.client.description_facture }}</pre>
           {% else %}
           {% comment %} <h3 class="font-bold mb-2 dark:text-gray-400">Info facture</h3> {% endcomment %}
           <p class="dark:text-gray-400">Nom d'entreprise : <span x-text="client_comercial_name"></span></p>
@@ -230,7 +237,8 @@
         {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Détail du facture</h3> {% endcomment %}
         <p class="text-emerald-800 text-md font-bold">Facture N° : <span x-text="facture_ref"></span></p>
         <div class="flex items-center justify-start">
-          <p class="dark:text-gray-400">Date d'emission : <span x-text="facture_emission_date"></span></p>
+          <p class="dark:text-gray-400">Date facturation : <span x-text="facture_Date"></span></p>
+          <p class="dark:text-gray-400 ml-5">Date échéance : <span x-text="facture_emission_date"></span></p>
           <p class="dark:text-gray-400 ml-40">Règlement : <span x-text="facture_reglement"></span></p>
         </div>
 
@@ -307,6 +315,7 @@
   // Alpine.js
   function facture() {
     return {
+      client_logo: '{{ facture.client.photo.url }}',
       client_comercial_name: '{{ facture.client.commercial_name }}',
       client_address: '{{ facture.client.adresse }}',
       client_code_postal: '2343',
@@ -314,12 +323,13 @@
       client_name: '{{ facture.client.name }} - {{ facture.client.commercial_name }}',
       client_email: '{{ facture.client.email }}',
       facture_ref: '{{ facture.ref }}',
+      facture_Date : '{{ facture.date_facture|date:"D, d M Y" }}',
       facture_intitule: '{{ facture.intitule }}',
-      facture_emission_date: '{{ facture.condition }}',
+      facture_emission_date: '{{ facture.condition|date:"D, d M Y" }}',
       facture_reglement: '{{ facture.reglement }}',
       facture_etat: '{{ facture.etat_facture }}',
       facture_montant: '{{ facture.montant|floatformat }}',
-      facture_condition: '{{ facture.condition }}',
+      //facture_condition: '{{ facture.condition }}',
       facture_description: '{{ facture.client.description_factue }}',
       facture_type: '{{ facture.type }}',
       facture_convert:false,
