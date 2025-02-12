@@ -4415,6 +4415,10 @@ select {
   color: rgb(57 106 255 / var(--tw-text-opacity));
 }
 
+.dark\:h-screen:is(.dark *) {
+  height: 100vh;
+}
+
 .dark\:divide-gray-700:is(.dark *) > :not([hidden]) ~ :not([hidden]) {
   --tw-divide-opacity: 1;
   border-color: rgb(55 65 81 / var(--tw-divide-opacity));
@@ -4951,6 +4955,10 @@ select {
     padding-top: 1rem;
   }
 
+  .sm\:text-left {
+    text-align: left;
+  }
+
   .sm\:text-sm {
     font-size: 0.875rem;
     line-height: 1.25rem;
@@ -5135,9 +5143,26 @@ select {
     padding-right: 2rem;
   }
 
+  .md\:text-right {
+    text-align: right;
+  }
+
+  .md\:text-end {
+    text-align: end;
+  }
+
   .md\:text-5xl {
     font-size: 3rem;
     line-height: 1;
+  }
+
+  .md\:font-medium {
+    font-weight: 500;
+  }
+
+  .md\:text-black {
+    --tw-text-opacity: 1;
+    color: rgb(0 0 0 / var(--tw-text-opacity));
   }
 }
 

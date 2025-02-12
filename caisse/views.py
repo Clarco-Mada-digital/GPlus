@@ -1520,8 +1520,6 @@ def beneficiaires(request):
 
     
     beneficiaires_sorted = sorted(beneficiaires, key=lambda b: next((i for i, v in enumerate(valeur) if v[1] == b.id), len(valeur)))
-
-    print(beneficiaires_sorted[0].operations)
     
     context = {
         'beneficiaires': beneficiaires_sorted,
