@@ -8,6 +8,7 @@ from django.db.models.functions import ExtractYear, ExtractMonth
 from .serializers.facture import FactureListSerializer, FactureDetailSerializer, FactureDateSerializer
 from .serializers.client import ClientListSerializer
 from .serializers.entreprise import EntrepriseSerializer
+from .serializers.user import UserSerializer
 
 from facture.models import Facture, Entreprise
 from clients.models import Client
@@ -43,13 +44,31 @@ class FactureViewset(ModelViewSet):
         return super().get_serializer_class() # /facture/
     
     # Permet d'obtenir la liste des sections par des factures
-    @action(detail=False, methods=['get'], serializer_class=FactureDateSerializer)
+    @action(detail=False, methods=['get'])
     def historique_dates(self, request):
         dates = Facture.objects.annotate(
             year=ExtractYear('date_facture'),
             month=ExtractMonth('date_facture')
         ).values('year', 'month').distinct().order_by('-year', '-month')
-        return Response(dates)
+
+         # Sérialisation des données avant de renvoyer
+        serializer = FactureDateSerializer(dates, many=True)  # Sérialisation de la liste
+        return Response(serializer.data)
+    
+    # Permet d'obtenir les infos de l'utilisateur connécté
+    @action(detail=False, methods=['get'])
+    def user_data(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+    
+    # Permet d'obtenir les infos de l'entreprise
+    @action(detail=False, methods=['get'])
+    def entreprise_data(self, request):
+        entreprise = Entreprise.objects.first()
+        if entreprise:
+            serializer = EntrepriseSerializer(entreprise)
+            return Response(serializer.data)
+        return Response({"error": "Aucune entreprise trouvée"}, status=404)
 
 
 class ClientViewSet(ReadOnlyModelViewSet):
@@ -61,14 +80,3 @@ class ClientViewSet(ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return Client.objects.all()
-    
-
-class EntrepriseViewSet(ReadOnlyModelViewSet):
-    """
-    EntrepriseViewSet: Utilisée pour obtnenir les infos de l'entreprise
-    """
-    permission_classes = [IsAuthenticated]
-    serializer_class = EntrepriseSerializer
-
-    def get_queryset(self):
-        return Entreprise.objects.all()

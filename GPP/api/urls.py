@@ -2,10 +2,9 @@
 
 from rest_framework import routers
 
-from facture.api.views import FactureViewset, ClientViewSet, EntrepriseViewSet
+from facture.api.views import FactureViewset, ClientViewSet
 
 router = routers.SimpleRouter()
 
 router.register('facture', FactureViewset, basename='facture')
 router.register('facture-client', ClientViewSet, basename='facture_client')
-router.register('facture-entreprise', EntrepriseViewSet, basename='facture_entreprise')
