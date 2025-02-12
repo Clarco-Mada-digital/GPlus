@@ -47,7 +47,11 @@
                 </div>
             </div>
             <div class="flex flex-col items-center pb-10">
-                <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="{{ client.photo.url }}" alt="{{ client.name }} image"/>
+                {% if client.photo %}
+                <img class="w-10 h-10 rounded-full" src="{{ client.photo.url }}" alt="{{ client.name }} image">
+                {% else %}
+                <img class="w-10 h-10 rounded-full" src="https://ui-avatars.com/api/?name={{client.name}}+{{client.commercial_name}}" alt="{{client.name}} image">
+                {% endif %}
                 <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">{{ client.name }}</h5>
                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ client.email }}</span>
                 <div class="flex mt-4 md:mt-6">
@@ -124,7 +128,12 @@
                         </div>
                     </td>
                     <th scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                        
+                        {% if client.photo %}
                         <img class="w-10 h-10 rounded-full" src="{{ client.photo.url }}" alt="Jese image">
+                        {% else %}
+                        <img class="w-10 h-10 rounded-full" src="https://ui-avatars.com/api/?name={{client.name}}+{{client.commercial_name}}" alt="Jese image">
+                        {% endif %}                            
                         <div class="ps-3">
                             <div class="text-base font-semibold">{{ client.name }}</div>
                             <div class="font-normal text-gray-500">{{ client.post }}</div>
@@ -179,7 +188,10 @@
                                     <form class="p-4 md:p-5" action="{% url 'client:edit_client' client.id %}" method="POST" enctype="multipart/form-data">
                                         {% csrf_token %}
                                         <div class="flex flex-col items-center justify-center w-full">
-                                            <img id="preview-image-{{ client.id }}" class="w-32 h-32 rounded-full object-cover mb-4" src="{{ client.photo.url }}" alt="Preview">
+                                            
+                                            {% if client.photo %}
+                                            <img id="preview-image-{{ client.id }}" class="w-32 h-32 rounded-full object-cover mb-4" src="{{ client.photo.url }}" alt="Preview">                                                
+                                            {% endif %}                                               
                                             
                                             <div id="upload-zone-{{ client.id }}" class="w-full hidden">
                                                 <label for="photo-{{ client.id }}" class="flex flex-col items-center justify-center w-full h-44 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
