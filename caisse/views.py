@@ -620,11 +620,6 @@ def ajouts_entree(request):
         messages.success(request, "Les opérations d'entrée ont été ajoutées avec succès.")
         return redirect('caisse:liste_entrees')
 
-        # except Categorie.DoesNotExist:
-        #     messages.error(request, "Une catégorie sélectionnée n'existe pas.")
-        # except Exception as e:
-        #     messages.error(request, f"Erreur lors de l'ajout : {e}")
-
     return render(request, 'caisse/operations/entre-sortie.html', {
         'categories_entree': categories_entree,
         'operation': 'entree',

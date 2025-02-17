@@ -397,11 +397,9 @@
 
                 <!-- Content -->
                 <main class="p-6 overflow-y-auto h-full">
-                    <div class="max-h-full">
-                        {% block content %}
-                        <!-- Page content will go here -->
-                        {% endblock %}
-                    </div>
+                    {% block content %}
+                    <!-- Page content will go here -->
+                    {% endblock %}
                 </main>
             </div>
         </div>
@@ -429,6 +427,15 @@
             sidebarClose.addEventListener('click', () => { // New event listener
                 sidebar.classList.add('-translate-x-full');
             });
+
+            // Remove overflow on mobile
+            if (window.innerWidth <= 640) { // 640px is the breakpoint for small screens
+                const mainContent = document.querySelector('main');
+                if (mainContent) {
+                    mainContent.classList.remove('overflow-y-auto'); // Remove overflow-y-auto class on mobile
+                    mainContent.classList.remove('h-full'); // Remove h-full class on mobile
+                }
+            }
   </script>
 
   <!-- ...existing code... -->

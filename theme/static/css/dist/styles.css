@@ -4877,6 +4877,10 @@ select {
     height: 1.5rem;
   }
 
+  .sm\:h-full {
+    height: 100%;
+  }
+
   .sm\:w-6 {
     width: 1.5rem;
   }
@@ -4910,6 +4914,10 @@ select {
     --tw-space-y-reverse: 0;
     margin-top: calc(0px * calc(1 - var(--tw-space-y-reverse)));
     margin-bottom: calc(0px * var(--tw-space-y-reverse));
+  }
+
+  .sm\:overflow-y-auto {
+    overflow-y: auto;
   }
 
   .sm\:rounded-2xl {
@@ -4996,6 +5004,10 @@ select {
 
   .md\:mt-6 {
     margin-top: 1.5rem;
+  }
+
+  .md\:mr-2 {
+    margin-right: 0.5rem;
   }
 
   .md\:block {
@@ -5124,6 +5136,10 @@ select {
     --tw-space-y-reverse: 0;
     margin-top: calc(0px * calc(1 - var(--tw-space-y-reverse)));
     margin-bottom: calc(0px * var(--tw-space-y-reverse));
+  }
+
+  .md\:overflow-y-auto {
+    overflow-y: auto;
   }
 
   .md\:p-5 {

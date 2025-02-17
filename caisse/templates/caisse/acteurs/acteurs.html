@@ -188,14 +188,15 @@
             </div>
             <button @click="showForm = true"
                 class="bg-blue-500 hover:bg-primary text-white font-semibold py-2 px-4 rounded flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2"
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
                     viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd"
                         d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
                         clip-rule="evenodd" />
                 </svg>
-                <span
-                    x-text="acteurType === 'employes' ? 'Nouveau employé' : 'Nouveau fournisseur'"></span>
+                <span class="hidden md:block ml-2"
+                    x-text="acteurType === 'employes' ? 'Nouveau employé' : 'Nouveau fournisseur'">
+                </span>
             </button>
         </div>
     </div>
@@ -214,34 +215,34 @@
             <!-- Formulaire pour les employés -->
             <div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+                    <div class="col-span-2">
                         <label for="last_name"
                             class="block text-sm font-medium">Nom</label>
                         <input type="text" id="last_name" name="last_name"
                             required
                             class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent dark:bg-secondary dark:text-white dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     </div>
-                    <div>
+                    <div class="col-span-2">
                         <label for="first_name"
                             class="block text-sm font-medium">Prénom</label>
                         <input type="text" id="first_name" name="first_name"
                             required
                             class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent dark:bg-secondary dark:text-white dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     </div>
-                    <div>
+                    <div class="col-span-2">
                         <label for="email"
                             class="block text-sm font-medium">Email</label>
                         <input type="email" id="email" name="email" required
                             class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent dark:bg-secondary dark:text-white dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     </div>
-                    <div>
+                    <div class="col-span-2">
                         <label for="tel"
                             class="block text-sm font-medium">Numéro
                             de téléphone</label>
                         <input type="tel" id="tel" name="tel" required
                             class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent dark:bg-secondary dark:text-white dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     </div>
-                    <div>
+                    <div class="col-span-2">
                         <label for="sexe"
                             class="block text-sm font-medium">Sexe</label>
                         <select id="sexe" name="sexe" required
@@ -250,7 +251,7 @@
                             <option value="Femme">Femme</option>
                         </select>
                     </div>
-                    <div>
+                    <div class="col-span-2">
                         <label for="date_naissance"
                             class="block text-sm font-medium">Date
                             de naissance</label>
@@ -258,13 +259,13 @@
                             name="date_naissance" required
                             class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent dark:bg-secondary dark:text-white dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     </div>
-                    <div>
+                    <div class="col-span-2">
                         <label for="adresse"
                             class="block text-sm font-medium">Adresse</label>
                         <input type="text" id="adresse" name="adresse"
                             class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-transparent dark:bg-secondary dark:text-white dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     </div>
-                    <div>
+                    <div class="col-span-2">
                         <label for="type_personnel"
                             class="block text-sm font-medium">Type
                             de personnel</label>
@@ -409,20 +410,17 @@
 
     <div class="mt-12">
 
-        <div class="flex justify-between items-center mb-4">
-            <div>
-                <h2
-                    class="text-2xl font-bold mb-6 dark:text-white">Catégories</h2>
-            </div>
+        <div class="flex justify-between items-start mb-4">
+            <h2 class="text-2xl font-bold mb-6 dark:text-white">Catégories</h2>
             <button @click="openAddCategorieForm('entree')"
                 class="bg-blue-500 hover:bg-primary text-white font-semibold py-2 px-4 rounded flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2"
-                    viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd"
-                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                        clip-rule="evenodd" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clip-rule="evenodd" />
                 </svg>
-                Ajouter une nouvelle catégorie
+                <span class="hidden md:block ml-2">Ajouter une nouvelle catégorie</span>
             </button>
         </div>
 
