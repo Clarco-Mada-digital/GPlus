@@ -241,7 +241,7 @@ def listes(request):
     """
     # Récupérer les filtres de recherche et de triage
     query = request.GET.get('q')
-    categorie_id = request.GET.get('categorie')
+    categorie_name = request.GET.get('categorie')
     beneficiaire_id = request.GET.get('beneficiaire')
     fournisseur_id = request.GET.get('fournisseur')
     mois = request.GET.get('mois')  # Récupérer le mois sélectionné
@@ -267,6 +267,8 @@ def listes(request):
     # Initialiser les queryset avec tri par défaut
     entree = OperationEntrer.objects.all().order_by('-date_transaction')
     sortie = OperationSortir.objects.all().order_by('-date_de_sortie')
+    categories = Categorie.objects.all().values('name').distinct()
+    print(categories)
 
     # Appliquer les filtres de recherche
     if query:
@@ -281,10 +283,17 @@ def listes(request):
             Q(montant__icontains=query)
         )
 
+    print(categorie_name)
     # Filtre par catégorie
-    if categorie_id and categorie_id.isdigit():  # Vérifier que c'est un nombre
-        entree = entree.filter(categorie_id=categorie_id)
-        sortie = sortie.filter(categorie_id=categorie_id)
+    if categorie_name:  # Vérifier que c'est un nombre
+        if Categorie.objects.all().filter(name=categorie_name, type='entree').exists():
+            entree = entree.filter(categorie_id = int( Categorie.objects.all().filter(name=categorie_name, type='entree').get().id))
+        else:
+            entree = []
+        if Categorie.objects.all().filter(name=categorie_name, type='sortie').exists():
+            sortie = sortie.filter(categorie_id = int(Categorie.objects.all().filter(name=categorie_name, type='sortie').get().id))
+        else:
+            sortie = []
 
     # Filtre par bénéficiaire (uniquement pour les sorties)
     if beneficiaire_id and beneficiaire_id.isdigit():  # Vérifier que c'est un nombre
@@ -316,12 +325,12 @@ def listes(request):
     # Contexte à passer au template
     context = {
         'page_obj': page_obj,
-        'categories': Categorie.objects.all(),
+        'categories': categories,
         'beneficiaires': Beneficiaire.objects.all(),
         'fournisseurs': Fournisseur.objects.all(),
         'lignes_par_page': lignes_par_page,
         'query': query,
-        'categorie_id': categorie_id,
+        'categorie_name': categorie_name,
         'beneficiaire_id': beneficiaire_id,
         'fournisseur_id': fournisseur_id,
         'mois_liste': mois_liste,

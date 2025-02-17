@@ -128,8 +128,8 @@
                             onchange="submitFormWithCurrentParams(this)">
                         <option value>Catégories</option>
                         {% for categorie in categories %}
-                        <option value="{{ categorie.id }}"
-                            {% if request.GET.categorie == categorie.id|stringformat:"s" %} selected{% endif %}>
+                        <option value="{{ categorie.name }}"
+                            {% if request.GET.categorie == categorie.name|stringformat:"s" %} selected{% endif %}>
                             {{ categorie.name }}
                         </option>
                         {% endfor %}
