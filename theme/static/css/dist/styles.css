@@ -1418,6 +1418,10 @@ select {
   top: 1.25rem;
 }
 
+.bottom-4 {
+  bottom: 1rem;
+}
+
 .z-0 {
   z-index: 0;
 }
@@ -1802,6 +1806,10 @@ select {
 
 .mt-\[130px\] {
   margin-top: 130px;
+}
+
+.mt-0 {
+  margin-top: 0px;
 }
 
 .block {
@@ -4982,6 +4990,11 @@ select {
     grid-column: span 3 / span 3;
   }
 
+  .md\:mx-2 {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
   .md\:-mt-24 {
     margin-top: -6rem;
   }
@@ -5140,6 +5153,11 @@ select {
 
   .md\:overflow-y-auto {
     overflow-y: auto;
+  }
+
+  .md\:bg-blue-500 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(59 130 246 / var(--tw-bg-opacity));
   }
 
   .md\:p-5 {

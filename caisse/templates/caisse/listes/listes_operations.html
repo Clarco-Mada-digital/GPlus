@@ -30,15 +30,17 @@
             </a>
         </div>
         <div><a href="{% url 'caisse:operation' %}">
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Nouvelle
+                <button class="hidden md:flex bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Nouvelle
                     opération</button>
+                <button class="md:hidden bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">+</button>
             </a>
         </div>
     </div>
     <div class="flex justify-between font-medium items-center space-x-4 pb-4">
         <!-- Sélecteur pour le nombre de lignes par page -->
         <form method="get" class="flex items-center space-x-2">
-            <label for="lignes">Nombre de lignes :</label>
+            <label for="lignes" class="hidden md:flex">Nombre de lignes :</label>
+            <label for="lignes" class="md:hidden">Lignes:</label>
             <select name="lignes"
                 class="border-none dark:bg-secondary focus:ring-0" id="lignes"
                 onchange="this.form.submit()">
@@ -52,7 +54,7 @@
 
         <!-- Pagination -->
         <div class="flex items-center font-medium space-x-2">
-            <span class="mx-2">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+            <span class="hidden md:flex mx-2">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
             <div class="flex space-x-2">
               {% if page_obj.has_previous %}
                 <a
@@ -75,6 +77,7 @@
                     </svg>
                 </a>
                 {% endif %}
+                <span class="md:hidden mx-2">{{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</span>
                 {% if page_obj.has_next %}
                 <a
                     href="?page={{ page_obj.next_page_number }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&fournisseur={{ fournisseur_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}"
@@ -652,4 +655,4 @@
         filterIcon.classList.toggle('rotate-180');
     }
 </script>
-        {% endblock %}
+{% endblock %}

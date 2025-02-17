@@ -1161,12 +1161,12 @@ def liste_entrees(request):
             Q(montant__icontains=query) | 
             Q(date_transaction__icontains=query)
         )
-    if categorie_id and categorie_id.isdigit():  # Vérifier que c'est un nombre
+    if categorie_id and categorie_id.isdigit():
         entrees = entrees.filter(categorie_id=categorie_id)
-    if beneficiaire_id:
+    if beneficiaire_id and beneficiaire_id.isdigit():
         entrees = entrees.filter(beneficiaire_id=beneficiaire_id)
     # Filtre par mois
-    if mois and mois.isdigit():  # Vérifier que c'est un nombre
+    if mois and mois.isdigit():
         entrees = entrees.filter(date_transaction__month=int(mois))
 
     # Définir les champs de tri valides
@@ -1254,11 +1254,11 @@ def liste_sorties(request):
             Q(montant__icontains=query) | 
             Q(date_de_sortie__icontains=query)
         )
-    if categorie_id:
+    if categorie_id and categorie_id.isdigit():
         sorties = sorties.filter(categorie_id=categorie_id)
-    if beneficiaire_id:
+    if beneficiaire_id and beneficiaire_id.isdigit():
         sorties = sorties.filter(beneficiaire_id=beneficiaire_id)
-    if fournisseur_id:
+    if fournisseur_id and fournisseur_id.isdigit():
         sorties = sorties.filter(fournisseur_id=fournisseur_id)
     # Filtre par mois
     if mois and mois.isdigit():  # Vérifiez que mois est un nombre
