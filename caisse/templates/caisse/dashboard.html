@@ -8,12 +8,12 @@
 
 <div class="container mx-auto px-4 py-8">
     <!-- Cartes des totaux -->
-    <form method="get" action="{% url 'caisse:index' %}?year={{ selected_year }}" class="mb-8">
+    <form method="get" action="{% url 'caisse:index' %}?year={{ selected_year }}" class="items-center flex flex_row mb-5">
         <label for="year"
             class="text-sm text-gray-600 dark:text-white">Sélectionner une année
             :</label>
         <select name="year" id="year" onchange="this.form.submit()"
-            class="ml-2 p-2 px-24 rounded-lg bg-white dark:bg-secondary border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-colors duration-200 cursor-pointer text-gray-700 dark:text-gray-200 mx-2">
+            class="ml-2 p-2 px-10 rounded-lg bg-white dark:bg-secondary border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-colors duration-200 cursor-pointer text-gray-700 dark:text-gray-200 mx-2">
             {% for year in years reversed %}
             <option value="{{ year }}"
                 {% if year == selected_year %}
@@ -396,7 +396,7 @@
     const sorties4Mois = JSON.parse('{{ sorties_4_mois|safe }}');
 
     // Graphique Résumé du mois
-    new Chart(document.getElementById('resumeMoisChart'), {
+    const resumeChart = new Chart(document.getElementById('resumeMoisChart'), {
         type: 'bar',
         data: {
             labels: entreesParMois.map(item => item.mois),
@@ -406,21 +406,18 @@
                 backgroundColor: '#396AFF',
                 borderColor: '#396AFF',
                 borderRadius: 10,
-                barThickness: 30
             }, {
                 label: 'Entrées',
                 data: entreesParMois.map(item => item.total),
                 backgroundColor: '#16DBCC',
                 borderColor: '#16DBCC',
                 borderRadius: 10,
-                barThickness: 30
             }, {
                 label: 'Sorties',
                 data: sortiesParMois.map(item => item.total),
                 backgroundColor: '#FF82AC',
                 borderColor: '#FF82AC',
                 borderRadius: 10,
-                barThickness: 30
             }]
         },
         options: {
@@ -461,6 +458,7 @@
             },
             plugins: {
                 legend: {
+                    display: true,
                     labels: {
                         font: {
                             size: 12
@@ -474,6 +472,19 @@
             }
         }
     });
+
+    // Adapter les graphiques pour mobile de manière dynamique
+    function adaptCharts() {
+        if (window.innerWidth < 768) {
+        // Graphique Dépenses par Catégorie
+        resumeChart.options.scales.y.ticks.font.size = 10; // Réduire la taille de la police des ticks
+        resumeChart.options.scales.x.ticks.font.size = 10; // Réduire la taille de la police des ticks
+        resumeChart.options.plugins.legend.display = false; // Masquer la légende
+        resumeChart.update();
+        }
+    }
+
+    adaptCharts();
 
     // Créer une variable pour stocker l'instance du graphique
     let sortiesCategoriesChart;

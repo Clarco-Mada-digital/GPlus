@@ -268,7 +268,6 @@ def listes(request):
     entree = OperationEntrer.objects.all().order_by('-date_transaction')
     sortie = OperationSortir.objects.all().order_by('-date_de_sortie')
     categories = Categorie.objects.all().values('name').distinct()
-    print(categories)
 
     # Appliquer les filtres de recherche
     if query:
@@ -282,8 +281,6 @@ def listes(request):
             Q(categorie__name__icontains=query) |
             Q(montant__icontains=query)
         )
-
-    print(categorie_name)
     # Filtre par catégorie
     if categorie_name:  # Vérifier que c'est un nombre
         if Categorie.objects.all().filter(name=categorie_name, type='entree').exists():

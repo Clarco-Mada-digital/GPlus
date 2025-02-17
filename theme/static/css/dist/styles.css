@@ -5106,6 +5106,10 @@ select {
     justify-content: flex-start;
   }
 
+  .md\:justify-between {
+    justify-content: space-between;
+  }
+
   .md\:gap-6 {
     gap: 1.5rem;
   }
