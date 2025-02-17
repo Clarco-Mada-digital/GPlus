@@ -29,7 +29,7 @@
                 <div class="overflow-hidden">
                     <div class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <!-- En-têtes pour grand écran -->
-                        <div class="bg-gray-50 dark:bg-gray-700">
+                        <div class="hidden md:grid bg-gray-50 dark:bg-gray-700">
                             <div class="grid grid-cols-5 gap-2">
                                 <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Employé</div>
                                 <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total des dépenses</div>
@@ -110,7 +110,7 @@
                     <div class="overflow-hidden">
                         <div class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <!-- En-têtes -->
-                            <div class="bg-gray-50 dark:bg-gray-700">
+                            <div class="hidden md:grid bg-gray-50 dark:bg-gray-700">
                                 <div class="grid grid-cols-4 gap-2">
                                     <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Catégorie</div>
                                     <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total des dépenses</div>
@@ -305,8 +305,7 @@
                     label: 'Dépenses par Catégorie',
                     data: initialData.data,
                     backgroundColor: colors.slice(0, initialData.labels.length),
-                    borderRadius: 10,
-                    barThickness: 40
+                    borderRadius: 10
                 }]
             },
             options: {
@@ -408,10 +407,11 @@
             categoryChart.data.datasets[0].backgroundColor = categoryChart.data.datasets[0].backgroundColor.slice(0, maxCategories);
         }
 
-        categoryChart.update();
-
+        
         // Graphique Dépenses par année
         const ctxYearly = document.getElementById('yearlyExpensesChart').getContext('2d');
+        const ctxYearlyParent = document.getElementById('yearlyExpensesChart').parentNode;
+        
         new Chart(ctxYearly, {
             type: 'line',
             data: {
@@ -438,6 +438,33 @@
             }
         });
 
+        // Adapter les graphiques pour mobile de manière dynamique
+        function adaptCharts() {
+            if (window.innerWidth < 768) {
+            // Graphique Dépenses par Catégorie
+            categoryChart.options.scales.y.ticks.font.size = 10; // Réduire la taille de la police des ticks
+            categoryChart.options.scales.x.ticks.font.size = 10; // Réduire la taille de la police des ticks
+            categoryChart.options.plugins.legend.display = false; // Masquer la légende
+
+            // Graphique Dépenses par année
+            ctxYearlyParent.style.height = '160px'; // Réduire la hauteur du conteneur
+            ctxYearlyParent.style.display = 'flex'; // Utiliser flexbox pour centrer
+            ctxYearlyParent.style.justifyContent = 'center'; // Centrer horizontalement
+            ctxYearlyParent.style.alignItems = 'center'; // Centrer verticalement
+            } else {
+            ctxYearlyParent.style.height = '400px'; // Rétablir la hauteur du conteneur
+            ctxYearlyParent.style.display = 'block'; // Rétablir l'affichage en bloc
+            categoryChart.options.plugins.legend.display = true; // Afficher la légende
+            }
+            categoryChart.update();
+        }
+
+        // Appeler la fonction lors du chargement de la page
+        adaptCharts();
+
+        // Ajouter un écouteur d'événement pour redimensionner la fenêtre
+        window.addEventListener('resize', adaptCharts);
+        
         // Initialiser le filtre de catégorie
         const categorieFilter = document.getElementById('categorieFilter');
         if (categorieFilter) {
@@ -449,7 +476,7 @@
             }
         }
     });
-
+    
     // Mettre à jour les options des graphiques pour le mode sombre
     Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151';
     Chart.defaults.borderColor = document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb';
@@ -463,5 +490,8 @@
         if (categoryChart) categoryChart.update();
         if (yearlyExpensesChart) yearlyExpensesChart.update();
     });
+
+    categoryChart.update();
+
 </script>
 {% endblock %}

@@ -1547,7 +1547,7 @@ def creer_beneficiaire(request: WSGIRequest):
         
         Beneficiaire.objects.create(
             personnel=personnel,
-            name=name if not personnel else None
+            name = name if not personnel else None
         )
         
         UserActivity.objects.create(
