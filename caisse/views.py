@@ -1507,18 +1507,7 @@ def beneficiaires(request):
     order = request.GET.get('order')
     
     valeur = [(str(beneficiaire), beneficiaire.id) for beneficiaire in beneficiaires]
-
-    # Trier les bénéficiaires par ordre alphabétique
-    if sort_by and order:
-        if order == 'asc':
-            valeur.sort()
-        elif order == 'desc':
-            valeur.sort(reverse=True)
-        else:
-            messages.error(request, "Ordre de tri non valide.")
-            return redirect('caisse:beneficiaires')
-
-
+    
     # Classification des opérations de chaque bénéficiaire
     operations_par_beneficiaire = defaultdict(lambda: {'entrees': 0, 'sorties': 0})
     
@@ -1533,6 +1522,41 @@ def beneficiaires(request):
     for beneficiaire in beneficiaires:
         beneficiaire.operations = operations_par_beneficiaire[beneficiaire.id]
 
+    # Trier les bénéficiaires par ordre alphabétique
+    if sort_by and order:
+        if sort_by == "name":
+            if order == 'asc':
+                valeur.sort()
+            elif order == 'desc':
+                valeur.sort(reverse=True)
+            else:
+                messages.error(request, "Ordre de tri non valide.")
+                return redirect('caisse:beneficiaires')
+        elif sort_by == "type":
+            valeur.clear()
+            if order == 'desc':
+                for beneficiaire in beneficiaires:
+                    if beneficiaire.personnel:
+                        valeur += [(str(beneficiaire), beneficiaire.id)]
+                for beneficiaire in beneficiaires:
+                    if not beneficiaire.personnel:
+                        valeur += [(str(beneficiaire), beneficiaire.id)]
+            elif order == 'asc':
+                for beneficiaire in beneficiaires:
+                    if beneficiaire.personnel:
+                        valeur += [(str(beneficiaire), beneficiaire.id)]
+                for beneficiaire in beneficiaires:
+                    if not beneficiaire.personnel:
+                        valeur += [(str(beneficiaire), beneficiaire.id)]
+                valeur.reverse()
+        elif sort_by == "operation":
+            valeur.clear()
+            
+            for beneficiaire in beneficiaires:
+                operations = operations_par_beneficiaire[beneficiaire.id]
+                valeur += [(str(beneficiaire), beneficiaire.id, operations['entrees'], operations['sorties'], operations['entrees'] + operations['sorties'])]
+            
+            valeur.sort(key=lambda x: x[-1], reverse=order == 'desc')
     
     beneficiaires_sorted = sorted(beneficiaires, key=lambda b: next((i for i, v in enumerate(valeur) if v[1] == b.id), len(valeur)))
     

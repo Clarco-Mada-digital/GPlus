@@ -134,7 +134,6 @@
             </div>
         {% endfor %}
     </div>
-    </div>
 
     <!-- Version desktop du tableau -->
     <table class="w-full hidden md:table">
@@ -142,17 +141,32 @@
             <tr class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                 <th class="px-4 py-3 text-left">
                     {% if request.GET.sort == 'name' and request.GET.order == 'asc' %}
-                    <a href="?sort=name&order=desc&lignes={{ lignes_par_page }}">Nom
-                        ⬇</a>
+                    <a href="?sort=name&order=desc">Nom ⬇</a>
                     {% elif request.GET.sort == 'name' and request.GET.order == 'desc' %}
-                    <a href="?sort=name&order=asc&lignes={{ lignes_par_page }}">Nom
-                        ⬆</a>
+                    <a href="?">Nom ⬆</a>
                     {% else %}
-                    <a href="?sort=name&order=asc&lignes={{ lignes_par_page }}">Nom ⬆⬇</a>
+                    <a href="?sort=name&order=asc">Nom ⬆⬇</a>
                     {% endif %}
                 </th>
-                <th class="px-4 py-3 text-center">Type</th>
-                <th class="px-4 py-3 text-center">Opération</th>
+                <th class="px-4 py-3 text-center">
+                    {% if request.GET.sort == 'type' and request.GET.order == 'asc' %}
+                    <a href="?sort=type&order=desc">Type ⬇</a>
+                    {% elif request.GET.sort == 'type' and request.GET.order == 'desc' %}
+                    <a href="?sort=type&order=asc">Type ⬆</a>
+                    {% else %}
+                    <a href="?sort=type&order=asc">Type ⬆⬇</a>
+                    {% endif %}
+                </th>
+                <th class="px-4 py-3 text-center">
+                    {% if request.GET.sort == 'operation' and request.GET.order == 'asc' %}
+                    <a href="?sort=operation&order=desc">Opération ⬇</a>
+                    {% elif request.GET.sort == 'operation' and request.GET.order == 'desc' %}
+                    <a href="?sort=operation&order=asc">Opération ⬆</a>
+                    {% else %}
+                    <a href="?sort=operation&order=asc">Opération ⬆⬇</a>
+                    {% endif %}
+                </th>
+                </th>
                 <th class="px-4 py-3">Actions</th>
             </tr>
         </thead>
@@ -242,6 +256,7 @@
             {% endfor %}
         </tbody>
     </table>
+</div>
 </div>
 
 {% endblock %}
