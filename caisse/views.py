@@ -426,6 +426,8 @@ def acteurs(request):
         'fournisseurs': json.dumps([{**item['fields'], 'id': item['pk']} for item in fournisseurs_json]),
         'categories_entrees': json.dumps([{**item['fields'], 'id': item['pk']} for item in categories_entrees]),
         'categories_sorties': json.dumps([{**item['fields'], 'id': item['pk']} for item in categories_sorties]),
+        'categorie_entrees': categories.filter(type='entree'),
+        'categorie_sorties': categories.filter(type='sortie')
     }
     return render(request, "caisse/acteurs/acteurs.html", context)
 
@@ -558,13 +560,18 @@ def modifier_categorie(request, pk):
     })
 
 @login_required
-@require_POST
-@csrf_exempt
-def supprimer_categorie(request, pk):
+def supprimer_categorie(request, pk: int):
     categorie = get_object_or_404(Categorie, pk=pk)
-    categorie.delete()
-    UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé une catégorie')
-    return JsonResponse({'success': True})
+
+    try:
+        categorie.delete()
+        UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé une catégorie')
+        messages.success(request, "Catégorie supprimée avec succès.")
+    except django.db.models.deletion.ProtectedError:
+        messages.error(request, "Impossible de supprimer une catégorie utilisée dans des opérations.")
+    except Exception:
+        messages.error(request, f"Erreur lors de la suppression.")
+    return redirect('caisse:acteurs')
 
 # Gestion des opérations
 
@@ -818,29 +825,36 @@ def parametres(request):
 @login_required
 @require_POST
 @csrf_exempt
-def creer_categorie(request):
-    data = json.loads(request.body)
-    name = data.get('name')
-    description = data.get('description')
-    type = data.get('type')
+def creer_categorie(request: WSGIRequest):
+    query_string = request.body
+
+    # Décoder la chaîne de requête
+    decoded_string = query_string.decode('utf-8')
+    data = urllib.parse.parse_qs(decoded_string)
+
+    name = data.get('categorie_name')[0]
+    description = data.get('categorie_description', [None])[0]
+    type = data.get('categorie_type')[0]
     
+    # Vérifie si le nom et le type sont renseignés
     if not name or not type:
-        return JsonResponse({'success': False, 'error': 'Nom et type sont requis'}, status=400)
+        messages.error(request, f"Erreur : Le nom et le type sont obligatoires.")
+        return redirect('caisse:acteurs')
+
+    # Vérifier si la catégorie existe déjà par nom et type
+    if Categorie.objects.filter(name=name, type=type).exists():
+        messages.error(request, "Une catégorie avec ce nom et ce type existe déjà.")
+        return redirect('caisse:acteurs')
+    
     try:
+        Categorie.objects.create(name=name, description=description, type=type)    
+        messages.success(request, "Catégorie créée avec succès.")
+
         UserActivity.objects.create(user=request.user, action='Création', description='a créé une nouvelle catégorie')
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
-    categorie = Categorie.objects.create(name=name, description=description, type=type)
+        messages.error(request, f"Erreur lors de la création de la catégorie.")
     
-    return JsonResponse({
-        'success': True,
-        'categorie': {
-            'id': categorie.id,
-            'name': categorie.name,
-            'description': categorie.description,
-            'type': categorie.type
-        }
-    })
+    return redirect('caisse:acteurs')
 
 @login_required
 def editer_acteur(request, type_acteur, pk):

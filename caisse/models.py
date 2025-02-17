@@ -17,7 +17,7 @@ class Categorie(models.Model):
         ('entree', 'Entrée'),
         ('sortie', 'Sortie'),
     ]
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
     type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='entree')
     history = HistoricalRecords()

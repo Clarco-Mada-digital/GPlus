@@ -652,32 +652,4 @@
         filterIcon.classList.toggle('rotate-180');
     }
 </script>
-<!-- ...existing code... -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const hideButtons = document.querySelectorAll('[data-modal-hide]');
-    const targetButtons = document.querySelectorAll('[data-modal-target]');
-
-    hideButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const modalId = this.getAttribute('data-modal-hide');
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        });
-    });
-
-    targetButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const modalId = this.getAttribute('data-modal-target');
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.remove('hidden');
-            }
-        });
-    });
-});
-</script>
-<!-- ...existing code... -->
         {% endblock %}
