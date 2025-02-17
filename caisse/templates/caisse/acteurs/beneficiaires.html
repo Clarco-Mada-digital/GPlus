@@ -152,7 +152,7 @@
                     {% if request.GET.sort == 'type' and request.GET.order == 'asc' %}
                     <a href="?sort=type&order=desc">Type ⬇</a>
                     {% elif request.GET.sort == 'type' and request.GET.order == 'desc' %}
-                    <a href="?sort=type&order=asc">Type ⬆</a>
+                    <a href="?">Type ⬆</a>
                     {% else %}
                     <a href="?sort=type&order=asc">Type ⬆⬇</a>
                     {% endif %}
@@ -161,7 +161,7 @@
                     {% if request.GET.sort == 'operation' and request.GET.order == 'asc' %}
                     <a href="?sort=operation&order=desc">Opération ⬇</a>
                     {% elif request.GET.sort == 'operation' and request.GET.order == 'desc' %}
-                    <a href="?sort=operation&order=asc">Opération ⬆</a>
+                    <a href="?">Opération ⬆</a>
                     {% else %}
                     <a href="?sort=operation&order=asc">Opération ⬆⬇</a>
                     {% endif %}
