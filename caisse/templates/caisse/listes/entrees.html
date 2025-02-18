@@ -474,15 +474,6 @@
         });
     </script>
 
-    <!-- Ajouter le bouton toggle pour les filtres sur mobile -->
-    <button onclick="toggleFilters()" 
-            class="md:hidden w-full flex items-center justify-between p-4 bg-white dark:bg-secondary rounded-lg mb-2">
-        <span class="font-medium">Filtres</span>
-        <svg id="filter-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-        </svg>
-    </button>
-
     <!-- Modifier la section des filtres -->
     <form method="GET" action="{% url 'caisse:liste_entrees' %}" 
           class="hidden md:block p-4" 
