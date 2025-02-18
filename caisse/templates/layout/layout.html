@@ -20,6 +20,7 @@
             href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:wght@100..900&family=Urbanist:ital,wght@0,554;1,554&display=swap"
             rel="stylesheet">
             <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+            <link rel="stylesheet" href="{% static 'css/custom_scrollbar.css' %}">
     </head>
 
     <style>
@@ -428,20 +429,22 @@
                 sidebar.classList.add('-translate-x-full');
             });
 
-            // Listen for window resize events
-            window.addEventListener('resize', () => {
+            function changeToMobile() {
                 const mainContent = document.querySelector('main');
                 if (window.innerWidth <= 640) {
-                    if (mainContent) {
-                        mainContent.classList.remove('overflow-y-auto');
-                        mainContent.classList.remove('h-full');
-                    }
+                    mainContent.classList.remove('overflow-y-auto');
+                    mainContent.classList.remove('h-full');
                 } else {
-                    if (mainContent) {
-                        mainContent.classList.add('overflow-y-auto');
-                        mainContent.classList.add('h-full');
-                    }
+                    mainContent.classList.add('overflow-y-auto');
+                    mainContent.classList.add('h-full');
                 }
+            }
+
+            changeToMobile();
+
+            // Listen for window resize events
+            window.addEventListener('resize', () => {
+                changeToMobile();
             });
   </script>
 
