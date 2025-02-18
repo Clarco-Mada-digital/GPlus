@@ -292,19 +292,20 @@ def listes(request):
         else:
             sortie = []
 
-    # Filtre par bénéficiaire (uniquement pour les sorties)
+    # Filtre par bénéficiaire
     if beneficiaire_id and beneficiaire_id.isdigit():  # Vérifier que c'est un nombre
         sortie = sortie.filter(beneficiaire_id=beneficiaire_id)
         entree = entree.filter(beneficiaire_id=beneficiaire_id)
-
-    # Filtre par fournisseur (uniquement pour les sorties)
-    if fournisseur_id and fournisseur_id.isdigit():  # Vérifier que c'est un nombre
-        sortie = sortie.filter(fournisseur_id=fournisseur_id)
 
     # Filtre par mois
     if mois and mois.isdigit():  # Vérifier que c'est un nombre
         entree = entree.filter(date_transaction__month=int(mois))
         sortie = sortie.filter(date_de_sortie__month=int(mois))
+
+    # Filtre par fournisseur (uniquement pour les sorties)
+    if fournisseur_id and fournisseur_id.isdigit():  # Vérifier que c'est un nombre
+        sortie = sortie.filter(fournisseur_id=fournisseur_id)
+        entree = []
 
     # Pagination
     lignes_par_page = str(request.GET.get('lignes', 10)) # Valeur par défaut : 10

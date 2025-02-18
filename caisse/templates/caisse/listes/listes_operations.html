@@ -171,11 +171,9 @@
                                 class="px-4 py-2 dark:bg-secondary border-none focus:ring-0 rounded-md"
                                 onchange="submitFormWithCurrentParams(this)">
                             <option value>Mois</option>
-                            {% for mois in mois_liste %}
-                            <option value="{{ mois.value }}" {% if request.GET.mois
-                                == mois.value|stringformat:"s" %}selected{% endif
-                                %}>
-                                {{ mois.label }}
+                            {% for mois_ in mois_liste %}
+                            <option value="{{ mois_.value }}" {% if request.GET.mois == mois_.value|stringformat:"s" %}selected{% endif %}>
+                                {{ mois_.label }}
                             </option>
                             {% endfor %}
                         </select>

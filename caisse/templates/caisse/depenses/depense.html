@@ -13,7 +13,7 @@
                 Détails des Dépenses par Employés
             </h2>
             <select id="moisSelect" 
-                    class="w-full md:w-auto px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
+                    class="w-full md:w-auto px-7 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
                     onchange="updateMonth(this.value)">
                 {% for mois in mois_liste %}
                 <option value="{{ mois.value }}" {% if mois.value == mois_selectionne %}selected{% endif %}>
@@ -171,7 +171,7 @@
     </div>
 
     <!-- Graphiques -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 gap-8">
         <!-- Graphique par Catégories -->
         <div class="bg-white dark:bg-secondary rounded-2xl shadow-sm p-4">
             <div class="flex justify-between items-center mb-4">
@@ -195,7 +195,7 @@
             <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
                 Dépenses par année
             </h2>
-            <div style="height: 400px;">
+            <div>
                 <canvas id="yearlyExpensesChart"></canvas>
             </div>
         </div>
@@ -440,7 +440,7 @@
 
         // Adapter les graphiques pour mobile de manière dynamique
         function adaptCharts() {
-            if (window.innerWidth < 768) {
+            if (window.innerWidth < 640) {
             // Graphique Dépenses par Catégorie
             categoryChart.options.scales.y.ticks.font.size = 10; // Réduire la taille de la police des ticks
             categoryChart.options.scales.x.ticks.font.size = 10; // Réduire la taille de la police des ticks
@@ -452,8 +452,7 @@
             ctxYearlyParent.style.justifyContent = 'center'; // Centrer horizontalement
             ctxYearlyParent.style.alignItems = 'center'; // Centrer verticalement
             } else {
-            ctxYearlyParent.style.height = '400px'; // Rétablir la hauteur du conteneur
-            ctxYearlyParent.style.display = 'block'; // Rétablir l'affichage en bloc
+            ctxYearlyParent.removeAttribute('style');
             categoryChart.options.plugins.legend.display = true; // Afficher la légende
             }
             categoryChart.update();
