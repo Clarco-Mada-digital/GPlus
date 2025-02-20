@@ -1,0 +1,127 @@
+{% load static %}
+<aside
+  :class="sidebarToggle ? 'translate-x-0 lg:w-[90px]' : '-translate-x-full'"
+  class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-hidden border-r border-gray-200 bg-white px-5 dark:border-gray-800 dark:bg-gray-900 lg:static lg:translate-x-0 z-50"
+>
+  <!-- SIDEBAR HEADER -->
+  <div
+    :class="sidebarToggle ? 'justify-center' : 'justify-between'"
+    class="flex items-center justify-center gap-2 pt-8 sidebar-header pb-7">
+    <a class="w-full flex items-center justify-center" href="{% url 'facture:index' %}">
+      <span class="logo w-full" :class="sidebarToggle ? 'hidden' : ''">
+        <img class="dark:hidden h-24 w-auto" src="{% static 'images/logo mada-digital.png' %}" alt="Logo" />
+        <img class="hidden dark:block h-24 w-auto" src="{% static 'images/logo mada-digital.png' %}" alt="Logo"/>
+      </span>
+
+      <img
+        class="logo-icon h-20"
+        :class="sidebarToggle ? 'lg:block' : 'hidden'"
+        src="{% static 'images/logo mada-digital.png' %}"
+        alt="Logo"
+      />
+    </a>
+  </div>
+  <!-- SIDEBAR HEADER -->
+
+  <div
+    class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
+    <!-- Sidebar Menu -->
+    <nav x-data="{selected: $persist('Dashboard')}">
+      <!-- Menu Group -->
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
+          <span
+            class="menu-group-title"
+            :class="sidebarToggle ? 'lg:hidden' : ''">
+            MENU
+          </span>
+
+          <svg
+            :class="sidebarToggle ? 'lg:block hidden' : 'hidden'"
+            class="mx-auto fill-current menu-group-icon"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z"
+              fill=""/>
+          </svg>
+        </h3>
+
+        <ul class="flex flex-col gap-4 mb-6">
+          <!-- Menu Item Dashboard -->
+          <li>
+            <a href="{% url 'facture:index' %}"
+              @click="selected = (selected === 'dashboard' ? '':'dashboard')"
+              class="menu-item group flex items-center  {% if request.path == '/facture/' %}text-blue-600 bg-blue-100  rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary  rounded-lg{% endif %}"
+              :class=" (selected === 'dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    :class="(selected === 'Dashboard') && (page === 'Dashboard') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
+                    class="h-6 w-6 mr-2" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path
+                      d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                <span
+                  class="menu-item-text ml-3"
+                  :class="sidebarToggle ? 'lg:hidden' : ''">
+                Tableau de bord
+              </span>
+            </a>
+          </li>
+          <!-- Menu Item Nouveau -->
+          <li>
+            <a href="{% url 'facture:facture' %}"
+              @click="selected = (selected === 'facture' ? '':'facture')"
+              class="menu-item group flex items-center  {% if request.path == '/facture/new/' %}text-blue-600 bg-blue-100  rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary  rounded-lg{% endif %}"
+              :class=" (selected === 'nouveau') && (page === 'nouveau') ? 'menu-item-active' : 'menu-item-inactive'">
+                <svg  :class="(selected === 'Dashboard') && (page === 'Dashboard') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
+                    class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M22 17H2a1 1 0 0 0 0 2h20a1 1 0 0 0 0-2m0 4H2a1 1 0 0 0 0 2h20a1 1 0 0 0 0-2M6 7a1 1 0 1 0 1 1a1 1 0 0 0-1-1m14-6H4a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3V4a3 3 0 0 0-3-3m1 11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1Zm-9-7a3 3 0 1 0 3 3a3 3 0 0 0-3-3m0 4a1 1 0 1 1 1-1a1 1 0 0 1-1 1m6-2a1 1 0 1 0 1 1a1 1 0 0 0-1-1"/></svg>
+                <span
+                  class="menu-item-text ml-3"
+                  :class="sidebarToggle ? 'lg:hidden' : ''">
+                  Nouveau
+                </span>
+            </a>
+          </li>
+          <!-- Menu Item service -->
+          <li>
+            <a href="{% url 'facture:service' %}"
+              @click="selected = (selected === 'service' ? '':'service')"
+              class="flex items-center px-4 py-2 mt-2 {% if request.path == '/facture/service/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}"
+              :class=" (selected === 'service') && (page === 'service') ? 'menu-item-active' : 'menu-item-inactive'">
+                <svg  :class="(selected === 'Dashboard') && (page === 'Dashboard') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
+                    class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17.414 10.414C18 9.828 18 8.886 18 7s0-2.828-.586-3.414m0 6.828C16.828 11 15.886 11 14 11h-4c-1.886 0-2.828 0-3.414-.586m10.828 0Zm0-6.828C16.828 3 15.886 3 14 3h-4c-1.886 0-2.828 0-3.414.586m10.828 0Zm-10.828 0C6 4.172 6 5.114 6 7s0 2.828.586 3.414m0-6.828Zm0 6.828ZM13 7a1 1 0 1 1-2 0a1 1 0 0 1 2 0Z"/><path stroke-linecap="round" d="M18 6a3 3 0 0 1-3-3m3 5a3 3 0 0 0-3 3M6 6a3 3 0 0 0 3-3M6 8a3 3 0 0 1 3 3m-4 9.388h2.26c1.01 0 2.033.106 3.016.308a14.9 14.9 0 0 0 5.33.118c.868-.14 1.72-.355 2.492-.727c.696-.337 1.549-.81 2.122-1.341c.572-.53 1.168-1.397 1.59-2.075c.364-.582.188-1.295-.386-1.728a1.89 1.89 0 0 0-2.22 0l-1.807 1.365c-.7.53-1.465 1.017-2.376 1.162q-.165.026-.345.047m0 0l-.11.012m.11-.012a1 1 0 0 0 .427-.24a1.49 1.49 0 0 0 .126-2.134a1.9 1.9 0 0 0-.45-.367c-2.797-1.669-7.15-.398-9.779 1.467m9.676 1.274a.5.5 0 0 1-.11.012m0 0a9.3 9.3 0 0 1-1.814.004"/><rect width="3" height="8" x="2" y="14" rx="1.5"/></g></svg>
+                <span
+                  class="menu-item-text ml-3"
+                  :class="sidebarToggle ? 'lg:hidden' : ''">
+                  Service
+                </span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'facture:settings' %}"
+              @click="selected = (selected === 'settings' ? '':'settings')"
+               class="flex items-center px-4 py-2 mt-2 {% if request.path == '/facture/settings/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}"
+              :class=" (selected === 'settings') && (page === 'settings') ? 'menu-item-active' : 'menu-item-inactive'">
+                <svg  :class="(selected === 'Dashboard') && (page === 'Dashboard') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
+                    class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17.414 10.414C18 9.828 18 8.886 18 7s0-2.828-.586-3.414m0 6.828C16.828 11 15.886 11 14 11h-4c-1.886 0-2.828 0-3.414-.586m10.828 0Zm0-6.828C16.828 3 15.886 3 14 3h-4c-1.886 0-2.828 0-3.414.586m10.828 0Zm-10.828 0C6 4.172 6 5.114 6 7s0 2.828.586 3.414m0-6.828Zm0 6.828ZM13 7a1 1 0 1 1-2 0a1 1 0 0 1 2 0Z"/><path stroke-linecap="round" d="M18 6a3 3 0 0 1-3-3m3 5a3 3 0 0 0-3 3M6 6a3 3 0 0 0 3-3M6 8a3 3 0 0 1 3 3m-4 9.388h2.26c1.01 0 2.033.106 3.016.308a14.9 14.9 0 0 0 5.33.118c.868-.14 1.72-.355 2.492-.727c.696-.337 1.549-.81 2.122-1.341c.572-.53 1.168-1.397 1.59-2.075c.364-.582.188-1.295-.386-1.728a1.89 1.89 0 0 0-2.22 0l-1.807 1.365c-.7.53-1.465 1.017-2.376 1.162q-.165.026-.345.047m0 0l-.11.012m.11-.012a1 1 0 0 0 .427-.24a1.49 1.49 0 0 0 .126-2.134a1.9 1.9 0 0 0-.45-.367c-2.797-1.669-7.15-.398-9.779 1.467m9.676 1.274a.5.5 0 0 1-.11.012m0 0a9.3 9.3 0 0 1-1.814.004"/><rect width="3" height="8" x="2" y="14" rx="1.5"/></g></svg>
+                <span
+                  class="menu-item-text ml-3"
+                  :class="sidebarToggle ? 'lg:hidden' : ''">
+                  Parametres
+                </span>
+            </a>   
+          </li>
+
+        </ul>
+      </div>
+      
+    </nav>
+    <!-- Sidebar Menu -->
+  </div>
+</aside>
