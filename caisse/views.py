@@ -343,6 +343,8 @@ def depenses(request):
     """
     # Récupérer le mois sélectionné
     mois_selectionne = request.GET.get('mois', timezone.now().strftime('%Y-%m'))
+    order_in = request.GET.get('order')
+    sort_by = request.GET.get('sort')
     
     try:
         date_debut = timezone.datetime.strptime(f"{mois_selectionne}-01", '%Y-%m-%d')
@@ -392,6 +394,24 @@ def depenses(request):
     ).values('year').annotate(
         total_depenses=Sum('montant')
     ).order_by('year')
+
+    # Trier les dépenses par employé
+    if sort_by == 'employe':
+        depenses_par_employe = sorted(depenses_par_employe, key=lambda x: (str(x['beneficiaire']) if x['beneficiaire'] else ''), reverse=(order_in == 'desc'))
+    elif sort_by == 'total_emp':
+        depenses_par_employe = sorted(depenses_par_employe, key=lambda x: x['total_depenses'], reverse=(order_in == 'desc'))
+    elif sort_by == 'operation_emp':
+        depenses_par_employe = sorted(depenses_par_employe, key=lambda x: x['nombre_depenses'], reverse=(order_in == 'desc'))
+    elif sort_by == 'categorie_emp':
+        depenses_par_employe = sorted(depenses_par_employe, key=lambda x: x['categorie_plus_depensee'], reverse=(order_in == 'desc'))
+
+    # Trier les dépenses par catégorie
+    if sort_by == 'categorie_cat':
+        depenses_par_categorie = sorted(depenses_par_categorie, key=lambda x: x['categorie__name'], reverse=(order_in == 'desc'))
+    elif sort_by == 'total_cat':
+        depenses_par_categorie = sorted(depenses_par_categorie, key=lambda x: x['total_depenses'], reverse=(order_in == 'desc'))
+    elif sort_by == 'operation_cat':
+        depenses_par_categorie = sorted(depenses_par_categorie, key=lambda x: x['nombre_depenses'], reverse=(order_in == 'desc'))
 
     # Générer la liste des mois
     mois_liste = []
