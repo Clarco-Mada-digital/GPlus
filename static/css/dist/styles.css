@@ -1598,6 +1598,14 @@ body{
   top: 1.25rem;
 }
 
+.right-\[50\%\]{
+  right: 50%;
+}
+
+.right-\[20\%\]{
+  right: 20%;
+}
+
 .z-0{
   z-index: 0;
 }
@@ -2202,6 +2210,26 @@ body{
   min-height: 100vh;
 }
 
+.min-h-\[90vh\]{
+  min-height: 90vh;
+}
+
+.min-h-\[100vh\]{
+  min-height: 100vh;
+}
+
+.min-h-\[98vh\]{
+  min-height: 98vh;
+}
+
+.min-h-96{
+  min-height: 24rem;
+}
+
+.min-h-\[280px\]{
+  min-height: 280px;
+}
+
 .w-0\.5{
   width: 0.125rem;
 }
@@ -2531,6 +2559,11 @@ body{
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.-translate-x-\[50\%\]{
+  --tw-translate-x: -50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .rotate-180{
   --tw-rotate: 180deg;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -2731,6 +2764,10 @@ body{
 
 .gap-8{
   gap: 2rem;
+}
+
+.gap-5{
+  gap: 1.25rem;
 }
 
 .gap-y-3{
@@ -5909,6 +5946,10 @@ input[type="date"]::-webkit-inner-spin-button,
     position: static;
   }
 
+  .lg\:fixed{
+    position: fixed;
+  }
+
   .lg\:right-0{
     right: 0px;
   }
@@ -5926,6 +5967,10 @@ input[type="date"]::-webkit-inner-spin-button,
     margin-top: 0px;
   }
 
+  .lg\:ml-40{
+    margin-left: 10rem;
+  }
+
   .lg\:block{
     display: block;
   }
@@ -5940,6 +5985,10 @@ input[type="date"]::-webkit-inner-spin-button,
 
   .lg\:h-11{
     height: 2.75rem;
+  }
+
+  .lg\:h-\[85vh\]{
+    height: 85vh;
   }
 
   .lg\:w-1\/2{
@@ -6142,6 +6191,10 @@ input[type="date"]::-webkit-inner-spin-button,
 
   .xl\:grid-cols-2{
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .xl\:grid-cols-5{
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }
 

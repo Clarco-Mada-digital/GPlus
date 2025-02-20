@@ -18,13 +18,14 @@
     <div class="h-full overflow-auto" >    
       <h5 class="text-primary/75">Gestion des Ressources Humaines (RH) </h5>
 
-      <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
+      <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
         <a href="{% url 'accounts:pricing_page' %}">
         {% include 'components/Card.html' with title="Personelle" description="55 Personnes" notification_msg="Nouveau" image="static/images/User.svg" %}
         </a>
       </div>
+
       <h5 class="text-primary/75">Gestion des Finances </h5>
-      <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
+      <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
         <a href="{% url 'caisse:index' %}">
         {% include 'components/Card.html' with title="Caisse" description="Nouveau" notification_msg="Nouveau" image="static/images/Comptabilite.svg" %}
         </a>
