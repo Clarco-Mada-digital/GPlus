@@ -7,7 +7,7 @@
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <!-- En-tête avec sélecteur de mois -->
-    <div class="bg-white dark:bg-secondary rounded-2xl shadow-sm mb-8">
+    <div class="bg-white dark:bg-secondary rounded-2xl shadow-sm">
         <div class="flex flex-col md:flex-row justify-between items-center p-4">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 md:mb-0">
                 Détails des Dépenses par Employés
@@ -133,7 +133,8 @@
     </div>
 
     <!-- Dépenses par Catégories -->
-    <div id="details_by_categories" class="bg-white dark:bg-secondary rounded-2xl shadow-sm mb-8">
+    <span id="details_by_categories"></span>
+    <div class="bg-white dark:bg-secondary rounded-2xl shadow-sm mt-8 mb-8">
         <div class="p-4">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
                 Détails des Dépenses par Catégories
@@ -156,22 +157,22 @@
                                         {% endif %}
                                     </div>
                                     <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                                    {% if request.GET.sort == 'total_cat' and request.GET.order == 'asc' %}
-                                    <a href="?sort=total_cat&order=desc&mois={{ request.GET.mois }}#details_by_categories">Total des dépenses ⬇</a>
-                                    {% elif request.GET.sort == 'total_cat' and request.GET.order == 'desc' %}
-                                    <a href="?mois={{ request.GET.mois }}#details_by_categories">Total des dépenses ⬆</a>
-                                    {% else %}
-                                    <a href="?sort=total_cat&order=asc&mois={{ request.GET.mois }}#details_by_categories">Total des dépenses ⬆⬇</a>
-                                    {% endif %}
+                                        {% if request.GET.sort == 'total_cat' and request.GET.order == 'asc' %}
+                                        <a href="?sort=total_cat&order=desc&mois={{ request.GET.mois }}#details_by_categories">Total des dépenses ⬇</a>
+                                        {% elif request.GET.sort == 'total_cat' and request.GET.order == 'desc' %}
+                                        <a href="?mois={{ request.GET.mois }}#details_by_categories">Total des dépenses ⬆</a>
+                                        {% else %}
+                                        <a href="?sort=total_cat&order=asc&mois={{ request.GET.mois }}#details_by_categories">Total des dépenses ⬆⬇</a>
+                                        {% endif %}
                                     </div>
                                     <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                                    {% if request.GET.sort == 'operation_cat' and request.GET.order == 'asc' %}
-                                    <a href="?sort=operation_cat&order=desc&mois={{ request.GET.mois }}#details_by_categories">Nombre d'opérations ⬇</a>
-                                    {% elif request.GET.sort == 'operation_cat' and request.GET.order == 'desc' %}
-                                    <a href="?mois={{ request.GET.mois }}#details_by_categories">Nombre d'opérations ⬆</a>
-                                    {% else %}
-                                    <a href="?sort=operation_cat&order=asc&mois={{ request.GET.mois }}#details_by_categories">Nombre d'opérations ⬆⬇</a>
-                                    {% endif %}
+                                        {% if request.GET.sort == 'operation_cat' and request.GET.order == 'asc' %}
+                                        <a href="?sort=operation_cat&order=desc&mois={{ request.GET.mois }}#details_by_categories">Nombre d'opérations ⬇</a>
+                                        {% elif request.GET.sort == 'operation_cat' and request.GET.order == 'desc' %}
+                                        <a href="?mois={{ request.GET.mois }}#details_by_categories">Nombre d'opérations ⬆</a>
+                                        {% else %}
+                                        <a href="?sort=operation_cat&order=asc&mois={{ request.GET.mois }}#details_by_categories">Nombre d'opérations ⬆⬇</a>
+                                        {% endif %}
                                     </div>
                                     <div class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                         Actions
