@@ -14,29 +14,29 @@
             {% endfor %}
         </div>
     {% endif %}
-    <div class="pl-[82%]"><a href="{% url 'caisse:liste_sorties' %}">
+    <div class="flex w-full justify-end"><a href="{% url 'caisse:liste_sorties' %}">
         <button class="bg-rose-100 hover:bg-rose-300 text-red font-bold py-2 px-4 rounded">Annuler la modification</button>
     </a>
     </div> <br><br>
 
     <form method="POST" action="{% url 'caisse:modifier_sortie' operation.id %}">
         {% csrf_token %}
-        <div class="flex justify-between flex-wrap">
+        <div class="flex gap-4 flex-wrap flex-col md:flex-row mb-8">
         <!-- Date -->
-        <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
-            <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Date:</span>
+        <div class="mb-4 px-2 flex shadow-sm border-gray-500 border-b-2">
+            <span class="flex select-none items-center text-gray-500 sm:text-sm">Date:</span>
             <input type="date" name="date" value="{{ operation.date_de_sortie|date:'Y-m-d' }}"
                     class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
         </div>
 
         <!-- Désignation -->
-        <div class="mb-4 flex w-[47%] shadow-sm border-gray-500 border-b-2">
+        <div class="mb-4 px-2 flex shadow-sm border-gray-500 border-b-2">
             <input type="text" name="designation" value="{{ operation.description }}" placeholder="Désignation"
                     class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
         </div>
 
         <!-- Bénéficiaire -->
-        <div class="mb-4 flex w-[25%] shadow-sm border-gray-500 border-b-2">
+        <div class="mb-4 px-2 flex shadow-sm border-gray-500 border-b-2">
             <select name="beneficiaire" class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 dark:bg-secondary dark:text-white dark:placeholder:text-gray-500">
                 <option value="" disabled>Choisissez un bénéficiaire</option>
                 {% for beneficiaire in beneficiaires %}
@@ -46,7 +46,7 @@
         </div>
 
         <!-- Fournisseur -->
-        <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
+        <div class="mb-4 px-2 flex shadow-sm border-gray-500 border-b-2">
             <select name="fournisseur" class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 dark:bg-secondary dark:text-white dark:placeholder:text-gray-500">
                 <option value="" disabled>Choisissez un fournisseur</option>
                 {% for fournisseur in fournisseurs %}
@@ -56,27 +56,27 @@
         </div>
 
         <!-- Quantité -->
-        <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
-            <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">Quantité:</span>
+        <div class="mb-4 px-2 flex shadow-sm border-gray-500 border-b-2">
+            <span class="flex select-none items-center text-gray-500 sm:text-sm">Quantité:</span>
             <input type="number" name="quantite" value="{{ operation.quantite }}" min="1" placeholder="Quantité"
                     class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
         </div>
 
         <!-- Prix Unitaire -->
-        <div class="mb-4 flex w-[25%] shadow-sm border-gray-500 border-b-2">
+        <div class="mb-4 px-2 flex shadow-sm border-gray-500 border-b-2">
             <input type="number" name="prixUnitaire" value="{{ operation.montant }}" placeholder="Prix Unitaire"
                     class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6" step="0.01">
         </div>
 
         <!-- Catégorie -->
-        <div class="mb-4 flex w-[20%] shadow-sm border-gray-500 border-b-2">
+        <div class="mb-4 px-2 flex shadow-sm border-gray-500 border-b-2">
             <select name="categorie" class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6 w-full dark:bg-secondary dark:text-white dark:placeholder:text-gray-500">
                 <option value="" disabled>Choisissez une catégorie</option>
                 {% for categorie in categories_sortie %}
                 <option value="{{ categorie.id }}" {% if categorie.id == operation.categorie_id %}selected{% endif %}>{{ categorie.name }}</option>
                 {% endfor %}
             </select>
-        </div><br>
+        </div>
     </div>
         <!-- Bouton de soumission -->
         <div class="flex justify-end">
