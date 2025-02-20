@@ -47,8 +47,7 @@
 }" 
 class="container mx-auto p-6 dark:text-white">
 
-    <div class="flex justify-between space-x-4 mb-10">
-        <div></div>
+    <div class="flex justify-between space-x-4 mb-8">
         <div class="bg-white dark:bg-secondary rounded-xl p-1">
             <button title="Opération entrée" x-on:click="operation = 'entree'"
                 :class="operation === 'entree' ? 'bg-green-100 hover:bg-green-100 text-green-700 font-bold py-1 px-4 rounded-xl' : 'bg-white dark:bg-secondary text-green-700 font-bold py-2 px-6 rounded-xl'">Entrées</button>
@@ -56,10 +55,12 @@ class="container mx-auto p-6 dark:text-white">
                 :class="operation === 'sortie' ? 'bg-rose-100 hover:bg-rose-100 text-rose-500 font-bold py-1 px-4 rounded-xl' : 'bg-white dark:bg-secondary text-rose-500 font-bold py-2 px-6 rounded-xl'">Sorties</button>
         </div>
 
-        <div><a href="{% url 'caisse:listes' %}">
+        <div class="flex items-center"><a href="{% url 'caisse:listes' %}">
                 <button title="Listes des Opérations"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl">Listes
-                    des Opérations</button>
+                    class="bg-blue-500 hover:bg-primary text-white font-semibold py-2 px-4 rounded flex items-center">
+                    <span class="md:hidden">Listes</span>                    
+                    <span class="hidden md:inline">Listes des Opérations</span>                    
+                </button>
             </a>
         </div>
     </div>
@@ -73,22 +74,22 @@ class="container mx-auto p-6 dark:text-white">
             {% csrf_token %}
             <div x-show="operation === 'entree'">
                 <template x-for="(ligne, index) in lignesEntrees" :key="index">
-                    <div class="flex justify-between flex-wrap relative">
+                    <div class="flex flex-wrap md:flex-row md:gap-8 flex-col">
                         <span
-                            class="mb-10 w-auto self-center text-placeholder font-semibold dark:text-white">Ligne
+                            class="mb-8 w-auto self-center text-placeholder font-semibold dark:text-white">Ligne
                             <span x-text="index + 1"></span>:</span>
                         <div
-                            class="mb-10 flex w-[15%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
+                            class="mb-8 flex shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <span
                                 class="flex select-none  items-center pl-3 dark:text-white/50 text-placeholder/50 sm:text-sm">Date:</span>
                             <input title="Date" type="date" autocomplete="off"
                                 x-model="ligne.date" name="date"
-                                class="dateInput focus:ring-0 text-placeholder block flex-1 border-none w-full font-semibold bg-transparent py-1.5 pl-1 dark:text-white sm:text-sm sm:leading-6"
+                                class="block flex-1 focus:ring-0 dark:placeholder:text-white/50 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
                                 required>
                         </div>
 
                         <div
-                            class="mb-10 w-[45%] px-2 shadow-sm text-placeholder dark:text-white border-gray-300 border-b-2 dark:border-gray-700">
+                            class="mb-8 px-2 shadow-sm text-placeholder dark:text-white border-gray-300 border-b-2 dark:border-gray-700">
                             <input title="Désignation" type="text" x-model="ligne.designation"
                                 name="designation"
                                 placeholder="Désignation"
@@ -97,7 +98,7 @@ class="container mx-auto p-6 dark:text-white">
                         </div>
 
                         <!-- Bénéficiaire -->
-                        <div class="mb-10 flex w-[25%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
+                        <div class="mb-8 px-2 flex shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
                             <input title="Bénéficiaire" type="text"
                                 x-model="ligne.beneficiaire_nom"
                                 list="beneficiaires-list"
@@ -115,7 +116,7 @@ class="container mx-auto p-6 dark:text-white">
                             </datalist>
                         </div>
 
-                        <div class="mb-10 w-[25%] shadow-sm border-gray-300 border-b-2 text-placeholder dark:text-white dark:border-gray-700">
+                        <div class="mb-8 px-2 shadow-sm border-gray-300 border-b-2 text-placeholder dark:text-white dark:border-gray-700">
                             <input title="Client" type="text" name="client"
                                    x-model="ligne.client"
                                    placeholder="Client"
@@ -123,14 +124,14 @@ class="container mx-auto p-6 dark:text-white">
                         </div>
 
                         <div
-                            class="mb-10 w-[25%] shadow-sm border-gray-300 dark:text-white border-b-2 dark:border-gray-700">
+                            class="mb-8 px-2 shadow-sm border-gray-300 dark:text-white border-b-2 dark:border-gray-700">
                             <input title="Montant" type="number" x-model="ligne.montant"
                                 name="montant"
                                 placeholder="Montant"
                                 class="block flex-1 focus:ring-0 w-full dark:placeholder:text-white/50 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                         </div>
 
-                        <div class="mb-10 w-[25%] shadow-sm border-gray-300 border-b-2 dark:text-white dark:border-gray-700 relative">
+                        <div class="mb-8 px-2 shadow-sm border-gray-300 border-b-2 dark:text-white dark:border-gray-700 relative">
                             <input title="Catégorie" type="text" 
                                    x-model="ligne.categorie_nom"
                                    list="categories-entree-list"
@@ -147,43 +148,41 @@ class="container mx-auto p-6 dark:text-white">
                                             value="{{ categorie.name }}">{{ categorie.name }}</option>
                                 {% endfor %}
                             </datalist>
-                        
-                            <!-- Boutons d'action -->
-                            <div class="absolute -right-16 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                                <!-- Bouton de duplication -->
-                                <button title="Dupliquer" type="button" 
-                                        @click="lignesEntrees.push({...ligne})"
-                                        class="p-1 hover:scale-110 transition-transform">
-                                    <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_530_193)">
-                                            <path d="M21.1679 1.76318H12.9929C11.7179 1.76318 10.6304 2.81318 10.6304 4.12568V6.78818H3.16792C1.89292 6.78818 0.80542 7.83818 0.80542 9.15068V16.3507C0.80542 16.8007 0.99292 17.2507 1.33042 17.5882L5.79292 21.9757C6.13042 22.3132 6.58042 22.5007 7.03042 22.5007H11.3429C12.6179 22.5007 13.6679 21.4507 13.6679 20.1382V15.0757L15.5804 16.9882C15.9179 17.3257 16.3679 17.5132 16.8179 17.5132H21.1679C22.4429 17.5132 23.5304 16.4632 23.5304 15.1507V4.08818C23.5304 2.81318 22.4429 1.76318 21.1679 1.76318ZM3.69292 17.4757H5.75542C5.79292 17.4757 5.83042 17.5132 5.83042 17.5507V19.6132L3.69292 17.4757ZM12.0179 20.1382C12.0179 20.5132 11.7179 20.8132 11.3804 20.8132H7.51792V17.5882C7.51792 16.6132 6.73042 15.8257 5.75542 15.8257H2.53042V9.07568C2.53042 8.70068 2.83042 8.40068 3.20542 8.40068H11.9804C12.0179 8.40068 12.0554 8.43818 12.0554 8.47568V20.1382H12.0179ZM13.7054 12.6757V12.4882H15.5804C15.6179 12.4882 15.6554 12.5257 15.6554 12.5632V14.6257L13.7054 12.6757ZM21.8429 15.1507C21.8429 15.5257 21.5429 15.8257 21.1679 15.8257H17.3054V12.6007C17.3054 11.6257 16.5179 10.8382 15.5429 10.8382H13.6679V8.51318C13.6679 7.68818 13.0679 6.97568 12.3179 6.82568V4.12568C12.3179 3.75068 12.6179 3.45068 12.9929 3.45068H21.1679C21.5429 3.45068 21.8429 3.75068 21.8429 4.12568V15.1507Z" fill="#718EBF" class="dark:fill-white"/>
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_530_193">
-                                                <rect width="24" height="24" fill="white" transform="translate(0.167969 0.113281)"/>
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </button>
+                        </div>
+                                                                                                                    <!-- Boutons d'action -->
+                        <div class="pb-6 flex items-start gap-2">
+                            <!-- Bouton de duplication -->
+                            <button title="Dupliquer" type="button" 
+                                    @click="lignesEntrees.push({...ligne})"
+                                    class="p-1 hover:scale-110 transition-transform">
+                                <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_530_193)">
+                                        <path d="M21.1679 1.76318H12.9929C11.7179 1.76318 10.6304 2.81318 10.6304 4.12568V6.78818H3.16792C1.89292 6.78818 0.80542 7.83818 0.80542 9.15068V16.3507C0.80542 16.8007 0.99292 17.2507 1.33042 17.5882L5.79292 21.9757C6.13042 22.3132 6.58042 22.5007 7.03042 22.5007H11.3429C12.6179 22.5007 13.6679 21.4507 13.6679 20.1382V15.0757L15.5804 16.9882C15.9179 17.3257 16.3679 17.5132 16.8179 17.5132H21.1679C22.4429 17.5132 23.5304 16.4632 23.5304 15.1507V4.08818C23.5304 2.81318 22.4429 1.76318 21.1679 1.76318ZM3.69292 17.4757H5.75542C5.79292 17.4757 5.83042 17.5132 5.83042 17.5507V19.6132L3.69292 17.4757ZM12.0179 20.1382C12.0179 20.5132 11.7179 20.8132 11.3804 20.8132H7.51792V17.5882C7.51792 16.6132 6.73042 15.8257 5.75542 15.8257H2.53042V9.07568C2.53042 8.70068 2.83042 8.40068 3.20542 8.40068H11.9804C12.0179 8.40068 12.0554 8.43818 12.0554 8.47568V20.1382H12.0179ZM13.7054 12.6757V12.4882H15.5804C15.6179 12.4882 15.6554 12.5257 15.6554 12.5632V14.6257L13.7054 12.6757ZM21.8429 15.1507C21.8429 15.5257 21.5429 15.8257 21.1679 15.8257H17.3054V12.6007C17.3054 11.6257 16.5179 10.8382 15.5429 10.8382H13.6679V8.51318C13.6679 7.68818 13.0679 6.97568 12.3179 6.82568V4.12568C12.3179 3.75068 12.6179 3.45068 12.9929 3.45068H21.1679C21.5429 3.45068 21.8429 3.75068 21.8429 4.12568V15.1507Z" fill="#718EBF" class="dark:fill-white"/>
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_530_193">
+                                            <rect width="24" height="24" fill="white" transform="translate(0.167969 0.113281)"/>
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                            </button>
                             <!-- Bouton de suppression -->
-                                <button title="Supprimer" type="button" 
+                            <button title="Supprimer" type="button" 
                                 @click="lignesEntrees.splice(index, 1)" 
                                 x-show="lignesEntrees.length > 1 && index > 0">
-                            <svg width="23" height="22" viewBox="0 0 23 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M17.2762 20.8134H6.00078C5.11118 20.8134 4.39001 20.0896 4.39001 19.1967V4.64673H18.8869V19.1967C18.8869 20.0896 18.1658 20.8134 17.2762 20.8134Z" stroke="#FF5691" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M9.22393 15.9633V9.49658" stroke="#FF5691" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M14.0557 15.9633V9.49658" stroke="#FF5691" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M1.16797 4.64656H22.108" stroke="#FF5691" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.0551 1.41333H9.22283C8.33323 1.41333 7.61206 2.13714 7.61206 3.03V4.64666H15.6659V3.03C15.6659 2.13714 14.9447 1.41333 14.0551 1.41333Z" stroke="#FF5691" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+                                <svg width="23" height="22" viewBox="0 0 23 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M17.2762 20.8134H6.00078C5.11118 20.8134 4.39001 20.0896 4.39001 19.1967V4.64673H18.8869V19.1967C18.8869 20.0896 18.1658 20.8134 17.2762 20.8134Z" stroke="#FF5691" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M9.22393 15.9633V9.49658" stroke="#FF5691" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M14.0557 15.9633V9.49658" stroke="#FF5691" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M1.16797 4.64656H22.108" stroke="#FF5691" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.0551 1.41333H9.22283C8.33323 1.41333 7.61206 2.13714 7.61206 3.03V4.64666H15.6659V3.03C15.6659 2.13714 14.9447 1.41333 14.0551 1.41333Z" stroke="#FF5691" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
                         </div>
-                    </div>
+                    </div>                     
                 </template>
 
-                <div class="mb-10">
+                <div class="mb-8">
                     <button title="Ajouter une ligne" type="button"
                         x-on:click="lignesEntrees.length < maxLignes && lignesEntrees.push({ date: new Date().toISOString().split('T')[0], designation: '', montant: '', categorie: '', categorie_nom: '' })"
                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl flex items-center">
@@ -213,25 +212,25 @@ class="container mx-auto p-6 dark:text-white">
             {% csrf_token %}
             <div x-show="operation === 'sortie'">
                 <template x-for="(ligne, index) in lignesSorties" :key="index">
-                    <div class="flex justify-between flex-wrap relative">
+                    <div class="flex flex-wrap md:flex-row md:gap-8 flex-col">
                         <span
-                            class="mb-10 w-auto self-center font-semibold dark:text-white text-placeholder">Ligne
+                            class="mb-8 w-auto self-center font-semibold dark:text-white text-placeholder">Ligne
                             <span x-text="index + 1"></span>:</span>
                         <!-- Date -->
                         <div
-                            class="mb-10 flex w-[20%] shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
+                            class="mb-8 flex shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <span
-                                class="flex select-none items-center pl-3 dark:text-white/50 text-placeholder/50 sm:text-sm">Date:</span>
+                                class="flex select-none  items-center pl-3 dark:text-white/50 text-placeholder/50 sm:text-sm">Date:</span>
                             <input title="Date" type="date" name="date"
                                 x-init="ligne.date = new Date().toISOString().split('T')[0]"
                                 x-model="ligne.date" id="datenow"
                                 autocomplete="off"
-                                class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 text-placeholder dark:text-white sm:text-sm sm:leading-6">
+                                class="block flex-1 focus:ring-0 dark:placeholder:text-white/50 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                         </div>
 
                         <!-- Désignation -->
                         <div
-                            class="mb-10 flex w-[47%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
+                            class="mb-8 px-2 shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
                             <input title="Désignation" type="text" name="designation" required
                                 x-model="ligne.designation"
                                 placeholder="Désignation"
@@ -239,7 +238,7 @@ class="container mx-auto p-6 dark:text-white">
                         </div>
 
                         <!-- Bénéficiaire -->
-                        <div class="mb-10 flex w-[25%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
+                        <div class="mb-8 px-2 shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
                             <input title="Bénéficiaire" type="text" 
                                    x-model="ligne.beneficiaire_nom"
                                    list="beneficiaires-sortie-list"
@@ -258,7 +257,7 @@ class="container mx-auto p-6 dark:text-white">
                         </div>
 
                         <!-- Fournisseur -->
-                        <div class="mb-10 flex w-[20%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
+                        <div class="mb-8 px-2 shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
                             <input title="Fournisseur" type="text" 
                                    x-model="ligne.fournisseur_nom"
                                    list="fournisseurs-list"
@@ -278,19 +277,19 @@ class="container mx-auto p-6 dark:text-white">
 
                         <!-- Quantité -->
                         <div
-                            class="mb-10 flex w-[20%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
+                            class="mb-8 flex shadow-sm border-gray-300 border-b-2 dark:border-gray-700">
                             <span
-                                class="flex select-none items-center pl-3 dark:text-white/50 text-placeholder/50 sm:text-sm">Quantité:</span>
+                                class="flex select-none  items-center pl-3 dark:text-white/50 text-placeholder/50 sm:text-sm">Quantité:</span>
                             <input title="Quantité" type="number" name="quantite" required
                                 x-model="ligne.quantite" min="1"
                                 placeholder="Quantité"
-                                class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 sm:text-sm sm:leading-6"
+                                class="block flex-1 focus:ring-0 dark:placeholder:text-white/50 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
                                 x-on:input="ligne.prixTotal = ligne.quantite * ligne.prixUnitaire">
                         </div>
 
                         <!-- Prix Unitaire -->
                         <div
-                            class="mb-10 flex w-[25%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
+                            class="mb-8 px-2 shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
                             <input title="Prix Unitaire" type="number" name="prixUnitaire"
                                 x-model="ligne.prixUnitaire" required
                                 placeholder="Prix Unitaire"
@@ -300,7 +299,7 @@ class="container mx-auto p-6 dark:text-white">
                         </div>
 
                         <!-- Catégorie -->
-                        <div class="mb-10 flex w-[20%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
+                        <div class="mb-8 px-2 shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
                             <input title="Catégorie" type="text" 
                                    x-model="ligne.categorie_nom"
                                    list="categories-sortie-list"
@@ -320,33 +319,34 @@ class="container mx-auto p-6 dark:text-white">
                         </div>
 
                         <!-- Prix Total -->
-                        <div class="mb-10 flex w-[20%] shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700 relative"> <!-- Ajout de relative ici -->
+                        <div class="mb-8 px-2 shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700"> <!-- Ajout de relative ici -->
                             <input type="number" name="prixTotal"
                                     x-model="ligne.prixTotal"
                                     placeholder="Prix Total"
                                     class="block flex-1 focus:ring-0 dark:placeholder:text-white/50 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
                                     readonly>
-                                    <!-- Boutons d'action -->
-                                <div class="absolute -right-20 top-1/2 -translate-y-1/2 flex items-center space-x-2">
-                                    <!-- Bouton de duplication -->
-                                    <button type="button" 
-                                            @click="lignesSorties.push({...ligne})"
-                                            class="p-1 hover:scale-110 transition-transform">
-                                            <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <g clip-path="url(#clip0_530_193)">
-                                                    <path d="M21.1679 1.76318H12.9929C11.7179 1.76318 10.6304 2.81318 10.6304 4.12568V6.78818H3.16792C1.89292 6.78818 0.80542 7.83818 0.80542 9.15068V16.3507C0.80542 16.8007 0.99292 17.2507 1.33042 17.5882L5.79292 21.9757C6.13042 22.3132 6.58042 22.5007 7.03042 22.5007H11.3429C12.6179 22.5007 13.6679 21.4507 13.6679 20.1382V15.0757L15.5804 16.9882C15.9179 17.3257 16.3679 17.5132 16.8179 17.5132H21.1679C22.4429 17.5132 23.5304 16.4632 23.5304 15.1507V4.08818C23.5304 2.81318 22.4429 1.76318 21.1679 1.76318ZM3.69292 17.4757H5.75542C5.79292 17.4757 5.83042 17.5132 5.83042 17.5507V19.6132L3.69292 17.4757ZM12.0179 20.1382C12.0179 20.5132 11.7179 20.8132 11.3804 20.8132H7.51792V17.5882C7.51792 16.6132 6.73042 15.8257 5.75542 15.8257H2.53042V9.07568C2.53042 8.70068 2.83042 8.40068 3.20542 8.40068H11.9804C12.0179 8.40068 12.0554 8.43818 12.0554 8.47568V20.1382H12.0179ZM13.7054 12.6757V12.4882H15.5804C15.6179 12.4882 15.6554 12.5257 15.6554 12.5632V14.6257L13.7054 12.6757ZM21.8429 15.1507C21.8429 15.5257 21.5429 15.8257 21.1679 15.8257H17.3054V12.6007C17.3054 11.6257 16.5179 10.8382 15.5429 10.8382H13.6679V8.51318C13.6679 7.68818 13.0679 6.97568 12.3179 6.82568V4.12568C12.3179 3.75068 12.6179 3.45068 12.9929 3.45068H21.1679C21.5429 3.45068 21.8429 3.75068 21.8429 4.12568V15.1507Z" fill="#718EBF" class="dark:fill-white"/>
-                                                </g>
-                                                <defs>
-                                                    <clipPath id="clip0_530_193">
-                                                        <rect width="24" height="24" fill="white" transform="translate(0.167969 0.113281)"/>
-                                                    </clipPath>
-                                                </defs>
-                                            </svg>
-                                    </button>
+                        </div>
+                        <!-- Boutons d'action -->
+                        <div class="pb-6 flex items-center gap-2">
+                            <!-- Bouton de duplication -->
+                            <button type="button" 
+                                    @click="lignesSorties.push({...ligne})"
+                                    class="p-1 hover:scale-110 transition-transform">
+                                <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_530_193)">
+                                        <path d="M21.1679 1.76318H12.9929C11.7179 1.76318 10.6304 2.81318 10.6304 4.12568V6.78818H3.16792C1.89292 6.78818 0.80542 7.83818 0.80542 9.15068V16.3507C0.80542 16.8007 0.99292 17.2507 1.33042 17.5882L5.79292 21.9757C6.13042 22.3132 6.58042 22.5007 7.03042 22.5007H11.3429C12.6179 22.5007 13.6679 21.4507 13.6679 20.1382V15.0757L15.5804 16.9882C15.9179 17.3257 16.3679 17.5132 16.8179 17.5132H21.1679C22.4429 17.5132 23.5304 16.4632 23.5304 15.1507V4.08818C23.5304 2.81318 22.4429 1.76318 21.1679 1.76318ZM3.69292 17.4757H5.75542C5.79292 17.4757 5.83042 17.5132 5.83042 17.5507V19.6132L3.69292 17.4757ZM12.0179 20.1382C12.0179 20.5132 11.7179 20.8132 11.3804 20.8132H7.51792V17.5882C7.51792 16.6132 6.73042 15.8257 5.75542 15.8257H2.53042V9.07568C2.53042 8.70068 2.83042 8.40068 3.20542 8.40068H11.9804C12.0179 8.40068 12.0554 8.43818 12.0554 8.47568V20.1382H12.0179ZM13.7054 12.6757V12.4882H15.5804C15.6179 12.4882 15.6554 12.5257 15.6554 12.5632V14.6257L13.7054 12.6757ZM21.8429 15.1507C21.8429 15.5257 21.5429 15.8257 21.1679 15.8257H17.3054V12.6007C17.3054 11.6257 16.5179 10.8382 15.5429 10.8382H13.6679V8.51318C13.6679 7.68818 13.0679 6.97568 12.3179 6.82568V4.12568C12.3179 3.75068 12.6179 3.45068 12.9929 3.45068H21.1679C21.5429 3.45068 21.8429 3.75068 21.8429 4.12568V15.1507Z" fill="#718EBF" class="dark:fill-white"/>
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_530_193">
+                                            <rect width="24" height="24" fill="white" transform="translate(0.167969 0.113281)"/>
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                            </button>
                             <!-- Bouton de suppression -->
-                                <button type="button" 
-                                    @click="lignesSorties.splice(index, 1)"
-                                    x-show="lignesSorties.length > 1 && index > 0">
+                            <button type="button" 
+                                @click="lignesSorties.splice(index, 1)"
+                                x-show="lignesSorties.length > 1 && index > 0">
                                 <svg width="23" height="22" viewBox="0 0 23 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M17.2762 20.8134H6.00078C5.11118 20.8134 4.39001 20.0896 4.39001 19.1967V4.64673H18.8869V19.1967C18.8869 20.0896 18.1658 20.8134 17.2762 20.8134Z" stroke="#FF5691" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
                                     <path d="M9.22393 15.9633V9.49658" stroke="#FF5691" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -356,12 +356,11 @@ class="container mx-auto p-6 dark:text-white">
                                 </svg>
                             </button>
                         </div>
-                        </div>
                     </div>
                 </template>
 
                 <!-- Ajouter une ligne -->
-                <div class="mb-10">
+                <div class="mb-8">
                     <button type="button"
                         x-on:click="lignesSorties.length < maxLignes && lignesSorties.push({ date: new Date().toISOString().split('T')[0], designation: '', beneficiaire: '', fournisseur: '', quantite: 1, prixUnitaire: '', categorie: '', categorie_nom: '', prixTotal: '' })"
                         class="bg-blue-500 hover:bg-blue-700 text-white space-x-2 font-bold py-2 px-4 rounded-xl flex items-center">
