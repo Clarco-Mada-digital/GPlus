@@ -29,10 +29,12 @@
     </title>
   </head>
   <body
-    x-data="{ page: 'dashboard', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+    x-data="{ 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
     x-init="
          darkMode = JSON.parse(localStorage.getItem('darkMode'));
-         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+         sidebarToggle = JSON.parse(localStorage.getItem('sidebarToggle'));
+         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
+         $watch('sidebarToggle', value => localStorage.setItem('sidebarToggle', JSON.stringify(value)));"
     :class="{'dark bg-gray-900': darkMode === true}" x-cloak>
     {% comment %} Message {% endcomment %}
     {% if messages %}
@@ -111,24 +113,12 @@
     </div>
     <!-- ===== Page Wrapper End ===== -->
 
-    <!-- Alpine.js Core -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Alpine.js Persist Plugin -->
+    <!-- Alpine Plugins -->
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Alpine Core -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
-      // Toggle the sidebar visibility
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const sidebarClose = document.getElementById('sidebarClose'); // New line
-      const sidebar = document.getElementById('sidebar');
-  
-      sidebarToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('-translate-x-full');
-      });
-      
-      sidebarClose.addEventListener('click', () => { // New event listener
-      sidebar.classList.add('-translate-x-full');
-      });
-
       // Fonction pour faire disparaître les messages après 3 secondes
       setTimeout(function() {
           var toastSuccess = document.getElementById('toast-success');
