@@ -204,9 +204,6 @@
         <img src="{{ entreprise.logo.url }}" alt="profil image" class="h-32 shadow-lg object-cover">
       </div>
       {% endif %}
-      <div x-show="client_logo != ''" class="flex items-center">
-        <img :src="client_logo" alt="logo de client" class="h-32 shadow-lg object-cover">
-      </div>
     </div>
       <div class="flex justify-between items-center mb-10">
         <div>
@@ -315,7 +312,6 @@
   // Alpine.js
   function facture() {
     return {
-      client_logo: '{{ facture.client.photo.url }}',
       client_comercial_name: '{{ facture.client.commercial_name }}',
       client_address: '{{ facture.client.adresse }}',
       client_code_postal: '2343',
@@ -325,7 +321,7 @@
       facture_ref: '{{ facture.ref }}',
       facture_Date : '{{ facture.date_facture|date:"D, d M Y" }}',
       facture_intitule: '{{ facture.intitule }}',
-      facture_emission_date: '{{ facture.condition|date:"D, d M Y" }}',
+      facture_emission_date: '{{ facture.condition|date:"Y-m-d" }}',
       facture_reglement: '{{ facture.reglement }}',
       facture_etat: '{{ facture.etat_facture }}',
       facture_montant: '{{ facture.montant|floatformat }}',
