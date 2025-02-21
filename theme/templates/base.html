@@ -4,19 +4,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Ajout du CDN de Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
     <title>G+</title>
     {% tailwind_css %}
-    <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
-    <!-- Ajout du CDN de Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" defer></script>
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">   
   </head>
   <style>
     [x-cloak]{
       display: none;
     }
   </style>
-  <body>
+  <body x-data="{ 'loaded': true, 'darkMode': false}"
+        x-init="darkMode = JSON.parse(localStorage.getItem('darkMode'));
+       $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));"
+       :class="{'dark bg-gray-900': darkMode === true}" x-cloak>
+
+       {% include 'includes/preloader.html' %}
     <div>
       <div
         class="bg-white overflow-y-auto dark:bg-gray-800 flex-1 flex flex-col min-h-[98vh] lg:space-x-2max-w-6xl sm:p-6 sm:my-2 sm:mx-4 sm:rounded-2xl">
@@ -28,7 +32,7 @@
         {% if messages %}
             {% for message in messages %}
                 {% if message.tags == 'success' %}
-                    <div id="toast-success" class="fixed top-5 right-5 flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
+                    <div id="toast-success" class="fixed top-5 right-5 flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 z-50" role="alert">
                         <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
                             <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
@@ -44,7 +48,7 @@
                         </button>
                     </div>
                 {% else %}
-                    <div id="toast-danger" class="fixed top-5 right-5 flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
+                    <div id="toast-danger" class="fixed top-5 right-5 flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 z-50" role="alert">
                         <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red bg-red/70 rounded-lg dark:bg-red/70 dark:text-red-200">
                             <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
@@ -73,8 +77,12 @@
       </div>
     </div>
   </body>
-  <!-- Include Alpine.js -->
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+
+  <!-- Alpine Plugins -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>    
+  <!-- Alpine Core -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>   
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" defer></script>
   <script>
   // Fonction pour faire disparaître les messages après 3 secondes
     setTimeout(function() {

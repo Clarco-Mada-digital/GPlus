@@ -324,6 +324,7 @@
                 <span class="sr-only">Fermer</span>
             </button>
             <div class="p-4 md:p-5">
+              
               <!-- Prévisualisation de la facture -->
               <div class="p-4" id="preview-facture">
                 <h2 class="text-lg font-bold mb-4">Prévisualisation de la facture</h2>
@@ -398,7 +399,7 @@
                           <template x-for="service in facture_services">
                             {% comment %} Liste des services du facture ici {% endcomment %}
                             <tr class="article-row">
-                              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white" x-text="service.description">
+                              <th scope="row" class="px-6 py-4 font-medium  whitespace-nowra" x-text="service.description">
                                   
                               </th>
                               <td class="px-6 py-4 article-prix" x-text="service.prix">

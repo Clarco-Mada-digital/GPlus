@@ -4,7 +4,7 @@
 {% include 'accounts/header.html' with header_title="Client & Prospect" %}
 
 <div class="flex items-center justify-end w-full px-5 mt-40 mb-5">
-    <a href="{% url "client:client" %}" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+    <a href="{% url 'client:client' %}" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
         Voir plus
         <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
@@ -25,8 +25,12 @@
             {% if client.type_client == 'Client' %}
               <li class="py-3 sm:py-4">
                   <div class="flex items-center">
-                      <div class="flex-shrink-0">
-                          <img class="w-8 h-8 rounded-full" src="/static/images/Employee/Huge-icon/user/outline/user.svg" alt="profil image">
+                      <div class="flex-shrink-0">                        
+                        {% if client.photo %}
+                            <img class="w-8 h-8 rounded-full" src="{{client.photo.url}}" alt="profil image">
+                        {% else %}
+                            <img class="w-10 h-10 rounded-full" src="https://ui-avatars.com/api/?name={{client.name}}+{{client.commercial_name}}" alt="{{client.name}} image">
+                        {% endif %}                            
                       </div>
                       <div class="flex-1 min-w-0 ms-4">
                           <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
@@ -71,7 +75,11 @@
               <li class="py-3 sm:py-4">
                   <div class="flex items-center">
                       <div class="flex-shrink-0">
-                          <img class="w-8 h-8 rounded-full" src="/static/images/Employee/Huge-icon/user/outline/user.svg" alt="profil image">
+                        {% if client.photo %}
+                            <img class="w-8 h-8 rounded-full" src="{{client.photo.url}}" alt="profil image">
+                        {% else %}
+                        <img class="w-10 h-10 rounded-full" src="https://ui-avatars.com/api/?name={{client.name}}+{{client.commercial_name}}" alt="{{client.name}} image">
+                        {% endif %}
                       </div>
                       <div class="flex-1 min-w-0 ms-4">
                           <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
@@ -95,6 +103,8 @@
   </div>
 </div>
 
+<!-- Ajout du CDN de Chart.js -->
+{% comment %} <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> {% endcomment %}
  <script>
     const ctx = document.getElementById('myChart').getContext('2d');
     const myChart = new Chart(ctx, {
