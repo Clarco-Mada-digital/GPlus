@@ -50,15 +50,18 @@
             <span class="hidden md:flex mx-2">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
             <div class="flex space-x-2">
                 {% if page_obj.has_previous %}
-                    <a onclick="updateQueryParam([{ key: 'page', value: 1 }])">
-                        class="px-3">
+                    <a onclick="updateQueryParam([{ key: 'page', value: 1 }])"
+                    style="cursor: pointer;"
+                    class="px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24"
                             height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
                             <path d="M19 12H5M12 5l-7 7 7 7" />
                         </svg></a>
-                    <a onclick="updateQueryParam([{ key: 'page', value: {{ page_obj.previous_page_number }} }])">
+                    <a onclick="updateQueryParam([{ key: 'page', value: {{ page_obj.previous_page_number }} }])"
+                    style="cursor: pointer;"
+                    class="px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M15 18l-6-6 6-6"/>
                         </svg>
@@ -66,12 +69,16 @@
                 {% endif %}
                 <span class="md:hidden mx-2">{{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</span>
                 {% if page_obj.has_next %}
-                    <a onclick="updateQueryParam([{ key: 'page', value: {{ page_obj.next_page_number }} }])">
+                    <a onclick="updateQueryParam([{ key: 'page', value: {{ page_obj.next_page_number }} }])"
+                    style="cursor: pointer;"
+                    class="px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M9 6l6 6-6 6"/>
                         </svg>
                     </a>
-                    <a onclick="updateQueryParam([{ key: 'page', value: {{ page_obj.paginator.num_pages }} }])">
+                    <a onclick="updateQueryParam([{ key: 'page', value: {{ page_obj.paginator.num_pages }} }])"
+                    style="cursor: pointer;"
+                    class="px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M5 12h14M12 19l7-7-7-7"/>
                         </svg>
@@ -154,7 +161,7 @@
                     </select>
 
                     <!-- Bouton Reset -->
-                    <a href="?lignes={{ lignes_par_page }}"
+                    <a href="?lignes={{ lignes_par_page }}?lignes={{ lignes_par_page }}"
                        class="text-red px-3 py-2 hover:text-red-700 flex items-center justify-center md:justify-start space-x-1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -348,6 +355,12 @@
                     <div class="grid grid-cols-2 gap-y-3 text-sm mb-4">
                         <div class="text-gray-600 dark:text-gray-400">Catégorie:</div>
                         <div class="text-right">{{ operation.categorie.name }}</div>
+
+                        <div class="text-gray-600 dark:text-gray-400">Bénéficiaire:</div>
+                        <div class="text-right">{{ operation.beneficiaire.name }}</div>
+
+                        <div class="text-gray-600 dark:text-gray-400">Client:</div>
+                        <div class="text-right">{{ operation.client }}</div>
 
                         <div class="text-gray-600 dark:text-gray-400">Date:</div>
                         <div class="text-right">{{ operation.date_transaction }}</div>

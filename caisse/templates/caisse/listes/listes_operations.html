@@ -128,7 +128,7 @@
                 <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 w-full">
                     <!-- Sélecteur Catégories -->
                     <select name="categorie"
-                            class="w-full md:w-[30%] py-2 border-none dark:bg-secondary focus:ring-0 rounded-lg"
+                            class="w-full md:w-auto py-2 border-none dark:bg-secondary focus:ring-0 rounded-lg"
                             onchange="updateQueryParam([{ key: 'categorie', value: this.value }])">
                         <option value>Catégories</option>
                         {% for categorie in categories %}
