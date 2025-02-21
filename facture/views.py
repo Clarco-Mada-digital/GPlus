@@ -140,7 +140,7 @@ def get_on_facture(request):  # sourcery skip: avoid-builtin-shadow
   # Retourner les détails de la facture sous forme de JSON
   return JsonResponse({
       'id': facture.id,
-      'client_logo': facture.client.photo.url,
+      # 'client_logo': facture.client.photo.url,
       'client_comercial_name': facture.client.commercial_name,
       'client_address': facture.client.adresse,
       'client_code_postal': '2343',
@@ -594,6 +594,7 @@ def modifier_entreprise(request):
       messages.success(request, "Modification avec success")
     except Exception as e:
       print(f'error{e}')
+      messages.error(request, "Quelque chose à mal passé, verifier votre information !")
   else:
     print("Erreurs de validation:", form.errors)
     messages.error(request, "Quelque chose à mal passé, verifier votre information !")

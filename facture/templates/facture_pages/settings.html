@@ -154,9 +154,13 @@
           </div>
           <input
             type="number"
-            id="zip-input"
-            name="taux_tva"
-            value="{{ entreprise.taux_tva|floatformat }}"
+            id="tva"
+            name="taux_tva"             
+            {% if entreprise.taux_tva %}
+              value="{{ entreprise.taux_tva|floatformat }}"
+            {% else %}
+              value=20
+            {% endif %}               
             aria-describedby="helper-text-explanation"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pe-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="20"
@@ -305,55 +309,58 @@
   </div>
 </div>
 
-<script>
-  function imageComponent() {
-    return {
-      facture_model_list: [
-        {
-          nom: "Facture Simple",
-          src: "/static/images/model_facture/facture_simple.png",
-          description:
-            "Une facture minimaliste avec un en-tête, des détails de client, une liste d'articles, et un total à payer.",
-          mode: "Premium",
-        },
-        {
-          nom: "Facture Professionnelle",
-          src: "/static/images/model_facture/facture_professionnelle.png",
-          description:
-            "Une facture avec un design professionnel, incluant un logo, des informations détaillées sur le vendeur et l'acheteur, et un tableau d'articles.",
-          mode: "Premium",
-        },
-        {
-          nom: "Facture Colorée",
-          src: "/static/images/model_facture/facture_coloree.jpeg",
-          description:
-            "Une facture avec des couleurs vives et un design moderne, idéale pour les entreprises créatives.",
-          mode: "Premium",
-        },
-        {
-          nom: "Facture Classique",
-          src: "/static/images/model_facture/facture_classique.jpeg",
-          description:
-            "Une facture traditionnelle avec un style épuré, parfaite pour les entreprises de services.",
-          mode: "Premium",
-        },
-        {
-          nom: "Facture avec Bordure",
-          src: "/static/images/model_facture/facture_bordure.jpeg",
-          description:
-            "Une facture avec une bordure élégante et des sections bien définies pour les informations et les articles.",
-          mode: "Premium",
-        },
-        {
-          nom: "Facture Moderne",
-          src: "/static/images/model_facture/facture_moderne.jpeg",
-          description:
-            "Une facture avec un design moderne, incluant des icônes et une mise en page responsive.",
-          mode: "Premium",
-        },
-      ],
-    };
-  }
-</script>
+
+{% block extrascript %}  
+  <script>
+    function imageComponent() {
+      return {
+        facture_model_list: [
+          {
+            nom: "Facture Simple",
+            src: "/static/images/model_facture/facture_simple.png",
+            description:
+              "Une facture minimaliste avec un en-tête, des détails de client, une liste d'articles, et un total à payer.",
+            mode: "Premium",
+          },
+          {
+            nom: "Facture Professionnelle",
+            src: "/static/images/model_facture/facture_professionnelle.png",
+            description:
+              "Une facture avec un design professionnel, incluant un logo, des informations détaillées sur le vendeur et l'acheteur, et un tableau d'articles.",
+            mode: "Premium",
+          },
+          {
+            nom: "Facture Colorée",
+            src: "/static/images/model_facture/facture_coloree.jpeg",
+            description:
+              "Une facture avec des couleurs vives et un design moderne, idéale pour les entreprises créatives.",
+            mode: "Premium",
+          },
+          {
+            nom: "Facture Classique",
+            src: "/static/images/model_facture/facture_classique.jpeg",
+            description:
+              "Une facture traditionnelle avec un style épuré, parfaite pour les entreprises de services.",
+            mode: "Premium",
+          },
+          {
+            nom: "Facture avec Bordure",
+            src: "/static/images/model_facture/facture_bordure.jpeg",
+            description:
+              "Une facture avec une bordure élégante et des sections bien définies pour les informations et les articles.",
+            mode: "Premium",
+          },
+          {
+            nom: "Facture Moderne",
+            src: "/static/images/model_facture/facture_moderne.jpeg",
+            description:
+              "Une facture avec un design moderne, incluant des icônes et une mise en page responsive.",
+            mode: "Premium",
+          },
+        ],
+      };
+    }
+  </script>
+{% endblock extrascript %}
 
 {% endblock content %}
