@@ -5034,6 +5034,14 @@ select {
     width: 100vw;
   }
 
+  .md\:w-\[20\%\] {
+    width: 20%;
+  }
+
+  .md\:w-\[50\%\] {
+    width: 50%;
+  }
+
   .md\:max-w-sm {
     max-width: 24rem;
   }

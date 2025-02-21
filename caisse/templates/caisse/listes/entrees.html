@@ -36,7 +36,7 @@
             <label for="lignes" class="md:hidden">Lignes:</label>
             <select name="lignes"
                 class="border-none dark:bg-secondary focus:ring-0" id="lignes"
-                onchange="this.form.submit()">
+                onchange="updateQueryParam([{ key: 'lignes', value: this.value }])">
                 <option value="5" {% if lignes_par_page == '5' %}selected{%endif%}>5</option>
                 <option value="10" {% if lignes_par_page == '10' %}selected{% endif %}>10</option>
                 <option value="15" {% if lignes_par_page == '15' %}selected{% endif %}>15</option>
@@ -50,8 +50,7 @@
             <span class="hidden md:flex mx-2">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
             <div class="flex space-x-2">
                 {% if page_obj.has_previous %}
-                    <a
-                        href="?page=1&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}"
+                    <a onclick="updateQueryParam([{ key: 'page', value: 1 }])">
                         class="px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24"
                             height="24" viewBox="0 0 24 24" fill="none"
@@ -59,7 +58,7 @@
                             stroke-linecap="round" stroke-linejoin="round">
                             <path d="M19 12H5M12 5l-7 7 7 7" />
                         </svg></a>
-                    <a href="?page={{ page_obj.previous_page_number }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
+                    <a onclick="updateQueryParam([{ key: 'page', value: {{ page_obj.previous_page_number }} }])">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M15 18l-6-6 6-6"/>
                         </svg>
@@ -67,12 +66,12 @@
                 {% endif %}
                 <span class="md:hidden mx-2">{{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</span>
                 {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
+                    <a onclick="updateQueryParam([{ key: 'page', value: {{ page_obj.next_page_number }} }])">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M9 6l6 6-6 6"/>
                         </svg>
                     </a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}&lignes={{ lignes_par_page }}&query={{ query }}&categorie={{ categorie_id }}&beneficiaire={{ beneficiaire_id }}&date_min={{ date_min }}&date_max={{ date_max }}&sort={{ sort_by }}&order={{ ordre }}" class="px-3">
+                    <a onclick="updateQueryParam([{ key: 'page', value: {{ page_obj.paginator.num_pages }} }])">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M5 12h14M12 19l7-7-7-7"/>
                         </svg>
@@ -102,8 +101,8 @@
                 <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 w-full">
                     <!-- Sélecteur Catégories -->
                     <select name="categorie"
-                            class="w-full md:w-[30%] py-2 border-none dark:bg-secondary focus:ring-0 rounded-lg"
-                            onchange="submitFormWithCurrentParams(this)">
+                            class="w-full md:w-auto py-2 border-none dark:bg-secondary focus:ring-0 rounded-lg"
+                            onchange="updateQueryParam([{ key: 'categorie', value: this.value }])">
                         <option value="">Catégories</option>
                         {% for categorie in categories %}
                         <option value="{{ categorie.id }}" {% if request.GET.categorie == categorie.id|stringformat:"s" %}selected{% endif %}>
@@ -117,7 +116,7 @@
                     <!-- Sélecteur Bénéficiaires -->
                     <select name="beneficiaire"
                             class="w-full md:w-auto py-2 border-none dark:bg-secondary focus:ring-0 rounded-md"
-                            onchange="submitFormWithCurrentParams(this)">
+                            onchange="updateQueryParam([{ key: 'beneficiaire', value: this.value }])">
                         <option value="">Bénéficiaires</option>
                         {% for beneficiaire in beneficiaires %}
                         <option value="{{ beneficiaire.id }}" {% if request.GET.beneficiaire == beneficiaire.id|stringformat:"s" %}selected{% endif %}>
@@ -128,10 +127,24 @@
 
                     <div class="hidden md:block h-10 w-0.5 bg-gray-300"></div>
 
+                    <!-- Sélecteur Bénéficiaires -->
+                    <select name="client"
+                            class="w-full md:w-auto py-2 border-none dark:bg-secondary focus:ring-0 rounded-md"
+                            onchange="updateQueryParam([{ key: 'client', value: this.value }])">
+                        <option value="">Client</option>
+                        {% for client in clients %}
+                        <option value="{{ client }}" {% if request.GET.client == client %}selected{% endif %}>
+                            {{ client }}
+                        </option>
+                        {% endfor %}
+                    </select>
+
+                    <div class="hidden md:block h-10 w-0.5 bg-gray-300"></div>
+
                     <!-- Sélecteur de mois -->
                     <select name="mois"
                             class="w-full md:w-auto py-2 border-none dark:bg-secondary focus:ring-0 rounded-md"
-                            onchange="submitFormWithCurrentParams(this)">
+                            onchange="updateQueryParam([{ key: 'mois', value: this.value }])">
                         <option value="">Tous les mois</option>
                         {% for mois in mois_liste %}
                         <option value="{{ mois.value }}" {% if request.GET.mois == mois.value|stringformat:"s" %}selected{% endif %}>
@@ -156,50 +169,6 @@
         </form>
     </div>
 
-    <!-- Ajouter le script pour la soumission du formulaire avec les paramètres actuels -->
-    <script>
-        function submitFormWithCurrentParams(changedElement) {
-            const form = document.getElementById('filter-form');
-            const currentParams = new URLSearchParams(window.location.search);
-            
-            // Conserver le nombre de lignes par page
-            if (currentParams.has('lignes')) {
-                const lignesInput = document.createElement('input');
-                lignesInput.type = 'hidden';
-                lignesInput.name = 'lignes';
-                lignesInput.value = currentParams.get('lignes');
-                form.appendChild(lignesInput);
-            }
-            
-            // Conserver le tri actuel
-            if (currentParams.has('sort')) {
-                const sortInput = document.createElement('input');
-                sortInput.type = 'hidden';
-                sortInput.name = 'sort';
-                sortInput.value = currentParams.get('sort');
-                form.appendChild(sortInput);
-            }
-            
-            if (currentParams.has('order')) {
-                const orderInput = document.createElement('input');
-                orderInput.type = 'hidden';
-                orderInput.name = 'order';
-                orderInput.value = currentParams.get('order');
-                form.appendChild(orderInput);
-            }
-            
-            form.submit();
-        }
-        
-        function toggleFilters() {
-            const filterForm = document.getElementById('filter-form');
-            const filterIcon = document.getElementById('filter-icon');
-            
-            filterForm.classList.toggle('hidden');
-            filterIcon.classList.toggle('rotate-180');
-        }
-    </script>
-
     <!-- Tableau des opérations -->
     <form method="post" id="export-form"
         action="{% url 'caisse:generer_excel_operations_entrees' %}">
@@ -216,48 +185,56 @@
                         </th>
                         <th class="px-4 py-1 text-left">
                             {% if request.GET.sort == 'description' and request.GET.order == 'asc' %}
-                                <a href="?sort=description&order=desc&lignes={{ lignes_par_page }}">Description ⬇</a>
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'description' }], [{ key: 'order', value: 'desc' }])">Description ⬇</a>
+                            {% elif request.GET.sort == 'description' and request.GET.order == 'desc' %}
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Description ⬆</a>
                             {% else %}
-                                <a href="?sort=description&order=asc&lignes={{ lignes_par_page }}">Description ⬆</a>
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'description' }], [{ key: 'order', value: 'asc' }])">Description ⬇⬆</a>
                             {% endif %}
                         </th>
                         <th class="px-4 py-1 text-left">
                             {% if request.GET.sort == 'categorie' and request.GET.order == 'asc' %}
-                                <a href="?sort=categorie&order=desc&lignes={{ lignes_par_page }}">Catégorie ⬇</a>
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'categorie' }], [{ key: 'order', value: 'desc' }])">Categorie ⬇</a>
+                            {% elif request.GET.sort == 'categorie' and request.GET.order == 'desc' %}
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Categorie ⬆</a>
                             {% else %}
-                                <a href="?sort=categorie&order=asc&lignes={{ lignes_par_page }}">Catégorie ⬆</a>
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'categorie' }], [{ key: 'order', value: 'asc' }])">Categorie ⬇⬆</a>
                             {% endif %}
                         </th>
                         <th class="px-4 py-1 text-left">
                             {% if request.GET.sort == 'beneficiaire' and request.GET.order == 'asc' %}
-                                <a href="?sort=beneficiaire&order=desc&lignes={{ lignes_par_page }}">Bénéficiaire ⬇</a>
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'beneficiaire' }], [{ key: 'order', value: 'desc' }])">Bénéficiaire ⬇</a>
+                            {% elif request.GET.sort == 'beneficiaire' and request.GET.order == 'desc' %}
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Bénéficiaire ⬆</a>
                             {% else %}
-                                <a href="?sort=beneficiaire&order=asc&lignes={{ lignes_par_page }}">Bénéficiaire ⬆</a>
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'beneficiaire' }], [{ key: 'order', value: 'asc' }])">Bénéficiaire ⬇⬆</a>
                             {% endif %}
                         </th>
                         <th class="px-4 py-1 text-left">
                             {% if request.GET.sort == 'client' and request.GET.order == 'asc' %}
-                                <a href="?sort=client&order=desc&lignes={{ lignes_par_page }}">Client ⬇</a>
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'client' }], [{ key: 'order', value: 'desc' }])">Client ⬇</a>
+                            {% elif request.GET.sort == 'client' and request.GET.order == 'desc' %}
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Client ⬆</a>
                             {% else %}
-                                <a href="?sort=client&order=asc&lignes={{ lignes_par_page }}">Client ⬆</a>
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'client' }], [{ key: 'order', value: 'asc' }])">Client ⬇⬆</a>
                             {% endif %}
                         </th>
                         <th class="px-4 py-1 text-left">
                             {% if request.GET.sort == 'date' and request.GET.order == 'asc' %}
-                                <a href="?sort=date&order=desc&lignes={{ lignes_par_page }}">Date ⬇</a>
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'date' }], [{ key: 'order', value: 'desc' }])">Date ⬇</a>
+                            {% elif request.GET.sort == 'date' and request.GET.order == 'desc' %}
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Date ⬆</a>
                             {% else %}
-                                <a href="?sort=date&order=asc&lignes={{ lignes_par_page }}">Date ⬆</a>
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'date' }], [{ key: 'order', value: 'asc' }])">Date ⬇⬆</a>
                             {% endif %}
                         </th>
                         <th class="px-4 py-1 text-right">
                             {% if request.GET.sort == 'montant' and request.GET.order == 'asc' %}
-                                <a href="?sort=montant&order=desc&lignes={{ lignes_par_page }}" class="flex items-center justify-end">
-                                    <span>Montant</span> ⬇
-                                </a>
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'montant' }], [{ key: 'order', value: 'desc' }])">Montant ⬇</a>
+                            {% elif request.GET.sort == 'montant' and request.GET.order == 'desc' %}
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Montant ⬆</a>
                             {% else %}
-                                <a href="?sort=montant&order=asc&lignes={{ lignes_par_page }}" class="flex items-center justify-end">
-                                    <span>Montant</span> ⬆
-                                </a>
+                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'montant' }], [{ key: 'order', value: 'asc' }])">Montant ⬇⬆</a>
                             {% endif %}
                         </th>
                         <th class="px-4 py-1">Actions</th>
@@ -484,6 +461,29 @@
 
     <!-- Ajouter le script pour le toggle des filtres -->
     <script>
+        function toggleFilters() {
+            const filterForm = document.getElementById('filter-form');
+            const filterIcon = document.getElementById('filter-icon');
+            
+            filterForm.classList.toggle('hidden');
+            filterIcon.classList.toggle('rotate-180');
+        }
+    </script>
+
+    <script>
+        // Fonction pour mettre à jour le paramètre de requête dans l'URL et recharger la page
+        function updateQueryParam(...params) {
+            const url = new URL(window.location.href);
+            params.flat().forEach(param => {
+                if (param.value) {
+                    url.searchParams.set(param.key, param.value);
+                } else {
+                    url.searchParams.delete(param.key);
+                }
+            });
+            window.location.href = url.toString();
+        }
+
         function toggleFilters() {
             const filterForm = document.getElementById('filter-form');
             const filterIcon = document.getElementById('filter-icon');

@@ -144,7 +144,7 @@
                     <!-- Sélecteur Bénéficiaires (uniquement pour les sorties) -->
                     <select name="beneficiaire"
                             class="px py-2 border-none dark:bg-secondary focus:ring-0 rounded-md"
-                            onchange="updateQueryParam([{ key: 'beneficiaire', value: this.value )}]">
+                            onchange="updateQueryParam([{ key: 'beneficiaire', value: this.value }])">
                         <option value>Bénéficiaires</option>
                         {% for beneficiaire in beneficiaires %}
                         <option value="{{ beneficiaire.id }}" {% if request.GET.beneficiaire == beneficiaire.id|stringformat:"s" %}selected{% endif %}>
@@ -564,40 +564,7 @@
         </form>
         <!-- Sélecteur pour le nombre de lignes par page -->
 
-        <script>
-    function submitFormWithCurrentParams(changedElement) {
-        const form = document.getElementById('filter-form');
-        const currentParams = new URLSearchParams(window.location.search);
-        
-        // Conserver le nombre de lignes par page
-        if (currentParams.has('lignes')) {
-            const lignesInput = document.createElement('input');
-            lignesInput.type = 'hidden';
-            lignesInput.name = 'lignes';
-            lignesInput.value = currentParams.get('lignes');
-            form.appendChild(lignesInput);
-        }
-        
-        // Conserver le tri actuel
-        if (currentParams.has('sort')) {
-            const sortInput = document.createElement('input');
-            sortInput.type = 'hidden';
-            sortInput.name = 'sort';
-            sortInput.value = currentParams.get('sort');
-            form.appendChild(sortInput);
-        }
-        
-        if (currentParams.has('order')) {
-            const orderInput = document.createElement('input');
-            orderInput.type = 'hidden';
-            orderInput.name = 'order';
-            orderInput.value = currentParams.get('order');
-            form.appendChild(orderInput);
-        }
-        
-        form.submit();
-    }
-    
+<script>    
     function validateAndSubmitExport(type) {
         const checkboxes = document.querySelectorAll('input[name="selected_operations"]:checked');
         const form = document.getElementById('export-form');

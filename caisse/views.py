@@ -1226,6 +1226,7 @@ def liste_entrees(request):
     # Filtrer les opérations d'entrée
     entrees = OperationEntrer.objects.all()
 
+    # Filtre par requête de recherche
     if query:
         entrees = entrees.filter(
             Q(description__icontains=query) | 
@@ -1233,10 +1234,20 @@ def liste_entrees(request):
             Q(montant__icontains=query) | 
             Q(date_transaction__icontains=query)
         )
+    
+    # Filtre par catégorie
     if categorie_id and categorie_id.isdigit():
-        entrees = entrees.filter(categorie_id=categorie_id)
+        entrees = entrees.filter(categorie_id=categorie_id)    
+    # Filtre par bénéficiaire
     if beneficiaire_id and beneficiaire_id.isdigit():
         entrees = entrees.filter(beneficiaire_id=beneficiaire_id)
+    # Filtre par client
+    client = request.GET.get('client')
+    if client:
+        if client != 'Pas de client':
+            entrees = entrees.filter(client=client)
+        else:
+            entrees = entrees.filter(client="")
     # Filtre par mois
     if mois and mois.isdigit():
         entrees = entrees.filter(date_transaction__month=int(mois))
@@ -1245,6 +1256,8 @@ def liste_entrees(request):
     valid_sort_fields = {
         'description': 'description',
         'categorie': 'categorie__name',
+        'client': 'client',
+        'beneficiaire': 'beneficiaire__name',
         'date': 'date_transaction',
         'montant': 'montant'
     }
@@ -1259,6 +1272,8 @@ def liste_entrees(request):
     # Récupérer uniquement les catégories de type "entrée" pour les options de filtrage
     categories = Categorie.objects.filter(type="entree")
     beneficiaires = Beneficiaire.objects.all()
+    clients = OperationEntrer.objects.values_list('client', flat=True).distinct()
+    clients = [client if client != '' else 'Pas de client' for client in clients]
     
     # Charger le template
     template = loader.get_template('caisse/listes/entrees.html')
@@ -1274,6 +1289,7 @@ def liste_entrees(request):
         'page_obj': page_obj,
         'categories': categories,
         'beneficiaires': beneficiaires,
+        'clients': clients,
         'prix': "Ar",
         'sort_by': sort_by,
         'ordre': ordre,
