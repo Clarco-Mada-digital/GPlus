@@ -240,10 +240,10 @@ def listes(request):
     Affiche la liste des opérations avec filtrage et tri.
     """
     # Récupérer les filtres de recherche et de triage
-    query = request.GET.get('q')
-    categorie_name = request.GET.get('categorie')
-    beneficiaire_id = request.GET.get('beneficiaire')
-    fournisseur_id = request.GET.get('fournisseur')
+    query = request.GET.get('q') if request.GET.get('q') != "None" else None
+    categorie_name = request.GET.get('categorie') if request.GET.get('categorie') != "None" else None
+    beneficiaire_id = request.GET.get('beneficiaire') if request.GET.get('beneficiaire') != "None" else None
+    fournisseur_id = request.GET.get('fournisseur') if request.GET.get('fournisseur') != "None" else None
     mois = request.GET.get('mois')  # Récupérer le mois sélectionné
     sort_by = request.GET.get('sort', 'date')
     ordre = request.GET.get('order', 'desc')
@@ -309,13 +309,58 @@ def listes(request):
 
     # Pagination
     lignes_par_page = str(request.GET.get('lignes', 10)) # Valeur par défaut : 10
-    operations = sorted(
-        chain(entree, sortie),
-        key=lambda x: (
-            getattr(x, 'date_transaction', None) or getattr(x, 'date_de_sortie', None)
-        ),
-        reverse=(sort_by == 'date' and ordre == 'desc')
-    )
+    
+    # Triage conditionnel
+    if sort_by == 'categorie':
+        # Trier les opérations par catégorie
+        operations = sorted(
+            chain(entree, sortie),
+            key=lambda x: getattr(x, 'categorie').name if x.categorie else '',
+            reverse=(ordre == 'desc')
+        )
+    elif sort_by == 'beneficiaire':
+        # Trier les opérations par bénéficiaire
+        operations = sorted(
+            chain(entree, sortie),
+            key=lambda x: str(x.beneficiaire),
+            reverse=(ordre == 'desc')
+        )
+    elif sort_by == 'fournisseur':
+        # Trier les opérations de sortie par fournisseur
+        operations = sorted(
+            sortie,
+            key=lambda x: getattr(x, 'fournisseur').name if x.fournisseur else '',
+            reverse=(ordre == 'desc')
+        )
+    elif sort_by == 'description':
+        # Trier les opérations par description
+        operations = sorted(
+            chain(entree, sortie),
+            key=lambda x: getattr(x, 'description'),
+            reverse=(ordre == 'desc')
+        )
+    elif sort_by == 'quantite':
+        # Trier les opérations de sortie par quantité
+        operations = sorted(
+            sortie,
+            key=lambda x: getattr(x, 'quantite', 0),
+            reverse=(ordre == 'desc')
+        )
+    elif sort_by == 'montant':
+        # Trier les opérations par montant
+        operations = sorted(
+            chain(entree, sortie),
+            key=lambda x: getattr(x, 'montant'),
+            reverse=(ordre == 'desc')
+        )
+    else:
+        # Trier les opérations par date
+        operations = sorted(
+            chain(entree, sortie),
+            key=lambda x: getattr(x, 'date_transaction', None) or getattr(x, 'date_de_sortie', None),
+            reverse=(ordre == 'desc')
+        )
+
     paginator = Paginator(operations, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
