@@ -388,9 +388,11 @@ def depenses(request):
     """
     # Récupérer le mois sélectionné
     mois_selectionne = request.GET.get('mois', timezone.now().strftime('%Y-%m'))
+    beneficiaire_id = request.GET.get('employe')
+    categorie_id = request.GET.get('categorie_emp')
     order_in = request.GET.get('order')
     sort_by = request.GET.get('sort')
-    
+
     try:
         date_debut = timezone.datetime.strptime(f"{mois_selectionne}-01", '%Y-%m-%d')
         date_fin = (date_debut + timezone.timedelta(days=32)).replace(day=1) - timezone.timedelta(days=1)
@@ -412,6 +414,13 @@ def depenses(request):
         nombre_depenses=Count('id'),
         categorie_plus_depensee=models.F('categorie__name')
     ).order_by('-total_depenses')
+
+    # Filtrer les dépenses par employé
+    if beneficiaire_id and beneficiaire_id.isdigit():
+        depenses_par_employe = depenses_par_employe.filter(beneficiaire_id=beneficiaire_id)
+    # Filtrer les dépenses par catégorie
+    if categorie_id and categorie_id.isdigit():
+        depenses_par_employe = depenses_par_employe.filter(categorie_id=categorie_id)
     
     for index in range(len(depenses_par_employe)):
         depenses_par_employe[index]['beneficiaire'] = Beneficiaire.objects.get(id=int(depenses_par_employe[index]['beneficiaire']))
@@ -423,6 +432,9 @@ def depenses(request):
         total_depenses=Sum('montant'),
         nombre_depenses=Count('id')
     ).order_by('-total_depenses')
+
+    employes = sorted(Beneficiaire.objects.all().distinct(), key=lambda x: str(x))
+    categories = operations.values('categorie__name', 'categorie__id').distinct().order_by('categorie__name')
 
     # Couleurs pour les catégories
     colors = [
@@ -440,23 +452,37 @@ def depenses(request):
         total_depenses=Sum('montant')
     ).order_by('year')
 
+    # Dictionnaire de tri pour les dépenses par employé
+    employe_sort_options = {
+        'employe': lambda x: (str(x['beneficiaire']) if x['beneficiaire'] else ''),
+        'total_emp': lambda x: x['total_depenses'],
+        'operation_emp': lambda x: x['nombre_depenses'],
+        'categorie_emp': lambda x: x['categorie_plus_depensee']
+    }
+
+    # Dictionnaire de tri pour les dépenses par catégorie
+    categorie_sort_options = {
+        'categorie_cat': lambda x: x['categorie__name'],
+        'total_cat': lambda x: x['total_depenses'],
+        'operation_cat': lambda x: x['nombre_depenses']
+    }
+
     # Trier les dépenses par employé
-    if sort_by == 'employe':
-        depenses_par_employe = sorted(depenses_par_employe, key=lambda x: (str(x['beneficiaire']) if x['beneficiaire'] else ''), reverse=(order_in == 'desc'))
-    elif sort_by == 'total_emp':
-        depenses_par_employe = sorted(depenses_par_employe, key=lambda x: x['total_depenses'], reverse=(order_in == 'desc'))
-    elif sort_by == 'operation_emp':
-        depenses_par_employe = sorted(depenses_par_employe, key=lambda x: x['nombre_depenses'], reverse=(order_in == 'desc'))
-    elif sort_by == 'categorie_emp':
-        depenses_par_employe = sorted(depenses_par_employe, key=lambda x: x['categorie_plus_depensee'], reverse=(order_in == 'desc'))
+    if sort_by in employe_sort_options:
+        depenses_par_employe = sorted(depenses_par_employe, key=employe_sort_options[sort_by], reverse=(order_in == 'desc'))
 
     # Trier les dépenses par catégorie
-    if sort_by == 'categorie_cat':
-        depenses_par_categorie = sorted(depenses_par_categorie, key=lambda x: x['categorie__name'], reverse=(order_in == 'desc'))
-    elif sort_by == 'total_cat':
-        depenses_par_categorie = sorted(depenses_par_categorie, key=lambda x: x['total_depenses'], reverse=(order_in == 'desc'))
-    elif sort_by == 'operation_cat':
-        depenses_par_categorie = sorted(depenses_par_categorie, key=lambda x: x['nombre_depenses'], reverse=(order_in == 'desc'))
+    if sort_by in categorie_sort_options:
+        depenses_par_categorie = sorted(depenses_par_categorie, key=categorie_sort_options[sort_by], reverse=(order_in == 'desc'))
+
+    # Pagination
+    lignes_par_page = str(request.GET.get('lignes', 10)) # Valeur par défaut : 10
+
+    paginator = Paginator(depenses_par_employe, lignes_par_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    print(page_obj)
 
     # Générer la liste des mois
     mois_liste = []
@@ -469,6 +495,10 @@ def depenses(request):
         })
 
     context = {
+        'page_obj': page_obj,
+        'lignes_par_page': lignes_par_page,
+        'employes': employes,
+        'categories': categories,
         'depenses_par_employe': depenses_par_employe,
         'depenses_par_categorie': depenses_par_categorie,
         'depenses_par_annee': depenses_par_annee,

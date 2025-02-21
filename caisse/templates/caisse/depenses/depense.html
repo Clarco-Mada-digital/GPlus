@@ -28,43 +28,205 @@
             <div class="inline-block min-w-full align-middle">
                 <div class="overflow-hidden">
                     <div class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+
+                        <!-- Section des filtres -->
+                        <div class="flex items-center flex-row justify-between text-black dark:text-white">
+                            <form method="GET" action="{% url 'caisse:liste_entrees' %}" 
+                                  class="hidden md:block p-2 bg-white dark:bg-secondary" 
+                                  id="filter-form" 
+                                  onsubmit="return false;">
+                                <div class="flex items-center dark:bg-secondary rounded-xl space-x-4">
+                                    <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 w-full">
+                                        <!-- Sélecteur Employés -->
+                                        <select name="employe"
+                                                class="w-full md:w-auto py-2 border-none dark:bg-secondary focus:ring-0 rounded-lg"
+                                                onchange="updateQueryParam([{ key: 'employe', value: this.value }])">
+                                            <option value="">Employés</option>
+                                            {% for employe in employes %}
+                                            <option value="{{ employe.id }}" {% if request.GET.employe == employe.id|stringformat:"s" %}selected{% endif %}>
+                                                {{ employe }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                    
+                                        <div class="hidden md:block h-10 w-0.5 bg-gray-300"></div>
+    
+                                        <!-- Sélecteur Catégories -->
+                                        <select name="categorie_emp"
+                                                class="w-full md:w-auto py-2 border-none dark:bg-secondary focus:ring-0 rounded-lg"
+                                                onchange="updateQueryParam([{ key: 'categorie_emp', value: this.value }])">
+                                            <option value="">Catégories</option>
+                                            {% for categorie in categories %}
+                                            <option value="{{ categorie.categorie__id }}" {% if request.GET.categorie_emp == categorie.categorie__id|stringformat:"s" %}selected{% endif %}>
+                                                {{ categorie.categorie__name }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                    
+                                        <div class="hidden md:block h-10 w-0.5 bg-gray-300"></div>
+                    
+                                        <!-- Bouton Reset -->
+                                        <a href="?lignes={{ lignes_par_page }}"
+                                           class="text-red px-3 py-2 hover:text-red-700 flex items-center justify-center md:justify-start space-x-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M23 4v6h-6"/>
+                                                <path d="M1 20v-6h6"/>
+                                                <path d="M3.51 9a9 9 0 0114.13-3.36L23 10M1 14l4.36 4.36A9 9 0 0020.49 15"/>
+                                            </svg>
+                                            <span>Reset</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="flex flex-col gap-4 font-medium items-center justify-end pb-4 px-4">
+                                <!-- Sélecteur pour le nombre de lignes par page -->
+                                <form method="get" class="flex items-center space-x-2">
+                                    <label for="lignes" class="hidden md:flex">Nombre de lignes :</label>
+                                    <label for="lignes" class="md:hidden">Lignes:</label>
+                                    <select name="lignes"
+                                    class="border-none dark:bg-secondary focus:ring-0" id="lignes"
+                                    onchange="updateQueryParam([{ key: 'lignes', value: this.value }])">
+                                    <option value="5" {% if lignes_par_page == '5' %}selected{%endif%}>5</option>
+                                    <option value="10" {% if lignes_par_page == '10' %}selected{% endif %}>10</option>
+                                    <option value="15" {% if lignes_par_page == '15' %}selected{% endif %}>15</option>
+                                    <option value="30" {% if lignes_par_page == '30' %}selected{% endif %}>30</option>
+                                    <option value="100" {% if lignes_par_page == '100' %}selected{% endif %}>100</option>
+                                    </select>
+                                </form>
+                        
+                                <!-- Pagination -->
+                                <div class="flex items-center font-medium space-x-2">
+                                    <span class="hidden md:flex mx-2">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+                                    <div class="flex space-x-2">
+                                      {% if page_obj.has_previous %}
+                                        <a
+                                            onclick="updateQueryParam([{ key: 'page', value: 1 }])"
+                                            style="cursor: pointer;"
+                                            class="px-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M19 12H5M12 5l-7 7 7 7" />
+                                            </svg></a>
+                                        <a
+                                        onclick="updateQueryParam([{ key: 'page', value: {{ page_obj.previous_page_number }} }])"
+                                        style="cursor: pointer;"
+                                        class="px-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M15 18l-6-6 6-6" />
+                                            </svg>
+                                        </a>
+                                        {% else %}
+                                        <a
+                                            class="px-3 text-gray-400 cursor-not-allowed">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M19 12H5M12 5l-7 7 7 7" />
+                                            </svg></a>
+                                        <a
+                                        class="px-3 text-gray-400 cursor-not-allowed">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M15 18l-6-6 6-6" />
+                                            </svg>
+                                        </a>
+                                        {% endif %}
+                                        <span class="md:hidden mx-2">{{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</span>
+                                        {% if page_obj.has_next %}
+                                        <a
+                                            onclick="updateQueryParam([{ key: 'page', value: {{ page_obj.next_page_number }} }])"
+                                            style="cursor: pointer;"
+                                            class="px-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                            height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M9 6l6 6-6 6" />
+                                            </svg>
+                                        </a>
+                                        <a
+                                            onclick="updateQueryParam([{ key: 'page', value: {{ page_obj.paginator.num_pages }} }])"
+                                            style="cursor: pointer;"
+                                            class="px-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M5 12h14M12 19l7-7-7-7" />
+                                            </svg>
+                                        </a>
+                                        {% else %}
+                                        <a
+                                            class="px-3 text-gray-400 cursor-not-allowed">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                            height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M9 6l6 6-6 6" />
+                                            </svg>
+                                        </a>
+                                        <a
+                                        class="px-3 text-gray-400 cursor-not-allowed">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                height="24" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M5 12h14M12 19l7-7-7-7" />
+                                            </svg>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- En-têtes pour grand écran -->
                         <div class="hidden md:grid bg-gray-50 dark:bg-gray-700">
                             <div class="grid grid-cols-5 gap-2">
                                 <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                     {% if request.GET.sort == 'employe' and request.GET.order == 'asc' %}
-                                    <a href="?sort=employe&order=desc&mois={{ request.GET.mois }}">Employé ⬇</a>
+                                    <a href="?lignes={{ request.GET.lignes }}&sort=employe&order=desc&mois={{ request.GET.mois }}">Employé ⬇</a>
                                     {% elif request.GET.sort == 'employe' and request.GET.order == 'desc' %}
-                                    <a href="?mois={{ request.GET.mois }}">Employé ⬆</a>
+                                    <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}">Employé ⬆</a>
                                     {% else %}
-                                    <a href="?sort=employe&order=asc&mois={{ request.GET.mois }}">Employé ⬆⬇</a>
+                                    <a href="?lignes={{ request.GET.lignes }}&sort=employe&order=asc&mois={{ request.GET.mois }}">Employé ⬆⬇</a>
                                     {% endif %}
                                 </div>
                                 <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                     {% if request.GET.sort == 'total_emp' and request.GET.order == 'asc' %}
-                                    <a href="?sort=total_emp&order=desc&mois={{ request.GET.mois }}">Total des dépenses ⬇</a>
+                                    <a href="?lignes={{ request.GET.lignes }}&sort=total_emp&order=desc&mois={{ request.GET.mois }}">Total ⬇</a>
                                     {% elif request.GET.sort == 'total_emp' and request.GET.order == 'desc' %}
-                                    <a href="?mois={{ request.GET.mois }}">Total des dépenses ⬆</a>
+                                    <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}">Total ⬆</a>
                                     {% else %}
-                                    <a href="?sort=total_emp&order=asc&mois={{ request.GET.mois }}">Total des dépenses ⬆⬇</a>
+                                    <a href="?lignes={{ request.GET.lignes }}&sort=total_emp&order=asc&mois={{ request.GET.mois }}">Total ⬆⬇</a>
                                     {% endif %}
                                 </div>
                                 <div class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                     {% if request.GET.sort == 'categorie_emp' and request.GET.order == 'asc' %}
-                                    <a href="?sort=categorie_emp&order=desc&mois={{ request.GET.mois }}">Catégorie ⬇</a>
+                                    <a href="?lignes={{ request.GET.lignes }}&sort=categorie_emp&order=desc&mois={{ request.GET.mois }}">Catégorie ⬇</a>
                                     {% elif request.GET.sort == 'categorie_emp' and request.GET.order == 'desc' %}
-                                    <a href="?mois={{ request.GET.mois }}">Catégorie ⬆</a>
+                                    <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}">Catégorie ⬆</a>
                                     {% else %}
-                                    <a href="?sort=categorie_emp&order=asc&mois={{ request.GET.mois }}">Catégorie ⬆⬇</a>
+                                    <a href="?lignes={{ request.GET.lignes }}&sort=categorie_emp&order=asc&mois={{ request.GET.mois }}">Catégorie ⬆⬇</a>
                                     {% endif %}
                                 </div>
                                 <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                     {% if request.GET.sort == 'operation_emp' and request.GET.order == 'asc' %}
-                                    <a href="?sort=operation_emp&order=desc&mois={{ request.GET.mois }}">Nombre d'opérations ⬇</a>
+                                    <a href="?lignes={{ request.GET.lignes }}&sort=operation_emp&order=desc&mois={{ request.GET.mois }}">Opérations ⬇</a>
                                     {% elif request.GET.sort == 'operation_emp' and request.GET.order == 'desc' %}
-                                    <a href="?mois={{ request.GET.mois }}">Nombre d'opérations ⬆</a>
+                                    <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}">Opérations ⬆</a>
                                     {% else %}
-                                    <a href="?sort=operation_emp&order=asc&mois={{ request.GET.mois }}">Nombre d'opérations ⬆⬇</a>
+                                    <a href="?lignes={{ request.GET.lignes }}&sort=operation_emp&order=asc&mois={{ request.GET.mois }}">Opérations ⬆⬇</a>
                                     {% endif %}
                                 </div>
                                 <div class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
@@ -75,7 +237,7 @@
 
                         <!-- Données -->
                         <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                            {% for depense in depenses_par_employe %}
+                            {% for depense in page_obj %}
                             <!-- Version mobile -->
                             <div class="md:hidden p-4 space-y-2">
                                 <div class="flex justify-between">
@@ -149,29 +311,29 @@
                                 <div class="grid grid-cols-4 gap-2">
                                     <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                         {% if request.GET.sort == 'categorie_cat' and request.GET.order == 'asc' %}
-                                        <a href="?sort=categorie_cat&order=desc&mois={{ request.GET.mois }}#details_by_categories">Catégorie ⬇</a>
+                                        <a href="?lignes={{ request.GET.lignes }}&sort=categorie_cat&order=desc&mois={{ request.GET.mois }}#details_by_categories">Catégorie ⬇</a>
                                         {% elif request.GET.sort == 'categorie_cat' and request.GET.order == 'desc' %}
-                                        <a href="?mois={{ request.GET.mois }}#details_by_categories">Catégorie ⬆</a>
+                                        <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}#details_by_categories">Catégorie ⬆</a>
                                         {% else %}
-                                        <a href="?sort=categorie_cat&order=asc&mois={{ request.GET.mois }}#details_by_categories">Catégorie ⬆⬇</a>
+                                        <a href="?lignes={{ request.GET.lignes }}&sort=categorie_cat&order=asc&mois={{ request.GET.mois }}#details_by_categories">Catégorie ⬆⬇</a>
                                         {% endif %}
                                     </div>
                                     <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                         {% if request.GET.sort == 'total_cat' and request.GET.order == 'asc' %}
-                                        <a href="?sort=total_cat&order=desc&mois={{ request.GET.mois }}#details_by_categories">Total des dépenses ⬇</a>
+                                        <a href="?lignes={{ request.GET.lignes }}&sort=total_cat&order=desc&mois={{ request.GET.mois }}#details_by_categories">Total ⬇</a>
                                         {% elif request.GET.sort == 'total_cat' and request.GET.order == 'desc' %}
-                                        <a href="?mois={{ request.GET.mois }}#details_by_categories">Total des dépenses ⬆</a>
+                                        <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}#details_by_categories">Total ⬆</a>
                                         {% else %}
-                                        <a href="?sort=total_cat&order=asc&mois={{ request.GET.mois }}#details_by_categories">Total des dépenses ⬆⬇</a>
+                                        <a href="?lignes={{ request.GET.lignes }}&sort=total_cat&order=asc&mois={{ request.GET.mois }}#details_by_categories">Total ⬆⬇</a>
                                         {% endif %}
                                     </div>
                                     <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                         {% if request.GET.sort == 'operation_cat' and request.GET.order == 'asc' %}
-                                        <a href="?sort=operation_cat&order=desc&mois={{ request.GET.mois }}#details_by_categories">Nombre d'opérations ⬇</a>
+                                        <a href="?lignes={{ request.GET.lignes }}&sort=operation_cat&order=desc&mois={{ request.GET.mois }}#details_by_categories">Opérations ⬇</a>
                                         {% elif request.GET.sort == 'operation_cat' and request.GET.order == 'desc' %}
-                                        <a href="?mois={{ request.GET.mois }}#details_by_categories">Nombre d'opérations ⬆</a>
+                                        <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}#details_by_categories">Opérations ⬆</a>
                                         {% else %}
-                                        <a href="?sort=operation_cat&order=asc&mois={{ request.GET.mois }}#details_by_categories">Nombre d'opérations ⬆⬇</a>
+                                        <a href="?lignes={{ request.GET.lignes }}&sort=operation_cat&order=asc&mois={{ request.GET.mois }}#details_by_categories">Opérations ⬆⬇</a>
                                         {% endif %}
                                     </div>
                                     <div class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
@@ -553,5 +715,21 @@
 
     categoryChart.update();
 
+</script>
+
+<script>
+    // Fonction pour mettre à jour le paramètre de requête dans l'URL et recharger la page
+    function updateQueryParam(...params) {
+        const url = new URL(window.location.href);
+        params.flat().forEach(param => {
+            if (param.value) {
+                url.searchParams.set(param.key, param.value);
+            } else {
+                url.searchParams.delete(param.key);
+            }
+        });
+        url.hash = ''; // Supprime tout ce qui se trouve après #
+        window.location.href = url.toString();
+    }
 </script>
 {% endblock %}
