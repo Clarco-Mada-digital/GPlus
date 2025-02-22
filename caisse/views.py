@@ -614,11 +614,20 @@ def supprimer_acteur(request, type_acteur, pk):
     elif type_acteur == 'fournisseur':
         acteur = get_object_or_404(Fournisseur, pk=pk)
     else:
+        messages.error(request, "Type d'acteur non valide.")
         return JsonResponse({'success': False, 'error': 'Type d\'acteur invalide'}, status=400)
 
-    acteur.delete()
-    UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé un acteur')
-    return JsonResponse({'success': True})
+    try:
+        acteur.delete()
+        UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé un acteur')
+        messages.success(request, "Acteur supprimé avec succès.")
+        return JsonResponse({'success': True})
+    except django.db.models.deletion.ProtectedError:
+        messages.error(request, "Impossible de supprimer un acteur utilisé dans des opérations.")
+        return JsonResponse({'success': False, 'error': 'Impossible de supprimer un acteur utilisé dans des opérations.'}, status=400)
+    except Exception as e:
+        messages.error(request, f"Erreur lors de la suppression de l'acteur.{e}")
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
 # Gestion des catégories
 
