@@ -534,30 +534,31 @@ def acteurs(request):
     return render(request, "caisse/acteurs/acteurs.html", context)
 
 @login_required
-def ajouter_acteur(request):
+def ajouter_acteur(request: WSGIRequest):
     """
     Ajoute un nouvel acteur (fournisseur, employé ou catégorie).
     """
+    data = {}
     if request.method == 'POST':
         type_acteur = request.POST.get('type_acteur')
         if type_acteur == 'fournisseurs':
             form = FournisseurForm(request.POST)
         elif type_acteur == 'employes':
             form = PersonnelForm(request.POST, request.FILES)
+            print(form.is_valid(), form.data)
         elif type_acteur == 'categories':
             form = CategorieForm(request.POST)
         else:
             messages.error(request, "Type d'acteur non valide.")
             return redirect('caisse:acteurs')
 
-        if form.is_valid():
+        try:
             form.save()
             # Enregistrement de l'activité
             UserActivity.objects.create(user=request.user, action='Création', description=f'a ajouté un {type_acteur[:-1]}')
             messages.success(request, f"{type_acteur[:-1].capitalize()} ajouté avec succès.")
-            return redirect('caisse:acteurs')
-        else:
-            messages.error(request, "Erreur dans le formulaire. Veuillez vérifier les données.")
+        except Exception as e:
+            messages.error(request, f"Erreur lors de l'ajout de l'acteur: {str(e)}")
     return redirect('caisse:acteurs')
 
 @login_required
