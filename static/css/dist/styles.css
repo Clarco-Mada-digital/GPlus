@@ -3277,6 +3277,20 @@ body{
   background-color: rgb(254 249 195 / var(--tw-bg-opacity));
 }
 
+.bg-red\/80{
+  background-color: rgb(255 89 145 / 0.8);
+}
+
+.bg-amber-500{
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 158 11 / var(--tw-bg-opacity));
+}
+
+.bg-teal-500{
+  --tw-bg-opacity: 1;
+  background-color: rgb(20 184 166 / var(--tw-bg-opacity));
+}
+
 .bg-opacity-50{
   --tw-bg-opacity: 0.5;
 }
@@ -4531,6 +4545,16 @@ input[type="date"]::-webkit-inner-spin-button,
   background-color: rgb(253 164 175 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-amber-600:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(217 119 6 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-teal-600:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(13 148 136 / var(--tw-bg-opacity));
+}
+
 .hover\:text-xl:hover{
   font-size: 1.25rem;
   line-height: 1.75rem;
@@ -5080,6 +5104,16 @@ input[type="date"]::-webkit-inner-spin-button,
   background-color: rgb(255 255 255 / 0.03);
 }
 
+.dark\:bg-amber-600:is(.dark *){
+  --tw-bg-opacity: 1;
+  background-color: rgb(217 119 6 / var(--tw-bg-opacity));
+}
+
+.dark\:bg-teal-600:is(.dark *){
+  --tw-bg-opacity: 1;
+  background-color: rgb(13 148 136 / var(--tw-bg-opacity));
+}
+
 .dark\:fill-gray-400:is(.dark *){
   fill: #9ca3af;
 }
@@ -5190,6 +5224,11 @@ input[type="date"]::-webkit-inner-spin-button,
 .dark\:text-yellow-400:is(.dark *){
   --tw-text-opacity: 1;
   color: rgb(250 204 21 / var(--tw-text-opacity));
+}
+
+.dark\:text-black:is(.dark *){
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .dark\:placeholder-gray-400:is(.dark *)::-moz-placeholder{
@@ -5325,6 +5364,16 @@ input[type="date"]::-webkit-inner-spin-button,
 
 .dark\:hover\:bg-white\/\[0\.03\]:hover:is(.dark *){
   background-color: rgb(255 255 255 / 0.03);
+}
+
+.dark\:hover\:bg-amber-700:hover:is(.dark *){
+  --tw-bg-opacity: 1;
+  background-color: rgb(180 83 9 / var(--tw-bg-opacity));
+}
+
+.dark\:hover\:bg-teal-700:hover:is(.dark *){
+  --tw-bg-opacity: 1;
+  background-color: rgb(15 118 110 / var(--tw-bg-opacity));
 }
 
 .dark\:hover\:text-black:hover:is(.dark *){

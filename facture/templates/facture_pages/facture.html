@@ -182,16 +182,27 @@
           </div>
         </div>
       </div>
+      
+      <input id="etat_facture" type="hidden" name="etat_facture" value="Impayée"/>
 
       <!-- Boutons d'action -->
       <div class="flex justify-end space-x-4">
-        <a href="{% url 'facture:index' %}" type="button" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red/60 dark:bg-red/60 dark:hover:bg-red/70">
+        <a href="{% url 'facture:index' %}" type="button" class="bg-red/80 text-white py-2 px-4 rounded hover:bg-red/60 dark:bg-red/60 dark:hover:bg-red/70">
           Annuler
         </a>
-        <button x-show="facture_view" type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
+        <button @click="$event.preventDefault();getFactureValue()" type="button" class="bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 dark:bg-teal-600 dark:hover:bg-teal-700">
+          Preview
+        </button>
+        <button x-show="facture_view" @click="document.getElementById('etat_facture').value = 'Brouillon';document.getElementById('factureSubmit').click()" type="button" class="bg-amber-500 text-white py-2 px-4 rounded hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700">
+          Créer un brouillon pour facture
+        </button>
+        <button x-show="!facture_view" @click="document.getElementById('etat_facture').value = 'Brouillon';document.getElementById('deviSubmit').click()" type="button" class="bg-amber-500 text-white py-2 px-4 rounded hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700">
+          Créer un brouillon pour devis
+        </button>
+        <button id="factureSubmit" x-show="facture_view" type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
           Créer la facture
         </button>
-        <button x-show="!facture_view" type="submit" class="bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700">
+        <button id="deviSubmit" x-show="!facture_view" type="submit" class="bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700">
           Créer la devis
         </button>
       </div>
@@ -285,6 +296,28 @@
       init(){
         // Charger les données depuis localStorage
         this.facture_view = this.front_view == 'facture' ? true : false;
+      },
+
+      getFactureValue() {
+        // Récupérer l'URL de manière sécurisée
+        // e.preventDefault();
+        const url = "{% url 'facture:preview_facture' %}";
+        form = document.getElementById('factureForm');
+        form.action = url;
+        formData = new FormData(form);
+        console.log(form.action);
+
+        fetch(form.action, {
+          method: form.method,
+          body: formData
+        }).then(response => response.json())
+          .then(data => {
+            console.log(data);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        
       },
     }
   }

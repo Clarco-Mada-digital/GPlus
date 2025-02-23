@@ -185,6 +185,59 @@ def facture(request):
   return render(request, "facture_pages/facture.html", context)
 
 @login_required(login_url="accounts:login_user")
+def preview_facture(request):
+  """Affiche la page de prévisualisation de facture.
+  """
+  form = FactureForm(request.POST)
+  services_data = {}
+  for key, value in request.POST.items():
+      if key.startswith('description-'):
+          service_id = key.split('description-')[1]
+          services_data[service_id] = {'description': value, 'quantite': 0, 'prix': 0.0}
+      elif key.startswith('quantite-'):
+          service_id = key.split('quantite-')[1]
+          if service_id in services_data:
+              services_data[service_id]['quantite'] = int(value)
+      elif key.startswith('prix-'):
+          service_id = key.split('prix-')[1]
+          if service_id in services_data:
+              services_data[service_id]['prix'] = float(value)
+
+  if form.is_valid():
+    try:
+      facture = form.save(commit=False)
+      facture.services = services_data
+      facture.created_by = request.user
+      # facture.etat_facture = 'impayée'
+      dernier_id = Facture.objects.latest('id').id if Facture.objects.exists() else 0
+      if facture.etat_facture == 'Brouillon' and facture.type == 'Facture':
+        facture.ref = (f'(FPROV{str(timezone.now().year)}-' + str(dernier_id + 1).zfill(6) + ')')
+      elif facture.etat_facture == 'Brouillon' and facture.type == 'Devis':
+        facture.ref = (
+            f'(DPROV{str(timezone.now().year)}-{str(dernier_id + 1).zfill(6)})'
+        )
+      elif facture.type == 'Facture':
+        facture.ref = f'F{str(timezone.now().year)}-{str(dernier_id + 1).zfill(6)}'
+      else:
+        facture.ref = f'D{str(timezone.now().year)}-{str(dernier_id + 1).zfill(6)}'
+      # The code is attempting to save a "facture" object using the `save()` method. The result of the
+      # save operation is being assigned to the variable `facture_created`.
+      # facture_created = facture.save()
+      messages.success(request, "Facture ajoutée avec succès.")
+      return JsonResponse({
+        # 'client_logo': facture.client.photo.url,
+        'facture': facture,
+        # Ajoutez d'autres champs nécessaires ici
+      })
+    except Exception as e:
+      print("Erreur lors de l'envoie de données:", e)
+      # messages.error(request, f"Erreur lors de l'envoie de données: {str(e)}")
+      
+  else:
+    print("Erreurs de validation:", form.errors)
+    # messages.error(request, "Erreur lors de l'ajout de la facture. Veuillez vérifier les informations entrées.")
+
+@login_required(login_url="accounts:login_user")
 def ajouter_facture(request):
   """
   Vue pour l'ajout d'une nouvelle facture.
@@ -218,7 +271,7 @@ def ajouter_facture(request):
       facture = form.save(commit=False)
       facture.services = services_data
       facture.created_by = request.user
-      facture.etat_facture = 'impayée'
+      # facture.etat_facture = 'impayée'
       dernier_id = Facture.objects.latest('id').id if Facture.objects.exists() else 0
       if facture.etat_facture == 'Brouillon' and facture.type == 'Facture':
         facture.ref = (f'(FPROV{str(timezone.now().year)}-' +
