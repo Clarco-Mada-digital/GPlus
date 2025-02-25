@@ -168,6 +168,7 @@ def facture(request):
   les utiliser dans le template 'facture_pages/facture.html'.
   """
   front_view = request.GET.get('view', 'facture')
+  entreprise = Entreprise.objects.get(pk=1) if Entreprise.objects.exists() else None 
   client_id = request.GET.get('client_id')
   client = Client.objects.get(id=client_id) if client_id else None
   clients = Client.objects.all()
@@ -180,7 +181,8 @@ def facture(request):
     "clients_list" : clients,
     "services_list" : services,
     "services_json" : json.dumps(services_list),
-    "client_selected" : client
+    "client_selected" : client,
+    "entreprise": entreprise
   }
   return render(request, "facture_pages/facture.html", context)
 
@@ -206,33 +208,51 @@ def preview_facture(request):
   if form.is_valid():
     try:
       facture = form.save(commit=False)
+      
       facture.services = services_data
-      facture.created_by = request.user
       # facture.etat_facture = 'impayée'
       dernier_id = Facture.objects.latest('id').id if Facture.objects.exists() else 0
-      if facture.etat_facture == 'Brouillon' and facture.type == 'Facture':
-        facture.ref = (f'(FPROV{str(timezone.now().year)}-' + str(dernier_id + 1).zfill(6) + ')')
-      elif facture.etat_facture == 'Brouillon' and facture.type == 'Devis':
+      if facture.type == 'Facture':
+        facture.ref = (
+            f'(FPROV{str(timezone.now().year)}-{str(dernier_id + 1).zfill(6)})'
+        )
+      else:
         facture.ref = (
             f'(DPROV{str(timezone.now().year)}-{str(dernier_id + 1).zfill(6)})'
         )
-      elif facture.type == 'Facture':
-        facture.ref = f'F{str(timezone.now().year)}-{str(dernier_id + 1).zfill(6)}'
-      else:
-        facture.ref = f'D{str(timezone.now().year)}-{str(dernier_id + 1).zfill(6)}'
-      # The code is attempting to save a "facture" object using the `save()` method. The result of the
-      # save operation is being assigned to the variable `facture_created`.
-      # facture_created = facture.save()
-      messages.success(request, "Facture ajoutée avec succès.")
+        
+      facture_data = {
+        'client_nom': facture.client.name,
+        'client_commercial': facture.client.commercial_name,
+        'client_adresse': facture.client.adresse,
+        'client_post': facture.client.post,
+        # 'client_ville': facture.client.ville,
+        'client_desc_facture': facture.client.description_facture,
+        # 'client_nif': facture.client.nif,
+        # 'client_stat': facture.client.stat,
+        'ref':facture.ref,
+        'services': facture.services,
+        'reglement': facture.reglement,
+        'condition': facture.condition,
+        'condition_reglement': facture.condition_reglement,
+        'date_facture': facture.date_facture,
+        'with_tva': facture.with_tva,
+      }
+      
       return JsonResponse({
         # 'client_logo': facture.client.photo.url,
-        'facture': facture,
+        'facture': facture_data,
         # Ajoutez d'autres champs nécessaires ici
       })
     except Exception as e:
       print("Erreur lors de l'envoie de données:", e)
+      return JsonResponse({
+        # 'client_logo': facture.client.photo.url,
+        'message': f"Erreur lors de l'envoie de données:{e}",
+        # Ajoutez d'autres champs nécessaires ici
+      })
       # messages.error(request, f"Erreur lors de l'envoie de données: {str(e)}")
-      
+
   else:
     print("Erreurs de validation:", form.errors)
     # messages.error(request, "Erreur lors de l'ajout de la facture. Veuillez vérifier les informations entrées.")
