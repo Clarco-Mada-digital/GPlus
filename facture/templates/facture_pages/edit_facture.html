@@ -66,7 +66,7 @@
         <label class="flex items-center gap-2" for="convert-facture">
           <input type="checkbox" id="convert-facture" class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" x-model="facture_convert"> Converture en facture
         </label>
-        <span x-text="facture_convert" ></span>
+        {% comment %} <span x-text="facture_convert" ></span> {% endcomment %}
       {% endif %}      
         
     </div>
@@ -84,17 +84,17 @@
       </div>
       <!-- Section info facture -->
       <div class="bg-gray-600 dark:bg-gray-800 p-4 mb-4 rounded">
-        <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info facture</h3>
+        <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Info {{ facture.type }}</h3>
         <div class="mb-4">
-          <label for="facture_intitule" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Intitulé de la facture</label>
+          <label for="facture_intitule" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Intitulé de la {{ facture.type }}</label>
           <input type="text" id="facture_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_intitule" name="intitule">
         </div>
         <div class="mb-4">
-          <label for="facture_condition" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Condition de la facture</label>
+          <label for="facture_condition" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Condition de la {{ facture.type }}</label>
           <input type="date" id="facture_condition" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_emission_date" name="condition">
         </div>
         <div class="mb-4">
-          <label for="facture_etat" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">État de la facture</label>
+          <label for="facture_etat" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">État de la {{ facture.type }}</label>
           <select id="facture_etat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" x-model="facture_etat" name="etat_facture">
             <option value="Impayée">Impayée</option>
             <option value="Payé">Payée</option>
@@ -125,7 +125,7 @@
 
       <!-- Section detail du facture -->
       <div class="bg-gray-600 dark:bg-gray-800 p-4 mb-4 rounded">
-        <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Détail du facture</h3>
+        <h3 class="text-sm font-bold mb-2 dark:text-gray-400">Détail du {{ facture.type }}</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="col-span-2 flex justify-between items-center gap-2">
             <div class="w-2/3">
@@ -196,7 +196,7 @@
 
   <!-- Prévisualisation de la facture -->
   <div class="w-2/3 p-4" id="preview-facture">
-    <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la facture</h2>
+    <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la {{ facture.type }}</h2>
     <div class="bg-gray-700 dark:bg-gray-900 p-10 shadow-md rounded">
       <div class="flex items-center justify-between">
       {% if entreprise.logo %}
@@ -232,9 +232,9 @@
       </div>
       <div class="mb-4 mt-10">
         {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Détail du facture</h3> {% endcomment %}
-        <p class="text-emerald-800 text-md font-bold">Facture N° : <span x-text="facture_ref"></span></p>
+        <p class="text-emerald-800 text-md font-bold">{{ facture.type }} N° : <span x-text="facture_ref"></span></p>
         <div class="flex items-center justify-start">
-          <p class="dark:text-gray-400">Date facturation : <span x-text="facture_Date"></span></p>
+          <p class="dark:text-gray-400">Date {{ facture.type }} : <span x-text="facture_Date"></span></p>
           <p class="dark:text-gray-400 ml-5">Date échéance : <span x-text="facture_emission_date"></span></p>
           <p class="dark:text-gray-400 ml-40">Règlement : <span x-text="facture_reglement"></span></p>
         </div>

@@ -327,7 +327,7 @@
               
               <!-- Prévisualisation de la facture -->
               <div class="p-4" id="preview-facture">
-                <h2 class="text-lg font-bold mb-4">Prévisualisation de la facture</h2>
+                <h2 class="text-lg font-bold mb-4">Prévisualisation <span x-show="facture_view">de la facture</span><span x-show="!facture_view">du devis</span> </h2>
                 <div class="shadow-md rounded">
                 <div  id="facture_content" class="p-10 m-0">
                   <div class="flex items-center justify-start">
@@ -363,9 +363,9 @@
                   </div>
                   <div class="mb-4 mt-10 text-gray-900">
                     {% comment %} <h3 class="text-xl font-bold mb-2">Détail du facture</h3> {% endcomment %}
-                    <p class="text-emerald-800 text-md font-bold">Facture N° : <span x-text="facture_ref"></span></p>
+                    <p class="text-emerald-800 text-md font-bold"><span x-show="facture_view">Facture</span><span x-show="!facture_view">Devis</span> N° : <span x-text="facture_ref"></span></p>
                     <div class="flex items-center justify-start text-inherit">
-                      <p>Date facturation : <span x-text="facture_date"></span></p>
+                      <p>Date <span x-show="facture_view">Facture</span><span x-show="!facture_view">Devis</span> : <span x-text="facture_date"></span></p>
                       <p class="ml-5">Date échéance : <span x-text="facture_condition"></span></p>
                       <p class="ml-40">Règlement : <span x-text="facture_reglement"></span></p>
                     </div>
@@ -496,20 +496,17 @@
         <div class="flex items-center w-full lg:w-auto justify-between gap-2">
         <div class="relative">
           <div
-            class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none"
-          >
+            class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
             <svg
               class="w-5 h-5 text-gray-500 dark:text-gray-400"
               aria-hidden="true"
               fill="currentColor"
               viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+              xmlns="http://www.w3.org/2000/svg">
               <path
                 fill-rule="evenodd"
                 d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                clip-rule="evenodd"
-              ></path>
+                clip-rule="evenodd"></path>
             </svg>
           </div>
           <input
@@ -518,8 +515,7 @@
             type="search"
             id="table-search"
             class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-            placeholder="Rechercher des articles"
-          />
+            placeholder="Rechercher des articles"/>
         </div>
         
         <a href="{% url 'facture:facture' %}?view='devis'" class="flex items-center bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
@@ -552,7 +548,7 @@
           
           {% for dev in devis %}
           <tr
-            class="bg-white border-b dark:bg-gray-800 even:dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50" data-dev-mois="{{ dev.date_facture.month }}">
+            class="bg-white border-b dark:bg-gray-800 even:dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50" data-dev-mois="{{ dev.date_facture.month }}" data-dev-annee="{{ dev.date_facture.year }}">
             <td colspan="7" class="w-4 p-4 text-center text-emerald-500 font-bold text-xl capitalize">
               {{ dev.date_facture|date:"F" }}
             </td>
@@ -564,11 +560,8 @@
                 <input
                   id="checkbox-table-search-1"
                   type="checkbox"
-                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label for="checkbox-table-search-1" class="sr-only"
-                  >checkbox</label
-                >
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
               </div>
             </td>
             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -669,6 +662,7 @@
       </nav>
     </div>
   </div>
+
 </div>
 
 {% comment %} Modal pour invité a remplir l'info d'entreprise {% endcomment %}
@@ -996,10 +990,13 @@
       });
 
       const devMoisNodes = document.querySelectorAll('[data-dev-mois][data-dev-annee]');
+      
       const devMoisAnneeValues = Array.from(moisNodes).map(node => {
         return `${node.getAttribute('data-dev-mois')}-${node.getAttribute('data-dev-annee')}`;
       });
+
       const devUniqueMoisAnnee = [...new Set(devMoisAnneeValues)];
+
       devMoisNodes.forEach((node, index) => {
         const devcurrentMoisAnnee = devMoisAnneeValues[index];
         if (devMoisAnneeValues.indexOf(devcurrentMoisAnnee) !== index) {
