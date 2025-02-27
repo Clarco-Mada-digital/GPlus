@@ -715,33 +715,24 @@ def ajouts_entree(request):
             # Validation des données individuelles
             if not dates[i] or not designations[i] or not montants[i] or not categories_ids[i]:
                 messages.error(request, f"Ligne {i+1} : Des champs obligatoires sont manquants.")
-                return render(request, 'caisse/operations/entre-sortie.html', {
-                    'categories_entree': categories_entree,
-                    'beneficiaires': beneficiaires,
-                    'operation': 'entree',
-                })
             
             montant = float(montants[i])
             if montant < 0:
                 messages.error(request, f"Ligne {i+1} : Le montant doit être positif.")
-                return render(request, 'caisse/operations/entre-sortie.html', {
-                    'categories_entree': categories_entree,
-                    'beneficiaires': beneficiaires,
-                    'operation': 'entree',
-                })
 
-            OperationEntrer.objects.create(
-                date_transaction=parse_date(dates[i]),
-                description=designations[i],
-                montant=montant,
-                categorie_id=int(categories_ids[i]),
-                beneficiaire_id=int(beneficiaires_ids),
-                client=clients[i] if clients else ""
-            )
-
-            messages.success(request, f"Ligne {i+1} : Les opérations d'entrée ont été ajoutées avec succès.")
-
-        return redirect('caisse:liste_entrees')
+            try:
+                OperationEntrer.objects.create(
+                    date_transaction=parse_date(dates[i]),
+                    description=designations[i],
+                    montant=montant,
+                    categorie_id=int(categories_ids[i]),
+                    beneficiaire_id=int(beneficiaires_ids),
+                    client=clients[i] if clients else ""
+                )
+                messages.success(request, f"Ligne {i+1} : Les opérations d'entrée ont été ajoutées avec succès.")
+            except:
+                messages.error(request, f"Ligne {i+1} : Erreur lors de l'ajout de l'opération.")
+                continue
 
     return render(request, 'caisse/operations/entre-sortie.html', {
         'categories_entree': categories_entree,
@@ -1171,8 +1162,10 @@ def supprimer_utilisateur(request, pk):
     try:
         user.delete()
         UserActivity.objects.create(user=request.user, action='Suppression', description='a supprimé un utilisateur')
+        messages.success(request, f"Utilisateur {user.get_full_name()} supprimé avec succès.")
         return JsonResponse({'success': True})
     except Exception as e:
+        messages.error(request, f"Erreur lors de la suppression de l'utilisateur {user.get_full_name()}.")
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
 @login_required

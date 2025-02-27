@@ -19,7 +19,7 @@
             @submit.prevent="submitForm" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-6 grid-cols-2">
                 <!-- Photo de profil -->
                 <div class="col-span-2 flex items-center space-x-6">
                     <div class="shrink-0">
@@ -90,7 +90,7 @@
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-transparent dark:border-gray-700">
                 </div>
 
-                <div>
+                <div class="col-span-2 sm:col-span-1">
                     <label class="block text-sm font-medium dark:text-white">
                         Nouveau mot de passe
                     </label>
@@ -129,7 +129,7 @@
                 </a>
                 <button type="submit"
                     class="bg-blue-500 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium dark:text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Enregistrer les modifications
+                    Enregistrer<span class="hidden sm:inline"> les modifications</span>
                 </button>
             </div>
         </form>
