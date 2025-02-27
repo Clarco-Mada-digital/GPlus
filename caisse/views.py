@@ -691,6 +691,7 @@ def ajouts_entree(request):
     Gère l'ajout d'opérations d'entrée.
     """
     categories_entree = Categorie.objects.filter(type='entree')
+    beneficiaires = Beneficiaire.objects.all()
     
     if request.method == 'POST':
         dates = request.POST.getlist('date')
@@ -705,6 +706,7 @@ def ajouts_entree(request):
             messages.error(request, "Veuillez remplir toutes les lignes du formulaire.")
             return render(request, 'caisse/operations/entre-sortie.html', {
                 'categories_entree': categories_entree,
+                'beneficiaires': beneficiaires,
                 'operation': 'entree',
             })
 
@@ -712,11 +714,21 @@ def ajouts_entree(request):
         for i in range(len(dates)):
             # Validation des données individuelles
             if not dates[i] or not designations[i] or not montants[i] or not categories_ids[i]:
-                raise ValueError(f"Ligne {i+1} : Des champs obligatoires sont manquants.")
+                messages.error(request, f"Ligne {i+1} : Des champs obligatoires sont manquants.")
+                return render(request, 'caisse/operations/entre-sortie.html', {
+                    'categories_entree': categories_entree,
+                    'beneficiaires': beneficiaires,
+                    'operation': 'entree',
+                })
             
             montant = float(montants[i])
             if montant < 0:
-                raise ValueError(f"Ligne {i+1} : Le montant doit être positif.")
+                messages.error(request, f"Ligne {i+1} : Le montant doit être positif.")
+                return render(request, 'caisse/operations/entre-sortie.html', {
+                    'categories_entree': categories_entree,
+                    'beneficiaires': beneficiaires,
+                    'operation': 'entree',
+                })
 
             OperationEntrer.objects.create(
                 date_transaction=parse_date(dates[i]),
@@ -727,11 +739,13 @@ def ajouts_entree(request):
                 client=clients[i] if clients else ""
             )
 
-        messages.success(request, "Les opérations d'entrée ont été ajoutées avec succès.")
+            messages.success(request, f"Ligne {i+1} : Les opérations d'entrée ont été ajoutées avec succès.")
+
         return redirect('caisse:liste_entrees')
 
     return render(request, 'caisse/operations/entre-sortie.html', {
         'categories_entree': categories_entree,
+        'beneficiaires': beneficiaires,
         'operation': 'entree',
     })
 
