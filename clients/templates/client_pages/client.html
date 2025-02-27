@@ -35,24 +35,219 @@
                 <div id="dropdown{{ client.id }}" class="z-10 hidden text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
                     <ul class="py-2" aria-labelledby="dropdownButton">
                     <li>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
+                        <button data-modal-target="modif-modal-{{ client.id }}" data-modal-toggle="modif-modal-{{ client.id }}" class="w-full text-start block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Modifier</button>
                     </li>
                     <li>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Export Data</a>
+                        <a href="{% url 'facture:facture' %}?client_id={{ client.id }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Créer un facture</a>
                     </li>
                     <li>
-                        <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
+                        <button data-modal-target="del-modal-{{ client.id }}" data-modal-toggle="del-modal-{{ client.id }}" class="w-full text-start block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Supprimer</button>
                     </li>
                     </ul>
                 </div>
             </div>
             <div class="flex flex-col items-center pb-10">
-                <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="{{ client.photo.url }}" alt="{{ client.name }} image"/>
+                {% if client.photo %}
+                <img class="w-10 h-10 rounded-full" src="{{ client.photo.url }}" alt="{{ client.name }} image">
+                {% else %}
+                <img class="w-10 h-10 rounded-full" src="https://ui-avatars.com/api/?name={{client.name}}+{{client.commercial_name}}" alt="{{client.name}} image">
+                {% endif %}
                 <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">{{ client.name }}</h5>
                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ client.email }}</span>
                 <div class="flex mt-4 md:mt-6">
                     <a href="tel:{{ client.tel }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Appeler</a>
                     <a href="mailto:{{ client.email }}" class="py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Message</a>
+                </div>
+            </div>
+            <!-- Modal Modification -->
+            <div id="modif-modal-{{ client.id }}" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <div class="relative p-4 w-full max-w-[50vw] max-h-full">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                                Modifier {{ client.name }}
+                            </h3>
+                            <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="modif-modal-{{ client.id }}">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Fermer</span>
+                            </button>
+                        </div>
+                        <form class="p-4 md:p-5" action="{% url 'client:edit_client' client.id %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="flex flex-col items-center justify-center w-full">
+                                
+                                {% if client.photo %}
+                                <img id="preview-image-{{ client.id }}" class="w-32 h-32 rounded-full object-cover mb-4" src="{{ client.photo.url }}" alt="Preview">                                                
+                                {% endif %}                                               
+                                
+                                <div id="upload-zone-{{ client.id }}" class="w-full hidden">
+                                    <label for="photo-{{ client.id }}" class="flex flex-col items-center justify-center w-full h-44 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                        <div class="flex flex-col items-center justify-center w-full pt-5 pb-6">
+                                            <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                            </svg>
+                                            <p class="mb-2 text-sm text-center text-gray-500 dark:text-gray-400"><span class="font-semibold">Cliquez pour télécharger votre photo de profil</span> ou glisser-déposer</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                                        </div>
+                                    </label>
+                                </div>
+                                <input id="photo-{{ client.id }}" name="photo" type="file" class="hidden" accept="image/*" onchange="editpreviewImage(this, '{{ client.id }}')"/>
+                                
+                                <button id="cancel-button-{{ client.id }}" type="button" class="mt-4 text-white bg-red-700 hover:bg-red/80 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center items-center dark:bg-red/60 dark:hover:bg-red/70 dark:focus:ring-red-800" onclick="toggleUploadZone('{{ client.id }}')">
+                                    Changer la photo
+                                    <svg class="w-4 h-4 ms-2 inline" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div class="grid gap-4 mb-4 grid-cols-2">
+                                <div class="col-span-2 sm:col-span-1 mt-2">
+                                    <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom du tier</label>
+                                    <input type="text" name="name" id="name" value="{{ client.name }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="">
+                                </div>
+                                <div class="col-span-2 sm:col-span-1 mt-2">
+                                    <label for="commercial_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom alternatif (commercial, marque, ...)</label>
+                                    <input type="text" name="commercial_name" id="commercial_name" value="{{ client.commercial_name }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="">
+                                </div>
+                                <div class="col-span-2">
+                                    <label for="post" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Poste</label>
+                                    <input type="text" name="post" id="post" value="{{ client.post }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                </div>
+                                <div class="col-span-2 sm:col-span-1">
+                                    <label for="tel1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">N° Tel 1</label>
+                                    <input type="tel" name="tel" id="tel1" value="{{ client.tel }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="">
+                                </div>
+                                <div class="col-span-2 sm:col-span-1">
+                                    <label for="tel2" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">N° Tel 2</label>
+                                    <input type="tel" name="tel2" id="tel2" value="{{ client.tel2 }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                </div>
+                                <div class="col-span-2 sm:col-span-1">
+                                    <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                                    <input type="email" name="email" id="email" value="{{ client.email }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="">
+                                </div>
+                                <div class="col-span-2 sm:col-span-1">
+                                    <label for="adresse" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Adresse</label>
+                                    <input type="text" name="adresse" id="adresse" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+                                    {% if client.adresse %}
+                                        value="{{ client.adresse }}"
+                                    {% endif %}
+                                    placeholder="Ex: Rue de la belle vie ..." >
+                                </div>
+                                <div class="col-span-2">
+                                    <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type du client</label>
+                                    <select name="type_client" id="type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                        <option value="Client" {% if client.type_client == 'Client' %}selected{% endif %}>Client</option>
+                                        <option value="Prospect" {% if client.type_client == 'Prospect' %}selected{% endif %}>Prospect</option>
+                                        <option value="Fourniseur" {% if client.type_client == 'Fourniseur' %}selected{% endif %}>Fourniseur</option>
+                                        <option value="Client-Prospect" {% if client.type_client == 'Client-Prospect' %}selected{% endif %}>Client - Prospect</option>
+                                        <option value="Client-Fourniseur" {% if client.type_client == 'Client-Fourniseur' %}selected{% endif %}>Client - Fourniseur</option>
+                                    </select>
+                                </div>
+                                {% comment %} Disponibilité {% endcomment %}
+                                {% if client.disponibilite %}
+                                    <div class="col-span-2">
+                                        <label for="disponibilite" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Disponibilité</label>
+                                        <div class="col-span-2">
+                                            <select id="select-jour" class="mb-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" onchange="ajouterLigneDisponibilite(this.value, {{ client.id }})">
+                                                <option value="">Sélectionner un jour</option>
+                                                <option value="Lundi - Vendredi">Lundi - Vendredi</option>
+                                                <option value="Lundi">Lundi</option>
+                                                <option value="Mardi">Mardi</option>
+                                                <option value="Mercredi">Mercredi</option>
+                                                <option value="Jeudi">Jeudi</option>
+                                                <option value="Vendredi">Vendredi</option>
+                                                <option value="Samedi">Samedi</option>
+                                                <option value="Dimanche">Dimanche</option>
+                                            </select>
+                                            <div id="disponibilite-dynamique-{{ client.id }}">
+                                                {% for jour, heures in client.disponibilite.items %}
+                                                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                                        <div class="flex items-center mr-2 w-[15%]">
+                                                            <span class="text-sm font-medium text-gray-900 dark:text-gray-300">{{ jour }}</span>
+                                                        </div>
+                                                        <div class="flex items-center space-x-4 flex-1 w-[85%]">
+                                                            <div class="flex-1">
+                                                                <div class="relative">
+                                                                    <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                                                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                                                            <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
+                                                                        </svg>
+                                                                    </div>
+                                                                    <input type="time" 
+                                                                            name="start-time-{{ jour }}"
+                                                                            class="bg-white border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                                            value="{{ heures.start }}"
+                                                                            required>
+                                                                </div>
+                                                            </div>
+                                                            <span class="text-gray-500">à</span>
+                                                            <div class="flex-1">
+                                                                <div class="relative">
+                                                                    <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                                                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                                                            <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
+                                                                        </svg>
+                                                                    </div>
+                                                                    <input type="time" 
+                                                                            name="end-time-{{ jour }}"
+                                                                            class="bg-white border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                                            value="{{ heures.end }}"
+                                                                            required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <button type="button" class="delete-day inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 hover:text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" onclick="supprimerLigneDisponibilite(this)">
+                                                                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                                                        <path fill-rule="evenodd" d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z" clip-rule="evenodd"/>
+                                                                    </svg>
+                                                                    <span class="sr-only">Delete</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>                                                    
+                                    </div>
+                                {% endif %}
+                                <div class="col-span-2">
+                                    <label for="message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description sur votre facture</label>
+                                    <textarea id="message" rows="4" name="description_facture" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Ecrirer ici ...">{{ client.description_facture }}</textarea>          
+                                </div>
+                            </div>
+                            <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                Sauvegarder
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% comment %} Modal suppression {% endcomment %}
+            <div id="del-modal-{{ client.id }}" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <div class="relative p-4 w-full max-w-md max-h-full">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="del-modal-{{ client.id }}">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                            </svg>
+                            <span class="sr-only">Fermer</span>
+                        </button>
+                        <div class="p-4 md:p-5 text-center">
+                            <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                            </svg>
+                            <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Êtes-vous sûr de vouloir supprimer ce client ?</h3>
+                            <a href="{% url 'client:del_client' client.id %}" class="text-white bg-red/60 dark:bg-red/60 hover:bg-red/80 dark:hover:bg-red/80 focus:ring-4 focus:outline-none focus:ring-red/30 dark:focus:ring-red/80 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2">
+                                Oui, supprimer
+                            </a>
+                            <button data-modal-hide="del-modal-{{ client.id }}" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                                Non, annuler
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -124,7 +319,12 @@
                         </div>
                     </td>
                     <th scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                        
+                        {% if client.photo %}
                         <img class="w-10 h-10 rounded-full" src="{{ client.photo.url }}" alt="Jese image">
+                        {% else %}
+                        <img class="w-10 h-10 rounded-full" src="https://ui-avatars.com/api/?name={{client.name}}+{{client.commercial_name}}" alt="Jese image">
+                        {% endif %}                            
                         <div class="ps-3">
                             <div class="text-base font-semibold">{{ client.name }}</div>
                             <div class="font-normal text-gray-500">{{ client.post }}</div>
@@ -179,7 +379,10 @@
                                     <form class="p-4 md:p-5" action="{% url 'client:edit_client' client.id %}" method="POST" enctype="multipart/form-data">
                                         {% csrf_token %}
                                         <div class="flex flex-col items-center justify-center w-full">
-                                            <img id="preview-image-{{ client.id }}" class="w-32 h-32 rounded-full object-cover mb-4" src="{{ client.photo.url }}" alt="Preview">
+                                            
+                                            {% if client.photo %}
+                                            <img id="preview-image-{{ client.id }}" class="w-32 h-32 rounded-full object-cover mb-4" src="{{ client.photo.url }}" alt="Preview">                                                
+                                            {% endif %}                                               
                                             
                                             <div id="upload-zone-{{ client.id }}" class="w-full hidden">
                                                 <label for="photo-{{ client.id }}" class="flex flex-col items-center justify-center w-full h-44 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
@@ -363,32 +566,36 @@
         </table>
 
         {% comment %} Nav pour le tableau {% endcomment %}
-        <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between py-4" aria-label="Table navigation">
-            <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Affichage <span class="font-semibold text-gray-900 dark:text-white">1-10</span> pour <span class="font-semibold text-gray-900 dark:text-white">1000</span></span>
-            <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
-                <li>
-                    <a href="#" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Pre</a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
-                </li>
-                <li>
-                    <a href="#" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
-                </li>
-                <li>
-            <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Suiv</a>
-                </li>
-            </ul>
-        </nav>
+        <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between py-5 px-2" aria-label="Table navigation">
+          <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Affichage du Page <span class="font-semibold text-gray-900 dark:text-white"> {{ clients_list.number }} </span> sur <span class="font-semibold text-gray-900 dark:text-white">{{ clients_list.paginator.num_pages }}</span></span>
+          <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+            {% if clients_list.has_previous %}
+              <li>
+                  <a href="?page={{ clients_list.previous_page_number }}" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" >Prev</a>
+              </li>
+            {% else %}
+              <li>
+                <button type="button" disabled class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed" >Prev</button>
+              </li>
+            {% endif %}
+            
+            {% comment %} {% for item in serv_rang %}
+              <li>
+                <a href="?page={{ services.page }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ item }}</a>
+              </li>              
+            {% endfor %} {% endcomment %}
+              
+            {% if clients_list.has_next %}
+              <li>
+                <a href="?page={{ clients_list.next_page_number }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Suiv</a>
+              </li>
+            {% else %}
+              <li>
+                <button type="button" disabled class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed">Suiv</button>
+              </li>
+            {% endif %}
+          </ul>
+      </nav>
     </div>
 
 </div>
@@ -396,7 +603,7 @@
 
 <!-- Modal d'inscription -->
 <div id="new_client-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <div class="relative p-4 w-full max-w-[50vw] max-h-full">
+    <div class="relative p-4 w-full lg:max-w-[50vw] max-h-full">
         <!-- Modal content -->
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <!-- Modal header -->

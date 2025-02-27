@@ -1,39 +1,38 @@
 {% extends 'layouts/facture_layout.html' %} 
+{% load humanize %}
 {% block title_page %} Service {% endblock title_page %} 
 {% block content %}
 
 
-  <div class="container mx-auto px-4 py-8">
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <div x-data="{ search:'' }" class="py-12 z-0">
+    <div class="relative overflow-x-auto shadow-md border-t border-gray-200 sm:rounded-lg p-2">
       <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
         
         <label for="table-search" class="sr-only">Rechercher</label>
         <div class="relative">
-          <div
-            class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none"
-          >
+          <div class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
             <svg
               class="w-5 h-5 text-gray-500 dark:text-gray-400"
               aria-hidden="true"
               fill="currentColor"
               viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+              xmlns="http://www.w3.org/2000/svg">
               <path
                 fill-rule="evenodd"
                 d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                clip-rule="evenodd"
-              ></path>
+                clip-rule="evenodd"></path>
             </svg>
           </div>
           <input
-            type="text"
-            id="table-search"
+            @keydown.enter="window.location.href = '{% url 'facture:service' %}?search=' + encodeURIComponent(search)"
+            x-model="search"
+            type="search"
+            id="service-search"
             class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Rechercher des articles"
           />
         </div>
-        <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
+        <button type="button" class="bg-blue-500 text-white text-sm lg:text-base py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
             Ajouter un service
         </button>
       </div>
@@ -55,8 +54,7 @@
             <th scope="col" class="px-6 py-3">Action</th>
           </tr>
         </thead>
-        <tbody>
-          
+        <tbody>          
           
           {% for service in services %}
           
@@ -78,7 +76,7 @@
               {{ service.nom_service }}
             </th>
             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-              {{ service.prix_unitaire }}
+              {{ service.prix_unitaire|intcomma }}
             </th>
             <td class="px-6 py-4">{{ service.description }}</td>
             <td class="px-6 py-4 flex items-center">
@@ -93,7 +91,7 @@
 
           {% comment %} Modal d'edit de service {% endcomment %}
           <div id="edit-popup-modal-{{ service.id }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-            <div class="relative p-4 w-full max-w-[50vw] max-h-full">
+            <div class="relative p-4 w-full lg:max-w-[50vw] max-h-full">
               <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white dark:bg-gray-700 bg-clip-padding rounded-md outline-none text-current">
                 <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 dark:border-gray-600 rounded-t-md">
                   <h5 class="text-xl font-medium leading-normal text-gray-800 dark:text-gray-200" id="edit-service-{{ service.id }}Label">
@@ -163,30 +161,34 @@
           {% endfor %}     
         </tbody>
       </table>
-      <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between py-5" aria-label="Table navigation">
-          <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Affichage <span class="font-semibold text-gray-900 dark:text-white">1-8</span> sur <span class="font-semibold text-gray-900 dark:text-white">1000</span></span>
+      <nav class="w-full flex items-center flex-column flex-wrap md:flex-row justify-between py-5 px-2" aria-label="Table navigation">
+          <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Affichage du Page <span class="font-semibold text-gray-900 dark:text-white"> {{ services.number }} </span> sur <span class="font-semibold text-gray-900 dark:text-white">{{ services.paginator.num_pages }}</span></span>
           <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+            {% if services.has_previous %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Prev</a>
+                  <a href="?page={{ services.previous_page_number }}" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" >Prev</a>
               </li>
+            {% else %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+                <button type="button" disabled class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed" >Prev</button>
               </li>
+            {% endif %}
+            
+            {% comment %} {% for item in serv_rang %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
-              </li>
+                <a href="?page={{ services.page }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ item }}</a>
+              </li>              
+            {% endfor %} {% endcomment %}
+              
+            {% if services.has_next %}
               <li>
-                  <a href="#" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+                <a href="?page={{ services.next_page_number }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Suiv</a>
               </li>
+            {% else %}
               <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">4</a>
+                <button type="button" disabled class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 cursor-not-allowed">Suiv</button>
               </li>
-              <li>
-                  <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">5</a>
-              </li>
-              <li>
-          <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Suiv</a>
-              </li>
+            {% endif %}
           </ul>
       </nav>
     </div>
@@ -194,7 +196,7 @@
 
   {% comment %} Modal d'ajout de service {% endcomment %}
   <div id="ajouterArticleModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <div class="relative p-4 w-full max-w-[50vw] max-h-full">
+    <div class="relative p-4 w-full lg:max-w-[50vw] max-h-full">
       <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white dark:bg-gray-700 bg-clip-padding rounded-md outline-none text-current">
         <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 dark:border-gray-600 rounded-t-md">
           <h5 class="text-xl font-medium leading-normal text-gray-800 dark:text-gray-200" id="ajouterArticleModalLabel">
@@ -235,28 +237,5 @@
       </div>
     </div>
   </div>
-
-
-  {% comment %} <script>
-    document.getElementById('serviceForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      var form = this;
-      var formData = new FormData(form);
-      fetch(form.action, {
-        method: form.method,
-        body: formData
-      }).then(response => {
-        if (response.ok) {
-          // Si la requête a réussi, fermez le modal
-          document.getElementById('ajouterArticleModal').classList.add('hidden');
-          // Rechargez la page pour afficher les nouveaux services
-          window.location.reload();
-        } else {
-          // Si la requête a échoué, affichez une erreur
-          alert('Une erreur s\'est produite lors de l\'enregistrement du service.');
-        }
-      });
-    });
-  </script> {% endcomment %}
 
   {% endblock content %}
