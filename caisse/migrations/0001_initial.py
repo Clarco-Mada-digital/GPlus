@@ -266,4 +266,8 @@ class Migration(migrations.Migration):
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
+        migrations.RunPython(
+            code=lambda apps, schema_editor: apps.get_model('caisse', 'Beneficiaire').objects.create(id=1, name='Général'),
+            reverse_code=lambda apps, schema_editor: apps.get_model('caisse', 'Beneficiaire').objects.filter(id=1).delete()
+        )
     ]
