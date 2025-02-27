@@ -382,7 +382,7 @@ def listes(request):
     return render(request, 'caisse/listes/listes_operations.html', context)
 
 @login_required
-def depenses(request):
+def depenses(request: WSGIRequest):
     """
     Affiche la page des dépenses avec les opérations par employé et par catégorie.
     """
@@ -476,13 +476,11 @@ def depenses(request):
         depenses_par_categorie = sorted(depenses_par_categorie, key=categorie_sort_options[sort_by], reverse=(order_in == 'desc'))
 
     # Pagination
-    lignes_par_page = str(request.GET.get('lignes', 10)) # Valeur par défaut : 10
+    lignes_par_page = request.GET.get('lignes', 10) # Valeur par défaut : 10
 
     paginator = Paginator(depenses_par_employe, lignes_par_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
-    print(page_obj)
 
     # Générer la liste des mois
     mois_liste = []
@@ -1619,22 +1617,37 @@ def historique(request):
     return render(request, 'caisse/historique/historique.html', {'historique': historique})
 
 @login_required
-def beneficiaires(request):
+def beneficiaires(request: WSGIRequest):
     """
     Affiche la liste des bénéficiaires.
     """
     beneficiaires = Beneficiaire.objects.all()
     personnels = Personnel.objects.all()
+
+    beneficiaire_id = request.GET.get('beneficiaire')
+    type_name = request.GET.get('type')
     sort_by = request.GET.get('sort')
     order = request.GET.get('order')
     
     valeur = [(str(beneficiaire), beneficiaire.id) for beneficiaire in beneficiaires]
+
+    # Filtrer les bénéficiaires par ID
+    if beneficiaire_id and beneficiaire_id.isdigit():
+        beneficiaires = beneficiaires.filter(id=beneficiaire_id)
+    elif type_name:
+        # Filtrer les bénéficiaires par type
+        if type_name == 'Personnel interne':
+            beneficiaires = beneficiaires.filter(personnel__isnull=False)
+        elif type_name == 'Bénéficiaire externe':
+            beneficiaires = beneficiaires.filter(personnel__isnull=True)
+        else:
+            messages.error(request, "Type de bénéficiaire non valide.")
     
     # Classification des opérations de chaque bénéficiaire
     operations_par_beneficiaire = defaultdict(lambda: {'entrees': 0, 'sorties': 0})
     
     for entree in OperationEntrer.objects.all():
-        if entree.beneficiaire:
+        if entree.beneficiaire and Beneficiaire.objects.filter(id=entree.beneficiaire.id).exists():
             operations_par_beneficiaire[entree.beneficiaire.id]['entrees'] += 1
     
     for sortie in OperationSortir.objects.all():
@@ -1673,7 +1686,6 @@ def beneficiaires(request):
                 valeur.reverse()
         elif sort_by == "operation":
             valeur.clear()
-            
             for beneficiaire in beneficiaires:
                 operations = operations_par_beneficiaire[beneficiaire.id]
                 valeur += [(str(beneficiaire), beneficiaire.id, operations['entrees'], operations['sorties'], operations['entrees'] + operations['sorties'])]
@@ -1681,10 +1693,22 @@ def beneficiaires(request):
             valeur.sort(key=lambda x: x[-1], reverse=order == 'desc')
     
     beneficiaires_sorted = sorted(beneficiaires, key=lambda b: next((i for i, v in enumerate(valeur) if v[1] == b.id), len(valeur)))
+
+    lignes_par_page = request.GET.get('lignes', 10)
+
+    paginator = Paginator(beneficiaires_sorted, lignes_par_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    types = ['Personnel interne', 'Bénéficiaire externe']
     
     context = {
+        'beneficiaires_filtre': valeur,
         'beneficiaires': beneficiaires_sorted,
         'personnels': personnels,
+        'types': types,
+        'page_obj': page_obj,
+        'lignes_par_page': str(lignes_par_page)
     }
 
     return render(request, "caisse/acteurs/beneficiaires.html", context)

@@ -195,38 +195,38 @@
                             <div class="grid grid-cols-5 gap-2">
                                 <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                     {% if request.GET.sort == 'employe' and request.GET.order == 'asc' %}
-                                    <a href="?lignes={{ request.GET.lignes }}&sort=employe&order=desc&mois={{ request.GET.mois }}">Employé ⬇</a>
+                                    <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'employe' }], [{ key: 'order', value: 'desc' }])">Employé ⬇</a>
                                     {% elif request.GET.sort == 'employe' and request.GET.order == 'desc' %}
-                                    <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}">Employé ⬆</a>
+                                    <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'sort'}])">Employé ⬆</a>
                                     {% else %}
-                                    <a href="?lignes={{ request.GET.lignes }}&sort=employe&order=asc&mois={{ request.GET.mois }}">Employé ⬆⬇</a>
+                                    <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'employe' }], [{ key: 'order', value: 'asc' }])">Employé ⬆⬇</a>
                                     {% endif %}
                                 </div>
                                 <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                     {% if request.GET.sort == 'total_emp' and request.GET.order == 'asc' %}
-                                    <a href="?lignes={{ request.GET.lignes }}&sort=total_emp&order=desc&mois={{ request.GET.mois }}">Total ⬇</a>
+                                    <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'total_emp' }], [{ key: 'order', value: 'desc' }])">Total ⬇</a>
                                     {% elif request.GET.sort == 'total_emp' and request.GET.order == 'desc' %}
-                                    <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}">Total ⬆</a>
+                                    <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Total ⬆</a>
                                     {% else %}
-                                    <a href="?lignes={{ request.GET.lignes }}&sort=total_emp&order=asc&mois={{ request.GET.mois }}">Total ⬆⬇</a>
+                                    <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'total_emp' }], [{ key: 'order', value: 'asc' }])">Total ⬆⬇</a>
                                     {% endif %}
                                 </div>
                                 <div class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                     {% if request.GET.sort == 'categorie_emp' and request.GET.order == 'asc' %}
-                                    <a href="?lignes={{ request.GET.lignes }}&sort=categorie_emp&order=desc&mois={{ request.GET.mois }}">Catégorie ⬇</a>
+                                    <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'categorie_emp' }], [{ key: 'order', value: 'desc' }])">Catégorie ⬇</a>
                                     {% elif request.GET.sort == 'categorie_emp' and request.GET.order == 'desc' %}
-                                    <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}">Catégorie ⬆</a>
+                                    <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Catégorie ⬆</a>
                                     {% else %}
-                                    <a href="?lignes={{ request.GET.lignes }}&sort=categorie_emp&order=asc&mois={{ request.GET.mois }}">Catégorie ⬆⬇</a>
+                                    <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'categorie_emp' }], [{ key: 'order', value: 'asc' }])">Catégorie ⬆⬇</a>
                                     {% endif %}
                                 </div>
                                 <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                     {% if request.GET.sort == 'operation_emp' and request.GET.order == 'asc' %}
-                                    <a href="?lignes={{ request.GET.lignes }}&sort=operation_emp&order=desc&mois={{ request.GET.mois }}">Opérations ⬇</a>
+                                    <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'operation_emp' }], [{ key: 'order', value: 'desc' }])">Opérations ⬇</a>
                                     {% elif request.GET.sort == 'operation_emp' and request.GET.order == 'desc' %}
-                                    <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}">Opérations ⬆</a>
+                                    <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Opérations ⬆</a>
                                     {% else %}
-                                    <a href="?lignes={{ request.GET.lignes }}&sort=operation_emp&order=asc&mois={{ request.GET.mois }}">Opérations ⬆⬇</a>
+                                    <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'operation_emp' }], [{ key: 'order', value: 'asc' }])">Opérations ⬆⬇</a>
                                     {% endif %}
                                 </div>
                                 <div class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
@@ -311,29 +311,29 @@
                                 <div class="grid grid-cols-4 gap-2">
                                     <div class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                         {% if request.GET.sort == 'categorie_cat' and request.GET.order == 'asc' %}
-                                        <a href="?lignes={{ request.GET.lignes }}&sort=categorie_cat&order=desc&mois={{ request.GET.mois }}#details_by_categories">Catégorie ⬇</a>
+                                        <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'categorie_cat' }], [{ key: 'order', value: 'desc' }], [{ id: 'details_by_categories'}])">Catégorie ⬇</a>
                                         {% elif request.GET.sort == 'categorie_cat' and request.GET.order == 'desc' %}
-                                        <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}#details_by_categories">Catégorie ⬆</a>
+                                        <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}], [{ id: 'details_by_categories'}])">Catégorie ⬆</a>
                                         {% else %}
-                                        <a href="?lignes={{ request.GET.lignes }}&sort=categorie_cat&order=asc&mois={{ request.GET.mois }}#details_by_categories">Catégorie ⬆⬇</a>
+                                        <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'categorie_cat' }], [{ key: 'order', value: 'asc' }], [{ id: 'details_by_categories'}])">Catégorie ⬆⬇</a>
                                         {% endif %}
                                     </div>
                                     <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                         {% if request.GET.sort == 'total_cat' and request.GET.order == 'asc' %}
-                                        <a href="?lignes={{ request.GET.lignes }}&sort=total_cat&order=desc&mois={{ request.GET.mois }}#details_by_categories">Total ⬇</a>
+                                        <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'total_cat' }], [{ key: 'order', value: 'desc' }], [{ id: 'details_by_categories'}])">Total ⬇</a>
                                         {% elif request.GET.sort == 'total_cat' and request.GET.order == 'desc' %}
-                                        <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}#details_by_categories">Total ⬆</a>
+                                        <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}], [{ id: 'details_by_categories'}])">Total ⬆</a>
                                         {% else %}
-                                        <a href="?lignes={{ request.GET.lignes }}&sort=total_cat&order=asc&mois={{ request.GET.mois }}#details_by_categories">Total ⬆⬇</a>
+                                        <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'total_cat' }], [{ key: 'order', value: 'asc' }], [{ id: 'details_by_categories'}])">Total ⬆⬇</a>
                                         {% endif %}
                                     </div>
                                     <div class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                         {% if request.GET.sort == 'operation_cat' and request.GET.order == 'asc' %}
-                                        <a href="?lignes={{ request.GET.lignes }}&sort=operation_cat&order=desc&mois={{ request.GET.mois }}#details_by_categories">Opérations ⬇</a>
+                                        <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'operation_cat' }], [{ key: 'order', value: 'desc' }], [{ id: 'details_by_categories'}])">Opérations ⬇</a>
                                         {% elif request.GET.sort == 'operation_cat' and request.GET.order == 'desc' %}
-                                        <a href="?lignes={{ request.GET.lignes }}&mois={{ request.GET.mois }}#details_by_categories">Opérations ⬆</a>
+                                        <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}], [{ id: 'details_by_categories'}])">Opérations ⬆</a>
                                         {% else %}
-                                        <a href="?lignes={{ request.GET.lignes }}&sort=operation_cat&order=asc&mois={{ request.GET.mois }}#details_by_categories">Opérations ⬆⬇</a>
+                                        <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'operation_cat' }], [{ key: 'order', value: 'asc' }], [{ id: 'details_by_categories'}])">Opérations ⬆⬇</a>
                                         {% endif %}
                                     </div>
                                     <div class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
@@ -727,8 +727,10 @@
             } else {
                 url.searchParams.delete(param.key);
             }
+            if (param.id) {
+                url.hash = `#${param.id}`;
+            }
         });
-        url.hash = ''; // Supprime tout ce qui se trouve après #
         window.location.href = url.toString();
     }
 </script>
