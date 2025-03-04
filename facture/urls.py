@@ -8,6 +8,7 @@ urlpatterns = [
   path('', views.index, name="index"),
   path('new/', views.facture, name="facture"),
   path('onfacture/', views.get_on_facture, name="one_facture"),
+  path('previewfacture/', views.preview_facture, name="preview_facture"),
   path('edit/<int:pk>/', views.modifier_facture, name="modifier_facture"),
   path('del/<int:pk>/', views.supprimer_facture, name="supprimer_facture"),  
   path('generate_pdf/', views.generate_pdf, name="facture_pdf"),  # Generer un pdf du facture

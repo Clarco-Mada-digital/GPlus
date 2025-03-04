@@ -4,8 +4,8 @@
 {% block content %}
 
 
-  <div x-data="{ search:'' }" class="container mx-auto px-4 py-12 z-0">
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <div x-data="{ search:'' }" class="py-12 z-0">
+    <div class="relative overflow-x-auto shadow-md border-t border-gray-200 sm:rounded-lg p-2">
       <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
         
         <label for="table-search" class="sr-only">Rechercher</label>
@@ -16,13 +16,11 @@
               aria-hidden="true"
               fill="currentColor"
               viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+              xmlns="http://www.w3.org/2000/svg">
               <path
                 fill-rule="evenodd"
                 d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                clip-rule="evenodd"
-              ></path>
+                clip-rule="evenodd"></path>
             </svg>
           </div>
           <input
@@ -34,7 +32,7 @@
             placeholder="Rechercher des articles"
           />
         </div>
-        <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
+        <button type="button" class="bg-blue-500 text-white text-sm lg:text-base py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
             Ajouter un service
         </button>
       </div>
@@ -56,8 +54,7 @@
             <th scope="col" class="px-6 py-3">Action</th>
           </tr>
         </thead>
-        <tbody>
-          
+        <tbody>          
           
           {% for service in services %}
           
@@ -94,7 +91,7 @@
 
           {% comment %} Modal d'edit de service {% endcomment %}
           <div id="edit-popup-modal-{{ service.id }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-            <div class="relative p-4 w-full max-w-[50vw] max-h-full">
+            <div class="relative p-4 w-full lg:max-w-[50vw] max-h-full">
               <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white dark:bg-gray-700 bg-clip-padding rounded-md outline-none text-current">
                 <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 dark:border-gray-600 rounded-t-md">
                   <h5 class="text-xl font-medium leading-normal text-gray-800 dark:text-gray-200" id="edit-service-{{ service.id }}Label">
@@ -164,7 +161,7 @@
           {% endfor %}     
         </tbody>
       </table>
-      <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between py-5 px-2" aria-label="Table navigation">
+      <nav class="w-full flex items-center flex-column flex-wrap md:flex-row justify-between py-5 px-2" aria-label="Table navigation">
           <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">Affichage du Page <span class="font-semibold text-gray-900 dark:text-white"> {{ services.number }} </span> sur <span class="font-semibold text-gray-900 dark:text-white">{{ services.paginator.num_pages }}</span></span>
           <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
             {% if services.has_previous %}
@@ -199,7 +196,7 @@
 
   {% comment %} Modal d'ajout de service {% endcomment %}
   <div id="ajouterArticleModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <div class="relative p-4 w-full max-w-[50vw] max-h-full">
+    <div class="relative p-4 w-full lg:max-w-[50vw] max-h-full">
       <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white dark:bg-gray-700 bg-clip-padding rounded-md outline-none text-current">
         <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 dark:border-gray-600 rounded-t-md">
           <h5 class="text-xl font-medium leading-normal text-gray-800 dark:text-gray-200" id="ajouterArticleModalLabel">
@@ -240,12 +237,5 @@
       </div>
     </div>
   </div>
-
-
-  <script>
-    function service_search(){
-      console.log('ici')
-    }
-  </script>
 
   {% endblock content %}

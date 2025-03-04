@@ -9,7 +9,7 @@
   <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-white">
     Mes Informations
   </h2>
-  <form method="POST" action="{% url "facture:edit_entreprise" %}" enctype="multipart/form-data" class="space-y-4">
+  <form method="POST" action="{% url 'facture:edit_entreprise' %}" enctype="multipart/form-data" class="space-y-4">
     {% csrf_token %}
 
     <!-- logo d'entreprises -->
@@ -20,25 +20,20 @@
       </div>
       {% endif %}
       <label
-        class="block text-sm font-medium text-gray-700 dark:text-white mb-2"
-        >Mon logo</label
-      >
+        class="block text-sm font-medium text-gray-700 dark:text-white mb-2">Mon logo</label>
       <div class="flex items-center">
         <input
           type="file"
           name="logo"
           accept="image/*"
-          class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 bg-transparent"
-        />
+          class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 bg-transparent"/>
       </div>
     </div>
 
     <!-- Informations de base -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-white"
-          >Nom commercial</label
-        >
+        <label class="block text-sm font-medium text-gray-700 dark:text-white">Nom commercial</label>
         <input
           type="text"
           name="nom"
@@ -49,9 +44,7 @@
         />
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-white"
-          >Email</label
-        >
+        <label class="block text-sm font-medium text-gray-700 dark:text-white">Email</label>
         <input
           type="email"
           name="email"
@@ -161,9 +154,13 @@
           </div>
           <input
             type="number"
-            id="zip-input"
-            name="taux_tva"
-            value="{{ entreprise.taux_tva|floatformat }}"
+            id="tva"
+            name="taux_tva"             
+            {% if entreprise.taux_tva %}
+              value="{{ entreprise.taux_tva|floatformat }}"
+            {% else %}
+              value=20
+            {% endif %}               
             aria-describedby="helper-text-explanation"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pe-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="20"
@@ -175,7 +172,7 @@
     <div class="flex justify-end">
       <button
         type="submit"
-        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
       >
         Enregistrer mes info
       </button>
@@ -185,7 +182,7 @@
 
 <!-- Choie du model de facture -->
 <div class="bg-white dark:text-white dark:bg-secondary rounded-lg my-5 p-6">
-  <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-white">
+  <h2 class="text-base lg:text-xl font-semibold mb-4 text-gray-700 dark:text-white">
     Choix du modele de facture
   </h2>
 
@@ -193,8 +190,7 @@
   <div x-data="{ imgModal : false, imgModalSrc : '', imgModalDesc : '' }">
     <template
       @img-modal.window="imgModal = true; imgModalSrc = $event.detail.imgModalSrc; imgModalDesc = $event.detail.imgModalDesc;"
-      x-if="imgModal"
-    >
+      x-if="imgModal">
       <div
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 transform scale-90"
@@ -203,27 +199,22 @@
         x-transition:leave-start="opacity-100 transform scale-100"
         x-transition:leave-end="opacity-0 transform scale-90"
         x-on:click.away="imgModalSrc = ''"
-        class="p-2 fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center bg-black bg-opacity-75"
-      >
+        class="p-2 fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center bg-black bg-opacity-75">
         <div
           @click.away="imgModal = ''"
-          class="flex flex-col max-w-3xl max-h-full overflow-auto"
-        >
+          class="flex flex-col max-w-3xl max-h-full overflow-auto">
           <div class="z-50">
             <button
               @click="imgModal = ''"
-              class="float-right pt-2 pr-2 outline-none focus:outline-none"
-            >
+              class="float-right pt-2 pr-2 outline-none focus:outline-none">
               <svg
                 class="fill-current text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 width="18"
                 height="18"
-                viewBox="0 0 18 18"
-              >
+                viewBox="0 0 18 18">
                 <path
-                  d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"
-                ></path>
+                  d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
               </svg>
             </button>
           </div>
@@ -231,8 +222,7 @@
             <img
               :alt="imgModalSrc"
               class="object-fit w-auto h-[90vh]"
-              :src="imgModalSrc"
-            />
+              :src="imgModalSrc"/>
             <p x-text="imgModalDesc" class="text-center text-white w-full"></p>
           </div>
         </div>
@@ -242,38 +232,31 @@
 
   <div x-data="imageComponent()" class="px-2">
     <div class="flex flex-wrap -mx-2 justify-start">
-      <div class="w-1/5 my-2 px-2 relative">
+      <div class="w-full max-w-64 md:w-1/3 xl:w-1/5 my-2 px-1 mx-auto lg:mx-0 lg:px-2 relative">
         <span
-          class="absolute top-1 right-0 bg-green-100/50 text-green-800 text-md font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-gray-700/80 dark:text-green-400 border border-green-400"
-          >Gratuite</span
-        >
+          class="absolute top-1 right-0 bg-green-100/50 text-green-800 text-md font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-gray-700/80 dark:text-green-400 border border-green-400">Gratuite</span>
         <div class="bg-gray-400">
           <a
             @click="$dispatch('img-modal', {  imgModalSrc: '/static/images/model_facture/facture_default.png', imgModalDesc: 'Model par defaut' })"
-            class="cursor-pointer"
-          >
+            class="cursor-pointer">
             <img
               alt="Placeholder"
               class="object-fit w-full h-80"
-              src="/static/images/model_facture/facture_default.png"
-            />
+              src="/static/images/model_facture/facture_default.png"/>
           </a>
           <div class="flex items-center justify-between p-1">
             <span>Facture par defaut</span>
             <button
               type="button"
-              class="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500"
-            >
+              class="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500">
               <svg
                 class="w-4 h-4"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
-                viewBox="0 0 18 18"
-              >
+                viewBox="0 0 18 18">
                 <path
-                  d="M3 7H1a1 1 0 0 0-1 1v8a2 2 0 0 0 4 0V8a1 1 0 0 0-1-1Zm12.954 0H12l1.558-4.5a1.778 1.778 0 0 0-3.331-1.06A24.859 24.859 0 0 1 6 6.8v9.586h.114C8.223 16.969 11.015 18 13.6 18c1.4 0 1.592-.526 1.88-1.317l2.354-7A2 2 0 0 0 15.954 7Z"
-                />
+                  d="M3 7H1a1 1 0 0 0-1 1v8a2 2 0 0 0 4 0V8a1 1 0 0 0-1-1Zm12.954 0H12l1.558-4.5a1.778 1.778 0 0 0-3.331-1.06A24.859 24.859 0 0 1 6 6.8v9.586h.114C8.223 16.969 11.015 18 13.6 18c1.4 0 1.592-.526 1.88-1.317l2.354-7A2 2 0 0 0 15.954 7Z"/>
               </svg>
               <span class="sr-only">Icon description</span>
             </button>
@@ -282,7 +265,7 @@
       </div>
 
       <template x-for=" facture in facture_model_list ">
-        <div class="w-1/5 my-2 px-2 relative">
+        <div class="w-full max-w-64 md:w-1/3 xl:w-1/5 my-2 px-1 mx-auto lg:mx-0 lg:px-2 relative">
           <span
             class="absolute top-1 right-0 bg-pink-100/50 text-pink-800 text-md font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-gray-700/80 dark:text-pink-400 border border-pink-400"
             x-text="facture.mode"
@@ -326,55 +309,58 @@
   </div>
 </div>
 
-<script>
-  function imageComponent() {
-    return {
-      facture_model_list: [
-        {
-          nom: "Facture Simple",
-          src: "/static/images/model_facture/facture_simple.png",
-          description:
-            "Une facture minimaliste avec un en-tête, des détails de client, une liste d'articles, et un total à payer.",
-          mode: "Premium",
-        },
-        {
-          nom: "Facture Professionnelle",
-          src: "/static/images/model_facture/facture_professionnelle.png",
-          description:
-            "Une facture avec un design professionnel, incluant un logo, des informations détaillées sur le vendeur et l'acheteur, et un tableau d'articles.",
-          mode: "Premium",
-        },
-        {
-          nom: "Facture Colorée",
-          src: "/static/images/model_facture/facture_coloree.jpeg",
-          description:
-            "Une facture avec des couleurs vives et un design moderne, idéale pour les entreprises créatives.",
-          mode: "Premium",
-        },
-        {
-          nom: "Facture Classique",
-          src: "/static/images/model_facture/facture_classique.jpeg",
-          description:
-            "Une facture traditionnelle avec un style épuré, parfaite pour les entreprises de services.",
-          mode: "Premium",
-        },
-        {
-          nom: "Facture avec Bordure",
-          src: "/static/images/model_facture/facture_bordure.jpeg",
-          description:
-            "Une facture avec une bordure élégante et des sections bien définies pour les informations et les articles.",
-          mode: "Premium",
-        },
-        {
-          nom: "Facture Moderne",
-          src: "/static/images/model_facture/facture_moderne.jpeg",
-          description:
-            "Une facture avec un design moderne, incluant des icônes et une mise en page responsive.",
-          mode: "Premium",
-        },
-      ],
-    };
-  }
-</script>
+
+{% block extrascript %}  
+  <script>
+    function imageComponent() {
+      return {
+        facture_model_list: [
+          {
+            nom: "Facture Simple",
+            src: "/static/images/model_facture/facture_simple.png",
+            description:
+              "Une facture minimaliste avec un en-tête, des détails de client, une liste d'articles, et un total à payer.",
+            mode: "Premium",
+          },
+          {
+            nom: "Facture Professionnelle",
+            src: "/static/images/model_facture/facture_professionnelle.png",
+            description:
+              "Une facture avec un design professionnel, incluant un logo, des informations détaillées sur le vendeur et l'acheteur, et un tableau d'articles.",
+            mode: "Premium",
+          },
+          {
+            nom: "Facture Colorée",
+            src: "/static/images/model_facture/facture_coloree.jpeg",
+            description:
+              "Une facture avec des couleurs vives et un design moderne, idéale pour les entreprises créatives.",
+            mode: "Premium",
+          },
+          {
+            nom: "Facture Classique",
+            src: "/static/images/model_facture/facture_classique.jpeg",
+            description:
+              "Une facture traditionnelle avec un style épuré, parfaite pour les entreprises de services.",
+            mode: "Premium",
+          },
+          {
+            nom: "Facture avec Bordure",
+            src: "/static/images/model_facture/facture_bordure.jpeg",
+            description:
+              "Une facture avec une bordure élégante et des sections bien définies pour les informations et les articles.",
+            mode: "Premium",
+          },
+          {
+            nom: "Facture Moderne",
+            src: "/static/images/model_facture/facture_moderne.jpeg",
+            description:
+              "Une facture avec un design moderne, incluant des icônes et une mise en page responsive.",
+            mode: "Premium",
+          },
+        ],
+      };
+    }
+  </script>
+{% endblock extrascript %}
 
 {% endblock content %}

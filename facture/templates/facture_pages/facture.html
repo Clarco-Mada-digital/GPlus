@@ -23,19 +23,19 @@
   </div> {% endcomment %}
   
 
-  <div class="container w-full px-4 py-8">
-    <form id="factureForm" action="{% url 'facture:new_facture' %}" method="POST" class="w-full bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+  <div class="w-full mx-auto">
+    <form id="factureForm" action="{% url 'facture:new_facture' %}" method="POST" class="w-full bg-white dark:bg-gray-800 p-2 lg:p-8 rounded-lg shadow-md">
       {% csrf_token %}
 
-      <div class="flex items-center justify-center">
-        <label x-on:click="facture_view = true" for="factForm" type="button" :class="facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-blue-200 rounded-s-lg hover:bg-blue-300 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-blue-800 dark:border-blue-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white'">
+      <div class="flex items-center justify-center mb-4">
+        <label x-on:click="facture_view = true" for="factForm" type="button" :class="facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium  border border-blue-200 rounded-s-lg bg-blue-300 text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-blue-800 dark:border-blue-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white'">
         <svg class="w-3 h-3 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
           <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
         </svg>
         Facture
         <input id="factForm" name="type" type="text" class="hidden" :value="facture_view ? 'Facture' : 'Devis' ">
       </label>
-      <label x-on:click="facture_view = false" for="devisForm" type="button" :class="!facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-emerald-200 rounded-e-lg hover:bg-emerald-300 hover:text-emerald-700 focus:z-10 focus:text-emerald-700 dark:bg-emerald-800 dark:border-emerald-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-emerald-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:text-emerald-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-emerald-500 dark:focus:text-white'">
+      <label x-on:click="facture_view = false" for="devisForm" type="button" :class="!facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium border border-emerald-200 rounded-e-lg bg-emerald-300 text-emerald-700 focus:z-10 focus:text-emerald-700 dark:bg-emerald-800 dark:border-emerald-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-emerald-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:text-emerald-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-emerald-500 dark:focus:text-white'">
         <svg class="w-3 h-3 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
           <path d="M14.707 7.793a1 1 0 0 0-1.414 0L11 10.086V1.5a1 1 0 0 0-2 0v8.586L6.707 7.793a1 1 0 1 0-1.414 1.414l4 4a1 1 0 0 0 1.416 0l4-4a1 1 0 0 0-.002-1.414Z"/>
           <path d="M18 12h-2.55l-2.975 2.975a3.5 3.5 0 0 1-4.95 0L4.55 12H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2Zm-3 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
@@ -74,13 +74,13 @@
         <h2 x-show="facture_view" class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Détails de la facture</h2>
         <h2 x-show="!facture_view" class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Détails du devis</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="col-span-3">
+          <div class="col-span-1 md:col-span-3">
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="numero">
               Intitulé
             </label>
             <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="intutilé" type="text" name="intitule" placeholder="Ajouter un titre ici" required>
           </div>
-          <div>
+          <div class="col-span-1">
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="reglement_facture">
               Règlement
             </label>
@@ -99,17 +99,17 @@
               <option value="14 jours fin de mois">14 jours fin de mois</option>
             </select>
           </div>          
-          <div>
+          <div class="col-span-1">
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="date">
               Condition
             </label>
             <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="condition" name="condition" type="date" required>
           </div>
-          <div>
+          <div class="col-span-1">
             <label class="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="reglement_facture">
               Condition de Règlement
             </label>
-            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="etat_facture" name="condition_reglement" required>
+            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="condition_reglement" name="condition_reglement" required>
               <option selected disabled hidden> --- </option>
               <option value="Carte bancaire">Carte bancaire</option>
               <option value="Chèque">Chèque</option>
@@ -126,7 +126,7 @@
         <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Ligne</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="col-span-2 flex justify-between items-center gap-2">
-            <div class="w-3/4">
+            <div class="w-full lg:w-3/4">
               <input 
                 id="service_searche" 
                 @keydown.enter.prevent="searchArticles($event.target.value)" 
@@ -138,29 +138,31 @@
                 placeholder="Rechercher un article"
               >
             </div>            
-            {% comment %} <div class="w-1/4">
-              <button type="button" :class="facture_view ? 'bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700' : 'bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700'" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
+             <div class="w-1/4 hidden">
+              <button type="button" id="addArticleBtn" :class="facture_view ? 'bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700' : 'bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700'" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
                 Ajouter un service
               </button>
-            </div> {% endcomment %}
+            </div> 
           </div>
         </div>
         <div id="result-articles-container" class="relative hidden bg-gray-200 dark:bg-gray-700 dark:text-gray-200 p-5 my-4 space-y-4 rounded-lg shadow-md">
           {% comment %} Le résultat affiché ici {% endcomment %}
         </div>
-        <div id="articles-container" class="relative space-y-4 my-4">
+        <div id="articles-container" class="relative w-full flex flex-col justify-center space-y-4 my-4">
           {% comment %} Les articles affiche ici {% endcomment %}
         </div>
-        <button type="button" id="ajouterArticle" :class="facture_view ? 'text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800' : 'text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800'">          
-          <svg class="w-3.5 h-3.5 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/>
-          </svg>
-          Ajouter une ligne service
-        </button>
-        <button type="button" id="ajouterArticle" :class="facture_view ? 'text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800' : 'text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800'">          
-          <svg class="w-3.5 h-3.5 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/>
-          </svg>
-          Ajouter une ligne produit
-        </button>
+        <div class="flex items-center gap-2 text-sm lg:text-base">
+          <button type="button" id="ajouterArticle" :class="facture_view ? 'text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800' : 'text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800'">          
+            <svg class="w-3.5 h-3.5 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/>
+            </svg>
+            Ajouter une ligne service
+          </button>
+          <button type="button" id="ajouterArticle" :class="facture_view ? 'text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800' : 'text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800'">          
+            <svg class="w-3.5 h-3.5 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/>
+            </svg>
+            Ajouter une ligne produit
+          </button>
+        </div>
       </div>     
 
       <!-- Total et Taxes -->
@@ -180,16 +182,27 @@
           </div>
         </div>
       </div>
+      
+      <input id="etat_facture" type="hidden" name="etat_facture" value="Impayée"/>
 
       <!-- Boutons d'action -->
       <div class="flex justify-end space-x-4">
-        <a href="{% url 'facture:index' %}" type="button" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red/60 dark:bg-red/60 dark:hover:bg-red/70">
+        <a href="{% url 'facture:index' %}" type="button" class="bg-red/80 text-white py-2 px-4 rounded hover:bg-red/60 dark:bg-red/60 dark:hover:bg-red/70">
           Annuler
         </a>
-        <button x-show="facture_view" type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
+        <button @click="$event.preventDefault();getFactureValue()" type="button" class="bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 dark:bg-teal-600 dark:hover:bg-teal-700">
+          Preview
+        </button>
+        <button x-show="facture_view" @click="document.getElementById('etat_facture').value = 'Brouillon';document.getElementById('factureSubmit').click()" type="button" class="bg-amber-500 text-white py-2 px-4 rounded hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700">
+          Créer un brouillon
+        </button>
+        <button x-show="!facture_view" @click="document.getElementById('etat_facture').value = 'Brouillon';document.getElementById('deviSubmit').click()" type="button" class="bg-amber-500 text-white py-2 px-4 rounded hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700">
+          Créer un brouillon
+        </button>
+        <button id="factureSubmit" x-show="facture_view" type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
           Créer la facture
         </button>
-        <button x-show="!facture_view" type="submit" class="bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700">
+        <button id="deviSubmit" x-show="!facture_view" type="submit" class="bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700">
           Créer la devis
         </button>
       </div>
@@ -198,7 +211,7 @@
 
   {% comment %} Modal d'ajout de service {% endcomment %}
   <div id="ajouterArticleModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <div class="relative p-4 w-full max-w-[50vw] max-h-full">
+    <div class="relative p-4 w-full lg:max-w-[50vw] max-h-full">
       <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white dark:bg-gray-700 bg-clip-padding rounded-md outline-none text-current">
         <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 dark:border-gray-600 rounded-t-md">
           <h5 class="text-xl font-medium leading-normal text-gray-800 dark:text-gray-200" id="ajouterArticleModalLabel">
@@ -211,7 +224,39 @@
               <span class="sr-only">Close modal</span>
           </button>
         </div>
-        <div class="modal-body relative p-4">
+        <div class="modal-body relative p-4">                    
+          {% comment %} Message apres l'enregistrement {% endcomment %}
+          <div id="alert-error" class="hidden items-center p-4 mb-4 text-red/80 rounded-lg bg-red/5 dark:bg-gray/80 dark:text-red/40" role="alert">
+            <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+            </svg>
+            <span class="sr-only">Info</span>
+            <div class="ms-3 text-sm font-medium">
+              Une erreur s'est produite lors de l'enregistrement du service.
+            </div>
+            <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700" data-dismiss-target="#alert-error" aria-label="Close">
+              <span class="sr-only">Close</span>
+              <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+              </svg>
+            </button>
+          </div>
+          <div id="alert-success" class="hidden items-center p-4 mb-4 text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+            <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+            </svg>
+            <span class="sr-only">Info</span>
+            <div class="ms-3 text-sm font-medium">
+              Article ajouter avec success.
+            </div>
+            <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700" data-dismiss-target="#alert-success" aria-label="Close">
+              <span class="sr-only">Close</span>
+              <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+              </svg>
+            </button>
+          </div>
+
           <form id="serviceForm" action="{% url 'facture:new_service' %}" method="POST" class="space-y-4 dark:text-white">
             {% csrf_token %}
             <div>
@@ -240,17 +285,194 @@
     </div>
   </div>
 
+   <button id="previewFactureBtn" data-modal-target="popup-modal-facture" data-modal-toggle="popup-modal-facture" type="button" class="hidden"></button> 
+
+  {% comment %} Modal facture view {% endcomment %}
+  <div id="popup-modal-facture" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-scroll mx-2 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full lg:w-9/12 max-h-full mx-auto">
+        <div class="relative bg-white rounded-lg min-w-[840px] shadow">
+            <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="popup-modal-facture">
+                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+                <span class="sr-only">Fermer</span>
+            </button>
+            <div class="p-4 md:p-5">
+              
+              <!-- Prévisualisation de la facture -->
+              <div class="p-4" id="preview-facture">
+                <h2 class="text-lg font-bold mb-4">Prévisualisation de la facture</h2>
+                <div class="shadow-md rounded">
+                <div  id="facture_content" class="p-10 m-0">
+                  <div class="flex items-center justify-start">
+                  {% if entreprise.logo %}
+                    <div class="flex items-center">
+                      <img src="{{ entreprise.logo.url }}" alt="logo d'entreprise" class="h-32 shadow-lg object-cover">
+                    </div>
+                  {% endif %}
+                  </div>
+                  <div class="flex justify-between items-center mb-10">
+                    <div>
+                      {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info client</h3> {% endcomment %}
+                      <p>Nom d'entreprise : <span>{{ entreprise.nom }}</span></p>
+                      <p>Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
+                      <p>Adresse : <span>{{ entreprise.adresse }}</span></p>
+                      <p>Code postal : <span>{{ entreprise.code_postal}} - {{ entreprise.region }}</span></p>
+                      <p>N° NIF : <span>{{ entreprise.nif }}</span></p>
+                      <p>N° STAT : <span>{{ entreprise.stat }}</span></p>          
+                    </div>
+                    <div>
+                      <pre x-show="facture.client_desc_facture" id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-gray-900 bg-transparent border-non" style="resize: none;" disabled x-text="facture.client_desc_facture"></pre>
+                      {% comment %} <h3 class="font-bold mb-2 dark:text-gray-400">Info facture</h3> {% endcomment %}
+                      <div x-show="!facture.client_desc_facture">
+                        <p class="text-gray-900">Nom d'entreprise : <span x-text="facture.client_commercial"></span></p>
+                        <p class="text-gray-900">Nom du client : <span x-text="facture.client_nom"></span></p>
+                        <p class="text-gray-900">address du client : <span x-text="facture.client_adresse"></span></p>
+                        <p class="text-gray-900">Code postal : <span x-text="facture.client_code_postal"></span> - <span x-text="facture.client_ville"></span></p>
+                        <p class="text-gray-900">N° NIF : <span>12345678901234</span></p>
+                        <p class="text-gray-900">N° STAT : <span>12345678901234</span></p>         
+                        {% comment %} <p class="text-gray-900"><span>{{ facture.client.description_facture|safe }}</span></p>  {% endcomment %}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-4 mt-10 text-gray-900">
+                    {% comment %} <h3 class="text-xl font-bold mb-2">Détail du facture</h3> {% endcomment %}
+                    <p class="text-emerald-800 text-md font-bold">Facture N° : <span x-text="facture.ref"></span></p>
+                    <div class="flex items-center justify-start text-inherit">
+                      <p>Date facturation : <span x-text="facture.date_facture"></span></p>
+                      <p class="ml-5">Date échéance : <span x-text="facture.condition"></span></p>
+                      <p class="ml-40">Règlement : <span x-text="facture.reglement"></span></p>
+                    </div>
+            
+                    {% comment %} Tableau details de facture {% endcomment %}
+                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-5">
+                      <table class="w-full border border-gray-200 rounded-md dark:border-gray-700 text-sm text-left rtl:text-right">
+                          <thead class="text-xs uppercase border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-transparent">
+                              <tr>
+                                  <th scope="col" class="px-6 py-3">
+                                      Désignation
+                                  </th>
+                                  <th scope="col" class="px-6 py-3">
+                                      <div class="flex items-center">
+                                          Prix unitaire
+                                      </div>
+                                  </th>
+                                  <th scope="col" class="px-6 py-3">
+                                      <div class="flex items-center">
+                                          Quantité
+                                      </div>
+                                  </th>
+                                  <th scope="col" class="px-6 py-3 text-right">
+                                      <div class="flex items-center">
+                                          Montant HT
+                                      </div>
+                                  </th>
+                              </tr>
+                          </thead>
+                          <tbody id="facture-services-table-body">
+                          <template x-for="service in facture.services">
+                            {% comment %} Liste des services du facture ici {% endcomment %}
+                            <tr class="article-row">
+                              <th scope="row" class="px-6 py-4 font-medium  whitespace-nowra" x-text="service.description">
+                                  
+                              </th>
+                              <td class="px-6 py-4 article-prix" x-text="service.prix">
+                                  
+                              </td>
+                              <td class="px-6 py-4 article-quantite" data-value="service.quantite" x-text="service.quantite">
+                              </td>
+                              <td class="px-6 py-4 article-total" x-text="numStr(parseFloat(service.prix) * parseFloat(service.quantite), ' ')">
+                              </td>
+                            </tr>
+                          </template>
+                          </tbody>
+                          <tfoot class="border border-gray-200 dark:border-gray-700">
+                            <tr>
+                                <th scope="row" class="px-6 py-4">
+                                </th>
+                                <th scope="row" class="px-6 py-4">
+                                </th>
+                                <th scope="row" class="px-6 py-4">
+                                </th>
+                                <th scope="row" class="px-6 py-2 text text-2xl font-bold">
+                                    <div class="font-bold" id="total-montant" x-text="facture.sousTotal">
+                                        {% comment %} {{ facture.montant|floatformat }} Ar {% endcomment %}
+                                    </div>
+                                </th>
+                            </tr>
+                        </tfoot>
+                      </table>
+
+                      <!-- Total et Taxes -->
+                      <div class="mb-8 mt-8">
+                        <div class="w-full md:w-1/2 ml-auto">
+                          <div class="grid grid-cols-2 gap-4">
+                            <div class="text-right font-bold">Sous-total:</div>
+                            <div class="text-right font-bold" id="sous-total" x-text="facture.sousTotal">0.00 Ar</div>                              
+                            <div :class="!facture.with_tva ? '' : 'line-through'" class="text-right" id="tva-label" class="">TVA (20%):</div>
+                            <div :class="!facture.with_tva ? '' : 'line-through'" class="text-right" id="tva" x-text="facture.tva">0.00 Ar</div>
+                            <div class="text-right font-bold">Total:</div>
+                            <div class="text-right font-bold" id="total" x-text="facture.montant">0.00 Ar</div>
+                            <input class="hidden" type="number" name="montant" id="total_input" value="0.00" >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="w-full flex items-center justify-end px-2">
+                  <button x-on:click="document.getElementById('factureSubmit').click()" x-show="facture_view" type="button" data-modal-hide="popup-modal-facture" class="bg-blue-500 text-white py-2 px-4 my-2 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
+                    Créer la facture
+                  </button>
+                  <button x-on:click="document.getElementById('deviSubmit').click()" x-show="!facture_view" type="button" data-modal-hide="popup-modal-facture" class="bg-emerald-500 text-white py-2 px-4 my-2 rounded hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700">
+                    Créer la devis
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+
 
 </div>
 
 <script defer>
-// Alpine.js  
+  // Alpine.js  
   function factDataComponent(){
     return {
       front_view: "{{ front_view }}",
+      facture : "",
       init(){
         // Charger les données depuis localStorage
         this.facture_view = this.front_view == 'facture' ? true : false;
+      },
+
+      getFactureValue() {
+        // Récupérer l'URL de manière sécurisée
+        // e.preventDefault();
+        const url = "{% url 'facture:preview_facture' %}";
+        form = document.getElementById('factureForm');
+        form.action = url;
+        formData = new FormData(form);
+
+        fetch(form.action, {
+          method: form.method,
+          body: formData
+        }).then(response => response.json())
+          .then(data => {
+            this.facture = data.facture
+            this.facture.sousTotal = document.getElementById('sous-total').textContent
+            this.facture.tva = document.getElementById('tva').textContent
+            this.facture.montant = document.getElementById('total').textContent
+            console.log(this.facture);
+            document.getElementById('previewFactureBtn').click()
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        
       },
     }
   }
@@ -267,7 +489,6 @@
     }
     calculerTotal();
   });
-
   
   const articlesContainer = document.getElementById('articles-container');
   const ajouterArticleBtn = document.getElementById('ajouterArticle');
@@ -281,33 +502,39 @@
       articleDiv.dataset.articleId = articleCount;
 
       articleDiv.innerHTML = `
-          <div class="col-span-5">
+        <div class='w-full col-span-6 grid lg:grid-cols-2 grid-cols-1 gap-2'>
+          <div class="col-span-1">
               <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-description" value="${nom_service}" name="description-${articleCount}"
                     type="text" placeholder="Description" data-article-id="${articleCount}" required>
           </div>
-          <div class="col-span-2">
+          <div class="col-span-1">
               <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-quantite" name="quantite-${articleCount}"
                     type="number" placeholder="Quantité" value="1" min="1" data-article-id="${articleCount}" required>
-          </div>          
-          <div class="flex col-span-2 h-10">
+          </div>  
+        </div> 
+        <div class='w-full col-span-4 grid lg:grid-cols-2 grid-cols-1 gap-2'>      
+          <div class="flex col-span-1 h-10">
             <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
               Ar
             </span>
             <input type="number" step="0.01" placeholder="Prix" name="prix-${articleCount}" value="${prix_unitaire}" data-article-id="${articleCount}" class="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 article-prix" required>
           </div>
-          <div class="col-span-2">
+          <div class="col-span-1">
               <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 article-total" 
                     type="text" placeholder="Total" disabled data-article-id="${articleCount}">
           </div>
-          <div class="col-span-1 flex items-center">
+        </div>
+        <div class='w-full col-span-2 grid lg:grid-cols-2 grid-cols-1 gap-2'>
+          <div class="w-full flex items-center flex-wrap lg:flex-nowrap">
               <button title="suprimer" type="button" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full supprimer-article" data-article-id="${articleCount}">
                   <svg class="w-10 h-10 p-2 bg-red rounded-full" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/></svg>
               </button>
 
-              <button data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal" title="Ajouter ce service au liste des services" type="button" class=" ${libre==false ? 'hidden' : ''} bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full" data-article-id="${articleCount}">
+              <button title="Ajouter ce service au liste des services" type="button" class=" ${libre==false ? 'hidden' : ''} bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full ajout-article" data-article-id="${articleCount}">
                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512"><path fill="#ef5a22" d="M203.72 87.938c-2.082.017-4.18.31-6.282.874c-13.45 3.608-21.412 17.53-17.782 31.094c1.384 5.172 4.235 9.52 8 12.75c-31.85 15.446-53.498 45.172-59.28 78.72l-22.532 7.593c-11.235-2.877-21.416-4.2-30.53-4.095c-14.696.167-26.65 4.02-35.908 10.97c-18.518 13.896-23.316 38.02-19.53 60.655c3.784 22.636 15.81 45.127 34.343 59.344c18.532 14.216 44.715 18.96 71.03 4.875c4.43-2.373 8.776-4.81 12.813-6.97c2.993 10.772 14.018 17.16 24.75 14.28c10.253-2.75 16.547-12.963 14.656-23.31c16.984 10.05 34.495 15.674 52.186 17.405c-14.094 20.893-32.316 39.57-53.97 54.78c27.754 27.726 224.764-24.853 229.626-61.592c-26.89-2.484-52.525-9.935-75.562-21.563c67.995-43.983 128.655-133.27 160.656-234.563l-42.47 14.344c-44.11 67.313-122.214 103.81-167.155 28a107.9 107.9 0 0 0-53-9.593c1.656-4.69 1.95-9.913.564-15.093c-3.063-11.443-13.392-18.998-24.625-18.906zM76.062 233.53c5.11-.027 10.865.51 17.312 1.75c18.656 36.728 39.31 63.938 61.188 82.845c-.767.113-1.546.263-2.313.47q-.22.058-.438.124c-2.846.324-5.588 1.044-8.218 1.936c-9.64 3.27-18.73 9.084-27.156 13.594c-20.655 11.056-36.95 7.41-50.844-3.25c-13.895-10.66-24.256-29.5-27.28-47.594c-3.027-18.094.948-34.097 12.31-42.625c5.683-4.263 13.943-7.186 25.438-7.25z"/></svg>
               </button>
           </div>
+        </div>
       `;
 
       articlesContainer.appendChild(articleDiv);
@@ -317,9 +544,12 @@
 
   // Fonction pour attacher les écouteurs d'événements
   function attacherEcouteurs(articleDiv) {
+      const modalAddArticle = document.getElementById('ajouterArticleModal')
       const quantiteInput = articleDiv.querySelector('.article-quantite');
+      const descInput = articleDiv.querySelector('.article-description');
       const prixInput = articleDiv.querySelector('.article-prix');
       const supprimerBtn = articleDiv.querySelector('.supprimer-article');
+      const ajoutBtn = articleDiv.querySelector('.ajout-article');
 
       quantiteInput.addEventListener('input', calculerTotal);
       prixInput.addEventListener('input', calculerTotal);
@@ -327,8 +557,13 @@
           articleDiv.remove();
           calculerTotal();
       });
-  }
-  
+      ajoutBtn.addEventListener('click', function() {
+        document.getElementById('nom_article').value = descInput.value;
+        document.getElementById('prix_unitaire').value = prixInput.value;
+        document.getElementById('addArticleBtn').click();
+       
+      });
+  }  
 
   // Fonction pour calculer les totaux
   function calculerTotal() {
@@ -356,9 +591,6 @@
       document.getElementById('total').textContent = numStr(total.toFixed(2), ' ') + ' Ar';
       document.getElementById('total_input').value = total.toFixed(2);
   }
-
-  // Ajouter un article par défaut au chargement
-  // creerArticle();
 
   // Écouteur pour le bouton d'ajout d'article
   ajouterArticleBtn.addEventListener('click', () => creerArticle("", 0.00, true));
@@ -428,11 +660,15 @@
     }).then(response => {
       if (response.ok) {
         // Si la requête a réussi, fermez le modal
-        document.getElementById('ajouterArticleModal').classList.add('hidden');
+        //document.getElementById('ajouterArticleModal').classList.add('hidden');
+        document.getElementById('alert-success').classList.remove('hidden')
+        document.getElementById('alert-success').classList.add('flex')
         // Rechargez la page pour afficher les nouveaux services
         // window.location.reload();
       } else {
         // Si la requête a échoué, affichez une erreur
+        document.getElementById('alert-error').classList.remove('hidden')
+        document.getElementById('alert-error').classList.add('flex')
         alert('Une erreur s\'est produite lors de l\'enregistrement du service.');
       }
     });
