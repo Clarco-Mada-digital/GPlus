@@ -6,12 +6,13 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models.functions import ExtractYear, ExtractMonth
 
 from .serializers.facture import FactureListSerializer, FactureDetailSerializer, FactureDateSerializer
-from .serializers.client import ClientListSerializer
+from .serializers.client import ClientListSerializer, ClientDetailSerializer
 from .serializers.entreprise import EntrepriseSerializer
 from .serializers.user import UserSerializer
 
 from facture.models import Facture, Entreprise
 from clients.models import Client
+from accounts.models import User
 
 from datetime import datetime
 
@@ -69,6 +70,20 @@ class FactureViewset(ModelViewSet):
             serializer = EntrepriseSerializer(entreprise)
             return Response(serializer.data)
         return Response({"error": "Aucune entreprise trouvée"}, status=404)
+
+    # Permet d'obtenir tout les utilisateurs
+    @action(detail=False, methods=['get'])
+    def users(self, request):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+    
+    # Permet d'obtenir tout les clients
+    @action(detail=False, methods=['get'])
+    def clients(self, request):
+        clients = Client.objects.all()
+        serializer = ClientDetailSerializer(clients, many=True)
+        return Response(serializer.data)
 
 
 class ClientViewSet(ReadOnlyModelViewSet):
