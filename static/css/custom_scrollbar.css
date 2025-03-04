@@ -1,0 +1,31 @@
+/* Styles pour la scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Styles pour la scrollbar en mode sombre */
+.dark ::-webkit-scrollbar-track {
+    background: #323D4E;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: #1f2937;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: #1f2937;
+}

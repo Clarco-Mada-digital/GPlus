@@ -3,18 +3,18 @@
 {% block title_page %} Facture - Devis {% endblock title_page %} 
 {% block content %}
 
-<div x-data="factDataComponent()" x-init="init()" x-cloak >
+<div class="text-sm lg:text-base" x-data="factDataComponent()" x-init="init()" x-cloak >
   
 
   {% comment %} Charts {% endcomment %}
-  <div class="container mx-auto px-4 pb-8 min-h-screen flex flex-col justify-evenly">
-    <h2 class="text-3xl font-bold uppercase text-center dark:text-white -mt-9">Tableau de bord</h2>    
-    <div class="flex items-center ml-auto w-[35rem] bg-white border rounded-sm overflow-hidden shadow -mt-5">
+  <div class="mx-auto flex flex-col items-baseline mb-8 gap-8">
+    <h2 class="text-xl lg:text-3xl font-bold uppercase w-full text-center dark:text-white">Tableau de bord</h2>    
+    <div class="flex items-center ml-auto w-auto bg-white border rounded-sm overflow-hidden shadow">
       <div class="p-4 bg-green-400">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" color="currentColor"><path d="M19.5 16v-3.994c0-1.486 0-2.23-.256-2.91c-.255-.68-.745-1.24-1.723-2.358L16 5H8L6.48 6.738C5.5 7.856 5.01 8.416 4.755 9.096s-.256 1.424-.256 2.91V16c0 2.828 0 4.243.879 5.121S7.672 22 10.5 22h3c2.828 0 4.243 0 5.121-.879c.879-.878.879-2.293.879-5.121"/><path d="M9.5 15.683c0 1.23 1.854 2.237 3.633 1.672s1.517-2.23.913-2.884s-1.491-.544-2.506-.596c-2.281-.116-2.442-2.303-.595-3.168c1.355-.635 3.093.18 3.293 1.293m-2.267-2.5v.978m0 7.242v.78M7.5 2h9c.466 0 .699 0 .883.076a1 1 0 0 1 .54.541c.077.184.077.417.077.883s0 .699-.076.883a1 1 0 0 1-.541.54C17.199 5 16.966 5 16.5 5h-9c-.466 0-.699 0-.883-.076a1 1 0 0 1-.54-.541C6 4.199 6 3.966 6 3.5s0-.699.076-.883a1 1 0 0 1 .541-.54C6.801 2 7.034 2 7.5 2"/></g></svg>
       </div>
-      <div class="px-4 text-gray-700">
-        <h3 class="text-xl tracking-wider">Facture</h3>
+      <div class="px-1 lg:px-4 text-gray-700">
+        <h3 class="lg:text-xl tracking-wider">Facture</h3>
         <span class="bg-pink-100 text-pink-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-lg dark:bg-gray-700 dark:text-pink-400 border border-pink-400">
           <svg class="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
           <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z"/>
@@ -29,13 +29,18 @@
           </span>
       </div>
     </div>
-    <div class="flex w-full items-center justify-between">
-      <canvas id="montantsFactureChart" style="width:100%;max-width:650px;max-height:500px"></canvas>
-      <canvas id="numbersFactureChart" style="width:100%;max-width:650px;max-height:500px"></canvas>
+    <div class="grid grid-cols-1 w-full xl:grid-cols-2 gap-2 mb-4">
+      <div class="w-full">
+        <canvas class="w-full max-h-[500px]" id="montantsFactureChart" ></canvas>
+      </div>
+      <div>
+        <canvas class="w-full max-h-[500px]"  id="numbersFactureChart" ></canvas>
+      </div>
     </div>
+
     <div class="flex w-full items-center gap-2"> 
       <div class="w-full relative overflow-x-auto shadow-md sm:rounded-lg">
-          <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <table class="w-full text-sm text-center lg:text-left rtl:text-right text-gray-500 dark:text-gray-400">
               <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                       <th scope="col" class="px-6 py-3">
@@ -53,7 +58,7 @@
                   </tr>
               </thead>
               <tbody>
-                <template x-for="stat in data_facture">
+                <template class="text-[9px] lg:text-base" x-for="stat in data_facture">
                   <tr :class="stat.montant_moyen < 600000 ? 'text-red' : '' " class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
                       <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap" x-text="stat.annee">
                       </th>
@@ -74,13 +79,13 @@
   {% comment %} Button toogle devis et facture {% endcomment %}
   <div class="flex w-full items-center justify-center">
     <div class="my-4 inline-flex rounded-md shadow-sm" role="group">
-      <button x-on:click="facture_view = true; saveFactView()" type="button" :class="facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-blue-200 rounded-s-lg hover:bg-blue-300 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-blue-800 dark:border-blue-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white'">
+      <button x-on:click="facture_view = true; saveFactView()" type="button" :class="facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium  border border-blue-200 rounded-s-lg bg-blue-300 text-blue-700 focus:z-10 focus:text-blue-700 bg-bleu-300 dark:border-blue-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white'">
         <svg class="w-3 h-3 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
           <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
         </svg>
         Facture
       </button>
-      <button x-on:click="facture_view = false; saveFactView()" type="button" :class="!facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-emerald-200 rounded-e-lg hover:bg-emerald-300 hover:text-emerald-700 focus:z-10 focus:text-emerald-700 dark:bg-emerald-800 dark:border-emerald-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-emerald-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:text-emerald-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-emerald-500 dark:focus:text-white'">
+      <button x-on:click="facture_view = false; saveFactView()" type="button" :class="!facture_view ? 'inline-flex items-center px-4 py-2 text-sm font-medium border border-emerald-200 rounded-e-lg bg-emerald-300 text-emerald-700 focus:z-10 focus:text-emerald-700 dark:bg-emerald-800 dark:border-emerald-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-emerald-500 dark:focus:text-white' : 'inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-emerald-700 focus:z-10 focus:text-emerald-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-emerald-500 dark:focus:text-white'">
         <svg class="w-3 h-3 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
           <path d="M14.707 7.793a1 1 0 0 0-1.414 0L11 10.086V1.5a1 1 0 0 0-2 0v8.586L6.707 7.793a1 1 0 1 0-1.414 1.414l4 4a1 1 0 0 0 1.416 0l4-4a1 1 0 0 0-.002-1.414Z"/>
           <path d="M18 12h-2.55l-2.975 2.975a3.5 3.5 0 0 1-4.95 0L4.55 12H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2Zm-3 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
@@ -91,52 +96,51 @@
   </div>
 
   {% comment %} View facture {% endcomment %}
-  <div x-show="facture_view" x-transition.duration.500ms  class="container mx-auto px-4 py-8">
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
+  <div x-show="facture_view" x-transition.duration.500ms  class="mx-auto py-8">
+    <div class="relative overflow-x-auto shadow-md border-t border-gray-200 sm:rounded-lg p-2">
+      <div class="flex flex-col gap-4 md:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4 mb-4">
         <div>
-          <form id="fact_filtre-form" method="GET">
-          <select id="fact_filtre_mois" name="filtre" class="text-gray-500 bg-white border border-gray-300 w-40 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-            <option value="" selected disabled hidden>
-              Filtre par mois
-            </option>
-            {% for mois in fact_mois_filtrable|slice:5 %}
-            <option 
-              
-              {% if mois_filtre == mois.id %}
-                selected
-              {% endif %}
-                
-              value="{{ mois.id }}">
-                {{ mois.nom }}
-            </option>
-            {% endfor %}
-          </select>
-          <select id="fact_filtre_annee" name="filtre" class="text-gray-500 bg-white border border-gray-300 w-40 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-            <option value="" selected disabled hidden>
-              Filtre par année
-            </option>          
-            {% for annee in fact_annee_filtrable|slice:5 %}
-              <option 
-              {% if annee_filtre == annee.id %}
-                selected
-              {% endif %}
-              value="{{ annee.id }}">
-                {{ annee.nom }}
+          <form class="flex items-center gap-4" id="fact_filtre-form" method="GET">
+            <select id="fact_filtre_mois" name="filtre" class="text-gray-500 bg-white border border-gray-300 w-40 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+              <option value="" selected disabled hidden>
+                Filtre par mois
               </option>
-            {% endfor %}
-          </select>        
-          <button type="button" onclick="window.location.href=window.location.pathname" class="text-gray-500 bg-white border border-gray-300 w-40 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-            Réinitialiser
-          </button>
+              {% for mois in fact_mois_filtrable|slice:5 %}
+              <option 
+                
+                {% if mois_filtre == mois.id %}
+                  selected
+                {% endif %}
+                  
+                value="{{ mois.id }}">
+                  {{ mois.nom }}
+              </option>
+              {% endfor %}
+            </select>
+            <select id="fact_filtre_annee" name="filtre" class="text-gray-500 bg-white border border-gray-300 w-40 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+              <option value="" selected disabled hidden>
+                Filtre par année
+              </option>          
+              {% for annee in fact_annee_filtrable|slice:5 %}
+                <option 
+                {% if annee_filtre == annee.id %}
+                  selected
+                {% endif %}
+                value="{{ annee.id }}">
+                  {{ annee.nom }}
+                </option>
+              {% endfor %}
+            </select>        
+            <button type="button" onclick="window.location.href=window.location.pathname" class="text-gray-500 bg-white border border-gray-300 w-40 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+              Réinitialiser
+            </button>
           </form>        
-          </div>
+        </div>
         <label for="table-search" class="sr-only">Rechercher</label>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center w-full lg:w-auto justify-between gap-2">
         <div class="relative">
           <div
-            class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none"
-          >
+            class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
             <svg
               class="w-5 h-5 text-gray-500 dark:text-gray-400"
               aria-hidden="true"
@@ -157,12 +161,11 @@
             type="search"
             id="table-search"
             class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Rechercher des articles"
-          />
+            placeholder="Rechercher des articles"/>
           
         </div>
-        <a href="{% url 'facture:facture' %}" type="button" class="flex items-center bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/></svg>
+        <a href="{% url 'facture:facture' %}" type="button" class="flex items-center text-sm md:text-base bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"/></svg>
           Nouvelle facture
         </a>
         </div>
@@ -227,10 +230,22 @@
               <button data-modal-target="popup-modal-{{ facture.id }}" data-modal-toggle="popup-modal-{{ facture.id }}" type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
                 <svg class="w-7 h-7 text-red/70 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6q-.425 0-.712-.288T4 5t.288-.712T5 4h4q0-.425.288-.712T10 3h4q.425 0 .713.288T15 4h4q.425 0 .713.288T20 5t-.288.713T19 6v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zm-7 11q.425 0 .713-.288T11 16V9q0-.425-.288-.712T10 8t-.712.288T9 9v7q0 .425.288.713T11 17m4 0q.425 0 .713-.288T15 16V9q0-.425-.288-.712T14 8t-.712.288T13 9v7q0 .425.288.713T14 17M7 6v13z"/></svg>
               </button>
-              <button @click="getFactureValue('{{facture.id}}')" data-modal-target="popup-modal-facture" data-modal-toggle="popup-modal-facture" type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
+              <button 
+                {% if entreprise.nom %}
+                  @click="getFactureValue('{{facture.id}}')" data-modal-target="popup-modal-facture" data-modal-toggle="popup-modal-facture"                  
+                {% else %}
+                  data-modal-target="popup-modal-entreprise" data-modal-toggle="popup-modal-entreprise"
+                {% endif %}
+                type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
                 <svg class="w-7 h-7 text-emerald-800" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m19.675 20.375l.7-.7L18.5 17.8V15h-1v3.2zM18 23q-2.075 0-3.537-1.463T13 18t1.463-3.537T18 13t3.538 1.463T23 18t-1.463 3.538T18 23M7 9h10V7H7zm4.675 12H5q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v6.7q-.725-.35-1.463-.525T18 11q-.275 0-.513.012t-.487.063V11H7v2h6.125q-.45.425-.812.925T11.675 15H7v2h4.075q-.05.25-.062.488T11 18q0 .825.15 1.538T11.675 21"/></svg>
-              </button>
-              <a @click="generate_pdf('{{facture.id}}')" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg cursor-pointer">
+              </button>                
+              <a 
+                {% if entreprise.nom %}
+                  @click="generate_pdf('{{facture.id}}')"
+                {% else %}
+                  data-modal-target="popup-modal-entreprise" data-modal-toggle="popup-modal-entreprise"
+                {% endif %}
+                class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg cursor-pointer">
                 <svg class="w-7 h-7 text-green-500" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M17.617 6.383a7.944 7.944 0 0 1-1.748 12.568a8.028 8.028 0 0 1-11.586-5.043a8.03 8.03 0 0 1 2.095-7.517c.451-.46-.256-1.168-.707-.707a8.946 8.946 0 0 0 9.756 14.586a8.946 8.946 0 0 0 2.9-14.594c-.451-.461-1.158.247-.707.707Z"/><path fill="currentColor" d="m15.355 10.6l-3 3a.5.5 0 0 1-.35.15a.5.5 0 0 1-.36-.15l-3-3a.5.5 0 0 1 .71-.71l2.14 2.14V3.555a.51.51 0 0 1 .5-.5a.5.5 0 0 1 .5.5v8.49l2.15-2.16a.5.5 0 0 1 .71.71Z"/></svg>
               </a>
             </td>
@@ -299,62 +314,60 @@
   </div>
   
   {% comment %} Modal facture view {% endcomment %}
-  <div id="popup-modal-facture" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <div class="relative p-4 w-9/12 max-h-full mx-auto">
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="popup-modal-facture">
+  <div id="popup-modal-facture" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-scroll mx-2 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full lg:w-9/12 max-h-full mx-auto">
+        <div class="relative bg-white rounded-lg min-w-[840px] shadow">
+            <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="popup-modal-facture">
                 <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                 </svg>
                 <span class="sr-only">Fermer</span>
             </button>
             <div class="p-4 md:p-5">
+              
               <!-- Prévisualisation de la facture -->
               <div class="p-4" id="preview-facture">
-                <h2 class="text-lg font-bold mb-4 dark:text-white">Prévisualisation de la facture</h2>
-                <div class="dark:bg-gray-900 shadow-md rounded">
+                <h2 class="text-lg font-bold mb-4">Prévisualisation <span x-show="facture_view">de la facture</span><span x-show="!facture_view">du devis</span> </h2>
+                <div class="shadow-md rounded">
                 <div  id="facture_content" class="p-10 m-0">
-                  <div class="flex items-center justify-between">
+                  <div class="flex items-center justify-start">
                   {% if entreprise.logo %}
                     <div class="flex items-center">
-                      <img src="{{ entreprise.logo.url }}" alt="profil image" class="h-32 shadow-lg object-cover">
+                      <img src="{{ entreprise.logo.url }}" alt="logo d'entreprise" class="h-32 shadow-lg object-cover">
                     </div>
-                  {% endif %}                  
-                    <div x-show="client_logo != ''" class="flex items-center">
-                      <img :src="client_logo" alt="profil image" class="h-32 shadow-lg object-cover">
-                    </div>
+                  {% endif %}
                   </div>
                   <div class="flex justify-between items-center mb-10">
                     <div>
                       {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Info client</h3> {% endcomment %}
-                      <p class="dark:text-gray-400">Nom d'entreprise : <span>{{ entreprise.nom }}</span></p>
-                      <p class="dark:text-gray-400">Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
-                      <p class="dark:text-gray-400">Adresse : <span>{{ entreprise.adresse }}</span></p>
-                      <p class="dark:text-gray-400">Code postal : <span>{{ entreprise.code_postal}} - {{ entreprise.region }}</span></p>
-                      <p class="dark:text-gray-400">N° NIF : <span>{{ entreprise.nif }}</span></p>
-                      <p class="dark:text-gray-400">N° STAT : <span>{{ entreprise.stat }}</span></p>          
+                      <p>Nom d'entreprise : <span>{{ entreprise.nom }}</span></p>
+                      <p>Nom : <span>{{ user.first_name }} {{ user.last_name }}</span></p>
+                      <p>Adresse : <span>{{ entreprise.adresse }}</span></p>
+                      <p>Code postal : <span>{{ entreprise.code_postal}} - {{ entreprise.region }}</span></p>
+                      <p>N° NIF : <span>{{ entreprise.nif }}</span></p>
+                      <p>N° STAT : <span>{{ entreprise.stat }}</span></p>          
                     </div>
                     <div>
-                      <pre x-show="client_desc_facture" id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-gray-900 bg-transparent border-none dark:bg-transparent dark:placeholder-gray-400 dark:text-gray-400" style="resize: none;" disabled x-text="client_desc_facture"></pre>
+                      <pre x-show="client_desc_facture" id="message" rows="6" cols="40" name="description_facture" class="block p-2.5 w-full text-gray-900 bg-transparent border-non" style="resize: none;" disabled x-text="client_desc_facture"></pre>
                       {% comment %} <h3 class="font-bold mb-2 dark:text-gray-400">Info facture</h3> {% endcomment %}
                       <div x-show="!client_desc_facture">
-                        <p class="text-gray-900 dark:text-gray-400">Nom d'entreprise : <span x-text="client_comercial_name"></span></p>
-                        <p class="text-gray-900 dark:text-gray-400">Nom du client : <span x-text="client_name"></span></p>
-                        <p class="text-gray-900 dark:text-gray-400">address du client : <span x-text="client_address"></span></p>
-                        <p class="text-gray-900 dark:text-gray-400">Code postal : <span x-text="client_code_postal"></span> - <span x-text="client_ville"></span></p>
-                        <p class="text-gray-900 dark:text-gray-400">N° NIF : <span>12345678901234</span></p>
-                        <p class="text-gray-900 dark:text-gray-400">N° STAT : <span>12345678901234</span></p>         
-                        <p class="text-gray-900 dark:text-gray-400"><span>{{ facture.client.description_facture|safe }}</span></p> 
+                        <p class="text-gray-900">Nom d'entreprise : <span x-text="client_comercial_name"></span></p>
+                        <p class="text-gray-900">Nom du client : <span x-text="client_name"></span></p>
+                        <p class="text-gray-900">address du client : <span x-text="client_address"></span></p>
+                        <p class="text-gray-900">Code postal : <span x-text="client_code_postal"></span> - <span x-text="client_ville"></span></p>
+                        <p class="text-gray-900">N° NIF : <span>12345678901234</span></p>
+                        <p class="text-gray-900">N° STAT : <span>12345678901234</span></p>         
+                        <p class="text-gray-900"><span>{{ facture.client.description_facture|safe }}</span></p> 
                       </div>
                     </div>
                   </div>
-                  <div class="mb-4 mt-10 text-gray-900 dark:text-gray-400">
-                    {% comment %} <h3 class="text-xl font-bold mb-2 dark:text-gray-400">Détail du facture</h3> {% endcomment %}
-                    <p class="text-emerald-800 text-md font-bold">Facture N° : <span x-text="facture_ref"></span></p>
+                  <div class="mb-4 mt-10 text-gray-900">
+                    {% comment %} <h3 class="text-xl font-bold mb-2">Détail du facture</h3> {% endcomment %}
+                    <p class="text-emerald-800 text-md font-bold"><span x-show="facture_view">Facture</span><span x-show="!facture_view">Devis</span> N° : <span x-text="facture_ref"></span></p>
                     <div class="flex items-center justify-start text-inherit">
-                      <p class="dark:text-gray-400">Date facturation : <span x-text="facture_date"></span></p>
-                      <p class="dark:text-gray-400 ml-5">Date échéance : <span x-text="facture_condition"></span></p>
-                      <p class="dark:text-gray-400 ml-40">Règlement : <span x-text="facture_reglement"></span></p>
+                      <p>Date <span x-show="facture_view">Facture</span><span x-show="!facture_view">Devis</span> : <span x-text="facture_date"></span></p>
+                      <p class="ml-5">Date échéance : <span x-text="facture_condition"></span></p>
+                      <p class="ml-40">Règlement : <span x-text="facture_reglement"></span></p>
                     </div>
             
                     {% comment %} Tableau details de facture {% endcomment %}
@@ -386,7 +399,7 @@
                           <template x-for="service in facture_services">
                             {% comment %} Liste des services du facture ici {% endcomment %}
                             <tr class="article-row">
-                              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white" x-text="service.description">
+                              <th scope="row" class="px-6 py-4 font-medium  whitespace-nowra" x-text="service.description">
                                   
                               </th>
                               <td class="px-6 py-4 article-prix" x-text="service.prix">
@@ -441,11 +454,11 @@
   </div>
 
   {% comment %} View Devis {% endcomment %}
-  <div x-show="!facture_view" x-transition.duration.500ms  class="container mx-auto px-4 py-8">
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
+  <div x-show="!facture_view" x-transition.duration.500ms  class="mx-auto py-8">
+    <div class="relative overflow-x-auto shadow-md border-t border-gray-200 sm:rounded-lg p-2">
+      <div class="flex flex-col gap-4 md:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4 mb-4">
         <div>
-          <form id="dev_filtre-form" method="GET">
+          <form class="flex items-center gap-4" id="dev_filtre-form" method="GET">
             <select id="dev_filtre_mois" name="filtre" class="text-gray-500 bg-white border border-gray-300 w-40 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
               <option value="" selected disabled hidden>
                 Filtre par mois
@@ -480,23 +493,20 @@
           </form>        
           </div>
         <label for="table-search" class="sr-only">Rechercher</label>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center w-full lg:w-auto justify-between gap-2">
         <div class="relative">
           <div
-            class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none"
-          >
+            class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
             <svg
               class="w-5 h-5 text-gray-500 dark:text-gray-400"
               aria-hidden="true"
               fill="currentColor"
               viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+              xmlns="http://www.w3.org/2000/svg">
               <path
                 fill-rule="evenodd"
                 d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                clip-rule="evenodd"
-              ></path>
+                clip-rule="evenodd"></path>
             </svg>
           </div>
           <input
@@ -505,8 +515,7 @@
             type="search"
             id="table-search"
             class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-            placeholder="Rechercher des articles"
-          />
+            placeholder="Rechercher des articles"/>
         </div>
         
         <a href="{% url 'facture:facture' %}?view='devis'" class="flex items-center bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700" data-modal-target="ajouterArticleModal" data-modal-toggle="ajouterArticleModal">
@@ -539,7 +548,7 @@
           
           {% for dev in devis %}
           <tr
-            class="bg-white border-b dark:bg-gray-800 even:dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50" data-dev-mois="{{ dev.date_facture.month }}">
+            class="bg-white border-b dark:bg-gray-800 even:dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50" data-dev-mois="{{ dev.date_facture.month }}" data-dev-annee="{{ dev.date_facture.year }}">
             <td colspan="7" class="w-4 p-4 text-center text-emerald-500 font-bold text-xl capitalize">
               {{ dev.date_facture|date:"F" }}
             </td>
@@ -551,11 +560,8 @@
                 <input
                   id="checkbox-table-search-1"
                   type="checkbox"
-                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label for="checkbox-table-search-1" class="sr-only"
-                  >checkbox</label
-                >
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
               </div>
             </td>
             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -574,10 +580,22 @@
               <button data-modal-target="popup-modal-{{ dev.id }}" data-modal-toggle="popup-modal-{{ dev.id }}" type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg focus:outline-none">
                 <svg class="w-7 h-7 text-red/70 me-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6q-.425 0-.712-.288T4 5t.288-.712T5 4h4q0-.425.288-.712T10 3h4q.425 0 .713.288T15 4h4q.425 0 .713.288T20 5t-.288.713T19 6v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zm-7 11q.425 0 .713-.288T11 16V9q0-.425-.288-.712T10 8t-.712.288T9 9v7q0 .425.288.713T11 17m4 0q.425 0 .713-.288T15 16V9q0-.425-.288-.712T14 8t-.712.288T13 9v7q0 .425.288.713T14 17M7 6v13z"/></svg>
               </button>
-              <button @click="getFactureValue('{{dev.id}}')" data-modal-target="popup-modal-facture" data-modal-toggle="popup-modal-facture" type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
+              <button 
+                {% if entreprise.nom %}
+                  @click="getFactureValue('{{dev.id}}')" data-modal-target="popup-modal-facture" data-modal-toggle="popup-modal-facture"
+                {% else %}
+                    data-modal-target="popup-modal-entreprise" data-modal-toggle="popup-modal-entreprise"
+                {% endif %}
+                type="button" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
                 <svg class="w-7 h-7 text-emerald-800" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m19.675 20.375l.7-.7L18.5 17.8V15h-1v3.2zM18 23q-2.075 0-3.537-1.463T13 18t1.463-3.537T18 13t3.538 1.463T23 18t-1.463 3.538T18 23M7 9h10V7H7zm4.675 12H5q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v6.7q-.725-.35-1.463-.525T18 11q-.275 0-.513.012t-.487.063V11H7v2h6.125q-.45.425-.812.925T11.675 15H7v2h4.075q-.05.25-.062.488T11 18q0 .825.15 1.538T11.675 21"/></svg>
               </button>              
-              <button @click="generate_pdf('{{dev.id}}')" class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
+              <button 
+                {% if entreprise.nom %}
+                  @click="generate_pdf('{{dev.id}}')"
+                {% else %}
+                  data-modal-target="popup-modal-entreprise" data-modal-toggle="popup-modal-entreprise"
+                {% endif %}
+                class="px-1 py-2 text-sm font-medium text-center inline-flex items-center text-white rounded-lg">
                 <svg class="w-7 h-7 text-green-500" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M17.617 6.383a7.944 7.944 0 0 1-1.748 12.568a8.028 8.028 0 0 1-11.586-5.043a8.03 8.03 0 0 1 2.095-7.517c.451-.46-.256-1.168-.707-.707a8.946 8.946 0 0 0 9.756 14.586a8.946 8.946 0 0 0 2.9-14.594c-.451-.461-1.158.247-.707.707Z"/><path fill="currentColor" d="m15.355 10.6l-3 3a.5.5 0 0 1-.35.15a.5.5 0 0 1-.36-.15l-3-3a.5.5 0 0 1 .71-.71l2.14 2.14V3.555a.51.51 0 0 1 .5-.5a.5.5 0 0 1 .5.5v8.49l2.15-2.16a.5.5 0 0 1 .71.71Z"/></svg>
               </button>
             </td>
@@ -644,349 +662,376 @@
       </nav>
     </div>
   </div>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
-<script>
-  // Alpine.js  
-  function factDataComponent(){
-    return {
-      search:'',
-      data_facture:'',
-      fact_search:'{{ fact_search }}',
-      dev_search:'{{ dev_search }}',
-      client_comercial_name: '',
-      client_address: '',
-      client_logo: '',
-      client_code_postal: '2343',
-      client_ville: 'Paris',
-      client_name: '',
-      client_email: '',
-      client_desc_facture: '',
-      facture_ref: '',
-      facture_date: '',
-      facture_intitule: '',
-      facture_emission_date: '',
-      facture_reglement: '',
-      facture_etat: '',
-      facture_montant: '',
-      facture_condition: '',
-      facture_description: '',
-      facture_with_tva: '',
-      facture_sous_total: '',
-      facture_services: '',
-      facture_view: 'true',
-      mois_actuel:'',
-      sousTotal: 0,
-      facture_tva: 0,
-      init (){
-        // Charger les données depuis localStorage
-        this.facture_view = localStorage.getItem('facture_view') === 'true';
+{% comment %} Modal pour invité a remplir l'info d'entreprise {% endcomment %}
+<div id="popup-modal-entreprise" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+        <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+            <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="popup-modal-entreprise">
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+                <span class="sr-only">Close modal</span>
+            </button>
+            <div class="p-4 md:p-5 text-center">
+                <svg class="mx-auto mb-4 text-amber-400 w-12 h-12 dark:text-amber-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                </svg>
+                <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Pour consulter la facture, il est nécessaire de compléter les informations relatives à votre entreprise. Veuillez vous rendre dans les paramètres et remplir le formulaire requis.</h3>
+                <button data-modal-hide="popup-modal-entreprise" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">OK !</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        // Partie chart statistique
-        // Récupérer les données via une requête AJAX
-        fetch("{% url 'facture:statistiques_facture' %}")
-          .then(response => response.json())
-          .then(data => {
-            const moisLabels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
-            // Préparer les datasets pour les montants
-            const montantsDatasets = [];
-            const facturesDatasets = [];
 
-            // Préparer les années à afficher
-            const annees = new Set();
-            Object.keys(data).forEach(mois => {
-              Object.keys(data[mois].montants).forEach(annee => annees.add(annee));
-            });
+{% block extrascript %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+  <script>
+    // Alpine.js  
+    function factDataComponent(){
+      return {
+        search:'',
+        data_facture:'',
+        fact_search:'{{ fact_search }}',
+        dev_search:'{{ dev_search }}',
+        client_comercial_name: '',
+        client_address: '',
+        client_logo: '',
+        client_code_postal: '2343',
+        client_ville: 'Paris',
+        client_name: '',
+        client_email: '',
+        client_desc_facture: '',
+        facture_ref: '',
+        facture_date: '',
+        facture_intitule: '',
+        facture_emission_date: '',
+        facture_reglement: '',
+        facture_etat: '',
+        facture_montant: '',
+        facture_condition: '',
+        facture_description: '',
+        facture_with_tva: '',
+        facture_sous_total: '',
+        facture_services: '',
+        facture_view: 'true',
+        mois_actuel:'',
+        sousTotal: 0,
+        facture_tva: 0,
+        init (){
+          // Charger les données depuis localStorage
+          this.facture_view = localStorage.getItem('facture_view') === 'true';
 
-            // Générer les couleurs et datasets
-            [...annees].forEach(annee => {
-              const montants = Array(12).fill(0);
-              const factures = Array(12).fill(0);
+          // Partie chart statistique
+          // Récupérer les données via une requête AJAX
+          fetch("{% url 'facture:statistiques_facture' %}")
+            .then(response => response.json())
+            .then(data => {
+              const moisLabels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+              // Préparer les datasets pour les montants
+              const montantsDatasets = [];
+              const facturesDatasets = [];
 
+              // Préparer les années à afficher
+              const annees = new Set();
               Object.keys(data).forEach(mois => {
-                const index = parseInt(mois) - 1;
-
-                // Remplir les montants
-                if (data[mois].montants[annee] !== undefined) {
-                    montants[index] = data[mois].montants[annee];
-                }
-                // Remplir les factures
-                if (data[mois].factures[annee] !== undefined) {
-                    factures[index] = data[mois].factures[annee];
-                }
+                Object.keys(data[mois].montants).forEach(annee => annees.add(annee));
               });
 
-              // Ajouter au dataset des montants
-              montantsDatasets.push({
-                label: `Montant ${annee}`,
-                data: montants,
-                borderColor: this.getRandomColor(),
-                backgroundColor: 'rgba(0, 0, 0, 0)',
-                tension: 0.4
-              });
+              // Générer les couleurs et datasets
+              [...annees].forEach(annee => {
+                const montants = Array(12).fill(0);
+                const factures = Array(12).fill(0);
 
-              // Ajouter au dataset des factures
-              facturesDatasets.push({
-                label: `Factures ${annee}`,
-                data: factures,
-                backgroundColor: this.getRandomColor()
-              });
-            });
+                Object.keys(data).forEach(mois => {
+                  const index = parseInt(mois) - 1;
 
-            // Graphique 1 : Montant total
-            const ctxMontant = document.getElementById('montantsFactureChart').getContext('2d');
-            new Chart(ctxMontant, {
-              type: 'line',
-              data: {
-                labels: moisLabels,
-                datasets: montantsDatasets
-              },
-              options: {
-                responsive: true,
-                plugins: {
-                  title: {
-                    display: true,
-                    text: 'Montant Total des Factures par Mois'
+                  // Remplir les montants
+                  if (data[mois].montants[annee] !== undefined) {
+                      montants[index] = data[mois].montants[annee];
                   }
+                  // Remplir les factures
+                  if (data[mois].factures[annee] !== undefined) {
+                      factures[index] = data[mois].factures[annee];
+                  }
+                });
+
+                // Ajouter au dataset des montants
+                montantsDatasets.push({
+                  label: `Montant ${annee}`,
+                  data: montants,
+                  borderColor: this.getRandomColor(),
+                  backgroundColor: 'rgba(0, 0, 0, 0)',
+                  tension: 0.4
+                });
+
+                // Ajouter au dataset des factures
+                facturesDatasets.push({
+                  label: `Factures ${annee}`,
+                  data: factures,
+                  backgroundColor: this.getRandomColor()
+                });
+              });
+
+              // Graphique 1 : Montant total
+              const ctxMontant = document.getElementById('montantsFactureChart').getContext('2d');
+              new Chart(ctxMontant, {
+                type: 'line',
+                data: {
+                  labels: moisLabels,
+                  datasets: montantsDatasets
                 },
-                scales: {
-                  y: {
-                    beginAtZero: true,
+                options: {
+                  responsive: true,
+                  plugins: {
                     title: {
                       display: true,
-                      text: 'Montant (Ar)'
+                      text: 'Montant Total des Factures par Mois'
+                    }
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      title: {
+                        display: true,
+                        text: 'Montant (Ar)'
+                      }
                     }
                   }
                 }
-              }
-          });
+            });
 
-            // Graphique 2 : Nombre de factures
-            const ctxFactures = document.getElementById('numbersFactureChart').getContext('2d');
-            new Chart(ctxFactures, {
-              type: 'bar',
-              data: {
-                labels: moisLabels,
-                datasets: facturesDatasets
-              },
-              options: {
-                responsive: true,
-                plugins: {
-                  title: {
-                    display: true,
-                    text: 'Nombre de Factures par Mois'
-                  }
+              // Graphique 2 : Nombre de factures
+              const ctxFactures = document.getElementById('numbersFactureChart').getContext('2d');
+              new Chart(ctxFactures, {
+                type: 'bar',
+                data: {
+                  labels: moisLabels,
+                  datasets: facturesDatasets
                 },
-                scales: {
-                  y: {
-                    beginAtZero: true,
+                options: {
+                  responsive: true,
+                  plugins: {
                     title: {
                       display: true,
-                      text: 'Nombre de Factures'
+                      text: 'Nombre de Factures par Mois'
+                    }
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      title: {
+                        display: true,
+                        text: 'Nombre de Factures'
+                      }
                     }
                   }
                 }
-              }
+              });
+
+              this.data_facture = this.calculerResume(data)
             });
+        },
 
-            this.data_facture = this.calculerResume(data)
-          });
-      },
+        calculerSousTotal(totalTTC, tva=0.20) {
+          const tauxTVA = tva; // 20%
+          const sousTotal = totalTTC / (1 + tauxTVA);
+          return sousTotal;
+        },
 
-      calculerSousTotal(totalTTC, tva=0.20) {
-        const tauxTVA = tva; // 20%
-        const sousTotal = totalTTC / (1 + tauxTVA);
-        return sousTotal;
-      },
+        getFactureValue(id) {
+          // Récupérer l'URL de manière sécurisée
+          const url = "{% url 'facture:one_facture' %}";
 
-      getFactureValue(id) {
-        // Récupérer l'URL de manière sécurisée
-        const url = "{% url 'facture:one_facture' %}";
-
-        fetch(`${url}?id=${id}`, {
-            method: 'GET',
-        })
-        .then(response => {
-          if (response.ok) {
-              // Si la requête a réussi, convertir la réponse en JSON
-              return response.json(); // Retourne une promesse
-          } else {
-              // Si la requête a échoué, affichez une erreur
-              throw new Error('Une erreur s\'est produite lors de l\'enregistrement du service.');
-          }
-        })
-        .then(data => {
-          // Ici, vous pouvez utiliser les données de la facture
-          this.client_logo = data.client_logo;
-          this.client_comercial_name = data.client_comercial_name;
-          this.client_address = data.client_address;
-          this.client_code_postal = '2343';
-          this.client_ville = 'Paris';
-          this.client_name = data.client_name;
-          this.client_email = data.client_email;
-          this.client_desc_facture = data.client_desc_facture;
-          this.facture_ref = data.facture_ref;
-          this.facture_date = data.facture_date;
-          this.facture_intitule = data.facture_intitule;
-          this.facture_date = data.facture_date;
-          this.facture_reglement = data.facture_reglement;
-          this.facture_etat = data.facture_etat;
-          this.facture_montant = `${data.facture_montant}`;
-          this.facture_condition = data.facture_condition;  
-          this.facture_with_tva = data.facture_with_tva;
-          let services = data.facture_services;
-          this.facture_services = JSON.parse(services);          
-          tva = this.facture_with_tva ? 0 : 0.20;
-          
-          this.facture_sous_total = this.calculerSousTotal(parseFloat(this.facture_montant), tva);
-          this.facture_tva = `${numStr(parseFloat(this.facture_sous_total) * tva, ' ')} Ar`;
-          // Fermez le modal ou effectuez d'autres actions avec les données
-          // window.location.reload(); // Décommentez si vous souhaitez recharger la page
-          // Pour Affichage des montants
-          this.facture_sous_total = numStr(this.facture_sous_total, ' ') + ' Ar';
-          this.facture_montant = numStr(this.facture_montant, ' ') + ' Ar';
-        })
-        .catch(error => {
-            // Gérer les erreurs de réseau
-            console.error('Erreur lors de la requête:', error);
-            alert('Une erreur de réseau s\'est produite.');
-        });
-      },
-
-      saveFactView(){
-        //Sauvegarder les données dans localStorage
-        localStorage.setItem('facture_view', this.facture_view)
-      },
+          fetch(`${url}?id=${id}`, {
+              method: 'GET',
+          })
+          .then(response => {
+            if (response.ok) {
+                // Si la requête a réussi, convertir la réponse en JSON
+                return response.json(); // Retourne une promesse
+            } else {
+                // Si la requête a échoué, affichez une erreur
+                throw new Error('Une erreur s\'est produite lors de l\'enregistrement du service.');
+            }
+          })
+          .then(data => {
+            // Ici, vous pouvez utiliser les données de la facture
+            //this.client_logo = data.client_logo;
+            this.client_comercial_name = data.client_comercial_name;
+            this.client_address = data.client_address;
+            this.client_code_postal = '2343';
+            this.client_ville = 'Paris';
+            this.client_name = data.client_name;
+            this.client_email = data.client_email;
+            this.client_desc_facture = data.client_desc_facture;
+            this.facture_ref = data.facture_ref;
+            this.facture_date = data.facture_date;
+            this.facture_intitule = data.facture_intitule;
+            this.facture_date = data.facture_date;
+            this.facture_reglement = data.facture_reglement;
+            this.facture_etat = data.facture_etat;
+            this.facture_montant = `${data.facture_montant}`;
+            this.facture_condition = data.facture_condition;  
+            this.facture_with_tva = data.facture_with_tva;
+            let services = data.facture_services;
+            this.facture_services = JSON.parse(services);          
+            tva = this.facture_with_tva ? 0 : 0.20;
             
-      // Create un pdf
-      generate_pdf(facture_id){
-        const element = document.getElementById('facture_content');
-        this.getFactureValue(facture_id);
+            this.facture_sous_total = this.calculerSousTotal(parseFloat(this.facture_montant), tva);
+            this.facture_tva = `${numStr(parseFloat(this.facture_sous_total) * tva, ' ')} Ar`;
+            // Fermez le modal ou effectuez d'autres actions avec les données
+            // window.location.reload(); // Décommentez si vous souhaitez recharger la page
+            // Pour Affichage des montants
+            this.facture_sous_total = numStr(this.facture_sous_total, ' ') + ' Ar';
+            this.facture_montant = numStr(this.facture_montant, ' ') + ' Ar';
+          })
+          .catch(error => {
+              // Gérer les erreurs de réseau
+              console.error('Erreur lors de la requête:', error);
+              alert('Une erreur de réseau s\'est produite.');
+          });
+        },
 
-        setTimeout(()=>{
-          const options = {
-            margin: 0,
-            filename: `${this.facture_intitule} - ${this.client_comercial_name}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-          };
+        saveFactView(){
+          //Sauvegarder les données dans localStorage
+          localStorage.setItem('facture_view', this.facture_view)
+        },
+              
+        // Create un pdf
+        generate_pdf(facture_id){
+          const element = document.getElementById('facture_content');
+          this.getFactureValue(facture_id);
+
+          setTimeout(()=>{
+            const options = {
+              margin: 0,
+              filename: `${this.facture_intitule} - ${this.client_comercial_name}.pdf`,
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: { scale: 2 },
+              jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
 
 
-          // Promise-based usage:
-          html2pdf().set(options).from(element).save();
-        }, 1000);       
-        
-      },
+            // Promise-based usage:
+            html2pdf().set(options).from(element).save();
+          }, 1000);       
+          
+        },
 
-      calculerResume(data) {
-        const resume = {};
+        calculerResume(data) {
+          const resume = {};
 
-        // Parcourir chaque mois (clé dans le JSON)
-        for (const mois in data) {
-          const montants = data[mois].montants; // Montants par année pour ce mois
-          const factures = data[mois].factures; // Nombre de factures par année pour ce mois
+          // Parcourir chaque mois (clé dans le JSON)
+          for (const mois in data) {
+            const montants = data[mois].montants; // Montants par année pour ce mois
+            const factures = data[mois].factures; // Nombre de factures par année pour ce mois
 
-          // Parcourir chaque année dans les montants
-          for (const annee in montants) {
-            // Si l'année n'est pas encore dans le résumé, l'initialiser
-            if (!resume[annee]) {
-              resume[annee] = {
-                annee: parseInt(annee),
-                nombre_total_factures: 0,
-                montant_total: 0,
-                montant_moyen: 0
-              };
+            // Parcourir chaque année dans les montants
+            for (const annee in montants) {
+              // Si l'année n'est pas encore dans le résumé, l'initialiser
+              if (!resume[annee]) {
+                resume[annee] = {
+                  annee: parseInt(annee),
+                  nombre_total_factures: 0,
+                  montant_total: 0,
+                  montant_moyen: 0
+                };
+              }
+              // Ajouter les montants et factures de ce mois à l'année correspondante
+              resume[annee].montant_total += montants[annee];
+              resume[annee].nombre_total_factures += factures[annee];
+              }
             }
-            // Ajouter les montants et factures de ce mois à l'année correspondante
-            resume[annee].montant_total += montants[annee];
-            resume[annee].nombre_total_factures += factures[annee];
+
+            // Calculer le montant moyen pour chaque année
+            for (const annee in resume) {
+                const totalFactures = resume[annee].nombre_total_factures;
+                const montantTotal = resume[annee].montant_total;
+
+                resume[annee].montant_moyen = totalFactures > 0 ? (montantTotal / totalFactures).toFixed(2) : 0;
             }
-          }
 
-          // Calculer le montant moyen pour chaque année
-          for (const annee in resume) {
-              const totalFactures = resume[annee].nombre_total_factures;
-              const montantTotal = resume[annee].montant_total;
+          return Object.values(resume); // Retourner le résumé sous forme de tableau
+        },
 
-              resume[annee].montant_moyen = totalFactures > 0 ? (montantTotal / totalFactures).toFixed(2) : 0;
-          }
-
-        return Object.values(resume); // Retourner le résumé sous forme de tableau
-      },
-
-      // Fonction pour générer des couleurs aléatoires
-      getRandomColor(){
-          const r = Math.floor(Math.random() * 255);
-          const g = Math.floor(Math.random() * 255);
-          const b = Math.floor(Math.random() * 255);
-          return `rgba(${r}, ${g}, ${b}, 0.6)`;
+        // Fonction pour générer des couleurs aléatoires
+        getRandomColor(){
+            const r = Math.floor(Math.random() * 255);
+            const g = Math.floor(Math.random() * 255);
+            const b = Math.floor(Math.random() * 255);
+            return `rgba(${r}, ${g}, ${b}, 0.6)`;
+        }
       }
     }
-  }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    // Sélectionner tous les éléments avec les attributs data-mois et data-annee
-    const moisNodes = document.querySelectorAll('[data-mois][data-annee]');
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sélectionner tous les éléments avec les attributs data-mois et data-annee
+      const moisNodes = document.querySelectorAll('[data-mois][data-annee]');
 
-    // Extraire les combinaisons uniques de mois et année
-    const moisAnneeValues = Array.from(moisNodes).map(node => {
-      return `${node.getAttribute('data-mois')}-${node.getAttribute('data-annee')}`;
+      // Extraire les combinaisons uniques de mois et année
+      const moisAnneeValues = Array.from(moisNodes).map(node => {
+        return `${node.getAttribute('data-mois')}-${node.getAttribute('data-annee')}`;
+      });
+
+      // Utiliser un Set pour identifier les combinaisons uniques
+      const uniqueMoisAnnee = [...new Set(moisAnneeValues)];
+
+      // Parcourir les éléments et masquer les doublons
+      moisNodes.forEach((node, index) => {
+        const currentMoisAnnee = moisAnneeValues[index];
+        if (moisAnneeValues.indexOf(currentMoisAnnee) !== index) {
+          // Si ce mois-année est un doublon, masquer l'élément
+          node.style.display = 'none';
+        }
+      });
+
+      const devMoisNodes = document.querySelectorAll('[data-dev-mois][data-dev-annee]');
+      
+      const devMoisAnneeValues = Array.from(moisNodes).map(node => {
+        return `${node.getAttribute('data-dev-mois')}-${node.getAttribute('data-dev-annee')}`;
+      });
+
+      const devUniqueMoisAnnee = [...new Set(devMoisAnneeValues)];
+
+      devMoisNodes.forEach((node, index) => {
+        const devcurrentMoisAnnee = devMoisAnneeValues[index];
+        if (devMoisAnneeValues.indexOf(devcurrentMoisAnnee) !== index) {
+          // Si ce mois-année est un doublon, masquer l'élément
+          node.style.display = 'none';
+        }
+      });    
+      
     });
 
-    // Utiliser un Set pour identifier les combinaisons uniques
-    const uniqueMoisAnnee = [...new Set(moisAnneeValues)];
-
-    // Parcourir les éléments et masquer les doublons
-    moisNodes.forEach((node, index) => {
-      const currentMoisAnnee = moisAnneeValues[index];
-      if (moisAnneeValues.indexOf(currentMoisAnnee) !== index) {
-        // Si ce mois-année est un doublon, masquer l'élément
-        node.style.display = 'none';
-      }
+    document.getElementById('fact_filtre_annee').addEventListener('change', function() {
+      var filtreValue = this.value;
+      var url = new URL(window.location.href);
+      url.searchParams.set('fact_annee', filtreValue);
+      window.location.href = url.href;
     });
-
-    const devMoisNodes = document.querySelectorAll('[data-dev-mois][data-dev-annee]');
-    const devMoisAnneeValues = Array.from(moisNodes).map(node => {
-      return `${node.getAttribute('data-dev-mois')}-${node.getAttribute('data-dev-annee')}`;
+    document.getElementById('fact_filtre_mois').addEventListener('change', function() {
+      var filtreValue = this.value;
+      var url = new URL(window.location.href);
+      url.searchParams.set('fact_mois', filtreValue);
+      window.location.href = url.href;
     });
-    const devUniqueMoisAnnee = [...new Set(devMoisAnneeValues)];
-    devMoisNodes.forEach((node, index) => {
-      const devcurrentMoisAnnee = devMoisAnneeValues[index];
-      if (devMoisAnneeValues.indexOf(devcurrentMoisAnnee) !== index) {
-        // Si ce mois-année est un doublon, masquer l'élément
-        node.style.display = 'none';
-      }
-    });    
-    
-  });
+    document.getElementById('dev_filtre_annee').addEventListener('change', function() {
+      var filtreValue = this.value;
+      var url = new URL(window.location.href);
+      url.searchParams.set('dev_annee', filtreValue);
+      window.location.href = url.href;
+    });
+    document.getElementById('dev_filtre_mois').addEventListener('change', function() {
+      var filtreValue = this.value;
+      var url = new URL(window.location.href);
+      url.searchParams.set('dev_mois', filtreValue);
+      window.location.href = url.href;
+    }); 
 
-  document.getElementById('fact_filtre_annee').addEventListener('change', function() {
-    var filtreValue = this.value;
-    var url = new URL(window.location.href);
-    url.searchParams.set('fact_annee', filtreValue);
-    window.location.href = url.href;
-  });
-  document.getElementById('fact_filtre_mois').addEventListener('change', function() {
-    var filtreValue = this.value;
-    var url = new URL(window.location.href);
-    url.searchParams.set('fact_mois', filtreValue);
-    window.location.href = url.href;
-  });
-  document.getElementById('dev_filtre_annee').addEventListener('change', function() {
-    var filtreValue = this.value;
-    var url = new URL(window.location.href);
-    url.searchParams.set('dev_annee', filtreValue);
-    window.location.href = url.href;
-  });
-  document.getElementById('dev_filtre_mois').addEventListener('change', function() {
-    var filtreValue = this.value;
-    var url = new URL(window.location.href);
-    url.searchParams.set('dev_mois', filtreValue);
-    window.location.href = url.href;
-  }); 
-
-</script>
+  </script>
+{% endblock extrascript %}
 {% endblock content %}
