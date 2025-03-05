@@ -21,12 +21,7 @@ class FactureListSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Facture
-        fields = [
-            'id', 'ref', 'intitule', 'type', 'client', 
-            'date_facture', 'reglement', 'condition', 'created_by',
-            'etat_facture', 'services', 'with_tva', 'montant'
-        ]
-        read_only_fields = ['ref', 'created_by'] # Empêche la modification de ces champs
+        fields = '__all__'
 
     # Surcharge de la méthode create pour générer la référence de la facture
     @transaction.atomic
