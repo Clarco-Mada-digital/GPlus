@@ -5,7 +5,10 @@
 <html lang="fr" class="{% if is_dark_theme %}dark{% endif %}">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0"
+        />
         <title>G+</title>
         {% tailwind_css %}
         <script
@@ -55,14 +58,14 @@
     </style>
 
     <body class="dark:bg-[#323D4E]">
-        <!-- <div class="absolute top-6 text-black z-50 left-4">
+        <div class="absolute top-2 text-black z-50 left-4 dark:text-white">
             <span class="sm:hidden">XS</span>
             <span class="hidden sm:inline md:hidden">SM</span>
             <span class="hidden md:block lg:hidden">MD</span>
             <span class="hidden lg:block xl:hidden">LG</span>
             <span class="hidden xl:block 2xl:hidden">XL</span>
             <span class="hidden 2xl:block ">2XL</span>
-        </div> -->
+        </div>
         {% comment %} Message {% endcomment %}
         {% if messages %}
             <div class="fixed z-20 top-5 right-5 mt-14 flex flex-col gap-2">
@@ -107,7 +110,10 @@
         <div class="flex h-screen bg-gray-50 dark:bg-[#323D4E]">
             <!-- Sidebar (hidden on small screens) -->
             <aside id="sidebar"
-                class="w-64 p-3 bg-white dark:bg-secondary  fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out sm:translate-x-0 sm:relative sm:flex-shrink-0 z-40">
+                class="
+                sm:lg:w-56 md:w-24
+                p-3 
+                bg-white dark:bg-secondary  fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out sm:translate-x-0 sm:relative sm:flex-shrink-0 z-40">
                 <button id="sidebarClose"
                     class="text-gray-500 focus:outline-none sm:hidden">
                     <svg class="w-6 h-6" fill="none"
@@ -119,11 +125,10 @@
                             stroke-width="2"
                             d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
-
                 </button>
 
-                <a href="{% url 'accounts:index' %}" class="px-6 ">
-                    <svg width="100" height="60"
+                <a href="{% url 'accounts:index' %}" class="px-6 md:px-0 lg:px-6">
+                    <svg class="md:w-full h-24 lg:h-24"
                         xmlns="http://www.w3.org/20" viewBox="0 0 535 346"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
@@ -146,19 +151,19 @@
 
                 <nav class="mt-4">
                     <a href="{% url 'caisse:index' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/' %}text-blue-600 bg-blue-100  rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary  rounded-lg{% endif %}">
+                        class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start {% if request.path == '/caisse/' %}text-blue-600 bg-blue-100  rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary  rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path
                                 d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                         </svg>
-                        <span class="ml-3">Tableau de bord</span>
+                        <span class="ml-3 lg:inline md:hidden">Tableau de bord</span>
                     </a>
                     <a href="{% url 'caisse:operation' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/operations/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
+                        class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/operations/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 mr-2"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -168,24 +173,24 @@
                             <path d="M7 13l5 5 5-5" />
                             <path d="M7 6l5-5 5 5" />
                         </svg>
-                        <span class="ml-3">Opérations</span>
+                        <span class="ml-3 lg:inline md:hidden">Opérations</span>
                     </a>
                     <a href="{% url 'caisse:listes' %}"
-                    class="flex items-center px-4 py-2 mt-2 {% if '/caisse/listes/' in request.path or  '/caisse/entrees/' in request.path or '/caisse/sorties/' in request.path %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary rounded-lg{% endif %}">
+                    class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if '/caisse/listes/' in request.path or  '/caisse/entrees/' in request.path or '/caisse/sorties/' in request.path %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
                             <path fill-rule="evenodd"
                                 d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
                                 clip-rule="evenodd" />
                         </svg>
-                        <span class="ml-3">Listes</span>
+                        <span class="ml-3 lg:inline md:hidden">Listes</span>
                     </a>
                     <a href="{% url 'caisse:depenses' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/depenses/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
+                        class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/depenses/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path
                                 d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
@@ -193,46 +198,46 @@
                                 d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
                                 clip-rule="evenodd" />
                         </svg>
-                        <span class="ml-3">Dépenses</span>
+                        <span class="ml-3 lg:inline md:hidden">Dépenses</span>
                     </a>
                     <a href="{% url 'caisse:acteurs' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/acteurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
+                        class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/acteurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path
                                 d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
                         </svg>
-                        <span class="ml-3">Acteurs</span>
+                        <span class="ml-3 lg:inline md:hidden">Acteurs</span>
                     </a>
                     <!-- Ajouter ce nouveau lien pour les bénéficiaires -->
                     <a href="{% url 'caisse:beneficiaires' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/beneficiaires/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
+                        class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/beneficiaires/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 mr-2"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0"
                             viewBox="0 0 20 20"
                             fill="currentColor">
                             <path
                                 d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                         </svg>
-                        <span class="ml-3">Bénéficiaires</span>
+                        <span class="ml-3 lg:inline md:hidden">Bénéficiaires</span>
                     </a>
                     {% if request.user.is_staff %}
                     <!-- Nouvel élément pour les utilisateurs -->
                     <a href="{% url 'caisse:utilisateurs' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/utilisateurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
+                        class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/utilisateurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path
                                 d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                         </svg>
-                        <span class="ml-3">Utilisateurs</span>
+                        <span class="ml-3 lg:inline md:hidden">Utilisateurs</span>
                     </a>
                     {% endif %}
                     <a href="{% url 'caisse:historique' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/historique/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
-                        <svg width="25" height="25" viewBox="0 0 25 25"
+                        class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/historique/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
+                        <svg class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 25 25"
                             fill="none" xmlns="http://www.w3.org/2000/svg">
 
                             <path
@@ -244,18 +249,18 @@
                                 fill="currentColor" />
 
                         </svg>
-                        <span class="ml-3">Historique</span>
+                        <span class="ml-3 lg:inline md:hidden">Historique</span>
                     </a>
 
                     <a href="{% url 'caisse:parametres' %}"
-                        class="flex items-center px-4 py-2 mt-2 {% if request.path == '/caisse/parametres/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
+                        class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/parametres/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path
                                 d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
                         </svg>
-                        <span class="ml-3">Paramètres</span>
+                        <span class="ml-3 lg:inline md:hidden">Paramètres</span>
                     </a>
                 </nav>
             </aside>
@@ -264,7 +269,7 @@
             <div class="flex-1 flex flex-col">
                 <!-- Header with button to toggle sidebar -->
                 <header
-                    class="flex items-center justify-between px-6 py-4 bg-white dark:bg-secondary">
+                    class="flex items-center justify-between w-auto px-6 py-4 bg-white dark:bg-secondary">
                     <button id="sidebarToggle"
                         class="text-gray-500 focus:outline-none sm:hidden">
                         <svg class="w-6 h-6" fill="none"
@@ -300,8 +305,10 @@
                                 </svg>
                             </div>
                             <input type="text"
-                                class="py-2 border-none focus:outline-none rounded-full bg-transparent focus:ring-0 dark:text-white"
-                                placeholder="Entrer votre recherche ici">
+                                class="
+                                w-full min-w-2
+                                py-2 border-none focus:outline-none rounded-full bg-transparent focus:ring-0 dark:text-white"
+                                placeholder="Recherche...">
                         </div>
                         <a href="{% url 'change_theme' %}" id="theme-toggle">
                             <div
@@ -449,42 +456,35 @@
                     mainContent.classList.add('h-full');
                 }
             }
+        </script>
 
-            changeToMobile();
+        <!-- ...existing code... -->
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hideButtons = document.querySelectorAll('[data-modal-hide]');
+            const targetButtons = document.querySelectorAll('[data-modal-target]');
 
-            // Listen for window resize events
-            window.addEventListener('resize', () => {
-                changeToMobile();
+            hideButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const modalId = this.getAttribute('data-modal-hide');
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
             });
-  </script>
 
-  <!-- ...existing code... -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const hideButtons = document.querySelectorAll('[data-modal-hide]');
-        const targetButtons = document.querySelectorAll('[data-modal-target]');
-    
-        hideButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const modalId = this.getAttribute('data-modal-hide');
-                const modal = document.getElementById(modalId);
-                if (modal) {
-                    modal.classList.add('hidden');
-                }
-            });
-        });
-    
-        targetButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const modalId = this.getAttribute('data-modal-target');
-                const modal = document.getElementById(modalId);
-                if (modal) {
-                    modal.classList.remove('hidden');
-                }
+            targetButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const modalId = this.getAttribute('data-modal-target');
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        modal.classList.remove('hidden');
+                    }
+                });
             });
         });
-    });
-    </script>
-    <!-- ...existing code... -->
+        </script>
+        <!-- ...existing code... -->
     </body>
 </html>
