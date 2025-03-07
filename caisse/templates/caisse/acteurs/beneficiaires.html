@@ -50,18 +50,30 @@
 
     <!-- Liste des bénéficiaires -->
     <!-- Version desktop du tableau -->
-    <div class="bg-white dark:bg-secondary rounded-2xl shadow-sm mb-4 md:mb-0">
+    <div class="bg-white dark:bg-secondary text-black dark:text-white rounded-2xl shadow-sm mb-4 md:mb-0">
         <!-- Section des filtres -->
-        <div class="flex items-center flex-row justify-between text-black dark:text-white">
+        <!-- Bouton pour afficher/masquer les filtres sur mobile -->
+        <button onclick="toggleFilters()" 
+            class="md:hidden w-full flex items-center justify-between p-4 bg-white dark:bg-secondary rounded-lg mb-2">
+            <span class="font-medium">Filtres</span>
+            <svg id="filter-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
+
+        <div class="
+        flex lg:flex-row flex-col
+        items-center justify-between 
+        text-black dark:text-white">
             <form method="GET" action="{% url 'caisse:liste_entrees' %}" 
-                    class="hidden md:block p-2 bg-white dark:bg-secondary" 
+                    class="w-full hidden md:block p-2 bg-white dark:bg-secondary" 
                     id="filter-form" 
                     onsubmit="return false;">
-                <div class="flex items-center dark:bg-secondary rounded-xl space-x-4">
-                    <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 w-full">
+                <div class="w-full flex items-center dark:bg-secondary rounded-xl space-x-4">
+                    <div class="w-full flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                         <!-- Sélecteur Employés -->
                         <select name="beneficiaire"
-                                class="w-full md:w-auto py-2 border-none dark:bg-secondary focus:ring-0 rounded-lg"
+                                class="w-full py-2 border-none dark:bg-secondary focus:ring-0 rounded-lg"
                                 onchange="updateQueryParam([{ key: 'beneficiaire', value: this.value }])">
                             <option value="">Bénéficiaires</option>
                             {% for beneficiaire in beneficiaires_filtre %}
@@ -75,7 +87,7 @@
 
                         <!-- Sélecteur Catégories -->
                         <select name="type"
-                                class="w-full md:w-auto py-2 border-none dark:bg-secondary focus:ring-0 rounded-lg"
+                                class="w-full py-2 border-none dark:bg-secondary focus:ring-0 rounded-lg"
                                 onchange="updateQueryParam([{ key: 'type', value: this.value }])">
                             <option value="">Types</option>
                             {% for type in types %}
@@ -102,7 +114,7 @@
                 </div>
             </form>
 
-            <div class="flex flex-col gap-4 font-medium items-center justify-end py-4 px-4">
+            <div class=" w-full flex flex-col gap-4 font-medium items-center justify-end py-4 px-4">
                 <!-- Sélecteur pour le nombre de lignes par page -->
                 <form method="get" class="flex items-center space-x-2">
                     <label for="lignes" class="hidden md:flex">Nombre de lignes :</label>
@@ -422,6 +434,14 @@
 </div>
 
 <script>
+
+    function toggleFilters() {
+        const filterForm = document.getElementById('filter-form');
+        const filterIcon = document.getElementById('filter-icon');
+        
+        filterForm.classList.toggle('hidden');
+        filterIcon.classList.toggle('rotate-180');
+    }
     // Fonction pour mettre à jour le paramètre de requête dans l'URL et recharger la page
     function updateQueryParam(...params) {
         const url = new URL(window.location.href);

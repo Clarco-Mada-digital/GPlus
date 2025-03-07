@@ -4963,6 +4963,10 @@ input[type="date"]::-webkit-inner-spin-button,
   border-color: rgb(55 65 81 / var(--tw-divide-opacity));
 }
 
+.dark\:rounded-2xl:is(.dark *){
+  border-radius: 1rem;
+}
+
 .dark\:border-blue-500:is(.dark *){
   --tw-border-opacity: 1;
   border-color: rgb(59 130 246 / var(--tw-border-opacity));
@@ -5227,6 +5231,11 @@ input[type="date"]::-webkit-inner-spin-button,
 .dark\:text-yellow-400:is(.dark *){
   --tw-text-opacity: 1;
   color: rgb(250 204 21 / var(--tw-text-opacity));
+}
+
+.dark\:text-black:is(.dark *){
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .dark\:placeholder-gray-400:is(.dark *)::-moz-placeholder{
