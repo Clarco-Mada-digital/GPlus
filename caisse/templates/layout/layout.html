@@ -151,9 +151,10 @@
 
                 <nav class="mt-4 flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
                     <a href="{% url 'caisse:index' %}"
+                    title="Tableau de bord"
                         class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start {% if request.path == '/caisse/' %}text-blue-600 bg-blue-100  rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary  rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-[30px] md:h-[30px] mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path
                                 d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
@@ -161,9 +162,10 @@
                         <span class="ml-3 lg:inline md:hidden">Tableau de bord</span>
                     </a>
                     <a href="{% url 'caisse:operation' %}"
+                    title="Opérations"
                         class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/operations/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-[30px] md:h-[30px] mr-2 lg:mr-2 md:m-0"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -176,9 +178,10 @@
                         <span class="ml-3 lg:inline md:hidden">Opérations</span>
                     </a>
                     <a href="{% url 'caisse:listes' %}"
+                    title="Listes"
                     class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if '/caisse/listes/' in request.path or  '/caisse/entrees/' in request.path or '/caisse/sorties/' in request.path %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-[30px] md:h-[30px] mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
                             <path fill-rule="evenodd"
@@ -188,9 +191,10 @@
                         <span class="ml-3 lg:inline md:hidden">Listes</span>
                     </a>
                     <a href="{% url 'caisse:depenses' %}"
+                        title="Dépenses"
                         class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/depenses/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-[30px] md:h-[30px] mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path
                                 d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
@@ -201,9 +205,10 @@
                         <span class="ml-3 lg:inline md:hidden">Dépenses</span>
                     </a>
                     <a href="{% url 'caisse:acteurs' %}"
+                        title="Acteurs"
                         class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/acteurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-[30px] md:h-[30px] mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path
                                 d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
@@ -212,9 +217,10 @@
                     </a>
                     <!-- Ajouter ce nouveau lien pour les bénéficiaires -->
                     <a href="{% url 'caisse:beneficiaires' %}"
+                        title="Bénéficiaires"
                         class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/beneficiaires/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-[30px] md:h-[30px] mr-2 lg:mr-2 md:m-0"
                             viewBox="0 0 20 20"
                             fill="currentColor">
                             <path
@@ -225,9 +231,10 @@
                     {% if request.user.is_staff %}
                     <!-- Nouvel élément pour les utilisateurs -->
                     <a href="{% url 'caisse:utilisateurs' %}"
+                        title="Utilisateurs"
                         class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/utilisateurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-[30px] md:h-[30px] mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path
                                 d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
@@ -236,8 +243,9 @@
                     </a>
                     {% endif %}
                     <a href="{% url 'caisse:historique' %}"
+                        title="Historique"
                         class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/historique/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
-                        <svg class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 25 25"
+                        <svg class="h-5 w-5 lg:h-5 lg:w-5 md:w-[30px] md:h-[30px] mr-2 lg:mr-2 md:m-0" viewBox="0 0 25 25"
                             fill="none" xmlns="http://www.w3.org/2000/svg">
 
                             <path
@@ -253,9 +261,10 @@
                     </a>
 
                     <a href="{% url 'caisse:parametres' %}"
+                        title="Paramètres"
                         class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start  {% if request.path == '/caisse/parametres/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-12 md:h-12 mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
+                            class="h-5 w-5 lg:h-5 lg:w-5 md:w-[30px] md:h-[30px] mr-2 lg:mr-2 md:m-0" viewBox="0 0 20 20"
                             fill="currentColor">
                             <path
                                 d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
