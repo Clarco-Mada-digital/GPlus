@@ -6203,6 +6203,14 @@ input[type="date"]::-webkit-inner-spin-button,
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
+  .xl\:grid-cols-4{
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .xl\:grid-cols-3{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .xl\:gap-6{
     gap: 1.5rem;
   }
@@ -6220,6 +6228,10 @@ input[type="date"]::-webkit-inner-spin-button,
 
   .\32xl\:hidden{
     display: none;
+  }
+
+  .\32xl\:grid-cols-4{
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .\32xl\:gap-\[5\%\]{
