@@ -107,13 +107,13 @@
             </div>
         {% endif %}
         
-        <div class="flex h-screen bg-gray-50 dark:bg-[#323D4E]">
+        <div class="flex h-screen overflow-hidden bg-gray-50 dark:bg-[#323D4E]">
             <!-- Sidebar (hidden on small screens) -->
             <aside id="sidebar"
                 class="
                 sm:lg:w-56 md:w-24
                 p-3 
-                bg-white dark:bg-secondary  fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out sm:translate-x-0 sm:relative sm:flex-shrink-0 z-40">
+                bg-white dark:bg-secondary fixed overflow-y-hidden inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out sm:translate-x-0 sm:relative sm:flex-shrink-0 z-40">
                 <button id="sidebarClose"
                     class="text-gray-500 focus:outline-none sm:hidden">
                     <svg class="w-6 h-6" fill="none"
@@ -149,7 +149,7 @@
 
                 </a>
 
-                <nav class="mt-4">
+                <nav class="mt-4 flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
                     <a href="{% url 'caisse:index' %}"
                         class="flex items-center px-4 md:px-0 lg:px-4 py-2 mt-2 md:justify-center lg:justify-start {% if request.path == '/caisse/' %}text-blue-600 bg-blue-100  rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary  rounded-lg{% endif %}">
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -266,10 +266,10 @@
             </aside>
 
             <!-- Main content -->
-            <div class="flex-1 flex flex-col">
+            <div class="w-full relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto">
                 <!-- Header with button to toggle sidebar -->
                 <header
-                    class="flex items-center justify-between w-auto px-6 py-4 bg-white dark:bg-secondary">
+                    class="flex items-center justify-between px-6 py-4 bg-white dark:bg-secondary">
                     <button id="sidebarToggle"
                         class="text-gray-500 focus:outline-none sm:hidden">
                         <svg class="w-6 h-6" fill="none"

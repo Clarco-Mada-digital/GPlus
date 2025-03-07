@@ -5,7 +5,7 @@
 {% block title_page %}Liste des Opérations{% endblock %}
 
 {% block content %}
-<div class="dark:text-white text-liste">
+<div class="dark:text-white mx-auto text-liste">
 
     <!-- Navigation entre Entrées et Sorties -->
     <div class="flex justify-between dark:text-white  space-x-4 mb-4  items-center">
@@ -186,173 +186,175 @@
     <form method="post" id="export-form" action="{% url 'caisse:generer_excel_operations_sorties' %}">
         {% csrf_token %}
         <input type="hidden" id="selected-operations-input" name="selected_operations_ids">
-        <div class="{% cycle 'bg-white dark:bg-secondary' 'bg-gray-100 dark:bg-gray-700' %} border-b border-white dark:border-gray-800 hover:bg-gray-200 dark:hover:bg-gray-800">
+        <div class="relative {% cycle 'bg-white dark:bg-secondary' 'bg-gray-100 dark:bg-gray-700' %} border-b border-white dark:border-gray-800 hover:bg-gray-200 dark:hover:bg-gray-800">
             <!-- Version desktop du tableau -->
-            <table class="w-full hidden md:table">
-                <thead class="text-table" >
-                    <tr class="text-sm font-medium border-b dark:border-gray-800 dark:text-white/70">
-                        <th class="px-4 py-1 text-left">
-                            <input type="checkbox" id="select-all-sorties">
-                        </th>
-                        <th class="px-4 py-1 text-left">
-                            {% if request.GET.sort == 'description' and request.GET.order == 'asc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'description' }], [{ key: 'order', value: 'desc' }])">Description ⬇</a>
-                            {% elif request.GET.sort == 'description' and request.GET.order == 'desc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Description ⬆</a>
-                            {% else %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'description' }], [{ key: 'order', value: 'asc' }])">Description ⬇⬆</a>
-                            {% endif %}
-                        </th>
-                        <th class="px-4 py-1 text-left">
-                            {% if request.GET.sort == 'categorie' and request.GET.order == 'asc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'categorie' }], [{ key: 'order', value: 'desc' }])">Categorie ⬇</a>
-                            {% elif request.GET.sort == 'categorie' and request.GET.order == 'desc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Categorie ⬆</a>
-                            {% else %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'categorie' }], [{ key: 'order', value: 'asc' }])">Categorie ⬇⬆</a>
-                            {% endif %}
-                        </th>
-                        <th class="px-4 py-1 text-left">
-                            {% if request.GET.sort == 'beneficiaire' and request.GET.order == 'asc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'beneficiaire' }], [{ key: 'order', value: 'desc' }])">Bénéficiaire ⬇</a>
-                            {% elif request.GET.sort == 'beneficiaire' and request.GET.order == 'desc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Bénéficiaire ⬆</a>
-                            {% else %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'beneficiaire' }], [{ key: 'order', value: 'asc' }])">Bénéficiaire ⬇⬆</a>
-                            {% endif %}
-                        </th>
-                        <th class="px-4 py-1 text-left items-center">
-                            {% if request.GET.sort == 'fournisseur' and request.GET.order == 'asc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'fournisseur' }], [{ key: 'order', value: 'desc' }])">Fournisseur ⬇</a>
-                            {% elif request.GET.sort == 'fournisseur' and request.GET.order == 'desc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Fournisseur ⬆</a>
-                            {% else %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'fournisseur' }], [{ key: 'order', value: 'asc' }])">Fournisseur ⬇⬆</a>
-                            {% endif %}
-                        </th>
-                        <th class="px-4 py-1 text-left">
-                            {% if request.GET.sort == 'date' and request.GET.order == 'asc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'date' }], [{ key: 'order', value: 'desc' }])">Date ⬇</a>
-                            {% elif request.GET.sort == 'date' and request.GET.order == 'desc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Date ⬆</a>
-                            {% else %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'date' }], [{ key: 'order', value: 'asc' }])">Date ⬇⬆</a>
-                            {% endif %}
-                        </th>
-                        <th class="px-4 py-1 text-right">
-                            {% if request.GET.sort == 'quantite' and request.GET.order == 'asc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'quantite' }], [{ key: 'order', value: 'desc' }])">Quantité ⬇</a>
-                            {% elif request.GET.sort == 'quantite' and request.GET.order == 'desc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Quantité ⬆</a>
-                            {% else %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'quantite' }], [{ key: 'order', value: 'asc' }])">Quantité ⬇⬆</a>
-                            {% endif %}
-                        </th>
-                        <th class="px-4 py-1 text-right">
-                            {% if request.GET.sort == 'montant' and request.GET.order == 'asc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'montant' }], [{ key: 'order', value: 'desc' }])">Montant ⬇</a>
-                            {% elif request.GET.sort == 'montant' and request.GET.order == 'desc' %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Montant ⬆</a>
-                            {% else %}
-                            <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'montant' }], [{ key: 'order', value: 'asc' }])">Montant ⬇⬆</a>
-                            {% endif %}
-                        </th>
-                        <th class="px-4 py-1 text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="text-liste dark:text-white font-medium">
-                    {% for operation in page_obj %}
-                    <tr :key="{{ operation.id }}" 
-                        class="{% cycle 'bg-white dark:bg-secondary' 'bg-gray-100 dark:bg-gray-800' %} border-b border-white dark:border-gray-800 hover:bg-gray-200">
-                        <td class="px-4 py-2">
-                            <input type="checkbox" name="selected_operations" value="{{ operation.id }}">
-                        </td>
-                        <td class="py-1 px-4">
-                            <div class="flex gap-2">
-                                <!-- SVG pour les sorties -->
-                                <svg width="22" height="23" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect y="0.621582" width="22" height="22" rx="11" fill="#FFE0EB"/>
-                                    <g clip-path="url(#clip0_394_243)">
-                                    <path d="M15.0523 5.62158C14.366 5.62158 13.8096 6.17799 13.8096 6.86436V10.5725H15.9436C16.1377 10.5725 16.2951 10.4151 16.2951 10.221V6.86436C16.2951 6.17799 15.7387 5.62158 15.0523 5.62158V5.62158Z" fill="#FB6094"/>
-                                    <path d="M9.25045 14.4575C9.25045 12.3338 10.9781 10.5846 13.1302 10.5905V7.01579C13.1302 6.48101 13.3315 5.99243 13.6622 5.62158H7.46145C6.49254 5.62158 5.7041 6.41002 5.7041 7.37893V17.2637C5.7041 17.58 6.09098 17.7353 6.30973 17.5067L6.75949 17.0371L7.23457 17.5124C7.37168 17.6495 7.59434 17.6495 7.73168 17.5124L8.18191 17.0624L8.6366 17.5133C8.77371 17.6492 8.99473 17.6492 9.13184 17.5133L9.59379 17.0553L10.056 17.5133C10.1929 17.6492 10.4136 17.6492 10.5507 17.5135L10.6403 17.4249C9.76859 16.6962 9.25045 15.6185 9.25045 14.4575ZM8.54815 8.45752H9.24199V7.76368C9.24199 7.56952 9.3994 7.41211 9.59355 7.41211C9.78771 7.41211 9.94512 7.56952 9.94512 7.76368V8.45752H10.639C10.8331 8.45752 10.9905 8.61493 10.9905 8.80908C10.9905 9.00324 10.8331 9.16064 10.639 9.16064H9.94512V9.85449C9.94512 10.0486 9.78771 10.2061 9.59355 10.2061C9.3994 10.2061 9.24199 10.0486 9.24199 9.85449V9.16064H8.54815C8.35399 9.16064 8.19659 9.00324 8.19659 8.80908C8.19659 8.61493 8.35399 8.45752 8.54815 8.45752ZM7.48416 10.9196H9.85137C10.0455 10.9196 10.2029 11.077 10.2029 11.2712C10.2029 11.4653 10.0455 11.6228 9.85137 11.6228H7.48416C7.29 11.6228 7.13259 11.4653 7.13259 11.2712C7.13259 11.077 7.29 10.9196 7.48416 10.9196ZM8.6572 14.4329H7.48181C7.28766 14.4329 7.13025 14.2755 7.13025 14.0813C7.13025 13.8872 7.28766 13.7298 7.48181 13.7298H8.6572C8.85136 13.7298 9.00877 13.8872 9.00877 14.0813C9.00877 14.2755 8.85136 14.4329 8.6572 14.4329ZM8.8916 13.029H7.48296C7.2888 13.029 7.1314 12.8716 7.1314 12.6774C7.1314 12.4833 7.2888 12.3259 7.48296 12.3259H8.8916C9.08576 12.3259 9.24316 12.4833 9.24316 12.6774C9.24316 12.8716 9.08576 13.029 8.8916 13.029Z" fill="#FB6094"/>
-                                    <path d="M13.1172 11.2935C11.3725 11.2935 9.95312 12.7129 9.95312 14.4575C9.95312 16.2022 11.3725 17.6216 13.1172 17.6216C14.8619 17.6216 16.2812 16.2022 16.2812 14.4575C16.2812 12.7129 14.8619 11.2935 13.1172 11.2935ZM13.4699 15.8115V15.8449C13.4699 16.0391 13.3124 16.1965 13.1183 16.1965C12.9241 16.1965 12.7667 16.0391 12.7667 15.8449V15.8389C12.6092 15.8014 12.4631 15.7394 12.3473 15.6636C12.1848 15.5573 12.1393 15.3394 12.2455 15.1769C12.3519 15.0144 12.5697 14.9689 12.7322 15.0752C12.8761 15.1693 13.1133 15.2051 13.2299 15.1502C13.3054 15.1147 13.3639 15.0388 13.372 14.9657C13.3894 14.81 13.1455 14.7232 12.9999 14.6657C12.7795 14.5787 12.5053 14.4703 12.3461 14.1829C12.1191 13.7732 12.3179 13.2331 12.7667 13.0483V13.0306C12.7667 12.8365 12.9241 12.6791 13.1183 12.6791C13.3105 12.6791 13.4665 12.8334 13.4696 13.0249C13.5961 13.0645 13.7127 13.1278 13.806 13.2139C13.9488 13.3455 13.9577 13.5679 13.8261 13.7106C13.6944 13.8534 13.472 13.8623 13.3293 13.7307C13.2715 13.6773 13.0932 13.6558 13.0158 13.7078C12.9637 13.7428 12.9433 13.8099 12.9611 13.8421C13.0354 13.9762 13.4242 14.0221 13.7185 14.2514C14.3196 14.7199 14.1104 15.5658 13.4699 15.8115Z" fill="#FB6094"/>
-                                    </g>
-                                    <defs>
-                                    <clipPath id="clip0_394_243">
-                                    <rect width="12" height="12" fill="white" transform="translate(5 5.62158)"/>
-                                    </clipPath>
-                                    </defs>
-                                    </svg>
-                                {{ operation.description }}
-                            </div>
-                        </td>
-                        <td class="py-1 px-4">{{ operation.categorie.name }}</td>
-                        <td class="py-1 px-4">
-                            {% if operation.beneficiaire %}
-                                {{ operation.beneficiaire }}
-                            {% else %}
-                                Bénéficiaire non spécifié
-                            {% endif %}
-                        </td>
-                        <td class="py-1 px-4">{{ operation.fournisseur.name }}</td>
-                        <td class="py-1 px-4">{{ operation.date_de_sortie }}</td>
-                        <td class="py-1 px-4 text-right">{{ operation.quantite }}</td>
-                        <td class="py-1 px-4 text-right">{{ operation.montant|intcomma }} Ar</td>
-                        <td class="py-1 px-4 text-right">
-                            <div class="flex justify-center text-table dark:text-white items-center space-x-2 border border-table dark:border-gray-600 rounded-2xl">
-                                <!-- Icône de modification (stylo) -->
-                                <a href="{% url 'caisse:modifier_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                </a>
-    
-                                <div class="h-10 bg-table dark:bg-gray-600" style="width: 1px;"></div>
-    
-                                <!-- Icône de suppression -->
-                                <a class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" data-modal-target="popup-modal-desktop-{{ operation.id }}">
-                                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M13.097 15.7002H4.51158C3.83421 15.7002 3.2851 15.1629 3.2851 14.5002V3.7002H14.3234V14.5002C14.3234 15.1629 13.7743 15.7002 13.097 15.7002Z" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
-                                        <path d="M6.96576 12.1003V7.30029" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
-                                        <path d="M10.6448 12.1003V7.30029" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
-                                        <path d="M0.831726 3.70029H16.776" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M10.6444 1.30029H6.96495C6.28758 1.30029 5.73846 1.83755 5.73846 2.50029V3.70029H11.8709V2.50029C11.8709 1.83755 11.3218 1.30029 10.6444 1.30029Z" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-
-                    {% comment %} Modal suppression Desktop {% endcomment %}
-                    <div id="popup-modal-desktop-{{ operation.id }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                        <div class="relative p-4 w-full max-w-md max-h-full">
-                            <div class="relative bg-white rounded-lg shadow dark:bg-secondary">
-                                <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="popup-modal-desktop-{{ operation.id }}">
-                                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                                    </svg>
-                                    <span class="sr-only">Fermer</span>
-                                </button>
-                                <div class="p-4 md:p-5 text-center">
-                                    <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                                    </svg>
-                                    <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Êtes-vous sûr de vouloir supprimer ce bénéficiaire ref: {{ operation.description }} ?</h3>
-                                    <a
-                                    href="{% url 'caisse:supprimer_sortie' operation.id  %}"
-                                    class="text-gray-500 dark:text-white bg-red-600 dark:bg-red-600 hover:bg-red-700 dark:hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2">
-                                        Oui, supprimer
+             <div class="overflow-x-auto">
+                <table class="w-full hidden md:table">
+                    <thead class="text-table" >
+                        <tr class="text-sm font-medium border-b dark:border-gray-800 dark:text-white/70">
+                            <th class="px-4 py-1 text-left">
+                                <input type="checkbox" id="select-all-sorties">
+                            </th>
+                            <th class="px-4 py-1 text-left whitespace-nowrap ">
+                                {% if request.GET.sort == 'description' and request.GET.order == 'asc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'description' }], [{ key: 'order', value: 'desc' }])">Description ⬇</a>
+                                {% elif request.GET.sort == 'description' and request.GET.order == 'desc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Description ⬆</a>
+                                {% else %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'description' }], [{ key: 'order', value: 'asc' }])">Description ⬇⬆</a>
+                                {% endif %}
+                            </th>
+                            <th class="px-4 py-1 text-left whitespace-nowrap ">
+                                {% if request.GET.sort == 'categorie' and request.GET.order == 'asc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'categorie' }], [{ key: 'order', value: 'desc' }])">Categorie ⬇</a>
+                                {% elif request.GET.sort == 'categorie' and request.GET.order == 'desc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Categorie ⬆</a>
+                                {% else %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'categorie' }], [{ key: 'order', value: 'asc' }])">Categorie ⬇⬆</a>
+                                {% endif %}
+                            </th>
+                            <th class="px-4 py-1 text-left whitespace-nowrap ">
+                                {% if request.GET.sort == 'beneficiaire' and request.GET.order == 'asc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'beneficiaire' }], [{ key: 'order', value: 'desc' }])">Bénéficiaire ⬇</a>
+                                {% elif request.GET.sort == 'beneficiaire' and request.GET.order == 'desc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Bénéficiaire ⬆</a>
+                                {% else %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'beneficiaire' }], [{ key: 'order', value: 'asc' }])">Bénéficiaire ⬇⬆</a>
+                                {% endif %}
+                            </th>
+                            <th class="px-4 py-1 text-left items-center whitespace-nowrap ">
+                                {% if request.GET.sort == 'fournisseur' and request.GET.order == 'asc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'fournisseur' }], [{ key: 'order', value: 'desc' }])">Fournisseur ⬇</a>
+                                {% elif request.GET.sort == 'fournisseur' and request.GET.order == 'desc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Fournisseur ⬆</a>
+                                {% else %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'fournisseur' }], [{ key: 'order', value: 'asc' }])">Fournisseur ⬇⬆</a>
+                                {% endif %}
+                            </th>
+                            <th class="px-4 py-1 text-left whitespace-nowrap ">
+                                {% if request.GET.sort == 'date' and request.GET.order == 'asc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'date' }], [{ key: 'order', value: 'desc' }])">Date ⬇</a>
+                                {% elif request.GET.sort == 'date' and request.GET.order == 'desc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Date ⬆</a>
+                                {% else %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'date' }], [{ key: 'order', value: 'asc' }])">Date ⬇⬆</a>
+                                {% endif %}
+                            </th>
+                            <th class="px-4 py-1 text-right whitespace-nowrap ">
+                                {% if request.GET.sort == 'quantite' and request.GET.order == 'asc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'quantite' }], [{ key: 'order', value: 'desc' }])">Quantité ⬇</a>
+                                {% elif request.GET.sort == 'quantite' and request.GET.order == 'desc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Quantité ⬆</a>
+                                {% else %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'quantite' }], [{ key: 'order', value: 'asc' }])">Quantité ⬇⬆</a>
+                                {% endif %}
+                            </th>
+                            <th class="px-4 py-1 text-right whitespace-nowrap ">
+                                {% if request.GET.sort == 'montant' and request.GET.order == 'asc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'montant' }], [{ key: 'order', value: 'desc' }])">Montant ⬇</a>
+                                {% elif request.GET.sort == 'montant' and request.GET.order == 'desc' %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort'}], [{ key: 'order'}])">Montant ⬆</a>
+                                {% else %}
+                                <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'montant' }], [{ key: 'order', value: 'asc' }])">Montant ⬇⬆</a>
+                                {% endif %}
+                            </th>
+                            <th class="px-4 py-1 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-liste dark:text-white font-medium">
+                        {% for operation in page_obj %}
+                        <tr :key="{{ operation.id }}" 
+                            class="{% cycle 'bg-white dark:bg-secondary' 'bg-gray-100 dark:bg-gray-800' %} border-b border-white dark:border-gray-800 hover:bg-gray-200">
+                            <td class="px-4 py-2">
+                                <input type="checkbox" name="selected_operations" value="{{ operation.id }}">
+                            </td>
+                            <td class="py-1 px-4 whitespace-nowrap ">
+                                <div class="flex gap-2">
+                                    <!-- SVG pour les sorties -->
+                                    <svg width="22" height="23" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect y="0.621582" width="22" height="22" rx="11" fill="#FFE0EB"/>
+                                        <g clip-path="url(#clip0_394_243)">
+                                        <path d="M15.0523 5.62158C14.366 5.62158 13.8096 6.17799 13.8096 6.86436V10.5725H15.9436C16.1377 10.5725 16.2951 10.4151 16.2951 10.221V6.86436C16.2951 6.17799 15.7387 5.62158 15.0523 5.62158V5.62158Z" fill="#FB6094"/>
+                                        <path d="M9.25045 14.4575C9.25045 12.3338 10.9781 10.5846 13.1302 10.5905V7.01579C13.1302 6.48101 13.3315 5.99243 13.6622 5.62158H7.46145C6.49254 5.62158 5.7041 6.41002 5.7041 7.37893V17.2637C5.7041 17.58 6.09098 17.7353 6.30973 17.5067L6.75949 17.0371L7.23457 17.5124C7.37168 17.6495 7.59434 17.6495 7.73168 17.5124L8.18191 17.0624L8.6366 17.5133C8.77371 17.6492 8.99473 17.6492 9.13184 17.5133L9.59379 17.0553L10.056 17.5133C10.1929 17.6492 10.4136 17.6492 10.5507 17.5135L10.6403 17.4249C9.76859 16.6962 9.25045 15.6185 9.25045 14.4575ZM8.54815 8.45752H9.24199V7.76368C9.24199 7.56952 9.3994 7.41211 9.59355 7.41211C9.78771 7.41211 9.94512 7.56952 9.94512 7.76368V8.45752H10.639C10.8331 8.45752 10.9905 8.61493 10.9905 8.80908C10.9905 9.00324 10.8331 9.16064 10.639 9.16064H9.94512V9.85449C9.94512 10.0486 9.78771 10.2061 9.59355 10.2061C9.3994 10.2061 9.24199 10.0486 9.24199 9.85449V9.16064H8.54815C8.35399 9.16064 8.19659 9.00324 8.19659 8.80908C8.19659 8.61493 8.35399 8.45752 8.54815 8.45752ZM7.48416 10.9196H9.85137C10.0455 10.9196 10.2029 11.077 10.2029 11.2712C10.2029 11.4653 10.0455 11.6228 9.85137 11.6228H7.48416C7.29 11.6228 7.13259 11.4653 7.13259 11.2712C7.13259 11.077 7.29 10.9196 7.48416 10.9196ZM8.6572 14.4329H7.48181C7.28766 14.4329 7.13025 14.2755 7.13025 14.0813C7.13025 13.8872 7.28766 13.7298 7.48181 13.7298H8.6572C8.85136 13.7298 9.00877 13.8872 9.00877 14.0813C9.00877 14.2755 8.85136 14.4329 8.6572 14.4329ZM8.8916 13.029H7.48296C7.2888 13.029 7.1314 12.8716 7.1314 12.6774C7.1314 12.4833 7.2888 12.3259 7.48296 12.3259H8.8916C9.08576 12.3259 9.24316 12.4833 9.24316 12.6774C9.24316 12.8716 9.08576 13.029 8.8916 13.029Z" fill="#FB6094"/>
+                                        <path d="M13.1172 11.2935C11.3725 11.2935 9.95312 12.7129 9.95312 14.4575C9.95312 16.2022 11.3725 17.6216 13.1172 17.6216C14.8619 17.6216 16.2812 16.2022 16.2812 14.4575C16.2812 12.7129 14.8619 11.2935 13.1172 11.2935ZM13.4699 15.8115V15.8449C13.4699 16.0391 13.3124 16.1965 13.1183 16.1965C12.9241 16.1965 12.7667 16.0391 12.7667 15.8449V15.8389C12.6092 15.8014 12.4631 15.7394 12.3473 15.6636C12.1848 15.5573 12.1393 15.3394 12.2455 15.1769C12.3519 15.0144 12.5697 14.9689 12.7322 15.0752C12.8761 15.1693 13.1133 15.2051 13.2299 15.1502C13.3054 15.1147 13.3639 15.0388 13.372 14.9657C13.3894 14.81 13.1455 14.7232 12.9999 14.6657C12.7795 14.5787 12.5053 14.4703 12.3461 14.1829C12.1191 13.7732 12.3179 13.2331 12.7667 13.0483V13.0306C12.7667 12.8365 12.9241 12.6791 13.1183 12.6791C13.3105 12.6791 13.4665 12.8334 13.4696 13.0249C13.5961 13.0645 13.7127 13.1278 13.806 13.2139C13.9488 13.3455 13.9577 13.5679 13.8261 13.7106C13.6944 13.8534 13.472 13.8623 13.3293 13.7307C13.2715 13.6773 13.0932 13.6558 13.0158 13.7078C12.9637 13.7428 12.9433 13.8099 12.9611 13.8421C13.0354 13.9762 13.4242 14.0221 13.7185 14.2514C14.3196 14.7199 14.1104 15.5658 13.4699 15.8115Z" fill="#FB6094"/>
+                                        </g>
+                                        <defs>
+                                        <clipPath id="clip0_394_243">
+                                        <rect width="12" height="12" fill="white" transform="translate(5 5.62158)"/>
+                                        </clipPath>
+                                        </defs>
+                                        </svg>
+                                    {{ operation.description }}
+                                </div>
+                            </td>
+                            <td class="py-1 px-4 whitespace-nowrap ">{{ operation.categorie.name }}</td>
+                            <td class="py-1 px-4 whitespace-nowrap ">
+                                {% if operation.beneficiaire %}
+                                    {{ operation.beneficiaire }}
+                                {% else %}
+                                    Bénéficiaire non spécifié
+                                {% endif %}
+                            </td>
+                            <td class="py-1 px-4 whitespace-nowrap ">{{ operation.fournisseur.name }}</td>
+                            <td class="py-1 px-4 whitespace-nowrap ">{{ operation.date_de_sortie }}</td>
+                            <td class="py-1 px-4 text-right whitespace-nowrap ">{{ operation.quantite }}</td>
+                            <td class="py-1 px-4 text-right whitespace-nowrap ">{{ operation.montant|intcomma }} Ar</td>
+                            <td class="py-1 px-4 text-right whitespace-nowrap ">
+                                <div class="flex justify-center text-table dark:text-white items-center space-x-2 border border-table dark:border-gray-600 rounded-2xl">
+                                    <!-- Icône de modification (stylo) -->
+                                    <a href="{% url 'caisse:modifier_sortie' operation.id %}" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
                                     </a>
-                                    <button data-modal-hide="popup-modal-desktop-{{ operation.id }}" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
-                                        Non, annuler
+        
+                                    <div class="h-10 bg-table dark:bg-gray-600" style="width: 1px;"></div>
+        
+                                    <!-- Icône de suppression -->
+                                    <a class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" data-modal-target="popup-modal-desktop-{{ operation.id }}">
+                                        <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M13.097 15.7002H4.51158C3.83421 15.7002 3.2851 15.1629 3.2851 14.5002V3.7002H14.3234V14.5002C14.3234 15.1629 13.7743 15.7002 13.097 15.7002Z" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M6.96576 12.1003V7.30029" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M10.6448 12.1003V7.30029" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M0.831726 3.70029H16.776" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10.6444 1.30029H6.96495C6.28758 1.30029 5.73846 1.83755 5.73846 2.50029V3.70029H11.8709V2.50029C11.8709 1.83755 11.3218 1.30029 10.6444 1.30029Z" stroke="#EF3826" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        {% comment %} Modal suppression Desktop {% endcomment %}
+                        <div id="popup-modal-desktop-{{ operation.id }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                            <div class="relative p-4 w-full max-w-md max-h-full">
+                                <div class="relative bg-white rounded-lg shadow dark:bg-secondary">
+                                    <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="popup-modal-desktop-{{ operation.id }}">
+                                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                        </svg>
+                                        <span class="sr-only">Fermer</span>
                                     </button>
+                                    <div class="p-4 md:p-5 text-center">
+                                        <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                        </svg>
+                                        <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Êtes-vous sûr de vouloir supprimer ce bénéficiaire ref: {{ operation.description }} ?</h3>
+                                        <a
+                                        href="{% url 'caisse:supprimer_sortie' operation.id  %}"
+                                        class="text-gray-500 dark:text-white bg-red-600 dark:bg-red-600 hover:bg-red-700 dark:hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2">
+                                            Oui, supprimer
+                                        </a>
+                                        <button data-modal-hide="popup-modal-desktop-{{ operation.id }}" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                                            Non, annuler
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    {% endfor %}
-                </tbody>
-            </table>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
             <!-- Version mobile du tableau -->
