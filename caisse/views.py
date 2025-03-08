@@ -476,7 +476,7 @@ def depenses(request: WSGIRequest):
         depenses_par_categorie = sorted(depenses_par_categorie, key=categorie_sort_options[sort_by], reverse=(order_in == 'desc'))
 
     # Pagination
-    lignes_par_page = request.GET.get('lignes', 10) # Valeur par défaut : 10
+    lignes_par_page = request.GET.get('lignes', str(10)) # Valeur par défaut : 10
 
     paginator = Paginator(depenses_par_employe, lignes_par_page)
     page_number = request.GET.get('page')

@@ -149,7 +149,7 @@
     <h2
         class="text-lg font-semibold mb-4 text-gray-800 dark:text-white underline decoration underline-offset-4">Résumé
         du mois</h2>
-    <div class="bg-white dark:bg-secondary rounded-2xl p-6 mb-8">
+    <div class="bg-white dark:bg-secondary rounded-2xl p-6 mb-8 shadow-md rounded-lg">
         <div class="grid grid-cols-1  gap-2 mb-4">
             <div class="xl:h-[500px] lg:h-[350px] md:h-[250px] transition-all duration-500">
                 <canvas class="w-full" id="resumeMoisChart"></canvas>
@@ -759,7 +759,6 @@
         setTimeout(() => {
             // Graphique de résumé
             if (resumeChart) {
-                console.log(resumeChart);
                 resumeChart.destroy();
             }
             resumeChart = new Chart(
@@ -785,7 +784,7 @@
             );
 
             adaptCharts();
-        }, 50);
+        }, 70);
     };
 
     // Remplir le tableau des entrées des 4 derniers mois
