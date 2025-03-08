@@ -418,7 +418,7 @@
             <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
                 Dépenses par année
             </h2>
-            <div>
+            <div class="xl:h-[500px] lg:h-[350px] md:h-[250px] transition-all duration-500">
                 <canvas class="h-full w-full" id="yearlyExpensesChart"></canvas>
             </div>
         </div>
@@ -661,6 +661,7 @@
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,
@@ -701,8 +702,6 @@
         categoryChart.options.scales.x.ticks.font.size = 10; // Réduire la taille de la police des ticks
         categoryChart.options.plugins.legend.display = false; // Masquer la légende
 
-        // Graphique Dépenses par année
-        ctxYearlyParent.style.height = '160px'; // Réduire la hauteur du conteneur
         ctxYearlyParent.style.display = 'flex'; // Utiliser flexbox pour centrer
         ctxYearlyParent.style.justifyContent = 'center'; // Centrer horizontalement
         ctxYearlyParent.style.alignItems = 'center'; // Centrer verticalement
