@@ -3286,6 +3286,11 @@ body{
   background-color: rgb(254 249 195 / var(--tw-bg-opacity));
 }
 
+.bg-\[\#323D4E\]{
+  --tw-bg-opacity: 1;
+  background-color: rgb(50 61 78 / var(--tw-bg-opacity));
+}
+
 .bg-opacity-50{
   --tw-bg-opacity: 0.5;
 }
@@ -5724,8 +5729,8 @@ input[type="date"]::-webkit-inner-spin-button,
     height: 250px;
   }
 
-  .md\:h-\[28px\]{
-    height: 28px;
+  .md\:h-\[30px\]{
+    height: 30px;
   }
 
   .md\:h-auto{
@@ -5734,10 +5739,6 @@ input[type="date"]::-webkit-inner-spin-button,
 
   .md\:h-full{
     height: 100%;
-  }
-
-  .md\:h-\[30px\]{
-    height: 30px;
   }
 
   .md\:w-1\/2{
@@ -5772,8 +5773,8 @@ input[type="date"]::-webkit-inner-spin-button,
     width: 20rem;
   }
 
-  .md\:w-\[28px\]{
-    width: 28px;
+  .md\:w-\[30px\]{
+    width: 30px;
   }
 
   .md\:w-auto{
@@ -5790,10 +5791,6 @@ input[type="date"]::-webkit-inner-spin-button,
 
   .md\:w-screen{
     width: 100vw;
-  }
-
-  .md\:w-\[30px\]{
-    width: 30px;
   }
 
   .md\:max-w-sm{

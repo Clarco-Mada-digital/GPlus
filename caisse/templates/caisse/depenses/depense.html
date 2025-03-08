@@ -427,6 +427,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+
+    let categoryChart;
+    let yearlyExpensesChart;
+    
     function updateMonth(mois) {
         const url = new URL(window.location);
         url.searchParams.set('mois', mois);
@@ -498,29 +502,31 @@
         '#EC4899', '#8B5CF6', '#14B8A6', '#F97316', '#06B6D4'
     ];
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Synchroniser les sélecteurs de mois
-        const moisSelect = document.getElementById('moisSelect');
-        const moisSelectCategories = document.getElementById('moisSelectCategories');
+    // Synchroniser les sélecteurs de mois
+    const moisSelect = document.getElementById('moisSelect');
+    const moisSelectCategories = document.getElementById('moisSelectCategories');
+    
+    if (moisSelect && moisSelectCategories) {
+        moisSelectCategories.innerHTML = moisSelect.innerHTML;
+        moisSelectCategories.value = moisSelect.value;
         
-        if (moisSelect && moisSelectCategories) {
-            moisSelectCategories.innerHTML = moisSelect.innerHTML;
-            moisSelectCategories.value = moisSelect.value;
-            
-            moisSelectCategories.addEventListener('change', function() {
-                updateMonth(this.value);
-            });
-        }
-        // Graphique par Catégories
-        const ctxCategory = document.getElementById('categoryChart').getContext('2d');
-        
-        // Préparer les données initiales
-        const initialData = {
-            labels: [{% for depense in depenses_par_categorie %}'{{ depense.categorie__name }}',{% endfor %}],
-            data: [{% for depense in depenses_par_categorie %}{{ depense.total_depenses }},{% endfor %}]
-        };
+        moisSelectCategories.addEventListener('change', function() {
+            updateMonth(this.value);
+        });
+    }
+    
+    // Préparer les données initiales
+    const initialData = {
+        labels: [{% for depense in depenses_par_categorie %}'{{ depense.categorie__name }}',{% endfor %}],
+        data: [{% for depense in depenses_par_categorie %}{{ depense.total_depenses }},{% endfor %}]
+    };
 
-        const categoryChart = new Chart(ctxCategory, {
+    function categoryChartConfig() {
+        const isDarkMode = document.body.classList.contains('dark');
+        const fontColor = isDarkMode ? '#fff' : '#374151';
+        const borderColor = isDarkMode ? '#374151' : '#e5e7eb';
+
+        return {
             type: 'bar',
             data: {
                 labels: initialData.labels,
@@ -545,7 +551,8 @@
                             font: {
                                 size: 12,
                                 weight: 'bold'
-                            }
+                            },
+                            color: fontColor
                         },
                         grid: {
                             color: 'rgba(200, 200, 200, 0.3)'
@@ -560,7 +567,8 @@
                             font: {
                                 size: 12,
                                 weight: 'bold'
-                            }
+                            },
+                            color: fontColor
                         }
                     }
                 },
@@ -568,11 +576,11 @@
                     legend: {
                         display: true,
                         position: 'top',
-                        // align: 'start',
                         labels: {
                             font: {
                                 size: 12
                             },
+                            color: fontColor,
                             usePointStyle: true,
                             padding: 20,
                             generateLabels: function(chart) {
@@ -586,6 +594,7 @@
                                         return {
                                             text: `${label} ${percentage}%`,
                                             fillStyle: data.datasets[0].backgroundColor[i],
+                                            fontColor: fontColor,
                                             index: i
                                         };
                                     });
@@ -595,6 +604,10 @@
                         }
                     },
                     tooltip: {
+                        titleColor: fontColor,
+                        bodyColor: fontColor,
+                        backgroundColor: isDarkMode ? '#1f2937' : '#fff',
+                        borderColor: isDarkMode ? '#374151' : '#e5e7eb',
                         callbacks: {
                             label: function(context) {
                                 const value = context.raw;
@@ -617,25 +630,25 @@
                     duration: 0 // Désactive l'animation
                 }
             }
-        });
-
-        // Rendre le graphique accessible globalement pour les mises à jour
-        window.categoryChart = categoryChart;
-
-        // Limiter le nombre de catégories affichées
-        const maxCategories = 10; // Nombre maximum de catégories à afficher
-        if (categoryChart.data.labels.length > maxCategories) {
-            categoryChart.data.labels = categoryChart.data.labels.slice(0, maxCategories);
-            categoryChart.data.datasets[0].data = categoryChart.data.datasets[0].data.slice(0, maxCategories);
-            categoryChart.data.datasets[0].backgroundColor = categoryChart.data.datasets[0].backgroundColor.slice(0, maxCategories);
         }
+    }
 
-        
-        // Graphique Dépenses par année
-        const ctxYearly = document.getElementById('yearlyExpensesChart').getContext('2d');
-        const ctxYearlyParent = document.getElementById('yearlyExpensesChart').parentNode;
-        
-        new Chart(ctxYearly, {
+    categoryChart = new Chart(document.getElementById('categoryChart').getContext('2d'), categoryChartConfig());
+
+    // Limiter le nombre de catégories affichées
+    const maxCategories = 10; // Nombre maximum de catégories à afficher
+    if (categoryChart.data.labels.length > maxCategories) {
+        categoryChart.data.labels = categoryChart.data.labels.slice(0, maxCategories);
+        categoryChart.data.datasets[0].data = categoryChart.data.datasets[0].data.slice(0, maxCategories);
+        categoryChart.data.datasets[0].backgroundColor = categoryChart.data.datasets[0].backgroundColor.slice(0, maxCategories);
+    }
+
+    function yearlyExpensesChartConfig() {
+        const isDarkMode = document.body.classList.contains('dark');
+        const fontColor = isDarkMode ? '#fff' : '#374151';
+        const borderColor = isDarkMode ? '#374151' : '#e5e7eb';
+
+        return {
             type: 'line',
             data: {
                 labels: [{% for depense in depenses_par_annee %}'{{ depense.year|date:"Y" }}',{% endfor %}],
@@ -654,66 +667,95 @@
                         ticks: {
                             callback: function(value) {
                                 return value.toLocaleString() + ' Ar';
-                            }
+                            },
+                            color: fontColor
                         }
+                    },
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: fontColor
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false,
                     }
                 }
             }
-        });
-
-        // Adapter les graphiques pour mobile de manière dynamique
-        function adaptCharts() {
-            if (window.innerWidth < 640) {
-            // Graphique Dépenses par Catégorie
-            categoryChart.options.scales.y.ticks.font.size = 10; // Réduire la taille de la police des ticks
-            categoryChart.options.scales.x.ticks.font.size = 10; // Réduire la taille de la police des ticks
-            categoryChart.options.plugins.legend.display = false; // Masquer la légende
-
-            // Graphique Dépenses par année
-            ctxYearlyParent.style.height = '160px'; // Réduire la hauteur du conteneur
-            ctxYearlyParent.style.display = 'flex'; // Utiliser flexbox pour centrer
-            ctxYearlyParent.style.justifyContent = 'center'; // Centrer horizontalement
-            ctxYearlyParent.style.alignItems = 'center'; // Centrer verticalement
-            } else {
-            ctxYearlyParent.removeAttribute('style');
-            categoryChart.options.plugins.legend.display = true; // Afficher la légende
-            }
-            categoryChart.update();
         }
-
-        // Appeler la fonction lors du chargement de la page
-        adaptCharts();
-
-        // Ajouter un écouteur d'événement pour redimensionner la fenêtre
-        window.addEventListener('resize', adaptCharts);
-        
-        // Initialiser le filtre de catégorie
-        const categorieFilter = document.getElementById('categorieFilter');
-        if (categorieFilter) {
-            const urlParams = new URLSearchParams(window.location.search);
-            const selectedCategory = urlParams.get('categorie');
-            if (selectedCategory) {
-                categorieFilter.value = selectedCategory;
-                filterTableByCategory(selectedCategory);
-            }
-        }
-    });
+    }
     
-    // Mettre à jour les options des graphiques pour le mode sombre
-    Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151';
-    Chart.defaults.borderColor = document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb';
+    // Graphique Dépenses par année
+    const ctxYearly = document.getElementById('yearlyExpensesChart').getContext('2d');
+    const ctxYearlyParent = document.getElementById('yearlyExpensesChart').parentNode;
+    
+    yearlyExpensesChart = new Chart(ctxYearly, yearlyExpensesChartConfig());
+
+    // Adapter les graphiques pour mobile de manière dynamique
+    function adaptCharts() {
+        if (window.innerWidth < 770) {
+        // Graphique Dépenses par Catégorie
+        categoryChart.options.scales.y.ticks.font.size = 10; // Réduire la taille de la police des ticks
+        categoryChart.options.scales.x.ticks.font.size = 10; // Réduire la taille de la police des ticks
+        categoryChart.options.plugins.legend.display = false; // Masquer la légende
+
+        // Graphique Dépenses par année
+        ctxYearlyParent.style.height = '160px'; // Réduire la hauteur du conteneur
+        ctxYearlyParent.style.display = 'flex'; // Utiliser flexbox pour centrer
+        ctxYearlyParent.style.justifyContent = 'center'; // Centrer horizontalement
+        ctxYearlyParent.style.alignItems = 'center'; // Centrer verticalement
+        } else {
+        ctxYearlyParent.removeAttribute('style');
+        categoryChart.options.plugins.legend.display = true; // Afficher la légende
+        }
+
+        categoryChart.update();
+    }
+
+    // Appeler la fonction lors du chargement de la page
+    adaptCharts();
+
+    // Ajouter un écouteur d'événement pour redimensionner la fenêtre
+    window.addEventListener('resize', adaptCharts);
+    
+    // Initialiser le filtre de catégorie
+    const categorieFilter = document.getElementById('categorieFilter');
+    if (categorieFilter) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedCategory = urlParams.get('categorie');
+        if (selectedCategory) {
+            categorieFilter.value = selectedCategory;
+            filterTableByCategory(selectedCategory);
+        }
+    }
+    
+    changeThemeCharts();
 
     // Écouter les changements de mode
-    document.addEventListener('dark-mode', function() {
-        Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#9ca3af' : '#374151';
-        Chart.defaults.borderColor = document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb';
-        
-        // Mettre à jour les graphiques
-        if (categoryChart) categoryChart.update();
-        if (yearlyExpensesChart) yearlyExpensesChart.update();
-    });
+    function changeThemeCharts() {
+        setTimeout(() => {
+            // Graphique Dépense par Catégorie
+            if (categoryChart) {
+                categoryChart.destroy();
+            }
+            categoryChart = new Chart(document.getElementById('categoryChart'), categoryChartConfig());
+            // Graphique Dépense par Année
+            if (yearlyExpensesChart) {
+                yearlyExpensesChart.destroy();
+            }
+            yearlyExpensesChart = new Chart(ctxYearly, yearlyExpensesChartConfig());
+            
+            // Mettre à jour les graphiques
+            categoryChart.update();
+            yearlyExpensesChart.update();
+            adaptCharts();
+        }, 50);
+    }
 
     categoryChart.update();
+    yearlyExpensesChart.update();
 
 </script>
 

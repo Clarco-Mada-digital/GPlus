@@ -416,6 +416,7 @@
     // Créer une variable pour stocker l'instance du graphique
     let sortiesCategoriesChart;
     let entreesCategoriesChart;
+    let resumeChart;
 
     // Données
     const entreesParMois = JSON.parse('{{ entrees_par_mois|safe }}');
@@ -426,83 +427,89 @@
     const entrees4Mois = JSON.parse('{{ entrees_4_mois|safe }}');
     const sorties4Mois = JSON.parse('{{ sorties_4_mois|safe }}');
 
-    // Graphique Résumé du mois
-    const resumeChart = new Chart(document.getElementById('resumeMoisChart'), {
-        type: 'bar',
-        data: {
-            labels: entreesParMois.map(item => item.mois),
-            datasets: [{
-                label: 'Solde',
-                data: soldesParMois.map(item => item.solde),
-                backgroundColor: '#396AFF',
-                borderColor: '#396AFF',
-                borderRadius: 10,
-            }, {
-                label: 'Entrées',
-                data: entreesParMois.map(item => item.total),
-                backgroundColor: '#16DBCC',
-                borderColor: '#16DBCC',
-                borderRadius: 10,
-            }, {
-                label: 'Sorties',
-                data: sortiesParMois.map(item => item.total),
-                backgroundColor: '#FF82AC',
-                borderColor: '#FF82AC',
-                borderRadius: 10,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: false,
-                    position: 'right',
-                    ticks: {
-                        callback: value => 'Ar ' + value.toLocaleString('fr-FR'),
-                        font: {
-                            size: 12,
-                            weight: 'bold'
+    function resumeChartConfig() {
+        const fontColor = document.body.classList.contains('dark') ? '#fff' : '#374151';
+
+        return {
+            type: 'bar',
+            data: {
+                labels: entreesParMois.map(item => item.mois),
+                datasets: [{
+                    label: 'Solde',
+                    data: soldesParMois.map(item => item.solde),
+                    backgroundColor: '#396AFF',
+                    borderColor: '#396AFF',
+                    borderRadius: 10,
+                }, {
+                    label: 'Entrées',
+                    data: entreesParMois.map(item => item.total),
+                    backgroundColor: '#16DBCC',
+                    borderColor: '#16DBCC',
+                    borderRadius: 10,
+                }, {
+                    label: 'Sorties',
+                    data: sortiesParMois.map(item => item.total),
+                    backgroundColor: '#FF82AC',
+                    borderColor: '#FF82AC',
+                    borderRadius: 10,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        position: 'right',
+                        ticks: {
+                            callback: value => 'Ar ' + value.toLocaleString('fr-FR'),
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            color: fontColor
                         },
-                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#374151'
+                        grid: {
+                            color: 'rgba(200, 200, 200, 0.3)'
+                        }
                     },
-                    grid: {
-                        color: 'rgba(200, 200, 200, 0.3)'
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            color: fontColor
+                        }
                     }
                 },
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        font: {
-                            size: 12,
-                            weight: 'bold'
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: false,
+                        labels: {
+                            font: {
+                                size: 12
+                            },
+                            color: fontColor,
+                            usePointStyle: true
                         },
-                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#374151'
+                        position: 'top',
+                        align: 'start'
                     }
                 }
-            },
-            interaction: {
-                intersect: false,
-                mode: 'index'
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                    labels: {
-                        font: {
-                            size: 12
-                        },
-                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#374151',
-                        usePointStyle: true
-                    },
-                    position: 'top',
-                    align: 'start'
-                }
             }
-        }
-    });
+        };
+    }
+
+    // Graphique Résumé du mois
+    resumeChart = new Chart(document.getElementById('resumeMoisChart'), resumeChartConfig());
 
     // Adapter les graphiques pour MD de manière dynamique
     function adaptCharts() {
@@ -510,7 +517,6 @@
         // Graphique Dépenses par Catégorie
         resumeChart.options.scales.y.ticks.font.size = 10; // Réduire la taille de la police des ticks
         resumeChart.options.scales.x.ticks.font.size = 10; // Réduire la taille de la police des ticks
-        resumeChart.options.plugins.legend.display = false; // Masquer la légende
         resumeChart.data.labels = entreesParMois.map(item => item.mois).map(item => item.substring(0, 3).charAt(0).toUpperCase() + item.substring(1, 3)); // Réduire la taille des mois et mettre la première lettre en majuscule
         resumeChart.update();
         // Graphique Sorties par Catégorie
@@ -542,7 +548,7 @@
 
     // Fonction pour créer la configuration du graphique de sorties
     function sortiesChartConfig() {
-        const isDarkMode = document.documentElement.classList.contains('dark');
+        const isDarkMode = document.body.classList.contains('dark');
         const textColor = isDarkMode ? '#FFFFFF' : '#374151';
 
         return {
@@ -669,8 +675,11 @@
     
     // Fonction pour créer la configuration du graphique d'entrées
     function entreesChartConfig() {
-        const isDarkMode = document.documentElement.classList.contains('dark');
+        const isDarkMode = document.body.classList.contains('dark');
+        console.log(isDarkMode);
         const textColor = isDarkMode ? '#FFFFFF' : '#374151';
+
+        console.log(textColor);
 
         return {
             type: 'doughnut',
@@ -736,17 +745,6 @@
         document.getElementById('sortiesCategoriesChart'),
         sortiesChartConfig()
     );
-
-    // Ajouter un écouteur pour le changement de thème du graphique de sorties
-    document.addEventListener('dark-mode', function() {
-        if (sortiesCategoriesChart) {
-            sortiesCategoriesChart.destroy();
-        }
-        sortiesCategoriesChart = new Chart(
-            document.getElementById('sortiesCategoriesChart'),
-            sortiesChartConfig()
-        );
-    });
     
     // Initialiser le graphique d'entrées
     entreesCategoriesChart = new Chart(
@@ -754,16 +752,41 @@
         entreesChartConfig()
     );
 
-    // Ajouter un écouteur pour le changement de thème du graphique d'entrées
-    document.addEventListener('dark-mode', function() {
-        if (entreesCategoriesChart) {
-            entreesCategoriesChart.destroy();
-        }
-        entreesCategoriesChart = new Chart(
-            document.getElementById('entreesCategoriesChart'),
-            entreesChartConfig()
-        );
-    });
+    changeThemeCharts();
+
+    // Ajouter un écouteur pour le changement de thème
+    function changeThemeCharts() {
+        setTimeout(() => {
+            // Graphique de résumé
+            if (resumeChart) {
+                console.log(resumeChart);
+                resumeChart.destroy();
+            }
+            resumeChart = new Chart(
+                document.getElementById('resumeMoisChart'),
+                resumeChartConfig()
+            );
+            // graphique de sorties
+            if (sortiesCategoriesChart) {
+                sortiesCategoriesChart.destroy();
+            }
+            sortiesCategoriesChart = new Chart(
+                document.getElementById('sortiesCategoriesChart'),
+                sortiesChartConfig()
+            );
+
+            // graphique d'entrées
+            if (entreesCategoriesChart) {
+                entreesCategoriesChart.destroy();
+            }
+            entreesCategoriesChart = new Chart(
+                document.getElementById('entreesCategoriesChart'),
+                entreesChartConfig()
+            );
+
+            adaptCharts();
+        }, 50);
+    };
 
     // Remplir le tableau des entrées des 4 derniers mois
     const entrees4MoisElement = document.getElementById('entrees4mois');

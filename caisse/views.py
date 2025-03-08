@@ -56,7 +56,7 @@ def superuser_required(view_func):
 
 # Vues principales
 @login_required
-def index(request):
+def index(request: WSGIRequest):
     """Vue du tableau de bord"""
     today = timezone.now()
     
@@ -543,7 +543,6 @@ def ajouter_acteur(request: WSGIRequest):
             form = FournisseurForm(request.POST)
         elif type_acteur == 'employes':
             form = PersonnelForm(request.POST, request.FILES)
-            print(form.is_valid(), form.data)
         elif type_acteur == 'categories':
             form = CategorieForm(request.POST)
         else:
