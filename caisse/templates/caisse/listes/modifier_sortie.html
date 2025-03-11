@@ -31,7 +31,7 @@
 
         <!-- Désignation -->
         <div class="mb-4 px-2 flex shadow-sm border-gray-500 border-b-2">
-            <input type="text" name="designation" value="{{ operation.description }}" placeholder="Désignation"
+            <input type="text" name="designation" value="{{ operation.description }}" placeholder="Désignation *" required
                     class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
         </div>
 
@@ -58,13 +58,15 @@
         <!-- Quantité -->
         <div class="mb-4 px-2 flex shadow-sm border-gray-500 border-b-2">
             <span class="flex select-none items-center text-gray-500 sm:text-sm">Quantité:</span>
-            <input type="number" name="quantite" value="{{ operation.quantite }}" min="1" placeholder="Quantité"
+            <input type="number" name="quantite" value="{{ operation.quantite }}" min="1" placeholder="*"
+                    required
                     class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6">
         </div>
 
         <!-- Prix Unitaire -->
         <div class="mb-4 px-2 flex shadow-sm border-gray-500 border-b-2">
-            <input type="number" name="prixUnitaire" value="{{ operation.montant }}" placeholder="Prix Unitaire"
+            <input type="number" name="prixUnitaire" value="{{ operation.montant }}" placeholder="Prix Unitaire *"
+                    required
                     class="block flex-1 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-gray-400 sm:text-sm sm:leading-6" step="0.01">
         </div>
 

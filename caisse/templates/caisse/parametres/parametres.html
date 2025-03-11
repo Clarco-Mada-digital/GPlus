@@ -79,8 +79,9 @@
                         </div>
                         <div>
                             <label
-                                class="block text-sm font-medium text-gray-700 dark:text-white">Email</label>
+                                class="block text-sm font-medium text-gray-700 dark:text-white">Email <span class="text-rose-400">*</span></label>
                             <input type="email"
+                                required
                                 name="email"
                                 value="{{ request.user.email }}"
                                 class="mt-1 block w-full rounded-md dark:border-gray-700 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-transparent">
@@ -116,7 +117,7 @@
                         <div>
                             <label
                                 class="block text-sm font-medium">Mot
-                                de passe actuel</label>
+                                de passe actuel <span class="text-rose-400">*</span></label>
                             <input type="password"
                                 name="current_password"
                                 class="mt-1 block w-full rounded-md dark:border-gray-700 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-transparent">
@@ -124,7 +125,7 @@
                         <div>
                             <label
                                 class="block text-sm font-medium">Nouveau
-                                mot de passe</label>
+                                mot de passe <span class="text-rose-400">*</span></label>
                             <input type="password"
                                 name="new_password"
                                 class="mt-1 block w-full rounded-md dark:border-gray-700 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-transparent">
@@ -132,7 +133,7 @@
                         <div>
                             <label
                                 class="block text-sm font-medium">Confirmer
-                                le nouveau mot de passe</label>
+                                le nouveau mot de passe <span class="text-rose-400">*</span></label>
                             <input type="password"
                                 name="confirm_password"
                                 class="mt-1 block w-full rounded-md  dark:border-gray-700 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-transparent">

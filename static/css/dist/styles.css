@@ -2995,11 +2995,6 @@ body{
   border-top-color: transparent;
 }
 
-.bg-\[\#323D4E\]{
-  --tw-bg-opacity: 1;
-  background-color: rgb(50 61 78 / var(--tw-bg-opacity));
-}
-
 .bg-amber-500{
   --tw-bg-opacity: 1;
   background-color: rgb(245 158 11 / var(--tw-bg-opacity));
@@ -3981,6 +3976,11 @@ body{
 
 .text-red\/80{
   color: rgb(255 89 145 / 0.8);
+}
+
+.text-rose-400{
+  --tw-text-opacity: 1;
+  color: rgb(251 113 133 / var(--tw-text-opacity));
 }
 
 .text-rose-500{

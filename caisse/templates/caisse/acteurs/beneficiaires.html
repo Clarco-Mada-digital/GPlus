@@ -24,7 +24,7 @@
             {% csrf_token %}
             <div class="grid grid-cols-1 gap-4">
                 <div>
-                    <label class="block text-sm font-medium dark:text-white">Type de bénéficiaire</label>
+                    <label class="block text-sm font-medium dark:text-white">Type de bénéficiaire <span class="text-rose-400">*</span></label>
                     <select name="personnel_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         <option value="">Bénéficiaire externe</option>
                         {% for personnel in personnels %}

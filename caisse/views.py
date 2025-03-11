@@ -725,7 +725,7 @@ def ajouts_entree(request):
                     description=designations[i],
                     montant=montant,
                     categorie_id=int(categories_ids[i]),
-                    beneficiaire_id=int(beneficiaires_ids),
+                    beneficiaire_id=int(beneficiaires_ids) if beneficiaires_ids else int(Beneficiaire.objects.get(name="Général").id),
                     client=clients[i] if clients else ""
                 )
                 messages.success(request, f"Ligne {i+1} : Les opérations d'entrée ont été ajoutées avec succès.")
@@ -777,7 +777,7 @@ def ajouts_sortie(request):
                     quantite=quantite,
                     montant=quantite * prix_unitaire,
                     categorie_id=int(categories_ids[i]),
-                    beneficiaire_id=int(beneficiaires_ids[i]),
+                    beneficiaire_id=int(beneficiaires_ids[i]) if beneficiaires_ids else int(Beneficiaire.objects.get(name="Général").id),
                     fournisseur_id=int(fournisseurs_ids[i])
                 )
 

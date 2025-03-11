@@ -12,7 +12,7 @@
         <div class="mb-4">
             <label class="block text-sm font-bold mb-2 dark:text-white"
                 for="{{ field.id_for_label }}">
-                {{ field.label }}
+                {{ field.label }} {% if field.field.required %}<span class="text-rose-400">*</span> {% endif %}
             </label>
             {% if field.field.widget.input_type == 'select' %}
             <select name="{{ field.name }}" id="{{ field.id_for_label }}"

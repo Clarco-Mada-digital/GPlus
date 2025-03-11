@@ -92,7 +92,7 @@ class="container mx-auto p-6 dark:text-white">
                             class="mb-8 px-2 shadow-sm text-placeholder dark:text-white border-gray-300 border-b-2 dark:border-gray-700">
                             <input title="Désignation" type="text" x-model="ligne.designation"
                                 name="designation"
-                                placeholder="Désignation"
+                                placeholder="Désignation *"
                                 class="block flex-1 focus:ring-0 dark:placeholder:text-white/50 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
                                 required>
                         </div>
@@ -102,7 +102,7 @@ class="container mx-auto p-6 dark:text-white">
                             <input title="Bénéficiaire" type="text"
                                 x-model="ligne.beneficiaire_nom"
                                 list="beneficiaires-list"
-                                placeholder="Bénéficiaire"
+                                placeholder="Bénéficiaire (Général)"
                                 @change="updateField('beneficiaires', $event.target.value, ligne, 'beneficiaire', 'beneficiaire_nom')"
                                 class="block flex-1 dark:placeholder:text-white/50 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                             <input type="hidden"
@@ -127,15 +127,16 @@ class="container mx-auto p-6 dark:text-white">
                             class="mb-8 px-2 shadow-sm border-gray-300 dark:text-white border-b-2 dark:border-gray-700">
                             <input title="Montant" type="number" x-model="ligne.montant"
                                 name="montant"
-                                placeholder="Montant"
-                                class="block flex-1 focus:ring-0 w-full dark:placeholder:text-white/50 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
+                                placeholder="Montant *"
+                                class="block flex-1 focus:ring-0 w-full dark:placeholder:text-white/50 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
+                                required>
                         </div>
 
                         <div class="mb-8 px-2 shadow-sm border-gray-300 border-b-2 dark:text-white dark:border-gray-700 relative">
                             <input title="Catégorie" type="text" 
                                    x-model="ligne.categorie_nom"
                                    list="categories-entree-list"
-                                   placeholder="Catégorie"
+                                   placeholder="Catégorie *"
                                    required
                                    @change="updateField('categories-entree', $event.target.value, ligne, 'categorie', 'categorie_nom')"
                                    class="block flex-1 dark:placeholder:text-white/50 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6 w-full">
@@ -231,9 +232,10 @@ class="container mx-auto p-6 dark:text-white">
                         <!-- Désignation -->
                         <div
                             class="mb-8 px-2 shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
-                            <input title="Désignation" type="text" name="designation" required
+                            <input title="Désignation" type="text" name="designation"
+                                required
                                 x-model="ligne.designation"
-                                placeholder="Désignation"
+                                placeholder="Désignation *"
                                 class="block flex-1 focus:ring-0 dark:placeholder:text-white/50 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
                         </div>
 
@@ -242,9 +244,10 @@ class="container mx-auto p-6 dark:text-white">
                             <input title="Bénéficiaire" type="text" 
                                    x-model="ligne.beneficiaire_nom"
                                    list="beneficiaires-sortie-list"
-                                   placeholder="Bénéficiaire"
+                                   placeholder="Bénéficiaire *"
                                    @change="updateField('beneficiaires', $event.target.value, ligne, 'beneficiaire', 'beneficiaire_nom')"
-                                   class="block flex-1 dark:placeholder:text-white/50 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
+                                   class="block flex-1 dark:placeholder:text-white/50 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
+                                   required>
                             <input type="hidden" 
                                    name="beneficiaire-sortie" 
                                    x-model="ligne.beneficiaire">
@@ -261,9 +264,10 @@ class="container mx-auto p-6 dark:text-white">
                             <input title="Fournisseur" type="text" 
                                    x-model="ligne.fournisseur_nom"
                                    list="fournisseurs-list"
-                                   placeholder="Fournisseur"
+                                   placeholder="Fournisseur *"
                                    @change="updateField('fournisseurs', $event.target.value, ligne, 'fournisseur', 'fournisseur_nom')"
-                                   class="block flex-1 dark:placeholder:text-white/50 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
+                                   class="block flex-1 dark:placeholder:text-white/50 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
+                                   required>
                             <input type="hidden" 
                                    name="fournisseur" 
                                    x-model="ligne.fournisseur">
@@ -282,7 +286,7 @@ class="container mx-auto p-6 dark:text-white">
                                 class="flex select-none  items-center pl-3 dark:text-white/50 text-placeholder/50 sm:text-sm">Quantité:</span>
                             <input title="Quantité" type="number" name="quantite" required
                                 x-model="ligne.quantite" min="1"
-                                placeholder="Quantité"
+                                placeholder="*"
                                 class="block flex-1 focus:ring-0 dark:placeholder:text-white/50 border-none w-full bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
                                 x-on:input="ligne.prixTotal = ligne.quantite * ligne.prixUnitaire">
                         </div>
@@ -292,7 +296,7 @@ class="container mx-auto p-6 dark:text-white">
                             class="mb-8 px-2 shadow-sm dark:text-white text-placeholder border-gray-300 border-b-2 dark:border-gray-700">
                             <input title="Prix Unitaire" type="number" name="prixUnitaire"
                                 x-model="ligne.prixUnitaire" required
-                                placeholder="Prix Unitaire"
+                                placeholder="Prix Unitaire *"
                                 class="block flex-1 items-center dark:placeholder:text-white/50 focus:ring-0 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
                                 step="0.01"
                                 x-on:input="ligne.prixTotal = ligne.quantite * ligne.prixUnitaire">
@@ -303,10 +307,11 @@ class="container mx-auto p-6 dark:text-white">
                             <input title="Catégorie" type="text" 
                                    x-model="ligne.categorie_nom"
                                    list="categories-sortie-list"
-                                   placeholder="Catégorie"
+                                   placeholder="Catégorie *"
                                    required
                                    @change="updateField('categories-sortie', $event.target.value, ligne, 'categorie', 'categorie_nom')"
-                                   class="block flex-1 focus:ring-0 dark:placeholder:text-white/50 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6">
+                                   class="block flex-1 focus:ring-0 dark:placeholder:text-white/50 border-none bg-transparent py-1.5 pl-1 placeholder:text-placeholder/50 sm:text-sm sm:leading-6"
+                                   required>
                             <input type="hidden" 
                                    name="categorie" 
                                    x-model="ligne.categorie">
