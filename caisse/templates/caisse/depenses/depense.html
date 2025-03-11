@@ -522,7 +522,7 @@
     };
 
     function categoryChartConfig() {
-        const isDarkMode = document.body.classList.contains('dark');
+        const isDarkMode = document.documentElement.classList.contains('dark');
         const fontColor = isDarkMode ? '#fff' : '#374151';
         const borderColor = isDarkMode ? '#374151' : '#e5e7eb';
 
@@ -644,7 +644,7 @@
     }
 
     function yearlyExpensesChartConfig() {
-        const isDarkMode = document.body.classList.contains('dark');
+        const isDarkMode = document.documentElement.classList.contains('dark');
         const fontColor = isDarkMode ? '#fff' : '#374151';
         const borderColor = isDarkMode ? '#374151' : '#e5e7eb';
 
@@ -711,10 +711,8 @@
         }
 
         categoryChart.update();
+        yearlyExpensesChart.update();
     }
-
-    // Appeler la fonction lors du chargement de la page
-    adaptCharts();
 
     // Ajouter un écouteur d'événement pour redimensionner la fenêtre
     window.addEventListener('resize', adaptCharts);
@@ -729,8 +727,6 @@
             filterTableByCategory(selectedCategory);
         }
     }
-    
-    changeThemeCharts();
 
     // Écouter les changements de mode
     function changeThemeCharts() {
@@ -745,16 +741,12 @@
                 yearlyExpensesChart.destroy();
             }
             yearlyExpensesChart = new Chart(ctxYearly, yearlyExpensesChartConfig());
-            
-            // Mettre à jour les graphiques
-            categoryChart.update();
-            yearlyExpensesChart.update();
             adaptCharts();
-        }, 50);
+        });
     }
-
-    categoryChart.update();
-    yearlyExpensesChart.update();
+    
+    // Appeler la fonction lors du chargement de la page
+    adaptCharts();
 
 </script>
 

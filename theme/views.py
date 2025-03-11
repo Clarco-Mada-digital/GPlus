@@ -22,7 +22,6 @@ Raises:
 def change_theme(request, **kwargs):
   if request.method == 'POST':
     data = json.loads(request.body)
-    print(data)
     is_dark_theme = data.get('is_dark_theme', None)
     if is_dark_theme is not None:
       request.session['is_dark_theme'] = is_dark_theme

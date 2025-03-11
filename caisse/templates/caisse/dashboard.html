@@ -428,7 +428,7 @@
     const sorties4Mois = JSON.parse('{{ sorties_4_mois|safe }}');
 
     function resumeChartConfig() {
-        const fontColor = document.body.classList.contains('dark') ? '#fff' : '#374151';
+        const fontColor = document.documentElement.classList.contains('dark') ? '#fff' : '#374151';
 
         return {
             type: 'bar',
@@ -548,7 +548,7 @@
 
     // Fonction pour créer la configuration du graphique de sorties
     function sortiesChartConfig() {
-        const isDarkMode = document.body.classList.contains('dark');
+        const isDarkMode = document.documentElement.classList.contains('dark');
         const textColor = isDarkMode ? '#FFFFFF' : '#374151';
 
         return {
@@ -675,7 +675,7 @@
     
     // Fonction pour créer la configuration du graphique d'entrées
     function entreesChartConfig() {
-        const isDarkMode = document.body.classList.contains('dark');
+        const isDarkMode = document.documentElement.classList.contains('dark');
         console.log(isDarkMode);
         const textColor = isDarkMode ? '#FFFFFF' : '#374151';
 
@@ -752,8 +752,6 @@
         entreesChartConfig()
     );
 
-    changeThemeCharts();
-
     // Ajouter un écouteur pour le changement de thème
     function changeThemeCharts() {
         setTimeout(() => {
@@ -784,7 +782,7 @@
             );
 
             adaptCharts();
-        }, 70);
+        });
     };
 
     // Remplir le tableau des entrées des 4 derniers mois
