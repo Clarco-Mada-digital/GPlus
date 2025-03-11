@@ -281,6 +281,7 @@ def listes(request):
             Q(categorie__name__icontains=query) |
             Q(montant__icontains=query)
         )
+
     # Filtre par catégorie
     if categorie_name:  # Vérifier que c'est un nombre
         if Categorie.objects.all().filter(name=categorie_name, type='entree').exists():
@@ -292,19 +293,24 @@ def listes(request):
         else:
             sortie = []
 
-    # Filtre par bénéficiaire
-    if beneficiaire_id and beneficiaire_id.isdigit():  # Vérifier que c'est un nombre
-        sortie = sortie.filter(beneficiaire_id=beneficiaire_id)
-        entree = entree.filter(beneficiaire_id=beneficiaire_id)
-
     # Filtre par mois
     if mois and mois.isdigit():  # Vérifier que c'est un nombre
-        entree = entree.filter(date_transaction__month=int(mois))
-        sortie = sortie.filter(date_de_sortie__month=int(mois))
+        if entree:
+            entree = entree.filter(date_transaction__month=int(mois))
+        if sortie:
+            sortie = sortie.filter(date_de_sortie__month=int(mois))
+
+    # Filtre par bénéficiaire
+    if beneficiaire_id and beneficiaire_id.isdigit():  # Vérifier que c'est un nombre
+        if sortie:
+            sortie = sortie.filter(beneficiaire_id=beneficiaire_id)
+        if entree:
+            entree = entree.filter(beneficiaire_id=beneficiaire_id)
 
     # Filtre par fournisseur (uniquement pour les sorties)
     if fournisseur_id and fournisseur_id.isdigit():  # Vérifier que c'est un nombre
-        sortie = sortie.filter(fournisseur_id=fournisseur_id)
+        if sortie:
+            sortie = sortie.filter(fournisseur_id=fournisseur_id)
         entree = []
 
     # Pagination
