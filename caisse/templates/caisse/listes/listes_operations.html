@@ -216,7 +216,7 @@
                             class="text-sm font-medium border-b dark:border-gray-800 dark:text-white/70">
                             <th class="px-4 py-1 text-left"><input type="checkbox"
                                     id="select-all"></th>
-                            <th class="px-4 py-1 text-left">
+                            <th class="px-4 py-1 text-left whitespace-nowrap">
                                 {% if request.GET.sort == 'description' and request.GET.order == 'asc' %}
                                 <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'description' }], [{ key: 'order', value: 'desc' }])">Description ⬇</a>
                                 {% elif request.GET.sort == 'description' and request.GET.order == 'desc' %}
@@ -225,7 +225,7 @@
                                 <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'description' }], [{ key: 'order', value: 'asc' }])">Description ⬇⬆</a>
                                 {% endif %}
                             </th>
-                            <th class="px-4 py-1 text-left">
+                            <th class="px-4 py-1 text-left whitespace-nowrap">
                                 {% if request.GET.sort == 'categorie' and request.GET.order == 'asc' %}
                                 <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'categorie' }], [{ key: 'order', value: 'desc' }])">Categorie ⬇</a>
                                 {% elif request.GET.sort == 'categorie' and request.GET.order == 'desc' %}
@@ -234,7 +234,7 @@
                                 <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'categorie' }], [{ key: 'order', value: 'asc' }])">Categorie ⬇⬆</a>
                                 {% endif %}
                             </th>
-                            <th class="px-4 py-1 text-left">
+                            <th class="px-4 py-1 text-left whitespace-nowrap">
                                 {% if request.GET.sort == 'beneficiaire' and request.GET.order == 'asc' %}
                                 <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'beneficiaire' }], [{ key: 'order', value: 'desc' }])">Bénéficiaire ⬇</a>
                                 {% elif request.GET.sort == 'beneficiaire' and request.GET.order == 'desc' %}
@@ -243,7 +243,7 @@
                                 <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'beneficiaire' }], [{ key: 'order', value: 'asc' }])">Bénéficiaire ⬇⬆</a>
                                 {% endif %}
                             </th>
-                            <th class="px-4 py-1 text-left items-center">
+                            <th class="px-4 py-1 text-left items-center whitespace-nowrap">
                                 {% if request.GET.sort == 'fournisseur' and request.GET.order == 'asc' %}
                                 <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'fournisseur' }], [{ key: 'order', value: 'desc' }])">Fournisseur ⬇</a>
                                 {% elif request.GET.sort == 'fournisseur' and request.GET.order == 'desc' %}
@@ -252,7 +252,7 @@
                                 <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'fournisseur' }], [{ key: 'order', value: 'asc' }])">Fournisseur ⬇⬆</a>
                                 {% endif %}
                             </th>
-                            <th class="px-4 py-1 text-left">
+                            <th class="px-4 py-1 text-left whitespace-nowrap">
                                 {% if request.GET.sort == 'date' and request.GET.order == 'asc' %}
                                 <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'date' }], [{ key: 'order', value: 'desc' }])">Date ⬇</a>
                                 {% elif request.GET.sort == 'date' and request.GET.order == 'desc' %}
@@ -261,7 +261,7 @@
                                 <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'date' }], [{ key: 'order', value: 'asc' }])">Date ⬇⬆</a>
                                 {% endif %}
                             </th>
-                            <th class="px-4 py-1 text-right">
+                            <th class="px-4 py-1 text-right whitespace-nowrap">
                                 {% if request.GET.sort == 'quantite' and request.GET.order == 'asc' %}
                                 <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'quantite' }], [{ key: 'order', value: 'desc' }])">Quantité ⬇</a>
                                 {% elif request.GET.sort == 'quantite' and request.GET.order == 'desc' %}
@@ -270,7 +270,7 @@
                                 <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'quantite' }], [{ key: 'order', value: 'asc' }])">Quantité ⬇⬆</a>
                                 {% endif %}
                             </th>
-                            <th class="px-4 py-1 text-right">
+                            <th class="px-4 py-1 text-right whitespace-nowrap">
                                 {% if request.GET.sort == 'montant' and request.GET.order == 'asc' %}
                                 <a style="cursor: pointer" onclick="updateQueryParam([{ key: 'sort', value: 'montant' }], [{ key: 'order', value: 'desc' }])">Montant ⬇</a>
                                 {% elif request.GET.sort == 'montant' and request.GET.order == 'desc' %}
