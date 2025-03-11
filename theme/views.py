@@ -1,4 +1,7 @@
+import json
 from django.http import HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
 
 """
@@ -15,10 +18,15 @@ Returns:
 Raises:
     None: Cette fonction ne lève aucune exception.
 """
+@csrf_exempt
 def change_theme(request, **kwargs):
-  if 'is_dark_theme' in request.session:
-    request.session['is_dark_theme'] = not request.session['is_dark_theme']
-    # request.session['is_dark_theme'] = not request.session.get('is_dark_theme')
-  else:
-    request.session['is_dark_theme'] = True
-  return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+  if request.method == 'POST':
+    data = json.loads(request.body)
+    print(data)
+    is_dark_theme = data.get('is_dark_theme', None)
+    if is_dark_theme is not None:
+      request.session['is_dark_theme'] = is_dark_theme
+    else:
+      request.session['is_dark_theme'] = not request.session.get('is_dark_theme', True)
+    return JsonResponse({'status': 'success'})
+  return JsonResponse({'status': 'failed'}, status=400)

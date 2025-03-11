@@ -2037,22 +2037,6 @@ body{
   height: 100svh;
 }
 
-.h-\[full\]{
-  height: full;
-}
-
-.h-\[50\%\]{
-  height: 50%;
-}
-
-.h-\[\]{
-  height: ;
-}
-
-.h-1\/2{
-  height: 50%;
-}
-
 .max-h-\[500px\]{
   max-height: 500px;
 }
@@ -5757,14 +5741,6 @@ input[type="date"]::-webkit-inner-spin-button,
     height: 100%;
   }
 
-  .md\:h-1\/2{
-    height: 50%;
-  }
-
-  .md\:h-1\/4{
-    height: 25%;
-  }
-
   .md\:w-1\/2{
     width: 50%;
   }
@@ -5993,10 +5969,6 @@ input[type="date"]::-webkit-inner-spin-button,
     height: 85vh;
   }
 
-  .lg\:h-1\/3{
-    height: 33.333333%;
-  }
-
   .lg\:w-1\/2{
     width: 50%;
   }
@@ -6206,10 +6178,6 @@ input[type="date"]::-webkit-inner-spin-button,
 
   .xl\:h-\[75px\]{
     height: 75px;
-  }
-
-  .xl\:h-1\/2{
-    height: 50%;
   }
 
   .xl\:w-1\/2{
