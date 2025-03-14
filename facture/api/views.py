@@ -30,7 +30,6 @@ class FactureViewset(ModelViewSet):
     def get_serializer_class(self):
         return super().get_serializer_class() # /facture/
     
-    # Permet d'obtenir les des factures
     @action(detail=False, methods=['get'])
     def actualiseFactures(self, request):
         latest_sync_date_str = request.query_params.get('s_dt')
@@ -54,7 +53,6 @@ class FactureViewset(ModelViewSet):
         serializer = FactureSerializer(factures, many=True)
         return Response(serializer.data)
     
-    # Permet d'obtenir les des clients
     @action(detail=False, methods=['get'])
     def actualiseClients(self, request):
         latest_sync_date_str = request.query_params.get('s_dt')
@@ -70,15 +68,14 @@ class FactureViewset(ModelViewSet):
             return Response({"error": "Format de date incorrect"}, status=400)
 
         # Filtrer les clients mises à jour ou créées après la date
-        factures = Client.objects.filter(
+        clients = Client.objects.filter(
             Q(created_at__gt=latest_sync_date) | Q(updated_at__gt=latest_sync_date)
         )
 
         # Sérialisation et réponse
-        serializer = ClientSerializer(factures, many=True)
+        serializer = ClientSerializer(clients, many=True)
         return Response(serializer.data)
 
-    # Permet d'obtenir les des users
     @action(detail=False, methods=['get'])
     def actualiseUsers(self, request):
         latest_sync_date_str = request.query_params.get('s_dt')
@@ -94,12 +91,10 @@ class FactureViewset(ModelViewSet):
             return Response({"error": "Format de date incorrect"}, status=400)
 
         # Filtrer les users mises à jour ou créées après la date
-        factures = User.objects.filter(
-            Q(created_at__gt=latest_sync_date) | Q(updated_at__gt=latest_sync_date)
-        )
+        users = User.objects.filter(date_joined=latest_sync_date)
 
         # Sérialisation et réponse
-        serializer = UserSerializer(factures, many=True)
+        serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
     # Permet d'obtenir les infos de l'utilisateur connécté
