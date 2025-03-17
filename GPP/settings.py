@@ -39,6 +39,7 @@ ALLOWED_HOSTS = ['*'] if env("PROJECT_ENV") == 'dev' else ['*'] # petite modif i
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne', # Pour gerer les ASGI
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -93,6 +94,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'GPP.wsgi.application'
+
+# Daphne
+ASGI_APPLICATION = "GPP.asgi.application"
 
 
 # rest_framework configs
