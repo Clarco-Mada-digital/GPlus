@@ -36,19 +36,24 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env("PROJECT_ENV") == 'dev'
 
 ALLOWED_HOSTS = ['*'] if env("PROJECT_ENV") == 'dev' else ['*'] # petite modif ici
+
+
 # Application definition
 
 INSTALLED_APPS = [
     'daphne', # Pour gerer les ASGI
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'corsheaders', # CORS
     'rest_framework', # Django REST Framework pour gerer les APIs
     'rest_framework_simplejwt', # JWT pour l'Autorisation vie a API
+
     "django_browser_reload",
     'tailwind',
     'theme',
@@ -59,6 +64,8 @@ INSTALLED_APPS = [
     'clients',
     'simple_history',
     'django.contrib.humanize',
+
+    'websocket',
 ]
 
 MIDDLEWARE = [
@@ -98,6 +105,12 @@ WSGI_APPLICATION = 'GPP.wsgi.application'
 # Daphne
 ASGI_APPLICATION = "GPP.asgi.application"
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND':'channels.layers.InMemoryChannelLayer' # Dev only
+    }
+}
+
 
 # rest_framework configs
 REST_FRAMEWORK = {
@@ -107,7 +120,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=1),  # A Modifier en Prod
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(weeks=1),
 }
 
 

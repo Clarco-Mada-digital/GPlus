@@ -4,24 +4,24 @@ from channels.middleware import BaseMiddleware
 from channels.db import database_sync_to_async
 
 from rest_framework_simplejwt.authentication import JWTAuthentication, AuthUser
-from rest_framework_simplejwt.tokens import Token
+from rest_framework_simplejwt.tokens import Token, AccessToken
 
 from django.db import close_old_connections
 from django.core import exceptions
+from django.contrib.auth.models import AnonymousUser
 
-class SimpleJWTAuthMiddleware(BaseMiddleware):
+class WebSocketJWTAuthMiddleware(BaseMiddleware):
     """
     Custom Simple JWT auth midddleware for WebSocket
     """
-
-    jwt_authenticator = JWTAuthentication()
 
     @database_sync_to_async
     def get_user(self, validated_token: Token) -> AuthUser:
         """
         Attempts to find and return a user using the given validated token.(Async)
         """
-        return self.jwt_authenticator.get_user(validated_token)
+        jwt_authenticator = JWTAuthentication()
+        return jwt_authenticator.get_user(validated_token)
 
     async def __call__(self, scope, receive, send):
         # Parse le token depuis la query string
@@ -33,11 +33,12 @@ class SimpleJWTAuthMiddleware(BaseMiddleware):
 
         if token:
             try:
-                validated_token = self.jwt_authenticator.get_validated_token(token)
-                user = await self.get_user(validated_token)
+                access_token = AccessToken(token) # Vérifie si c'est un access token
+                user = await self.get_user(access_token)
                 scope['user'] = user
             except Exception as e:
-                raise e
+                print(e)
+                scope['user'] = AnonymousUser()
         else:
             raise exceptions.BadRequest("token parameter required.")
 
