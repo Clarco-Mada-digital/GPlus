@@ -2229,6 +2229,10 @@ body{
   width: 350px;
 }
 
+.w-\[400px\]{
+  width: 400px;
+}
+
 .w-\[50px\]{
   width: 50px;
 }
@@ -4162,10 +4166,6 @@ body{
   transition-duration: 500ms;
 }
 
-.duration-75{
-  transition-duration: 75ms;
-}
-
 .ease-in{
   transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
 }
@@ -4214,10 +4214,6 @@ body{
 
 .duration-500{
   animation-duration: 500ms;
-}
-
-.duration-75{
-  animation-duration: 75ms;
 }
 
 .ease-in{
