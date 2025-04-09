@@ -33,8 +33,7 @@ SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("PROJECT_ENV") == 'dev'
-
-ALLOWED_HOSTS = [] if env("PROJECT_ENV") == 'dev' else ['*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.164.67'] if env("PROJECT_ENV") == 'dev' else ['*']
 # Application definition
 
 INSTALLED_APPS = [
@@ -54,6 +53,11 @@ INSTALLED_APPS = [
     'clients',
     'simple_history',
     'django.contrib.humanize',
+    'rest_framework',              # Ajoute ceci
+    'rest_framework_simplejwt',    # Ajoute ceci
+    'dj_rest_auth',
+    'django_filters',  # Ajoute cette ligne
+    
 ]
 
 MIDDLEWARE = [
@@ -169,3 +173,40 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 
 AUTH_USER_MODEL = "accounts.user"
+
+
+REST_AUTH = {
+    'TOKEN_MODEL': None,
+    'USE_JWT': True,
+}
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+        'PAGE_SIZE': 40,
+}
+
+# Configuration de SimpleJWT
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+}
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:8081",  # Remplacez par l'URL de votre frontend
+# ]
+CORS_ALLOW_CREDENTIALS = True
