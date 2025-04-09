@@ -6,7 +6,7 @@ from .api_views import (
     PersonnelListCreate, PersonnelRetrieveUpdateDestroy,
     FournisseurListCreate, FournisseurRetrieveUpdateDestroy,
     BeneficiaireListCreate, BeneficiaireRetrieveUpdateDestroy,
-    TableauBordResume
+    TableauBordResume, DetailsEntreesAPI, DetailsSortiesAPI, DetailsSoldeAPI, DepensesAPI
 )
 
 urlpatterns = [
@@ -36,4 +36,9 @@ urlpatterns = [
     path('beneficiaires/<int:pk>/', BeneficiaireRetrieveUpdateDestroy.as_view(), name='beneficiaire-retrieve-update-destroy'),
 
     path('tableau-bord/resume/', TableauBordResume.as_view(), name='tableau-bord-resume'),
+
+    path('details/entrees/', DetailsEntreesAPI.as_view(), name='api-details-entrees'),
+    path('details/sorties/', DetailsSortiesAPI.as_view(), name='api-details-sorties'),
+    path('details/solde/', DetailsSoldeAPI.as_view(), name='api-details-solde'),
+    path('depenses/', DepensesAPI.as_view(), name='api-depenses'),
 ]

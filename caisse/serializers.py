@@ -248,6 +248,7 @@ class OperationSortirCreateSerializer(serializers.ModelSerializer):
         # Après création, retourner la représentation complète avec OperationSortirSerializer
         return OperationSortirSerializer(instance).data
 
+# Modifier le sérialiseur pour création d'OperationEntrer pour inclure tous les champs
 class OperationEntrerCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = OperationEntrer
@@ -268,3 +269,22 @@ class OperationEntrerCreateSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         # Après création, retourner la représentation complète avec OperationEntrerSerializer
         return OperationEntrerSerializer(instance).data
+
+# Ajouter un sérialiseur pour la mise à jour d'OperationEntrer
+class OperationEntrerUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OperationEntrer
+        fields = ['description', 'montant', 'date_transaction', 'categorie', 'beneficiaire', 'client']
+
+    def to_representation(self, instance):
+        # Après mise à jour, retourner la représentation complète avec OperationEntrerSerializer
+        return OperationEntrerSerializer(instance).data
+
+class OperationSortirUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OperationSortir
+        fields = ['description', 'montant', 'date_de_sortie', 'quantite', 'categorie', 'beneficiaire', 'fournisseur']
+
+    def to_representation(self, instance):
+        # Après mise à jour, retourner la représentation complète avec OperationSortirSerializer
+        return OperationSortirSerializer(instance).data
