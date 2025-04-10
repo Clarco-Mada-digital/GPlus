@@ -15,6 +15,9 @@ from accounts.models import User
 
 from django.db.models import Q
 from django.utils.dateparse import parse_datetime
+from django.utils import timezone
+
+from datetime import datetime
 
 class FactureViewset(ModelViewSet):
     """
@@ -30,6 +33,36 @@ class FactureViewset(ModelViewSet):
     def get_serializer_class(self):
         return super().get_serializer_class() # /facture/
     
+    @action(detail=True, methods=['put'])
+    def updateEtat(self, request, pk=None):
+        # Recupérer les datas du request body
+        new_etat_facture = request.data.get('etat_facture')
+
+        if new_etat_facture is None:
+            raise ValidationError("etat_facture non fournis")
+
+        try:
+            facture = Facture.objects.get(pk=pk)
+        except Facture.DoesNotExist:
+            return Response({'error': 'Facture introuvable.'}, status=404)
+        
+        facture_year = facture.date_facture.year
+
+        facture.ref = FactureSerializer.generate_ref(
+            facture_id=pk, 
+            facture_year=facture_year,
+            etat_facture=new_etat_facture,
+            facture_type=facture.type
+        )
+        facture.etat_facture = new_etat_facture
+        facture.updated_at = timezone.now()
+        facture.save()
+
+        print(facture.ref)
+
+        serializer = FactureSerializer(facture)
+        return Response(serializer.data)
+
     @action(detail=False, methods=['get'])
     def actualiseFactures(self, request):
         latest_sync_date_str = request.query_params.get('s_dt')
