@@ -190,7 +190,7 @@
         <a href="{% url 'facture:index' %}" type="button" class="flex items-center justify-center bg-red/80 text-white py-2 px-4 rounded hover:bg-red/60 dark:bg-red/60 dark:hover:bg-red/70">
           Annuler
         </a>
-        <button @click="$event.preventDefault();getFactureValue()" type="button" class="bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 dark:bg-teal-600 dark:hover:bg-teal-700">
+        <button @click.prevent="getFactureValue()" type="button" class="bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 dark:bg-teal-600 dark:hover:bg-teal-700">
           Preview
         </button>
         <button x-show="facture_view" @click="document.getElementById('etat_facture').value = 'Brouillon';document.getElementById('factureSubmit').click()" type="button" class="bg-amber-500 text-white py-2 px-4 rounded hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700">
@@ -441,7 +441,7 @@
 {% endblock content %}
 
 
-{% block estraScripts %}
+{% block extrascript %}
   <script defer>
     // Alpine.js  
     function factDataComponent(){
@@ -470,10 +470,13 @@
               this.facture.sousTotal = document.getElementById('sous-total').textContent
               this.facture.tva = document.getElementById('tva').textContent
               this.facture.montant = document.getElementById('total').textContent
-              console.log(this.facture);
               document.getElementById('previewFactureBtn').click()
+              // Réinitialiser le formulaire après l'envoi
+              form.action = "{% url 'facture:new_facture' %}";
             })
             .catch(error => {
+              // Réinitialiser le formulaire après l'envoi
+              form.action = "{% url 'facture:new_facture' %}";
               console.error('Error:', error);
             });
           
@@ -679,5 +682,5 @@
     });
 
   </script>
-{% endblock estraScripts %}
+{% endblock extrascript %}
   

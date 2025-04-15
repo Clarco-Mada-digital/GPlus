@@ -74,8 +74,8 @@ def index(request):
     devis = devis.filter(intitule__contains=dev_search, type="Devis")
     
   
-  paginator_fact = Paginator(factures, 10) # Afficher les resultat par 10
-  paginator_dev = Paginator(devis, 10) # Afficher les resultat par 10
+  paginator_fact = Paginator(factures, 5) # Afficher les resultat par 5
+  paginator_dev = Paginator(devis, 5) # Afficher les resultat par 5
   page_facture = request.GET.get('page_facture')
   factures = paginator_fact.get_page(page_facture)
   page_dev = request.GET.get('page_dev')
