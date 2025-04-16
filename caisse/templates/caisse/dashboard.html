@@ -189,7 +189,7 @@
         <!-- Visualisation des sorties par mois -->
         <div class="h-[400px]">
             <h2
-                class="text-sm md:text-baselg:text-lg font-semibold mb-4 text-gray-800 dark:text-white underline decoration underline-offset-4">
+                class="text-sm md:text-base lg:text-lg font-semibold mb-4 text-gray-800 dark:text-white underline decoration underline-</h2>offset-4">
                 Visualisation des sorties par mois
             </h2>
             <div class="flex flex-col bg-white h-full justify-between dark:bg-secondary rounded-2xl p-6">
@@ -513,7 +513,7 @@
 
     // Adapter les graphiques pour MD de manière dynamique
     function adaptCharts() {
-        if (window.innerWidth <= 1024) {
+        if (window.innerWidth <= 1200) {
         // Graphique Dépenses par Catégorie
         resumeChart.options.scales.y.ticks.font.size = 10; // Réduire la taille de la police des ticks
         resumeChart.options.scales.x.ticks.font.size = 10; // Réduire la taille de la police des ticks
@@ -554,121 +554,92 @@
         return {
             type: 'doughnut',
             data: {
-                labels: sortiesCategories.map(item => item.categorie),
-                datasets: [{
-                    data: sortiesCategories.map(item => item.total),
-                    backgroundColor: backgroundColors,
-                    borderWidth: 0,
-                    borderRadius: 10,
-                    spacing: 2
-                }]
+            labels: sortiesCategories.map(item => item.categorie),
+            datasets: [{
+                data: sortiesCategories.map(item => item.total),
+                backgroundColor: backgroundColors,
+                borderWidth: 0,
+                borderRadius: 10,
+                spacing: 2
+            }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '75%',
-                plugins: {
-                    legend: {
-                        position: 'left',
-                        labels: {
-                            color: textColor,
-                            usePointStyle: false,
-                            padding: 15,
-                            font: {
-                                size: 15,
-                                weight: 'bold'
-                            },
-                            generateLabels: function(chart) {
-                                const data = chart.data;
-                                if (data.labels.length && data.datasets.length) {
-                                    return data.labels.map((label, i) => {
-                                        const value = data.datasets[0].data[i];
-                                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                        const percentage = ((value / total) * 100).toFixed(1);
-                                        
-                                        return {
-                                            text: `${label} ${percentage}%`,
-                                            fillStyle: data.datasets[0].backgroundColor[i % data.datasets[0].backgroundColor.length],
-                                            index: i,
-                                            fontColor: textColor // Forcer la couleur du texte
-                                        };
-                                    });
-                                }
-                                return [];
-                            }
-                        }
+            onClick: function(event, elements) {
+                console.log('Clicked on chart:', event, elements);
+                if (elements.length > 0) {
+                    const index = elements[0].index;
+                    const category = sortiesCategories[index].categorie;
+                    // Rediriger vers la page de détails avec le paramètre de catégorie
+                    const url = `{% url 'caisse:details_sorties' %}?year={{ selected_year }}&categorie=${category}`;
+                    window.location.href = url;
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: {
+                legend: {
+                maxHeight: 50, // Hauteur maximale de la légende
+                maxWidth: 200, // Largeur maximale de la légende                
+                position: 'left',
+                labels: {
+                    color: textColor,
+                    usePointStyle: false,
+                    padding: 15,
+                    font: {
+                    size: 15,
+                    weight: 'bold'
                     },
-                    tooltip: {
-                        titleColor: textColor,
-                        bodyColor: textColor,
-                        backgroundColor: isDarkMode ? '#1f2937' : '#fff',
-                        borderColor: isDarkMode ? '#374151' : '#e5e7eb',
-                        displayColors: true
+                    boxWidth: 15,
+                    generateLabels: function(chart) {
+                    const data = chart.data;
+                    if (data.labels.length && data.datasets.length) {
+                        return data.labels.map((label, i) => {
+                        const value = data.datasets[0].data[i];
+                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        const percentage = ((value / total) * 100).toFixed(1);
+
+                        return {
+                            text: `${label} ${percentage}%`,
+                            fillStyle: data.datasets[0].backgroundColor[i % data.datasets[0].backgroundColor.length],
+                            index: i,
+                            hidden: chart.getDatasetMeta(0).data[i].hidden || false, // Track hidden state
+                            fontColor: textColor // Forcing text color
+                        };
+                        });
                     }
+                    return [];
+                    }
+                },
+                onClick: function(e, legendItem, legend) {
+                    const index = legendItem.index;
+                    const chart = legend.chart;
+                    const category = chart.data.labels[index];
+                    // Rediriger vers la page de détails avec le paramètre de catégorie
+                    const url = `{% url 'caisse:details_sorties' %}?year={{ selected_year }}&categorie=${category}`;
+                    window.location.href = url;
+                },
+                onHover: (event, legendItem, legend) => {
+                    const chart = legend.chart;
+                    chart.canvas.style.cursor = 'pointer';
+                    legend.options.maxHeight = 400;
+                    legend.options.maxWidth = 600;
+                    chart.update();
+                },
+                onLeave: (event, legendItem, legend) => {
+                    const chart = legend.chart;
+                    chart.canvas.style.cursor = 'default';
+                    chart.update();
+                },
+                },
+                tooltip: {
+                titleColor: textColor,
+                bodyColor: textColor,
+                backgroundColor: isDarkMode ? '#1f2937' : '#fff',
+                borderColor: isDarkMode ? '#374151' : '#e5e7eb',
+                displayColors: true,
                 }
             }
-        };
-
-        return {
-            type: 'doughnut',
-            data: {
-                labels: sortiesCategories.map(item => item.categorie),
-                datasets: [{
-                    data: sortiesCategories.map(item => item.total),
-                    backgroundColor: [
-                        '#4040FF',    // Bleu principal
-                        '#16DBCC',    // Turquoise
-                        '#FF82AC',    // Rose
-                        '#FFB800',    // Orange
-                    ],
-                    borderWidth: 0,
-                    borderRadius: 10,
-                    spacing: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '75%',
-                plugins: {
-                    legend: {
-                        position: 'left',
-                        labels: {
-                            color: textColor,
-                            usePointStyle: false,
-                            padding: 15,
-                            font: {
-                                size: 15,
-                                weight: 'bold'
-                            },
-                            generateLabels: function(chart) {
-                                const data = chart.data;
-                                if (data.labels.length && data.datasets.length) {
-                                    return data.labels.map((label, i) => {
-                                        const value = data.datasets[0].data[i];
-                                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                        const percentage = ((value / total) * 100).toFixed(1);
-                                        
-                                        return {
-                                            text: `${label} ${percentage}%`,
-                                            fillStyle: data.datasets[0].backgroundColor[i % data.datasets[0].backgroundColor.length],
-                                            index: i,
-                                            fontColor: textColor // Forcer la couleur du texte
-                                        };
-                                    });
-                                }
-                                return [];
-                            }
-                        }
-                    },
-                    tooltip: {
-                        titleColor: textColor,
-                        bodyColor: textColor,
-                        backgroundColor: isDarkMode ? '#1f2937' : '#fff',
-                        borderColor: isDarkMode ? '#374151' : '#e5e7eb',
-                        displayColors: true
-                    }
-                }
             }
         };
     }
@@ -694,6 +665,16 @@
                 }]
             },
             options: {
+                onClick: function(event, elements) {
+                    console.log('Clicked on chart:', event, elements);
+                    if (elements.length > 0) {
+                        const index = elements[0].index;
+                        const category = entreesCategories[index].categorie;
+                        // Rediriger vers la page de détails avec le paramètre de catégorie
+                        const url = `{% url 'caisse:details_entrees' %}?year={{ selected_year }}&categorie=${category}`;
+                        window.location.href = url;
+                    }
+                },
                 responsive: true,
                 maintainAspectRatio: false,
                 cutout: '75%',
@@ -708,6 +689,7 @@
                                 size: 15,
                                 weight: 'bold'
                             },
+                            boxWidth: 15,
                             generateLabels: function(chart) {
                                 const data = chart.data;
                                 if (data.labels.length && data.datasets.length) {
@@ -726,7 +708,27 @@
                                 }
                                 return [];
                             }
-                        }
+                        },
+                        onClick: function(e, legendItem, legend) {
+                            const index = legendItem.index;
+                            const chart = legend.chart;
+                            const category = chart.data.labels[index];
+                            // Rediriger vers la page de détails avec le paramètre de catégorie
+                            const url = `{% url 'caisse:details_entrees' %}?year={{ selected_year }}&categorie=${category}`;
+                            window.location.href = url;
+                        },
+                        onHover: (event, legendItem, legend) => {
+                            const chart = legend.chart;
+                            chart.canvas.style.cursor = 'pointer';
+                            legend.options.maxHeight = 400;
+                            legend.options.maxWidth = 600;
+                            chart.update();
+                        },
+                        onLeave: (event, legendItem, legend) => {
+                            const chart = legend.chart;
+                            chart.canvas.style.cursor = 'default';
+                            chart.update();
+                        },
                     },
                     tooltip: {
                         titleColor: textColor,
@@ -745,12 +747,24 @@
         document.getElementById('sortiesCategoriesChart'),
         sortiesChartConfig()
     );
-    
+    document.getElementById('sortiesCategoriesChart').addEventListener('mouseout', function(event) {
+        const legend = sortiesCategoriesChart.legend;
+        legend.options.maxHeight = 50;
+        legend.options.maxWidth = 200;
+        sortiesCategoriesChart.update();
+    });
+
     // Initialiser le graphique d'entrées
     entreesCategoriesChart = new Chart(
         document.getElementById('entreesCategoriesChart'),
         entreesChartConfig()
     );
+    document.getElementById('entreesCategoriesChart').addEventListener('mouseout', function(event) {
+        const legend = entreesCategoriesChart.legend;
+        legend.options.maxHeight = 50;
+        legend.options.maxWidth = 200;
+        entreesCategoriesChart.update();
+    });
 
     // Ajouter un écouteur pour le changement de thème
     function changeThemeCharts() {
@@ -792,10 +806,14 @@
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    ${entree.mois}
+                    <a href="{% url 'caisse:details_entrees' %}?year={{ selected_year }}#${entree.mois}" style="cursor: pointer">
+                        ${entree.mois}
+                    </a>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right dark:text-gray-400 transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    Ar ${entree.total.toLocaleString('fr-FR')}
+                    <a href="{% url 'caisse:details_entrees' %}?year={{ selected_year }}#${entree.mois}" style="cursor: pointer">
+                        Ar ${entree.total.toLocaleString('fr-FR')}
+                    </a>
                 </td>
             `;
             entrees4MoisElement.appendChild(row);
@@ -818,10 +836,14 @@
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    ${sortie.mois}
+                    <a href="{% url 'caisse:details_sorties' %}?year={{ selected_year }}#${sortie.mois}" style="cursor: pointer">
+                        ${sortie.mois}
+                    </a>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right dark:text-gray-400 transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    Ar ${sortie.total.toLocaleString('fr-FR')}
+                    <a href="{% url 'caisse:details_sorties' %}?year={{ selected_year }}#${sortie.mois}" style="cursor: pointer">
+                        Ar ${sortie.total.toLocaleString('fr-FR')}
+                    </a>
                 </td>
             `;
             sorties4MoisElement.appendChild(row);
@@ -844,10 +866,14 @@
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    ${entree.mois}
+                    <a href="{% url 'caisse:details_entrees' %}?year={{ selected_year }}#${entree.mois}" style="cursor: pointer">
+                        ${entree.mois}
+                    </a>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right dark:text-gray-400 transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    Ar ${entree.total.toLocaleString('fr-FR')}
+                    <a href="{% url 'caisse:details_entrees' %}?year={{ selected_year }}#${entree.mois}" style="cursor: pointer">
+                        Ar ${entree.total.toLocaleString('fr-FR')}
+                    </a>
                 </td>
             `;
             entreesParMoisElement.appendChild(row);
@@ -872,10 +898,14 @@
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    ${sortie.mois}
+                    <a href="{% url 'caisse:details_sorties' %}?year={{ selected_year }}#${sortie.mois}" style="cursor: pointer">
+                        ${sortie.mois}
+                    </a>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right dark:text-gray-400 transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    Ar ${sortie.total.toLocaleString('fr-FR')}
+                    <a href="{% url 'caisse:details_sorties' %}?year={{ selected_year }}#${sortie.mois}" style="cursor: pointer">
+                        Ar ${sortie.total.toLocaleString('fr-FR')}
+                    </a>
                 </td>
             `;
             sortiesParMoisElement.appendChild(row);

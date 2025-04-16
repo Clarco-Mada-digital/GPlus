@@ -151,8 +151,9 @@ def index(request: WSGIRequest):
         'categorie__name'
     ).annotate(
         total=Sum('montant')
-    ).order_by('-total')[:5])
+    ).order_by('-total'))
     
+
     # Données pour le graphique des catégories d'entrées
     entrees_categories = list(OperationEntrer.objects.filter(
         date_transaction__gte=first_day_of_year,
@@ -1853,19 +1854,40 @@ def details_entrees(request):
     """Vue détaillée des entrées par mois"""
     # Récupérer l'année sélectionnée ou utiliser l'année courante
     selected_year = int(request.GET.get('year', timezone.now().year))
-    
-    # Filtrer les entrées pour l'année sélectionnée
-    entrees = OperationEntrer.objects.filter(
-        date_transaction__year=selected_year
-    ).annotate(
-        mois=TruncMonth('date_transaction')
-    ).values('mois').annotate(
-        total=Sum('montant'),
-        nombre_operations=Count('id')
-    ).order_by('-mois')
+
+    # Récupérer le nom de la catégorie depuis la requête GET
+    categorie_name = request.GET.get('categorie')
+    # Récupérer l'ID de la catégorie correspondante
+    categorie_id = Categorie.objects.filter(name=categorie_name, type='entree').values_list('id', flat=True).first() if categorie_name else None
+
+    # Filtrer les entrées par catégorie si l'ID est valide
+    if categorie_id:
+        entrees = OperationEntrer.objects.filter(
+            date_transaction__year=selected_year,
+            categorie_id=categorie_id
+        ).annotate(
+            mois=TruncMonth('date_transaction')
+        ).values('mois').annotate(
+            total=Sum('montant'),
+            nombre_operations=Count('id')
+        ).order_by('-mois')
+    else:
+        # Filtrer les entrées pour l'année sélectionnée
+        entrees = OperationEntrer.objects.filter(
+            date_transaction__year=selected_year
+        ).annotate(
+            mois=TruncMonth('date_transaction')
+        ).values('mois').annotate(
+            total=Sum('montant'),
+            nombre_operations=Count('id')
+        ).order_by('-mois')
 
     for entree in entrees:
         entree['operations'] = OperationEntrer.objects.filter(
+            date_transaction__month=entree['mois'].month,
+            date_transaction__year=entree['mois'].year,
+            categorie_id=categorie_id
+        ).order_by('-date_transaction') if categorie_id else OperationEntrer.objects.filter(
             date_transaction__month=entree['mois'].month,
             date_transaction__year=entree['mois'].year
         ).order_by('-date_transaction')
@@ -1883,18 +1905,39 @@ def details_entrees(request):
 def details_sorties(request):
     """Vue détaillée des sorties par mois"""
     selected_year = int(request.GET.get('year', timezone.now().year))
-    
-    sorties = OperationSortir.objects.filter(
-        date_de_sortie__year=selected_year
-    ).annotate(
-        mois=TruncMonth('date_de_sortie')
-    ).values('mois').annotate(
-        total=Sum('montant'),
-        nombre_operations=Count('id')
-    ).order_by('-mois')
+
+    # Récupérer le nom de la catégorie depuis la requête GET
+    categorie_name = request.GET.get('categorie')
+    # Récupérer l'ID de la catégorie correspondante
+    categorie_id = Categorie.objects.filter(name=categorie_name, type='sortie').values_list('id', flat=True).first() if categorie_name else None
+
+    # Filtrer les sorties par catégorie si l'ID est valide
+    if categorie_id:
+        sorties = OperationSortir.objects.filter(
+            date_de_sortie__year=selected_year,
+            categorie_id=categorie_id
+        ).annotate(
+            mois=TruncMonth('date_de_sortie')
+        ).values('mois').annotate(
+            total=Sum('montant'),
+            nombre_operations=Count('id')
+        ).order_by('-mois')
+    else:
+        sorties = OperationSortir.objects.filter(
+            date_de_sortie__year=selected_year
+        ).annotate(
+            mois=TruncMonth('date_de_sortie')
+        ).values('mois').annotate(
+            total=Sum('montant'),
+            nombre_operations=Count('id')
+        ).order_by('-mois')
 
     for sortie in sorties:
         sortie['operations'] = OperationSortir.objects.filter(
+            date_de_sortie__month=sortie['mois'].month,
+            date_de_sortie__year=sortie['mois'].year,
+            categorie_id=categorie_id
+        ).order_by('-date_de_sortie') if categorie_id else OperationSortir.objects.filter(
             date_de_sortie__month=sortie['mois'].month,
             date_de_sortie__year=sortie['mois'].year
         ).order_by('-date_de_sortie')

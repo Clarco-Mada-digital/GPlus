@@ -13,7 +13,7 @@
     </div>
 
     {% for sortie in sorties %}
-    <div class="bg-white dark:bg-secondary rounded-lg shadow-md mb-6">
+    <div id="{{ sortie.mois_format }}" class="bg-white dark:bg-secondary rounded-lg shadow-md mb-6">
         <div class="p-4 bg-pink-50 dark:bg-pink-900">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
                 {{ sortie.mois_format }}

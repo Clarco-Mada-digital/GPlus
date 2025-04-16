@@ -13,7 +13,7 @@
     </div>
 
     {% for entree in entrees %}
-    <div class="bg-white dark:bg-secondary rounded-lg shadow-md mb-6">
+    <div id="{{ entree.mois_format }}" class="bg-white dark:bg-secondary rounded-lg shadow-md mb-6">
         <div class="p-4 bg-blue-50 dark:bg-blue-900">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
                 {{ entree.mois_format }}
