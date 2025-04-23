@@ -58,7 +58,7 @@ class FactureViewset(ModelViewSet):
         facture.updated_at = timezone.now()
         facture.save()
 
-        print(facture.ref)
+        # print(facture.ref)
 
         serializer = FactureSerializer(facture)
         return Response(serializer.data)
