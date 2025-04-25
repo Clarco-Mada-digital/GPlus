@@ -30,7 +30,7 @@ class FactureSerializer(serializers.ModelSerializer):
         
         # Mettre à jour la référence de la facture après l'enregistrement
         facture_year = str(timezone.now().year) # Récupère l'année actuelle
-        facture.ref = self.generate_ref(facture, facture_year)  # Regénérer le ref avec l'ID réel
+        facture.ref = self.generate_ref(facture=facture, facture_year=facture_year)  # Regénérer le ref avec l'ID réel
         facture.save()  # Sauvegarder la facture avec la référence mis à jour
         
         return facture
