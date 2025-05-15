@@ -11,7 +11,7 @@ from clients.models import Client
 from .models import Service, Facture, Entreprise
 from .forms import FactureForm, ServiceForm, EntrepriseForm
 from xhtml2pdf import pisa
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
 import uuid
 
