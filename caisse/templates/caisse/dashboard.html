@@ -159,7 +159,7 @@
                         <canvas id="sortiesCategoriesChart"></canvas>
                     </div>
                     <div class="mt-4 text-end">
-                        <a href="{% url 'caisse:depenses' %}?mois={{ selected_year }}-12"
+                        <a href="{% url 'caisse:depenses' %}?mois={{ selected_year }}-{{ depense_month }}"
                             class="inline-flex items-center text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300">
                             <span>Voir l'historique détaillé des sorties</span>
                             <svg xmlns="http://www.w3.org/2000/svg"
