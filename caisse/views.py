@@ -62,11 +62,12 @@ def index(request: WSGIRequest):
     today = timezone.now()
     
     # Obtenir l'année sélectionnée (par défaut, l'année en cours)
-    selected_year = int(request.GET.get('year', today.year))   
+    selected_year = int(request.GET.get('year', today.year))  
     
+    current_month = f"{today.month:02d}"
 
     # Calculer le premier et dernier jour du mois actuel
-    today = date.today()
+    # today = date.today()
     first_day_of_month = datetime(today.year, today.month, 1)
     last_day_of_month = datetime(today.year, today.month + 1, 1) - timedelta(days=1)  # Dernier jour du mois
         
@@ -216,6 +217,7 @@ def index(request: WSGIRequest):
         'sorties_4_mois': json.dumps(formatted_sorties[-4:][::-1]) if formatted_sorties else json.dumps([]),
         'years': years,
         'selected_year': selected_year,
+        'current_month': current_month,
     }
 
     return render(request, "caisse/dashboard.html", context)
