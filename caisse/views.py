@@ -15,6 +15,7 @@ from django.core.paginator import Paginator
 from django.db.models.functions import TruncYear, TruncMonth
 from django.db.models import Q
 from django.utils import timezone
+from datetime import datetime, date
 from datetime import timedelta
 from django.views.decorators.http import require_POST, require_http_methods
 from django.views.decorators.csrf import csrf_exempt
@@ -61,22 +62,40 @@ def index(request: WSGIRequest):
     today = timezone.now()
     
     # Obtenir l'année sélectionnée (par défaut, l'année en cours)
-    selected_year = int(request.GET.get('year', today.year))
+    selected_year = int(request.GET.get('year', today.year))   
+    
+
+    # Calculer le premier et dernier jour du mois actuel
+    today = date.today()
+    first_day_of_month = date(today.year, today.month, 1)
+    last_day_of_month = date(today.year, today.month + 1, 1) - timedelta(days=1)  # Dernier jour du mois
+        
+    # Calculer les totaux du mois actuel
+    total_entrees_mois = OperationEntrer.objects.filter(
+        date_transaction__gte=first_day_of_month,
+        date_transaction__lte=last_day_of_month
+    ).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
+    
+    total_sorties_mois = OperationSortir.objects.filter(
+        date_de_sortie__gte=first_day_of_month,
+        date_de_sortie__lte=last_day_of_month
+    ).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
+    
     
     # Calculer le premier et dernier jour de l'année sélectionnée
     first_day_of_year = datetime(selected_year, 1, 1)
     last_day_of_year = datetime(selected_year, 12, 31)
     
     # Calculer les totaux de l'année sélectionnée
-    total_entrees_mois = OperationEntrer.objects.filter(
-        date_transaction__gte=first_day_of_year,
-        date_transaction__lte=last_day_of_year
-    ).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
+    # total_entrees_mois = OperationEntrer.objects.filter(
+    #     date_transaction__gte=first_day_of_year,
+    #     date_transaction__lte=last_day_of_year
+    # ).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
 
-    total_sorties_mois = OperationSortir.objects.filter(
-        date_de_sortie__gte=first_day_of_year,
-        date_de_sortie__lte=last_day_of_year
-    ).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
+    # total_sorties_mois = OperationSortir.objects.filter(
+    #     date_de_sortie__gte=first_day_of_year,
+    #     date_de_sortie__lte=last_day_of_year
+    # ).aggregate(Sum('montant'))['montant__sum'] or Decimal('0')
     
     # Données des entrées par mois pour l'année sélectionnée
     entrees_par_mois = list(OperationEntrer.objects.filter(
