@@ -56,7 +56,7 @@ def superuser_required(view_func):
     return _wrapped_view
 
 # Vues principales
-@login_required
+@login_required(login_url="accounts:login_user")
 def index(request: WSGIRequest):
     """Vue du tableau de bord"""
     today = timezone.now()
@@ -224,7 +224,7 @@ def index(request: WSGIRequest):
 
 
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def operations(request):
     """
     Affiche la page des opérations.
@@ -243,7 +243,7 @@ def operations(request):
         'fournisseurs': fournisseurs,
         })
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def categories(request):
     """
     Affiche la liste des catégories.
@@ -256,7 +256,7 @@ def categories(request):
     }
     return render(request, "caisse/categories/categories.html", context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def listes(request):
     """
     Affiche la liste des opérations avec filtrage et tri.
@@ -409,7 +409,7 @@ def listes(request):
     }
     return render(request, 'caisse/listes/listes_operations.html', context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def depenses(request: WSGIRequest):
     """
     Affiche la page des dépenses avec les opérations par employé et par catégorie.
@@ -535,7 +535,7 @@ def depenses(request: WSGIRequest):
 
 # Gestion des acteurs
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def acteurs(request):
     """
     Affiche la page des acteurs (personnels, fournisseurs, catégories).
@@ -559,7 +559,7 @@ def acteurs(request):
     }
     return render(request, "caisse/acteurs/acteurs.html", context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def ajouter_acteur(request: WSGIRequest):
     """
     Ajoute un nouvel acteur (fournisseur, employé ou catégorie).
@@ -586,7 +586,7 @@ def ajouter_acteur(request: WSGIRequest):
             messages.error(request, f"Erreur lors de l'ajout de l'acteur: {str(e)}")
     return redirect('caisse:acteurs')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def ajouter_fournisseur(request):
     """
     Ajoute un nouveau fournisseur.
@@ -603,7 +603,7 @@ def ajouter_fournisseur(request):
             messages.error(request, "Erreur dans le formulaire. Veuillez vérifier les données.")
     return redirect('caisse:acteurs')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 @require_POST
 @csrf_exempt
 def modifier_acteur(request, type_acteur, pk):
@@ -631,7 +631,7 @@ def modifier_acteur(request, type_acteur, pk):
         }
     })
 
-@login_required
+@login_required(login_url="accounts:login_user")
 @require_POST
 @csrf_exempt
 def supprimer_acteur(request, type_acteur, pk):
@@ -657,7 +657,7 @@ def supprimer_acteur(request, type_acteur, pk):
 
 # Gestion des catégories
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def ajouter_categorie(request):
     """
     Ajoute une nouvelle catégorie.
@@ -672,7 +672,7 @@ def ajouter_categorie(request):
             return redirect('caisse:acteurs')
     return redirect('caisse:acteurs')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 @require_POST
 @csrf_exempt
 def modifier_categorie(request, pk):
@@ -696,7 +696,7 @@ def modifier_categorie(request, pk):
         }
     })
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def supprimer_categorie(request, pk: int):
     categorie = get_object_or_404(Categorie, pk=pk)
 
@@ -712,7 +712,7 @@ def supprimer_categorie(request, pk: int):
 
 # Gestion des opérations
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def ajouts_entree(request):
     """
     Gère l'ajout d'opérations d'entrée.
@@ -767,7 +767,7 @@ def ajouts_entree(request):
         'operation': 'entree',
     })
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def ajouts_sortie(request):
     """
     Gère l'ajout d'opérations de sortie sans vérification.
@@ -829,7 +829,7 @@ def ajouts_sortie(request):
         'operation': 'sortie',
     })
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def modifier_entree(request, pk):
     # Récupérer l'entrée existante
     entree = get_object_or_404(OperationEntrer, id=pk)
@@ -873,7 +873,7 @@ def modifier_entree(request, pk):
     return render(request, 'caisse/listes/modifier_entree.html', context)
 
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def modifier_sortie(request, pk):
     # Récupérer l'opération de sortie spécifique
     operation = get_object_or_404(OperationSortir, id=pk)
@@ -918,7 +918,7 @@ def modifier_sortie(request, pk):
     return render(request, 'caisse/listes/modifier_sortie.html', context)
 
 #Suppression des entrées
-@login_required
+@login_required(login_url="accounts:login_user")
 def supprimer_entree(request, pk):
     """
     Supprime une opération d'entrée ou de sortie en fonction de son ID.
@@ -935,7 +935,7 @@ def supprimer_entree(request, pk):
     return redirect(request.META.get('HTTP_REFERER'))
 
 #Suppression des sorties
-@login_required
+@login_required(login_url="accounts:login_user")
 def supprimer_sortie(request, pk):
     """
     Supprime une opération d'entrée ou de sortie en fonction de son ID.
@@ -949,7 +949,7 @@ def supprimer_sortie(request, pk):
     return redirect(request.META.get('HTTP_REFERER'))
 
 # Add this new view
-@login_required
+@login_required(login_url="accounts:login_user")
 def parametres(request):
     """
     Affiche la page des paramètres.
@@ -959,7 +959,7 @@ def parametres(request):
     }
     return render(request, "caisse/parametres/parametres.html", context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 @require_POST
 @csrf_exempt
 def creer_categorie(request: WSGIRequest):
@@ -993,7 +993,7 @@ def creer_categorie(request: WSGIRequest):
     
     return redirect('caisse:acteurs')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def editer_acteur(request, type_acteur, pk):
     if type_acteur == 'personnel':
         acteur = get_object_or_404(Personnel, pk=pk)
@@ -1022,7 +1022,7 @@ def editer_acteur(request, type_acteur, pk):
     }
     return render(request, 'caisse/acteurs/editer_acteur.html', context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def editer_categorie(request, pk):
     categorie = get_object_or_404(Categorie, pk=pk)
     if request.method == 'POST':
@@ -1040,7 +1040,7 @@ def editer_categorie(request, pk):
     }
     return render(request, 'caisse/acteurs/editer_categorie.html', context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 @user_passes_test(is_admin)
 def utilisateurs(request):
     """
@@ -1049,7 +1049,7 @@ def utilisateurs(request):
     users = User.objects.all()
     return render(request, 'caisse/utilisateurs/utilisateurs.html', {'users': users})
 
-@login_required
+@login_required(login_url="accounts:login_user")
 @user_passes_test(is_admin)
 @csrf_exempt
 def creer_utilisateur(request):
@@ -1101,7 +1101,7 @@ def creer_utilisateur(request):
         messages.error(request, f"Erreur lors de la création de l'utilisateur: {str(e)}")
         return redirect('caisse:utilisateurs')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 @user_passes_test(is_admin)
 @require_POST
 @csrf_exempt
@@ -1176,7 +1176,7 @@ def modifier_utilisateur(request, pk):
             'error': str(e)
         }, status=400)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 @user_passes_test(is_admin)
 @require_POST
 @csrf_exempt
@@ -1195,7 +1195,7 @@ def supprimer_utilisateur(request, pk):
         messages.error(request, f"Erreur lors de la suppression de l'utilisateur {user.get_full_name()}.")
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 @user_passes_test(is_admin)
 def editer_utilisateur(request, pk):
     """
@@ -1207,7 +1207,7 @@ def editer_utilisateur(request, pk):
     
     return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def update_profile(request):
     if request.method == 'POST':
         user = request.user
@@ -1233,7 +1233,7 @@ def update_profile(request):
     
     return redirect('caisse:parametres')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def change_password(request):
     if request.method == 'POST':
         current_password = request.POST.get('current_password')
@@ -1266,7 +1266,7 @@ def change_password(request):
     
     return redirect('caisse:parametres')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def liste_entrees(request):
     """
     Affiche la liste des opérations d'entrée.
@@ -1374,7 +1374,7 @@ def liste_entrees(request):
     }
     return HttpResponse(template.render(context, request))
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def liste_sorties(request):
     """
     Affiche la liste des opérations de sortie.
@@ -1639,7 +1639,7 @@ def generer_excel_operations_sorties(request):
 
     return response
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def historique(request):
     # Si l'utilisateur est un administrateur, afficher toutes les activités
     if request.user.is_staff:
@@ -1650,7 +1650,7 @@ def historique(request):
     
     return render(request, 'caisse/historique/historique.html', {'historique': historique})
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def beneficiaires(request: WSGIRequest):
     """
     Affiche la liste des bénéficiaires.
@@ -1747,7 +1747,7 @@ def beneficiaires(request: WSGIRequest):
 
     return render(request, "caisse/acteurs/beneficiaires.html", context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 @require_POST
 @csrf_exempt
 def creer_beneficiaire(request: WSGIRequest):
@@ -1782,7 +1782,7 @@ def creer_beneficiaire(request: WSGIRequest):
         messages.error(request, f"Erreur lors de la création du bénéficiaire.")
         return redirect('caisse:beneficiaires') 
 
-@login_required
+@login_required(login_url="accounts:login_user")
 @require_POST
 @csrf_exempt
 def modifier_beneficiaire(request: WSGIRequest, pk):
@@ -1820,7 +1820,7 @@ def modifier_beneficiaire(request: WSGIRequest, pk):
     
     return redirect('caisse:beneficiaires')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 @csrf_exempt
 def supprimer_beneficiaire(request, pk):
     beneficiaire = get_object_or_404(Beneficiaire, pk=pk)
@@ -1840,7 +1840,7 @@ def supprimer_beneficiaire(request, pk):
     
     return redirect('caisse:beneficiaires')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def editer_beneficiaire(request, pk):
     beneficiaire = get_object_or_404(Beneficiaire, pk=pk)
     personnels = Personnel.objects.all()
@@ -1870,7 +1870,7 @@ def get_available_years():
     
     return sorted(list(all_years), reverse=True)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def details_entrees(request):
     """Vue détaillée des entrées par mois"""
     # Récupérer l'année sélectionnée ou utiliser l'année courante
@@ -1922,7 +1922,7 @@ def details_entrees(request):
     }
     return render(request, 'caisse/details/details_entrees.html', context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def details_sorties(request):
     """Vue détaillée des sorties par mois"""
     selected_year = int(request.GET.get('year', timezone.now().year))
@@ -1972,7 +1972,7 @@ def details_sorties(request):
     }
     return render(request, 'caisse/details/details_sorties.html', context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def details_solde(request):
     """Vue détaillée du solde par mois"""
     selected_year = int(request.GET.get('year', timezone.now().year))
@@ -2052,7 +2052,7 @@ def details_solde(request):
     }
     return render(request, 'caisse/details/details_solde.html', context)
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def ajouter_element(request):
     element_type = request.GET.get('type')
     return_url = request.GET.get('return_url')
@@ -2113,7 +2113,7 @@ def ajouter_element(request):
     
     return redirect('caisse:index')
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def verifier_categorie(request, id):
     try:
         exists = Categorie.objects.filter(id=id).exists()
@@ -2121,7 +2121,7 @@ def verifier_categorie(request, id):
     except:
         return JsonResponse({'exists': False})
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def verifier_beneficiaire(request, id):
     try:
         exists = Beneficiaire.objects.filter(id=id).exists()
@@ -2129,7 +2129,7 @@ def verifier_beneficiaire(request, id):
     except:
         return JsonResponse({'exists': False})
 
-@login_required
+@login_required(login_url="accounts:login_user")
 def verifier_fournisseur(request, id):
     try:
         exists = Fournisseur.objects.filter(id=id).exists()
