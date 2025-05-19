@@ -67,8 +67,8 @@ def index(request: WSGIRequest):
 
     # Calculer le premier et dernier jour du mois actuel
     today = date.today()
-    first_day_of_month = date(today.year, today.month, 1)
-    last_day_of_month = date(today.year, today.month + 1, 1) - timedelta(days=1)  # Dernier jour du mois
+    first_day_of_month = datetime(today.year, today.month, 1)
+    last_day_of_month = datetime(today.year, today.month + 1, 1) - timedelta(days=1)  # Dernier jour du mois
         
     # Calculer les totaux du mois actuel
     total_entrees_mois = OperationEntrer.objects.filter(
