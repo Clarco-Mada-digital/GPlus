@@ -186,11 +186,11 @@
       <input id="etat_facture" type="hidden" name="etat_facture" value="Impayée"/>
 
       <!-- Boutons d'action -->
-      <div class="flex justify-end space-x-4">
-        <a href="{% url 'facture:index' %}" type="button" class="bg-red/80 text-white py-2 px-4 rounded hover:bg-red/60 dark:bg-red/60 dark:hover:bg-red/70">
+      <div class="flex justify-end space-x-4 text-sm xl:text-base">
+        <a href="{% url 'facture:index' %}" type="button" class="flex items-center justify-center bg-red/80 text-white py-2 px-4 rounded hover:bg-red/60 dark:bg-red/60 dark:hover:bg-red/70">
           Annuler
         </a>
-        <button @click="$event.preventDefault();getFactureValue()" type="button" class="bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 dark:bg-teal-600 dark:hover:bg-teal-700">
+        <button @click.prevent="getFactureValue()" type="button" class="bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 dark:bg-teal-600 dark:hover:bg-teal-700">
           Preview
         </button>
         <button x-show="facture_view" @click="document.getElementById('etat_facture').value = 'Brouillon';document.getElementById('factureSubmit').click()" type="button" class="bg-amber-500 text-white py-2 px-4 rounded hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700">
@@ -438,242 +438,249 @@
 
 </div>
 
-<script defer>
-  // Alpine.js  
-  function factDataComponent(){
-    return {
-      front_view: "{{ front_view }}",
-      facture : "",
-      init(){
-        // Charger les données depuis localStorage
-        this.facture_view = this.front_view == 'facture' ? true : false;
-      },
+{% endblock content %}
 
-      getFactureValue() {
-        // Récupérer l'URL de manière sécurisée
-        // e.preventDefault();
-        const url = "{% url 'facture:preview_facture' %}";
-        form = document.getElementById('factureForm');
-        form.action = url;
-        formData = new FormData(form);
 
-        fetch(form.action, {
-          method: form.method,
-          body: formData
-        }).then(response => response.json())
-          .then(data => {
-            this.facture = data.facture
-            this.facture.sousTotal = document.getElementById('sous-total').textContent
-            this.facture.tva = document.getElementById('tva').textContent
-            this.facture.montant = document.getElementById('total').textContent
-            console.log(this.facture);
-            document.getElementById('previewFactureBtn').click()
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
-        
-      },
-    }
-  }
+{% block extrascript %}
+  <script defer>
+    // Alpine.js  
+    function factDataComponent(){
+      return {
+        front_view: "{{ front_view }}",
+        facture : "",
+        init(){
+          // Charger les données depuis localStorage
+          this.facture_view = this.front_view == 'facture' ? true : false;
+        },
 
-  document.getElementById('date').value = new Date().toISOString().slice(0, 10);
-  
-  document.getElementById('calculate_with_tva').addEventListener('change', function() {
-    if (this.checked) {
-      document.getElementById('tva-label').classList.add('line-through');
-      document.getElementById('tva').classList.add('line-through');
-    } else {
-      document.getElementById('tva-label').classList.remove('line-through');
-      document.getElementById('tva').classList.remove('line-through');
-    }
-    calculerTotal();
-  });
-  
-  const articlesContainer = document.getElementById('articles-container');
-  const ajouterArticleBtn = document.getElementById('ajouterArticle');
-  let articleCount = 0;
+        getFactureValue() {
+          // Récupérer l'URL de manière sécurisée
+          // e.preventDefault();
+          const url = "{% url 'facture:preview_facture' %}";
+          form = document.getElementById('factureForm');
+          form.action = url;
+          formData = new FormData(form);
 
-  // Fonction pour créer un nouvel service
-  function creerArticle(nom_service='', prix_unitaire=0.00, libre=false) {
-      articleCount++;
-      const articleDiv = document.createElement('div');
-      articleDiv.className = 'grid grid-cols-12 gap-2 article-row';
-      articleDiv.dataset.articleId = articleCount;
-
-      articleDiv.innerHTML = `
-        <div class='w-full col-span-6 grid lg:grid-cols-2 grid-cols-1 gap-2'>
-          <div class="col-span-1">
-              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-description" value="${nom_service}" name="description-${articleCount}"
-                    type="text" placeholder="Description" data-article-id="${articleCount}" required>
-          </div>
-          <div class="col-span-1">
-              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-quantite" name="quantite-${articleCount}"
-                    type="number" placeholder="Quantité" value="1" min="1" data-article-id="${articleCount}" required>
-          </div>  
-        </div> 
-        <div class='w-full col-span-4 grid lg:grid-cols-2 grid-cols-1 gap-2'>      
-          <div class="flex col-span-1 h-10">
-            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-              Ar
-            </span>
-            <input type="number" step="0.01" placeholder="Prix" name="prix-${articleCount}" value="${prix_unitaire}" data-article-id="${articleCount}" class="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 article-prix" required>
-          </div>
-          <div class="col-span-1">
-              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 article-total" 
-                    type="text" placeholder="Total" disabled data-article-id="${articleCount}">
-          </div>
-        </div>
-        <div class='w-full col-span-2 grid lg:grid-cols-2 grid-cols-1 gap-2'>
-          <div class="w-full flex items-center flex-wrap lg:flex-nowrap">
-              <button title="suprimer" type="button" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full supprimer-article" data-article-id="${articleCount}">
-                  <svg class="w-10 h-10 p-2 bg-red rounded-full" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/></svg>
-              </button>
-
-              <button title="Ajouter ce service au liste des services" type="button" class=" ${libre==false ? 'hidden' : ''} bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full ajout-article" data-article-id="${articleCount}">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512"><path fill="#ef5a22" d="M203.72 87.938c-2.082.017-4.18.31-6.282.874c-13.45 3.608-21.412 17.53-17.782 31.094c1.384 5.172 4.235 9.52 8 12.75c-31.85 15.446-53.498 45.172-59.28 78.72l-22.532 7.593c-11.235-2.877-21.416-4.2-30.53-4.095c-14.696.167-26.65 4.02-35.908 10.97c-18.518 13.896-23.316 38.02-19.53 60.655c3.784 22.636 15.81 45.127 34.343 59.344c18.532 14.216 44.715 18.96 71.03 4.875c4.43-2.373 8.776-4.81 12.813-6.97c2.993 10.772 14.018 17.16 24.75 14.28c10.253-2.75 16.547-12.963 14.656-23.31c16.984 10.05 34.495 15.674 52.186 17.405c-14.094 20.893-32.316 39.57-53.97 54.78c27.754 27.726 224.764-24.853 229.626-61.592c-26.89-2.484-52.525-9.935-75.562-21.563c67.995-43.983 128.655-133.27 160.656-234.563l-42.47 14.344c-44.11 67.313-122.214 103.81-167.155 28a107.9 107.9 0 0 0-53-9.593c1.656-4.69 1.95-9.913.564-15.093c-3.063-11.443-13.392-18.998-24.625-18.906zM76.062 233.53c5.11-.027 10.865.51 17.312 1.75c18.656 36.728 39.31 63.938 61.188 82.845c-.767.113-1.546.263-2.313.47q-.22.058-.438.124c-2.846.324-5.588 1.044-8.218 1.936c-9.64 3.27-18.73 9.084-27.156 13.594c-20.655 11.056-36.95 7.41-50.844-3.25c-13.895-10.66-24.256-29.5-27.28-47.594c-3.027-18.094.948-34.097 12.31-42.625c5.683-4.263 13.943-7.186 25.438-7.25z"/></svg>
-              </button>
-          </div>
-        </div>
-      `;
-
-      articlesContainer.appendChild(articleDiv);
-      calculerTotal();
-      attacherEcouteurs(articleDiv);
-  }
-
-  // Fonction pour attacher les écouteurs d'événements
-  function attacherEcouteurs(articleDiv) {
-      const modalAddArticle = document.getElementById('ajouterArticleModal')
-      const quantiteInput = articleDiv.querySelector('.article-quantite');
-      const descInput = articleDiv.querySelector('.article-description');
-      const prixInput = articleDiv.querySelector('.article-prix');
-      const supprimerBtn = articleDiv.querySelector('.supprimer-article');
-      const ajoutBtn = articleDiv.querySelector('.ajout-article');
-
-      quantiteInput.addEventListener('input', calculerTotal);
-      prixInput.addEventListener('input', calculerTotal);
-      supprimerBtn.addEventListener('click', function() {
-          articleDiv.remove();
-          calculerTotal();
-      });
-      ajoutBtn.addEventListener('click', function() {
-        document.getElementById('nom_article').value = descInput.value;
-        document.getElementById('prix_unitaire').value = prixInput.value;
-        document.getElementById('addArticleBtn').click();
-       
-      });
-  }  
-
-  // Fonction pour calculer les totaux
-  function calculerTotal() {
-      let sousTotal = 0;
-      const articles = document.querySelectorAll('.article-row');
-
-      articles.forEach(article => {
-          const quantite = parseFloat(article.querySelector('.article-quantite').value) || 0;
-          const prix = parseFloat(article.querySelector('.article-prix').value) || 0;
-          const totalArticle = quantite * prix;
+          fetch(form.action, {
+            method: form.method,
+            body: formData
+          }).then(response => response.json())
+            .then(data => {
+              this.facture = data.facture
+              this.facture.sousTotal = document.getElementById('sous-total').textContent
+              this.facture.tva = document.getElementById('tva').textContent
+              this.facture.montant = document.getElementById('total').textContent
+              document.getElementById('previewFactureBtn').click()
+              // Réinitialiser le formulaire après l'envoi
+              form.action = "{% url 'facture:new_facture' %}";
+            })
+            .catch(error => {
+              // Réinitialiser le formulaire après l'envoi
+              form.action = "{% url 'facture:new_facture' %}";
+              console.error('Error:', error);
+            });
           
-          article.querySelector('.article-total').value = numStr(totalArticle.toFixed(2), ' ') + ' Ar';
-          sousTotal += totalArticle;
-      });
-
-      if (document.getElementById('calculate_with_tva').checked) {
-        tva = 0;
-      }else{
-        tva = sousTotal * 0.20;
+        },
       }
-      const total = sousTotal + tva;
-
-      document.getElementById('sous-total').textContent = numStr(sousTotal.toFixed(2), ' ') + ' Ar';
-      document.getElementById('tva').textContent = numStr(tva.toFixed(2), ' ') + ' Ar';
-      document.getElementById('total').textContent = numStr(total.toFixed(2), ' ') + ' Ar';
-      document.getElementById('total_input').value = total.toFixed(2);
-  }
-
-  // Écouteur pour le bouton d'ajout d'article
-  ajouterArticleBtn.addEventListener('click', () => creerArticle("", 0.00, true));
-
-  // Écouteur pour le formulaire
-  //document.getElementById('factureForm').addEventListener('submit', function(e) {
-  //    e.preventDefault();
-      // Ici, vous pouvez ajouter la logique pour envoyer les données au serveur
-  //    console.log('Formulaire soumis');
-  //});
-   
-
-
-  let servicesList =  data = JSON.parse("{{ services_json | escapejs }}")
-  function searchArticles(query) {
-    const articlesContainer = document.getElementById('result-articles-container');
-    const searchQuery = query.trim();
-    if (searchQuery === '') {
-      articlesContainer.innerHTML = '';
-      articlesContainer.style.display = 'none';
-      return;
     }
-    const filteredArticles = servicesList.filter(article => article.nom_service.toLowerCase().includes(searchQuery.toLowerCase()));
-    let html = '';
-    if (filteredArticles.length > 0) {
-      html = filteredArticles.map(article => `
-        <div class="cursor-pointer" onclick="addArticle(${article.id})">
-          <span>${article.nom_service}</span> - Prix unitaire: <span>${article.prix_unitaire}</span>
+
+    document.getElementById('date').value = new Date().toISOString().slice(0, 10);
+    
+    document.getElementById('calculate_with_tva').addEventListener('change', function() {
+      if (this.checked) {
+        document.getElementById('tva-label').classList.add('line-through');
+        document.getElementById('tva').classList.add('line-through');
+      } else {
+        document.getElementById('tva-label').classList.remove('line-through');
+        document.getElementById('tva').classList.remove('line-through');
+      }
+      calculerTotal();
+    });
+    
+    const articlesContainer = document.getElementById('articles-container');
+    const ajouterArticleBtn = document.getElementById('ajouterArticle');
+    let articleCount = 0;
+
+    // Fonction pour créer un nouvel service
+    function creerArticle(nom_service='', prix_unitaire=0.00, libre=false) {
+        articleCount++;
+        const articleDiv = document.createElement('div');
+        articleDiv.className = 'grid grid-cols-12 gap-2 article-row';
+        articleDiv.dataset.articleId = articleCount;
+
+        articleDiv.innerHTML = `
+          <div class='w-full col-span-6 grid lg:grid-cols-2 grid-cols-1 gap-2'>
+            <div class="col-span-1">
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-description" value="${nom_service}" name="description-${articleCount}"
+                      type="text" placeholder="Description" data-article-id="${articleCount}" required>
+            </div>
+            <div class="col-span-1">
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline article-quantite" name="quantite-${articleCount}"
+                      type="number" placeholder="Quantité" value="1" min="1" data-article-id="${articleCount}" required>
+            </div>  
+          </div> 
+          <div class='w-full col-span-4 grid lg:grid-cols-2 grid-cols-1 gap-2'>      
+            <div class="flex col-span-1 h-10">
+              <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                Ar
+              </span>
+              <input type="number" step="0.01" placeholder="Prix" name="prix-${articleCount}" value="${prix_unitaire}" data-article-id="${articleCount}" class="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 article-prix" required>
+            </div>
+            <div class="col-span-1">
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 article-total" 
+                      type="text" placeholder="Total" disabled data-article-id="${articleCount}">
+            </div>
+          </div>
+          <div class='w-full col-span-2 grid lg:grid-cols-2 grid-cols-1 gap-2'>
+            <div class="w-full flex items-center flex-wrap lg:flex-nowrap">
+                <button title="suprimer" type="button" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full supprimer-article" data-article-id="${articleCount}">
+                    <svg class="w-10 h-10 p-2 bg-red rounded-full" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z"/></svg>
+                </button>
+
+                <button title="Ajouter ce service au liste des services" type="button" class=" ${libre==false ? 'hidden' : ''} bg-red-500 text-white p-2 rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 w-full ajout-article" data-article-id="${articleCount}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512"><path fill="#ef5a22" d="M203.72 87.938c-2.082.017-4.18.31-6.282.874c-13.45 3.608-21.412 17.53-17.782 31.094c1.384 5.172 4.235 9.52 8 12.75c-31.85 15.446-53.498 45.172-59.28 78.72l-22.532 7.593c-11.235-2.877-21.416-4.2-30.53-4.095c-14.696.167-26.65 4.02-35.908 10.97c-18.518 13.896-23.316 38.02-19.53 60.655c3.784 22.636 15.81 45.127 34.343 59.344c18.532 14.216 44.715 18.96 71.03 4.875c4.43-2.373 8.776-4.81 12.813-6.97c2.993 10.772 14.018 17.16 24.75 14.28c10.253-2.75 16.547-12.963 14.656-23.31c16.984 10.05 34.495 15.674 52.186 17.405c-14.094 20.893-32.316 39.57-53.97 54.78c27.754 27.726 224.764-24.853 229.626-61.592c-26.89-2.484-52.525-9.935-75.562-21.563c67.995-43.983 128.655-133.27 160.656-234.563l-42.47 14.344c-44.11 67.313-122.214 103.81-167.155 28a107.9 107.9 0 0 0-53-9.593c1.656-4.69 1.95-9.913.564-15.093c-3.063-11.443-13.392-18.998-24.625-18.906zM76.062 233.53c5.11-.027 10.865.51 17.312 1.75c18.656 36.728 39.31 63.938 61.188 82.845c-.767.113-1.546.263-2.313.47q-.22.058-.438.124c-2.846.324-5.588 1.044-8.218 1.936c-9.64 3.27-18.73 9.084-27.156 13.594c-20.655 11.056-36.95 7.41-50.844-3.25c-13.895-10.66-24.256-29.5-27.28-47.594c-3.027-18.094.948-34.097 12.31-42.625c5.683-4.263 13.943-7.186 25.438-7.25z"/></svg>
+                </button>
+            </div>
+          </div>
+        `;
+
+        articlesContainer.appendChild(articleDiv);
+        calculerTotal();
+        attacherEcouteurs(articleDiv);
+    }
+
+    // Fonction pour attacher les écouteurs d'événements
+    function attacherEcouteurs(articleDiv) {
+        const modalAddArticle = document.getElementById('ajouterArticleModal')
+        const quantiteInput = articleDiv.querySelector('.article-quantite');
+        const descInput = articleDiv.querySelector('.article-description');
+        const prixInput = articleDiv.querySelector('.article-prix');
+        const supprimerBtn = articleDiv.querySelector('.supprimer-article');
+        const ajoutBtn = articleDiv.querySelector('.ajout-article');
+
+        quantiteInput.addEventListener('input', calculerTotal);
+        prixInput.addEventListener('input', calculerTotal);
+        supprimerBtn.addEventListener('click', function() {
+            articleDiv.remove();
+            calculerTotal();
+        });
+        ajoutBtn.addEventListener('click', function() {
+          document.getElementById('nom_article').value = descInput.value;
+          document.getElementById('prix_unitaire').value = prixInput.value;
+          document.getElementById('addArticleBtn').click();
+        
+        });
+    }  
+
+    // Fonction pour calculer les totaux
+    function calculerTotal() {
+        let sousTotal = 0;
+        const articles = document.querySelectorAll('.article-row');
+
+        articles.forEach(article => {
+            const quantite = parseFloat(article.querySelector('.article-quantite').value) || 0;
+            const prix = parseFloat(article.querySelector('.article-prix').value) || 0;
+            const totalArticle = quantite * prix;
+            
+            article.querySelector('.article-total').value = numStr(totalArticle.toFixed(2), ' ') + ' Ar';
+            sousTotal += totalArticle;
+        });
+
+        if (document.getElementById('calculate_with_tva').checked) {
+          tva = 0;
+        }else{
+          tva = sousTotal * 0.20;
+        }
+        const total = sousTotal + tva;
+
+        document.getElementById('sous-total').textContent = numStr(sousTotal.toFixed(2), ' ') + ' Ar';
+        document.getElementById('tva').textContent = numStr(tva.toFixed(2), ' ') + ' Ar';
+        document.getElementById('total').textContent = numStr(total.toFixed(2), ' ') + ' Ar';
+        document.getElementById('total_input').value = total.toFixed(2);
+    }
+
+    // Écouteur pour le bouton d'ajout d'article
+    ajouterArticleBtn.addEventListener('click', () => creerArticle("", 0.00, true));
+
+    // Écouteur pour le formulaire
+    //document.getElementById('factureForm').addEventListener('submit', function(e) {
+    //    e.preventDefault();
+        // Ici, vous pouvez ajouter la logique pour envoyer les données au serveur
+    //    console.log('Formulaire soumis');
+    //});
+    
+
+
+    let servicesList =  data = JSON.parse("{{ services_json | escapejs }}")
+    function searchArticles(query) {
+      const articlesContainer = document.getElementById('result-articles-container');
+      const searchQuery = query.trim();
+      if (searchQuery === '') {
+        articlesContainer.innerHTML = '';
+        articlesContainer.style.display = 'none';
+        return;
+      }
+      const filteredArticles = servicesList.filter(article => article.nom_service.toLowerCase().includes(searchQuery.toLowerCase()));
+      let html = '';
+      if (filteredArticles.length > 0) {
+        html = filteredArticles.map(article => `
+          <div class="cursor-pointer" onclick="addArticle(${article.id})">
+            <span>${article.nom_service}</span> - Prix unitaire: <span>${article.prix_unitaire}</span>
+          </div>
+        `).join('');
+      } else {
+        html = '<div>Aucun résultat trouvé</div>';
+      }
+      articlesContainer.innerHTML = html;
+      if (html === '') {
+        articlesContainer.style.display = 'none';
+      } else {
+        articlesContainer.style.display = 'block';
+      }
+      
+    }
+
+    let selectedArticles = [];
+    function addArticle(id) {
+      const resultArticlesContainer = document.getElementById('result-articles-container');
+      const article = servicesList.find(service => service.id === id);
+      selectedArticles.push(article);
+      const ligneContainer = document.getElementById('articles-container');
+      const html = selectedArticles.map((article, index) => `
+        <div>
+          <span>${article.nom_service}</span> - Prix: <span>${article.prix_unitaire} €</span>
+          <button class="ml-2" onclick="removeArticle(${index})">Supprimer</button>
         </div>
       `).join('');
-    } else {
-      html = '<div>Aucun résultat trouvé</div>';
+      creerArticle(article.nom_service, article.prix_unitaire)
+      document.getElementById('service_searche').value = "";
+      resultArticlesContainer.style.display = 'none';
     }
-    articlesContainer.innerHTML = html;
-    if (html === '') {
-      articlesContainer.style.display = 'none';
-    } else {
-      articlesContainer.style.display = 'block';
-    }
-    
-  }
 
-  let selectedArticles = [];
-  function addArticle(id) {
-    const resultArticlesContainer = document.getElementById('result-articles-container');
-    const article = servicesList.find(service => service.id === id);
-    selectedArticles.push(article);
-    const ligneContainer = document.getElementById('articles-container');
-    const html = selectedArticles.map((article, index) => `
-      <div>
-        <span>${article.nom_service}</span> - Prix: <span>${article.prix_unitaire} €</span>
-        <button class="ml-2" onclick="removeArticle(${index})">Supprimer</button>
-      </div>
-    `).join('');
-    creerArticle(article.nom_service, article.prix_unitaire)
-    document.getElementById('service_searche').value = "";
-    resultArticlesContainer.style.display = 'none';
-  }
-
-  document.getElementById('serviceForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    var form = this;
-    var formData = new FormData(form);
-    fetch(form.action, {
-      method: form.method,
-      body: formData
-    }).then(response => {
-      if (response.ok) {
-        // Si la requête a réussi, fermez le modal
-        //document.getElementById('ajouterArticleModal').classList.add('hidden');
-        document.getElementById('alert-success').classList.remove('hidden')
-        document.getElementById('alert-success').classList.add('flex')
-        // Rechargez la page pour afficher les nouveaux services
-        // window.location.reload();
-      } else {
-        // Si la requête a échoué, affichez une erreur
-        document.getElementById('alert-error').classList.remove('hidden')
-        document.getElementById('alert-error').classList.add('flex')
-        alert('Une erreur s\'est produite lors de l\'enregistrement du service.');
-      }
+    document.getElementById('serviceForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var form = this;
+      var formData = new FormData(form);
+      fetch(form.action, {
+        method: form.method,
+        body: formData
+      }).then(response => {
+        if (response.ok) {
+          // Si la requête a réussi, fermez le modal
+          //document.getElementById('ajouterArticleModal').classList.add('hidden');
+          document.getElementById('alert-success').classList.remove('hidden')
+          document.getElementById('alert-success').classList.add('flex')
+          // Rechargez la page pour afficher les nouveaux services
+          // window.location.reload();
+        } else {
+          // Si la requête a échoué, affichez une erreur
+          document.getElementById('alert-error').classList.remove('hidden')
+          document.getElementById('alert-error').classList.add('flex')
+          alert('Une erreur s\'est produite lors de l\'enregistrement du service.');
+        }
+      });
     });
-  });
 
-</script>
-
-{% endblock content %}
+  </script>
+{% endblock extrascript %}
+  

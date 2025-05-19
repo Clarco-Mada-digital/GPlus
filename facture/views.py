@@ -11,7 +11,7 @@ from clients.models import Client
 from .models import Service, Facture, Entreprise
 from .forms import FactureForm, ServiceForm, EntrepriseForm
 from xhtml2pdf import pisa
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
 import uuid
 
@@ -38,7 +38,7 @@ def index(request):
   entreprise = Entreprise.objects.get(pk=1) if Entreprise.objects.exists() else None 
 
   factures = all_facture.filter(type="Facture").order_by('-date_facture')
-  devis = all_facture.filter(type="Devis")  
+  devis = all_facture.filter(type="Devis").order_by('-date_facture')
 
   mois_uniques = {facture.date_facture.month for facture in factures}
   mois_uniques = sorted(mois_uniques, reverse=True)
@@ -74,8 +74,8 @@ def index(request):
     devis = devis.filter(intitule__contains=dev_search, type="Devis")
     
   
-  paginator_fact = Paginator(factures, 10) # Afficher les resultat par 10
-  paginator_dev = Paginator(devis, 10) # Afficher les resultat par 10
+  paginator_fact = Paginator(factures, 5) # Afficher les resultat par 5
+  paginator_dev = Paginator(devis, 5) # Afficher les resultat par 5
   page_facture = request.GET.get('page_facture')
   factures = paginator_fact.get_page(page_facture)
   page_dev = request.GET.get('page_dev')
