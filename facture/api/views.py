@@ -4,12 +4,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 
-from .serializers.facture import FactureSerializer
-from .serializers.client import ClientSerializer
-from .serializers.entreprise import EntrepriseSerializer
-from .serializers.user import UserSerializer
-
-from facture.models import Facture, Entreprise
+from facture.models import Facture, Entreprise, Service
 from clients.models import Client
 from accounts.models import User
 
@@ -17,7 +12,15 @@ from django.db.models import Q
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 
-from datetime import datetime
+from .serializers import FactureSerializer, ClientSerializer, EntrepriseSerializer, UserSerializer, FactureServiceSerializer
+
+class FactureServiceViewset(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FactureServiceSerializer
+    
+    def get_queryset(self):
+        return Service.objects.all().order_by('-id')
+
 
 class FactureViewset(ModelViewSet):
     """
@@ -158,3 +161,4 @@ class FactureViewset(ModelViewSet):
         clients = Client.objects.all()
         serializer = ClientSerializer(clients, many=True)
         return Response(serializer.data)
+    

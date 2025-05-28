@@ -1,10 +1,36 @@
+
 from django.utils import timezone
 from django.db import transaction
-from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework import serializers
+from clients.models import Client
+from accounts.models import User
+from facture.models import Entreprise, Service, Facture
 
-from facture.models import Facture
 
+class FactureServiceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Service
+        fields = '__all__'
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'first_name', 'last_name', 'date_joined']
+
+class ClientSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Client
+        fields = '__all__'
+
+class EntrepriseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Entreprise
+        fields = ['logo', 'nom', 'adresse', 'tel', 'email', 'code_postal', 'region', 'nif', 'stat', 'taux_tva']
 
 # Utilisée pour sérialiser la liste de facture
 class FactureSerializer(serializers.ModelSerializer):
