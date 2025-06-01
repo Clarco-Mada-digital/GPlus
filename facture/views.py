@@ -83,7 +83,7 @@ def index(request):
 
   # Partie statistique
   # Nombre de factures impayées
-  factures_impayees = Facture.objects.filter(etat_facture='impayée').count()
+  factures_impayees = Facture.objects.filter(etat_facture='Impayée').count()
   factures_brouillon = Facture.objects.filter(etat_facture='Brouillon').count()
   # Nombre de factures par type
   factures_par_type = (
