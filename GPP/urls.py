@@ -21,6 +21,9 @@ from django.contrib import admin
 from django.urls import include, path
 from django.contrib.auth import views as auth_views
 
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .api.urls import router as api_router
+
 from theme.views import change_theme
 from caisse.views import index
 
@@ -35,9 +38,15 @@ urlpatterns = [
     path("client/", include("clients.urls", namespace='client')),          # Pour la module du clients et prospects
     path("__reload__/", include("django_browser_reload.urls")),
     # API
-    path('api/', include('caisse.api_urls')),
+    # path('api/', include('caisse.api_urls')),
     path('api/auth/', include('accounts.api_urls')),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
+
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # JWT token, necessaire pour acceder a l'API
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # JWT token refresh, necessaire pour acceder a l'API
+
+    # API base url
+    path('api/', include(api_router.urls)), 
 ]
 
 

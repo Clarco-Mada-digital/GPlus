@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 
+import datetime
 import os
 from pathlib import Path
 # from getenv import env
@@ -37,12 +38,19 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.164.67'] if env("PROJECT_ENV
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne', # Pour gerer les ASGI
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'corsheaders', # CORS
+    'rest_framework', # Django REST Framework pour gerer les APIs
+    'rest_framework_simplejwt', # JWT pour l'Autorisation vie a API
+
     "django_browser_reload",
     'tailwind',
     'theme',
@@ -53,16 +61,12 @@ INSTALLED_APPS = [
     'clients',
     'simple_history',
     'django.contrib.humanize',
-    'rest_framework',              # Ajoute ceci
-    'rest_framework_simplejwt',    # Ajoute ceci
-    'dj_rest_auth',
-    'django_filters',  # Ajoute cette ligne
-    
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware', # CORS
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -92,6 +96,34 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'GPP.wsgi.application'
+
+# Daphne
+ASGI_APPLICATION = "GPP.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND':'channels.layers.InMemoryChannelLayer' # Dev only
+    }
+}
+
+
+# rest_framework configs
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication', # Classe d'authentifaction pour Rest Framework
+    ]
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(weeks=1),
+}
+
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = ['*']
+CORS_ALLOW_METHODS = ['*']
 
 
 # Database
@@ -169,7 +201,7 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
+NPM_BIN_PATH = "/home/malcovys/.nvm/versions/node/v22.11.0/bin/npm"
 
 AUTH_USER_MODEL = "accounts.user"
 
