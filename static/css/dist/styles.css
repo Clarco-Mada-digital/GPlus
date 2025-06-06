@@ -1913,6 +1913,10 @@ body{
   display: grid;
 }
 
+.contents{
+  display: contents;
+}
+
 .hidden{
   display: none;
 }
@@ -2510,6 +2514,10 @@ body{
 
 .flex-wrap{
   flex-wrap: wrap;
+}
+
+.content-start{
+  align-content: flex-start;
 }
 
 .items-start{
@@ -3673,6 +3681,10 @@ body{
   vertical-align: middle;
 }
 
+.font-serif{
+  font-family: Montserrat, serif;
+}
+
 .text-2xl{
   font-size: 1.5rem;
   line-height: 2rem;
@@ -3681,6 +3693,11 @@ body{
 .text-3xl{
   font-size: 1.875rem;
   line-height: 2.25rem;
+}
+
+.text-5xl{
+  font-size: 3rem;
+  line-height: 1;
 }
 
 .text-\[9px\]{
@@ -3778,6 +3795,10 @@ body{
 
 .-tracking-\[0\.2px\]{
   letter-spacing: -0.2px;
+}
+
+.tracking-normal{
+  letter-spacing: 0em;
 }
 
 .tracking-wider{
