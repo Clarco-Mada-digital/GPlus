@@ -23,7 +23,6 @@ from django.contrib.auth import views as auth_views
 
 from rest_framework_simplejwt.views import TokenRefreshView
 from .api.views import CustomTokenObtainPairView
-from .api.urls import router as api_router
 
 from theme.views import change_theme
 from caisse.views import index
@@ -43,7 +42,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # JWT token refresh, necessaire pour acceder a l'API
 
     # API base url
-    path('api/', include(api_router.urls)), 
+    path('api/', include('GPP.api.urls')),
 ]
 
 
