@@ -15,6 +15,7 @@ from django.utils import timezone
 from .serializers import FactureSerializer, ClientSerializer, EntrepriseSerializer, UserSerializer, FactureServiceSerializer
 
 class UserViewset(ModelViewSet):
+    permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
 
     def get_queryset(self):
