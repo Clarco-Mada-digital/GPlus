@@ -22,8 +22,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'photo': photo_url,
-            'entreprise': entreprise
         }
+
+        data['entreprise'] = entreprise
         
         return data
     
