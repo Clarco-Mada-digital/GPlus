@@ -14,6 +14,26 @@ from django.utils import timezone
 
 from .serializers import FactureSerializer, ClientSerializer, EntrepriseSerializer, UserSerializer, FactureServiceSerializer
 
+
+class EntrepriseViewset(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EntrepriseSerializer
+
+    def get_queryset(self):
+        return Entreprise.objects.all()
+
+    @action(detail=False, methods=['put'])
+    def update_entreprise(self, request):
+        entreprise = Entreprise.objects.first()
+        serializer = self.get_serializer(entreprise, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        
+        return Response(serializer.errors, status=400)
+
+
 class UserViewset(ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
