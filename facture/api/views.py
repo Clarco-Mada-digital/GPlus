@@ -65,7 +65,7 @@ class FactureServiceViewset(ModelViewSet):
     serializer_class = FactureServiceSerializer
     
     def get_queryset(self):
-        return Service.objects.all().order_by('-id')
+        return Service.objects.all()
 
 
 class FactureViewset(ModelViewSet):
