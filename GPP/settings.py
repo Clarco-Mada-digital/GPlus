@@ -201,7 +201,7 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-NPM_BIN_PATH = "/home/malcovys/.nvm/versions/node/v22.15.0/bin/npm"
+NPM_BIN_PATH = env("NPM_PATH")
 
 AUTH_USER_MODEL = "accounts.user"
 
