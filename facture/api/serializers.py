@@ -1,4 +1,3 @@
-
 from django.utils import timezone
 from django.db import transaction
 from rest_framework.exceptions import ValidationError
@@ -9,28 +8,42 @@ from facture.models import Entreprise, Service, Facture
 
 
 class FactureServiceSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Service
         fields = '__all__'
 
-class UserSerializer(serializers.ModelSerializer):
 
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'date_joined']
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'photo', 'date_joined')
+    
+    def update(self, instance, validated_data):
+        # Si photo n'est pas fournie dans la requête, on conserve l'existante
+        if 'photo' in validated_data and not validated_data['photo']:
+            validated_data.pop('photo')
+        
+        # Appliquer les autres modifications
+        return super().update(instance, validated_data)
+
 
 class ClientSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Client
         fields = '__all__'
 
-class EntrepriseSerializer(serializers.ModelSerializer):
 
+class EntrepriseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Entreprise
-        fields = ['logo', 'nom', 'adresse', 'tel', 'email', 'code_postal', 'region', 'nif', 'stat', 'taux_tva']
+        fields = ('logo', 'nom', 'adresse', 'tel', 'email', 'code_postal', 'region', 'nif', 'stat', 'taux_tva')
+
+    def update(self, instance, validated_data):
+        if 'logo' in validated_data and not validated_data['logo']:
+            validated_data.pop('logo')
+
+        return super().update(instance, validated_data)
+
 
 # Utilisée pour sérialiser la liste de facture
 class FactureSerializer(serializers.ModelSerializer):

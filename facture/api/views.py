@@ -14,12 +14,58 @@ from django.utils import timezone
 
 from .serializers import FactureSerializer, ClientSerializer, EntrepriseSerializer, UserSerializer, FactureServiceSerializer
 
+
+class EntrepriseViewset(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EntrepriseSerializer
+
+    def get_queryset(self):
+        return Entreprise.objects.all()
+
+    @action(detail=False, methods=['put'])
+    def update_entreprise(self, request):
+        entreprise = Entreprise.objects.first()
+        serializer = self.get_serializer(entreprise, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        
+        return Response(serializer.errors, status=400)
+
+
+class UserViewset(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        return User.objects.all()
+    
+    @action(detail=False, methods=['put'])
+    def update_profile(self, request):
+        """
+        Action permettant à l'utilisateur de mettre à jour
+        ses propres informations personnelles.
+        """
+        user = request.user
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        
+        return Response(serializer.errors, status=400)
+    
+    @action(detail=False, methods=['put'])
+    def update_profile_photo(self, request):
+        pass
+
 class FactureServiceViewset(ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = FactureServiceSerializer
     
     def get_queryset(self):
-        return Service.objects.all().order_by('-id')
+        return Service.objects.all()
 
 
 class FactureViewset(ModelViewSet):
@@ -161,4 +207,4 @@ class FactureViewset(ModelViewSet):
         clients = Client.objects.all()
         serializer = ClientSerializer(clients, many=True)
         return Response(serializer.data)
-    
+
