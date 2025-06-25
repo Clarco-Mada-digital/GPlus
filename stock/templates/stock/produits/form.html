@@ -1,0 +1,578 @@
+{% extends 'layouts/stock_layout.html' %}
+{% load widget_tweaks %}
+
+{% block extra_css %}
+<style>
+    /* Styles pour les champs de formulaire en mode sombre */
+    .form-input,
+    .form-select,
+    .form-textarea,
+    .form-checkbox,
+    .form-radio,
+    .form-file {
+        @apply dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-gray-400 dark:ring-offset-slate-800;
+    }
+    
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+        @apply dark:ring-blue-500 dark:border-blue-500 dark:ring-2 dark:ring-offset-2;
+    }
+    
+    .form-label,
+    .form-checkbox-label,
+    .form-radio-label {
+        @apply dark:text-gray-300;
+    }
+    
+    .form-help-text,
+    .form-file-text {
+        @apply dark:text-gray-400;
+    }
+    
+    /* Style pour les cartes et conteneurs */
+    .card {
+        @apply dark:bg-slate-800 dark:border-slate-700 dark:shadow-slate-900/20;
+    }
+    
+    /* Style pour les messages d'erreur */
+    .errorlist {
+        @apply dark:text-red-400;
+    }
+    
+    /* Style pour les boutons */
+    .btn {
+        @apply dark:ring-offset-slate-800;
+    }
+    
+    .btn-primary {
+        @apply dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-500;
+    }
+    
+    .btn-secondary {
+        @apply dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-500;
+    }
+    
+    /* Style pour les onglets et navigation */
+    .tab-active {
+        @apply dark:border-blue-500 dark:text-blue-500;
+    }
+    
+    .tab-inactive {
+        @apply dark:border-transparent dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-300;
+    }
+</style>
+{% endblock %}
+
+{% block title %}{% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} un produit - GPlus StockPilot{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            <a href="{% url 'stock:liste_produits' %}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">Produits</a>
+        </div>
+    </li>
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            <span class="ml-4 text-sm font-medium text-gray-500">{% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} un produit</span>
+        </div>
+    </li>
+{% endblock %}
+
+{% block page_title %}
+    {% if form.instance.pk %}
+        Modifier le produit
+    {% else %}
+        Ajouter un nouveau produit
+    {% endif %}
+    <p class="mt-1 text-sm font-normal text-gray-500">
+        {% if form.instance.pk %}
+            Mettez à jour les informations du produit
+        {% else %}
+            Remplissez les champs pour ajouter un nouveau produit
+        {% endif %}
+    </p>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-red-700">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <!-- Colonne de gauche -->
+                <div class="space-y-6">
+                    <!-- Code du produit -->
+                    <div class="form-group">
+                        <label for="{{ form.code.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.code.label }}
+                            {% if form.code.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="mt-1">
+                            {{ form.code|add_class:"form-input block p-3 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500"|attr:"placeholder:dark:text-gray-400" }}
+                            {% if form.code.help_text %}
+                                <p class="mt-1 text-sm text-gray-500">{{ form.code.help_text }}</p>
+                            {% endif %}
+                            {% for error in form.code.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Désignation -->
+                    <div class="form-group">
+                        <label for="{{ form.designation.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.designation.label }}
+                            {% if form.designation.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="mt-1">
+                            {{ form.designation|add_class:"form-input block p-3 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500"|attr:"placeholder:dark:text-gray-400" }}
+                            {% if form.designation.help_text %}
+                                <p class="mt-1 text-sm text-gray-500">{{ form.designation.help_text }}</p>
+                            {% endif %}
+                            {% for error in form.designation.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Catégorie -->
+                    <div class="form-group">
+                        <label for="{{ form.categorie.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.categorie.label }}
+                            {% if form.categorie.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="mt-1">
+                            {{ form.categorie|add_class:"form-select block p-3 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500" }}
+                            {% if form.categorie.help_text %}
+                                <p class="mt-1 text-sm text-gray-500">{{ form.categorie.help_text }}</p>
+                            {% endif %}
+                            {% for error in form.categorie.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Fournisseur -->
+                    <div class="form-group">
+                        <label for="{{ form.fournisseur.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.fournisseur.label }}
+                            {% if form.fournisseur.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="mt-1">
+                            {{ form.fournisseur|add_class:"form-select block p-3 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500" }}
+                            {% if form.fournisseur.help_text %}
+                                <p class="mt-1 text-sm text-gray-500">{{ form.fournisseur.help_text }}</p>
+                            {% endif %}
+                            {% for error in form.fournisseur.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                                        <!-- Photo du produit -->
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.photo.label }}
+                                {% if form.photo.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                            
+                            <!-- Aperçu de la photo -->
+                            <div class="mt-1 flex items-center space-x-6">
+                                <!-- Conteneur de l'aperçu -->
+                                <div class="flex-shrink-0 h-24 w-24 rounded-md overflow-hidden bg-gray-100 border border-gray-300 dark:bg-slate-700 dark:border-slate-600 flex items-center justify-center">
+                                    {% if form.instance.photo %}
+                                        <img id="photo-preview" src="{{ form.instance.photo.url }}" alt="Photo du produit" class="h-full w-full object-cover">
+                                    {% else %}
+                                        <svg id="default-photo" class="h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Zone de dépôt et bouton de téléchargement -->
+                                <div class="flex-1">
+                                    <div class="flex items-center">
+                                        <label for="{{ form.photo.id_for_label }}" class="relative cursor-pointer">
+                                            <span class="px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:hover:bg-slate-600">
+                                                Choisir une photo
+                                            </span>
+                                            <input id="{{ form.photo.id_for_label }}" 
+                                               name="{{ form.photo.name }}" 
+                                               type="file" 
+                                               class="sr-only" 
+                                               onchange="updatePhotoPreview(this)"
+                                               accept="image/*"
+                                               {% if form.photo.field.required and not form.instance.photo %}required{% endif %}>
+                                        </label>
+                                        <p class="pl-1 text-sm text-gray-500">ou glisser-déposer</p>
+                                    </div>
+                                    
+                                    <!-- Nom du fichier sélectionné -->
+                                    <p id="file-name" class="mt-2 text-xs text-gray-500">
+                                        {% if form.instance.photo %}
+                                            {{ form.instance.photo.name|slice:"7:" }}
+                                        {% else %}
+                                            Aucun fichier sélectionné
+                                        {% endif %}
+                                    </p>
+                                    
+                                    <!-- Aide et formats acceptés -->
+                                    <p class="mt-1 text-xs text-gray-500">
+                                        Formats acceptés : JPG, JPEG, PNG, GIF (max. 5 Mo)
+                                    </p>
+                                    
+                                    <!-- Case à cocher pour supprimer la photo existante -->
+                                    {% if form.instance.photo %}
+                                    <div class="mt-2 flex items-center">
+                                        <input type="checkbox" 
+                                               id="{{ form.supprimer_photo.id_for_label }}" 
+                                               name="{{ form.supprimer_photo.name }}" 
+                                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                               onchange="togglePhotoDeletion(this)">
+                                        <label for="{{ form.supprimer_photo.id_for_label }}" class="ml-2 text-sm text-gray-600">
+                                            Supprimer la photo actuelle
+                                        </label>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Messages d'erreur -->
+                            {% if form.photo.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.photo.errors|join:", " }}</p>
+                            {% endif %}
+                        </div>
+                </div>
+                
+                <!-- Colonne de droite -->
+                <div class="space-y-6">
+                    <!-- Prix d'achat -->
+                    <div class="form-group">
+                        <label for="{{ form.prix_achat.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.prix_achat.label }}
+                            {% if form.prix_achat.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">€</span>
+                            </div>
+                            {{ form.prix_achat|add_class:"pl-7 p-3 form-input block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" }}
+                        </div>
+                        {% if form.prix_achat.help_text %}
+                            <p class="mt-1 text-sm text-gray-500">{{ form.prix_achat.help_text }}</p>
+                        {% endif %}
+                        {% for error in form.prix_achat.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Prix de vente -->
+                    <div class="form-group">
+                        <label for="{{ form.prix_vente.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.prix_vente.label }}
+                            {% if form.prix_vente.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 dark:text-gray-400 sm:text-sm">€</span>
+                            </div>
+                            {{ form.prix_vente|add_class:"pl-7 p-3 form-input block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500"|attr:"placeholder:dark:text-gray-400" }}
+                        </div>
+                        {% if form.prix_vente.help_text %}
+                            <p class="mt-1 text-sm text-gray-500">{{ form.prix_vente.help_text }}</p>
+                        {% endif %}
+                        {% for error in form.prix_vente.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Quantité en stock -->
+                    <div class="form-group">
+                        <label for="{{ form.quantite_stock.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.quantite_stock.label }}
+                            {% if form.quantite_stock.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="mt-1">
+                            {{ form.quantite_stock|add_class:"form-input block p-3 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500"|attr:"placeholder:dark:text-gray-400" }}
+                            {% if form.quantite_stock.help_text %}
+                                <p class="mt-1 text-sm text-gray-500">{{ form.quantite_stock.help_text }}</p>
+                            {% endif %}
+                            {% for error in form.quantite_stock.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Seuil d'alerte -->
+                    <div class="form-group">
+                        <label for="{{ form.seuil_alerte.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ form.seuil_alerte.label }}
+                            {% if form.seuil_alerte.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="mt-1">
+                            {{ form.seuil_alerte|add_class:"form-input block p-3 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500"|attr:"placeholder:dark:text-gray-400" }}
+                            {% if form.seuil_alerte.help_text %}
+                                <p class="mt-1 text-sm text-gray-500">{{ form.seuil_alerte.help_text }}</p>
+                            {% endif %}
+                            {% for error in form.seuil_alerte.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                    {{ form.description.label }}
+                    {% if form.description.field.required %}<span class="text-red-500">*</span>{% endif %}
+                </label>
+                <div class="mt-1">
+                    {{ form.description|add_class:"form-textarea block p-3 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500"|attr:"rows:3 placeholder:dark:text-gray-400" }}
+                    {% if form.description.help_text %}
+                        <p class="mt-1 text-sm text-gray-500">{{ form.description.help_text }}</p>
+                    {% endif %}
+                    {% for error in form.description.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Boutons d'action -->
+            <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-slate-700 mt-6">
+                <a href="{% url 'stock:liste_produits' %}" class="bg-white dark:bg-slate-700 py-2 px-4 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:ring-offset-slate-800">
+                    Annuler
+                </a>
+                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:ring-offset-slate-800">
+                    {% if form.instance.pk %}
+                        Mettre à jour
+                    {% else %}
+                        Enregistrer
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Mise à jour de l'aperçu de la photo et du nom du fichier
+    function updatePhotoPreview(input) {
+        const file = input.files[0];
+        const fileName = file ? file.name : 'Aucun fichier sélectionné';
+        const fileExt = file ? file.name.split('.').pop().toLowerCase() : '';
+        const validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        
+        // Vérifier l'extension du fichier
+        if (file && !validExtensions.includes(fileExt)) {
+            alert('Format de fichier non supporté. Veuillez choisir une image (JPG, JPEG, PNG, GIF).');
+            input.value = '';
+            document.getElementById('file-name').textContent = 'Aucun fichier sélectionné';
+            return;
+        }
+        
+        // Vérifier la taille du fichier
+        if (file && file.size > maxSize) {
+            alert('Le fichier est trop volumineux. La taille maximale autorisée est de 5 Mo.');
+            input.value = '';
+            document.getElementById('file-name').textContent = 'Aucun fichier sélectionné';
+            return;
+        }
+        
+        // Mettre à jour le nom du fichier
+        document.getElementById('file-name').textContent = file ? file.name : 'Aucun fichier sélectionné';
+        
+        // Afficher l'aperçu de l'image
+        const previewContainer = document.querySelector('.flex-shrink-0');
+        let preview = document.getElementById('photo-preview');
+        const defaultPhoto = document.getElementById('default-photo');
+        
+        if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                if (!preview) {
+                    // Créer l'élément d'aperçu s'il n'existe pas
+                    const newPreview = document.createElement('img');
+                    newPreview.id = 'photo-preview';
+                    newPreview.className = 'h-full w-full object-cover';
+                    newPreview.alt = 'Aperçu de la photo';
+                    previewContainer.innerHTML = '';
+                    previewContainer.appendChild(newPreview);
+                    newPreview.src = e.target.result;
+                    
+                    // Afficher le conteneur d'aperçu avec la couleur de fond appropriée
+                    previewContainer.classList.remove('bg-gray-100', 'dark:bg-slate-700');
+                    previewContainer.classList.add('bg-white', 'dark:bg-slate-800');
+                } else {
+                    preview.src = e.target.result;
+                }
+                
+                if (defaultPhoto) {
+                    defaultPhoto.style.display = 'none';
+                }
+            };
+            
+            reader.onerror = function() {
+                console.error('Erreur lors de la lecture du fichier');
+                alert('Une erreur est survenue lors de la lecture du fichier. Veuillez réessayer.');
+                input.value = '';
+                document.getElementById('file-name').textContent = 'Aucun fichier sélectionné';
+            };
+            
+            reader.readAsDataURL(file);
+        } else {
+            // Si aucun fichier n'est sélectionné
+            if (preview) {
+                preview.remove();
+            }
+            if (defaultPhoto) {
+                defaultPhoto.style.display = 'block';
+                previewContainer.classList.remove('bg-white', 'dark:bg-slate-800');
+                previewContainer.classList.add('bg-gray-100', 'dark:bg-slate-700');
+            }
+            document.getElementById('file-name').textContent = 'Aucun fichier sélectionné';
+        }
+        
+        // Décocher la case de suppression de la photo si elle est cochée
+        const deleteCheckbox = document.getElementById('{{ form.supprimer_photo.id_for_label }}');
+        if (deleteCheckbox && deleteCheckbox.checked) {
+            deleteCheckbox.checked = false;
+            togglePhotoDeletion(deleteCheckbox);
+        }
+    }
+    
+    // Gestion de la suppression de la photo
+    function togglePhotoDeletion(checkbox) {
+        const preview = document.getElementById('photo-preview');
+        const defaultPhoto = document.getElementById('default-photo');
+        const fileInput = document.getElementById('{{ form.photo.id_for_label }}');
+        const fileName = document.getElementById('file-name');
+        const previewContainer = document.querySelector('.flex-shrink-0');
+        
+        if (checkbox.checked) {
+            // Marquer visuellement la photo pour suppression
+            if (preview) {
+                preview.style.opacity = '0.5';
+                preview.style.filter = 'grayscale(100%)';
+                previewContainer.classList.add('dark:border-red-500');
+            }
+            // Désactiver le champ de fichier et effacer sa valeur
+            fileInput.required = false;
+            fileInput.disabled = true;
+            // Mettre à jour le nom du fichier
+            if (fileName) {
+                fileName.textContent = 'Photo marquée pour suppression';
+                fileName.classList.add('text-red-600');
+            }
+            // Mettre à jour le style du conteneur d'aperçu
+            if (previewContainer) {
+                previewContainer.classList.add('border-red-300', 'dark:border-red-500', 'border-2');
+            }
+        } else {
+            // Restaurer l'apparence de la photo
+            if (preview) {
+                preview.style.opacity = '1';
+                preview.style.filter = 'none';
+                previewContainer.classList.remove('dark:border-red-500');
+            }
+            // Réactiver le champ de fichier
+            fileInput.required = {{ form.photo.field.required|yesno:"true,false" }};
+            fileInput.disabled = false;
+            // Restaurer le nom du fichier
+            if (fileName) {
+                fileName.textContent = 'Aucun fichier sélectionné';
+                fileName.classList.remove('text-red-600');
+            }
+            // Restaurer le style du conteneur d'aperçu
+            if (previewContainer) {
+                previewContainer.classList.remove('border-red-300', 'dark:border-red-500', 'border-2');
+                // S'assurer que le fond est correct en mode sombre
+                if (document.documentElement.classList.contains('dark')) {
+                    previewContainer.classList.add('dark:bg-slate-800');
+                }
+            }
+        }
+    }
+    
+    // Formatage des champs de prix
+    document.addEventListener('DOMContentLoaded', function() {
+        // Formatage des champs de prix à la saisie
+        function formatPrice(input) {
+            if (!input) return;
+            
+            // Ne formater que si le champ est vide ou contient une valeur numérique
+            if (input.value === '' || /^\d+(\.\d{0,2})?$/.test(input.value)) {
+                // Enregistrer la position du curseur
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                
+                // Formater la valeur avec 2 décimales
+                let value = input.value.replace(/[^0-9.]/g, '');
+                if (value.includes('.')) {
+                    const parts = value.split('.');
+                    if (parts[1].length > 2) {
+                        parts[1] = parts[1].substring(0, 2);
+                        value = parts.join('.');
+                    }
+                }
+                
+                // Mettre à jour la valeur
+                input.value = value;
+                
+                // Restaurer la position du curseur
+                input.setSelectionRange(start, end);
+            } else {
+                // Si la valeur n'est pas valide, la réinitialiser
+                input.value = '';
+            }
+        }
+        
+        // Appliquer le formatage aux champs de prix
+        const prixAchatInput = document.getElementById('{{ form.prix_achat.id_for_label }}');
+        const prixVenteInput = document.getElementById('{{ form.prix_vente.id_for_label }}');
+        
+        if (prixAchatInput) {
+            prixAchatInput.addEventListener('input', function() {
+                formatPrice(this);
+            });
+        }
+        
+        if (prixVenteInput) {
+            prixVenteInput.addEventListener('input', function() {
+                formatPrice(this);
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -59,8 +59,10 @@ INSTALLED_APPS = [
     'caisse',
     'facture',
     'clients',
+    'stock',
     'simple_history',
     'django.contrib.humanize',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -235,9 +237,11 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
+# Configuration de l'authentification
+LOGIN_URL = 'accounts:login_user'  # URL de connexion
+LOGIN_REDIRECT_URL = 'stock:tableau_bord'  # Redirection après connexion
+LOGOUT_REDIRECT_URL = 'accounts:login_user'  # Redirection après déconnexion
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:8081",  # Remplacez par l'URL de votre frontend
-# ]
+# Configuration CORS
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True

@@ -1,0 +1,50 @@
+<form method="get" class="mb-6">
+    <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex-1">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <input type="text" 
+                       name="q" 
+                       value="{{ request.GET.q }}" 
+                       class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                       placeholder="Rechercher...">
+            </div>
+        </div>
+        
+        {% if date_filter %}
+        <div class="flex flex-col sm:flex-row gap-2">
+            <div class="relative">
+                <label for="date_debut" class="block text-sm font-medium text-gray-700 mb-1">Date début</label>
+                <input type="date" 
+                       name="date_debut" 
+                       id="date_debut" 
+                       value="{{ request.GET.date_debut }}" 
+                       class="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            
+            <div class="relative">
+                <label for="date_fin" class="block text-sm font-medium text-gray-700 mb-1">Date fin</label>
+                <input type="date" 
+                       name="date_fin" 
+                       id="date_fin" 
+                       value="{{ request.GET.date_fin }}" 
+                       class="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="flex items-end">
+            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-search mr-2"></i> Rechercher
+            </button>
+            
+            {% if request.GET %}
+            <a href="{{ request.path }}" class="ml-2 inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-times mr-2"></i> Réinitialiser
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</form>

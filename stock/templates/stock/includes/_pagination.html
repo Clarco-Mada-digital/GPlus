@@ -1,0 +1,38 @@
+{% if page_obj.has_other_pages %}
+<nav class="mt-6 flex items-center justify-between border-t border-gray-200 px-4 sm:px-0">
+    <div class="-mt-px flex w-0 flex-1">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+               class="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Précédent
+            </a>
+        {% endif %}
+    </div>
+    
+    <div class="hidden md:-mt-px md:flex">
+        {% for i in page_obj.paginator.page_range %}
+            {% if page_obj.number == i %}
+                <span class="inline-flex items-center border-t-2 border-blue-500 px-4 pt-4 text-sm font-medium text-blue-600">
+                    {{ i }}
+                </span>
+            {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                <a href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                   class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                    {{ i }}
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <div class="-mt-px flex w-0 flex-1 justify-end">
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+               class="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                Suivant
+                <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        {% endif %}
+    </div>
+</nav>
+{% endif %}

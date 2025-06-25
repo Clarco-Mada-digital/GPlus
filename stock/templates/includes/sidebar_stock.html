@@ -1,0 +1,148 @@
+{% load static %}
+<aside
+  x-transition
+  :class="sidebarToggle ? 'translate-x-0 lg:w-[80px] p-3' : '-translate-x-full px-5'"
+  class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-auto flex-col overflow-y-hidden border-r border-gray-200 bg-white  dark:border-gray-800 dark:bg-gray-900 lg:static lg:translate-x-0 z-30">
+  <!-- SIDEBAR HEADER -->
+  <div
+    :class="sidebarToggle ? 'justify-center' : 'justify-between'"
+    class="flex items-center justify-center gap-2 pt-8 sidebar-header pb-7">
+    <a class="w-full mx-atuo" href="{% url 'accounts:index' %}">
+      <span class="logo w-full" :class="sidebarToggle ? 'hidden' : ''">
+        <img class="dark:hidden h-24 w-auto" src="{% static 'images/Logo mada-digital.png' %}" alt="Logo" />
+        <img class="hidden dark:block h-24 w-auto" src="{% static 'images/Logo mada-digital.png' %}" alt="Logo"/>
+      </span>
+
+      <img
+        class="logo-icon h-20"
+        :class="sidebarToggle ? 'lg:block' : 'hidden'"
+        src="{% static 'images/Logo mada-digital.png' %}"
+        alt="Logo"/>
+    </a>
+  </div>
+  <!-- SIDEBAR HEADER -->
+
+  <div
+    class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
+    <!-- Sidebar Menu -->
+    <nav >
+      <!-- Menu Group -->
+      <div>
+        <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
+          <span
+            class="menu-group-title"
+            :class="sidebarToggle ? 'lg:hidden' : ''">
+            MENU
+          </span>
+
+          <svg
+            :class="sidebarToggle ? 'lg:block hidden' : 'hidden'"
+            class="mx-auto fill-current menu-group-icon"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z"
+              fill=""/>
+          </svg>
+        </h3>
+
+        <ul class="flex flex-col gap-4 mb-6">
+          <!-- Menu Item Dashboard -->
+          <li>
+            <a href="{% url 'stock:tableau_bord' %}"              
+              class="menu-item group flex items-center  {% if request.path == '/stock/tableau_bord/' %}text-blue-600 bg-blue-100  rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary  rounded-lg{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg"                    
+                    class="h-6 w-6 mr-2" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path
+                      d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                </svg>
+                <span
+                  class="menu-item-text"
+                  :class="sidebarToggle ? 'lg:hidden' : 'ml-3'">
+                Tableau de bord
+              </span>
+            </a>
+          </li>
+          <!-- Menu Item Nouveau -->
+          <li>
+            <a href="{% url 'stock:liste_produits' %}"
+              class="menu-item group flex items-center  {% if request.path == '/stock/produits/' %}text-blue-600 bg-blue-100  rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary  rounded-lg{% endif %}">
+              <svg class="w-6 h-6 mr-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Octicons by GitHub - https://github.com/primer/octicons/blob/main/LICENSE --><path fill="currentColor" d="M12.876.64V.639l8.25 4.763c.541.313.875.89.875 1.515v9.525a1.75 1.75 0 0 1-.875 1.516l-8.25 4.762a1.75 1.75 0 0 1-1.75 0l-8.25-4.763a1.75 1.75 0 0 1-.875-1.515V6.917c0-.625.334-1.202.875-1.515L11.126.64a1.75 1.75 0 0 1 1.75 0m-1 1.298L4.251 6.34l7.75 4.474l7.75-4.474l-7.625-4.402a.25.25 0 0 0-.25 0m.875 19.123l7.625-4.402a.25.25 0 0 0 .125-.216V7.639l-7.75 4.474ZM3.501 7.64v8.803c0 .09.048.172.125.216l7.625 4.402v-8.947Z"/></svg>
+                <span
+                  class="menu-item-text ml-3"
+                  :class="sidebarToggle ? 'lg:hidden' : ''">
+                  Produits
+                </span>
+            </a>
+          </li>
+          <!-- Menu Item service -->
+          <li>
+            <a href="{% url 'stock:liste_entrees' %}"
+              class="menu-item group flex items-center {% if request.path == '/stock/entrees/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
+              <svg class="w-6 h-6 mr-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 20 20"><!-- Icon from Zondicons by Steve Schoger - https://github.com/dukestreetstudio/zondicons/blob/master/LICENSE --><path fill="currentColor" d="M7 10V2h6v8h5l-8 8l-8-8z"/></svg>
+                <span
+                  class="menu-item-text ml-3"
+                  :class="sidebarToggle ? 'lg:hidden' : ''">
+                  Entrées
+                </span>
+            </a>
+          </li>
+          <!-- Menu Item paramètre -->
+          <li>
+            <a href="{% url 'stock:liste_sorties' %}"
+               class="menu-item group flex items-center {% if request.path == '/stock/sorties/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
+               <svg class="w-6 h-6 mr-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Material Design Icons by Pictogrammers - https://github.com/Templarian/MaterialDesign/blob/master/LICENSE --><path fill="currentColor" d="M14 20h-4v-9l-3.5 3.5l-2.42-2.42L12 4.16l7.92 7.92l-2.42 2.42L14 11z"/></svg>
+                <span
+                  class="menu-item-text ml-3"
+                  :class="sidebarToggle ? 'lg:hidden' : ''">
+                  Sorties
+                </span>
+            </a>   
+          </li>
+          <li>
+            <a href="{% url 'stock:liste_fournisseurs' %}"
+               class="menu-item group flex items-center {% if request.path == '/stock/fournisseurs/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
+               <svg class="w-6 h-6 mr-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Material Symbols by Google - https://github.com/google/material-design-icons/blob/master/LICENSE --><path fill="currentColor" d="M4.625 22q-.425 0-.737-.312t-.313-.738v-2.625q0-2.25 1.4-3.975t3.6-2.2q-1 .7-1.55 1.762t-.55 2.288v4.75q0 .275.075.55t.25.5zM8.3 22q-.425 0-.737-.312t-.313-.738V16.2q0-1.75 1.238-2.975T11.475 12H16.2q1.75 0 2.975 1.225T20.4 16.2v1.6q0 1.75-1.225 2.975T16.2 22zM12 9.9q-1.65 0-2.8-1.15t-1.15-2.8t1.15-2.8T12 2t2.8 1.15t1.15 2.8t-1.15 2.8T12 9.9"/></svg>
+                <span
+                  class="menu-item-text ml-3"
+                  :class="sidebarToggle ? 'lg:hidden' : ''">
+                  Fournisseurs
+                </span>
+            </a>   
+          </li>
+          <li>
+            <a href="{% url 'stock:liste_categories' %}"
+               class="menu-item group flex items-center {% if request.path == '/stock/categories/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
+               <svg class="w-6 h-6 mr-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><!-- Icon from Carbon by IBM - undefined --><path fill="currentColor" d="m6.76 6l.45.89L7.76 8H12v5H4V6zm.62-2H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H9l-.72-1.45a1 1 0 0 0-.9-.55m15.38 2l.45.89l.55 1.11H28v5h-8V6zm.62-2H19a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-4l-.72-1.45a1 1 0 0 0-.9-.55M6.76 19l.45.89l.55 1.11H12v5H4v-7zm.62-2H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1H9l-.72-1.45a1 1 0 0 0-.9-.55m15.38 2l.45.89l.55 1.11H28v5h-8v-7zm.62-2H19a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-4l-.72-1.45a1 1 0 0 0-.9-.55"/></svg>
+                <span
+                  class="menu-item-text ml-3"
+                  :class="sidebarToggle ? 'lg:hidden' : ''">
+                  Categories
+                </span>
+            </a>   
+          </li>
+          <li>
+            <a href="{% url 'stock:rapports' %}"
+               class="menu-item group flex items-center {% if request.path == '/stock/rapports/' %}text-blue-600 bg-blue-100 rounded-lg{% else %}text-gray-600 dark:text-white hover:bg-blue-50 dark:hover:bg-primary   rounded-lg{% endif %}">
+               <svg class="w-6 h-6 mr-2" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Tabler Icons by Paweł Kuna - https://github.com/tabler/tabler-icons/blob/master/LICENSE --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M6 20V10l10 6V4"/><path d="m13 7l3-3l3 3"/></g></svg>
+                <span
+                  class="menu-item-text ml-3"
+                  :class="sidebarToggle ? 'lg:hidden' : ''">
+                  Rapports
+                </span>
+            </a>   
+          </li>
+
+        </ul>
+      </div>
+      
+    </nav>
+    <!-- Sidebar Menu -->
+  </div>
+</aside>

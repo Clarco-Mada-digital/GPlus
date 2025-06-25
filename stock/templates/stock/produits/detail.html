@@ -1,0 +1,220 @@
+{% extends 'layouts/stock_layout.html' %}
+{% load static %}
+
+{% block title %}{{ produit.designation }} - Détails du produit{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            <a href="{% url 'stock:liste_produits' %}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">Produits</a>
+        </div>
+    </li>
+    <li>
+        <div class="flex items-center">
+            <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            <span class="ml-4 text-sm font-medium text-gray-500">{{ produit.designation|truncatechars:30 }}</span>
+        </div>
+    </li>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- En-tête avec bouton de retour et actions -->
+    <div class="md:flex md:items-center md:justify-between mb-6">
+        
+        <div class="mt-4 flex space-x-3 md:mt-0">
+            <a href="{% url 'stock:modifier_produit' produit.pk %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-edit mr-2"></i> Modifier
+            </a>
+            <a href="{% url 'stock:ajouter_entree' %}?produit={{ produit.id }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                <i class="fas fa-plus-circle mr-2"></i> Entrée stock
+            </a>
+            <a href="{% url 'stock:ajouter_sortie' %}?produit={{ produit.id }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                <i class="fas fa-minus-circle mr-2"></i> Sortie stock
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Informations principales -->
+        <div class="lg:col-span-2">
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        Informations du produit
+                    </h3>
+                </div>
+                <div class="px-4 py-5 sm:p-0">
+                    <dl class="sm:divide-y sm:divide-gray-200">
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Référence
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                {{ produit.code|default:"N/A" }}
+                            </dd>
+                        </div>
+                        {% if produit.categorie %}
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Catégorie
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                {{ produit.categorie.nom }}
+                            </dd>
+                        </div>
+                        {% endif %}
+                        {% if produit.fournisseur %}
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Fournisseur
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                <a href="{% url 'stock:detail_fournisseur' produit.fournisseur.id %}" class="text-blue-600 hover:text-blue-800">
+                                    {{ produit.fournisseur.nom }}
+                                </a>
+                            </dd>
+                        </div>
+                        {% endif %}
+                        {% if produit.description %}
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Description
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                {{ produit.description|linebreaksbr }}
+                            </dd>
+                        </div>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Stock et prix -->
+            <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        Gestion du stock
+                    </h3>
+                </div>
+                <div class="px-4 py-5 sm:p-0">
+                    <dl class="sm:divide-y sm:divide-gray-200">
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Stock actuel
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if produit.quantite_stock <= produit.seuil_alerte %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
+                                    {{ produit.quantite_stock }} {{ produit.unite_mesure }}
+                                </span>
+                                {% if produit.quantite_stock <= produit.seuil_alerte %}
+                                    <span class="ml-2 text-sm text-red-600">
+                                        <i class="fas fa-exclamation-triangle"></i> Stock en dessous du seuil d'alerte
+                                    </span>
+                                {% endif %}
+                            </dd>
+                        </div>
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Seuil d'alerte
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                {{ produit.seuil_alerte }} {{ produit.unite_mesure }}
+                            </dd>
+                        </div>
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Prix d'achat
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                {{ produit.prix_achat|default:"0" }} Ar
+                            </dd>
+                        </div>
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Prix de vente
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                {{ produit.prix_vente|default:"0" }} Ar
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations secondaires -->
+        <div class="space-y-6">
+            <!-- Statut du produit -->
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        Statut
+                    </h3>
+                </div>
+                <div class="px-4 py-5 sm:p-0">
+                    <dl class="sm:divide-y sm:divide-gray-200">
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Statut
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                {% if not produit.actif %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        Actif
+                                    </span>
+                                {% else %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        Inactif
+                                    </span>
+                                {% endif %}
+                            </dd>
+                        </div>
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Date de création
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                {{ produit.date_creation|date:"d/m/Y H:i" }}
+                            </dd>
+                        </div>
+                        {% if produit.date_maj %}
+                        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Dernière modification
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                {{ produit.date_maj|date:"d/m/Y H:i" }}
+                            </dd>
+                        </div>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Image du produit -->
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        Image du produit
+                    </h3>
+                </div>
+                <div class="px-4 py-5 text-center">
+                    {% if produit.image %}
+                        <img src="{{ produit.image.url }}" alt="{{ produit.designation }}" class="mx-auto h-48 w-48 object-contain">
+                    {% else %}
+                        <div class="h-48 w-full flex items-center justify-center bg-gray-100 text-gray-400 rounded">
+                            <i class="fas fa-box-open text-5xl"></i>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

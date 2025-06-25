@@ -1,0 +1,174 @@
+{% extends 'stock/base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} un fournisseur - Gestion de Stock{% endblock %}
+
+{% block breadcrumb_items %}
+<nav class="flex" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-4">
+        <li>
+            <div class="flex items-center">
+                <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+                <a href="{% url 'stock:liste_fournisseurs' %}" class="ml-4 text-sm font-medium text-gray-500 hover:text-blue-700">Fournisseurs</a>
+            </div>
+        </li>
+        <li>
+            <div class="flex items-center">
+                <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+                <a href="{% url 'stock:liste_fournisseurs' %}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">{% if form.instance.pk %}Modifier{% else %}Nouveau{% endif %} fournisseur</a>
+            </div>
+        </li>
+    </ol>
+</nav>        
+{% endblock %}
+
+{% block page_title %}
+    {% if form.instance.pk %}Modifier{% else %}Ajouter un{% endif %} fournisseur
+    <p class="mt-1 text-sm font-normal text-gray-500">
+        {% if form.instance.pk %}
+            Mettez à jour les informations du fournisseur
+        {% else %}
+            Renseignez les informations du nouveau fournisseur
+        {% endif %}
+    </p>
+{% endblock %}
+
+{% block content %}
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <form method="post" class="p-6 space-y-6">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <p class="font-medium">Veuillez corriger les erreurs ci-dessous</p>
+                    </div>
+                    <ul class="mt-2 list-disc list-inside text-sm">
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Nom -->
+                <div class="col-span-2 md:col-span-1">
+                    <label for="{{ form.nom.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.nom.label }} <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="{{ form.nom.name }}" id="{{ form.nom.id_for_label }}" 
+                           class="mt-1 block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3"
+                           value="{{ form.nom.value|default_if_none:'' }}" required>
+                    {% if form.nom.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.nom.errors|join:", " }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-xs text-gray-500">Le nom du fournisseur tel qu'il apparaîtra dans les listes</p>
+                </div>
+
+                <!-- Contact -->
+                <div class="col-span-2 md:col-span-1">
+                    <label for="{{ form.contact.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.contact.label }}
+                    </label>
+                    <input type="text" name="{{ form.contact.name }}" id="{{ form.contact.id_for_label }}" 
+                           class="mt-1 block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3"
+                           value="{{ form.contact.value|default_if_none:'' }}">
+                    {% if form.contact.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.contact.errors|join:", " }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-xs text-gray-500">Personne à contacter (optionnel)</p>
+                </div>
+
+                <!-- Email -->
+                <div class="col-span-2 md:col-span-1">
+                    <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.email.label }} <span class="text-red-500">*</span>
+                    </label>
+                    <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" 
+                           class="mt-1 block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3"
+                           value="{{ form.email.value|default_if_none:'' }}" required>
+                    {% if form.email.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.email.errors|join:", " }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-xs text-gray-500">Adresse email de contact</p>
+                </div>
+
+                <!-- Téléphone -->
+                <div class="col-span-2 md:col-span-1">
+                    <label for="{{ form.telephone.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.telephone.label }}
+                    </label>
+                    <input type="tel" name="{{ form.telephone.name }}" id="{{ form.telephone.id_for_label }}" 
+                           class="mt-1 block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3"
+                           value="{{ form.telephone.value|default_if_none:'' }}">
+                    {% if form.telephone.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.telephone.errors|join:", " }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-xs text-gray-500">Numéro de téléphone (optionnel)</p>
+                </div>
+
+                <!-- Adresse -->
+                <div class="col-span-2">
+                    <label for="{{ form.adresse.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {{ form.adresse.label }}
+                    </label>
+                    <textarea name="{{ form.adresse.name }}" id="{{ form.adresse.id_for_label }}" 
+                              class="mt-1 block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3"
+                              rows="3">{{ form.adresse.value|default_if_none:'' }}</textarea>
+                    {% if form.adresse.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.adresse.errors|join:", " }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-xs text-gray-500">Adresse complète du fournisseur (optionnel)</p>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-5 border-t border-gray-200 flex items-center justify-end space-x-3">
+                <a href="{% if form.instance.pk %}{% url 'stock:detail_fournisseur' form.instance.pk %}{% else %}{% url 'stock:liste_fournisseurs' %}{% endif %}" 
+                   class="text-red-600 hover:text-red-900 hover:underline transition">
+                    <i class="fas fa-times mr-2"></i> Annuler
+                </a>
+                <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                    <i class="fas fa-save mr-2"></i> Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialisation des champs avec des classes Tailwind
+    const inputs = document.querySelectorAll('input, textarea, select');
+    inputs.forEach(input => {
+        input.classList.add('mt-1', 'block', 'w-full', 'rounded-md', 'border-gray-300', 'shadow-sm', 
+                          'focus:border-blue-500', 'focus:ring-blue-500', 'sm:text-sm');
+        
+        // Ajout de classes spécifiques pour les champs d'erreur
+        if (input.classList.contains('is-invalid')) {
+            input.classList.add('border-red-300', 'text-red-900', 'placeholder-red-300');
+            input.classList.remove('border-gray-300');
+        }
+    });
+    
+    // Gestion de la soumission du formulaire
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function() {
+            // Désactiver le bouton de soumission pour éviter les doubles soumissions
+            const submitButton = this.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Enregistrement...';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

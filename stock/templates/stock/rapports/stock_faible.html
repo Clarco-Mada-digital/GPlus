@@ -1,0 +1,256 @@
+{% extends 'stock/base.html' %}
+{% load static humanize %}
+
+{% block title %}Rapport de stock faible - Gestion de Stock{% endblock %}
+
+{% block breadcrumb_items %}
+<nav class="flex" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-4">
+        <li>
+            <div class="flex items-center">
+                <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+                <a href="{% url 'stock:rapports' %}" class="ml-4 text-sm font-medium text-gray-500 hover:text-blue-700">Rapports</a>
+            </div>
+        </li>
+        <li>
+            <div class="flex items-center">
+                <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+                <span class="ml-4 text-sm font-medium text-gray-500 hover:text-blue-700">Stock faible</span>
+            </div>
+        </li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block page_title %}
+    Rapport de stock faible
+    <p class="mt-1 text-sm font-normal text-gray-500">
+        Produits dont le niveau de stock est inférieur ou égal au seuil d'alerte
+    </p>
+{% endblock %}
+
+{% block page_actions %}
+    <div class="flex space-x-3">
+        <button onclick="window.print()" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <i class="fas fa-print mr-2"></i> Imprimer
+        </button>
+        <a href="?export=pdf" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <i class="fas fa-file-pdf mr-2"></i> Exporter en PDF
+        </a>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <!-- En-tête avec filtres -->
+        <div class="p-4 border-b border-gray-200">
+            <form method="get" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                    <!-- Filtre par catégorie -->
+                    <div class="md:col-span-4">
+                        <label for="categorie" class="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
+                        <select name="categorie" id="categorie" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            <option value="">Toutes les catégories</option>
+                            {% for categorie in categories %}
+                                <option value="{{ categorie.id }}" {% if request.GET.categorie == categorie.id|stringformat:'s' %}selected{% endif %}>
+                                    {{ categorie.nom }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Filtre par fournisseur -->
+                    <div class="md:col-span-4">
+                        <label for="fournisseur" class="block text-sm font-medium text-gray-700 mb-1">Fournisseur</label>
+                        <select name="fournisseur" id="fournisseur" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            <option value="">Tous les fournisseurs</option>
+                            {% for fournisseur in fournisseurs %}
+                                <option value="{{ fournisseur.id }}" {% if request.GET.fournisseur == fournisseur.id|stringformat:'s' %}selected{% endif %}>
+                                    {{ fournisseur.nom }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Boutons d'action -->
+                    <div class="md:col-span-4 flex items-end space-x-2">
+                        <button type="submit" class="inline-flex items-center justify-center w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-filter mr-2"></i>Filtrer
+                        </button>
+                        <a href="{% url 'stock:rapport_stock_faible' %}" class="inline-flex items-center justify-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-redo"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Résumé -->
+        <div class="bg-blue-50 p-4 border-b border-blue-100">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div>
+                    <h3 class="text-lg font-medium text-red-800">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        {{ produits|length }} produit{{ produits|pluralize }} en stock faible
+                    </h3>
+                    <p class="text-sm text-red-700 mt-1">
+                        Seuil d'alerte : {{ seuil_alerte }} unité{{ seuil_alerte|pluralize }}
+                    </p>
+                </div>
+                <div class="mt-2 md:mt-0">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                        <i class="fas fa-clock mr-1"></i>
+                        Généré le {{ date_rapport|date:"d/m/Y à H:i" }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des produits -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Référence
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Désignation
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Catégorie
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Fournisseur
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Stock actuel
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Seuil d'alerte
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for produit in produits %}
+                    <tr class="{% if produit.quantite_stock == 0 %}bg-red-50{% else %}hover:bg-gray-50{% endif %}">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {{ produit.code|default:"-" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">{{ produit.designation }}</div>
+                            <div class="text-xs text-gray-500">{{ produit.description|truncatechars:50|default:"Aucune description" }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                {% if produit.categorie %}
+                                    bg-green-100 text-green-800
+                                {% else %}
+                                    bg-gray-100 text-gray-800
+                                {% endif %}">
+                                {{ produit.categorie.nom|default:"Non catégorisé" }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ produit.fournisseur.nom|default:"-" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm {% if produit.quantite_stock == 0 %}text-red-600 font-bold{% else %}text-gray-900{% endif %}">
+                            {{ produit.quantite_stock|intcomma }} {{ produit.unite_mesure|default:"unité" }}{{ produit.quantite_stock|pluralize }}
+                            {% if produit.quantite_stock == 0 %}
+                                <span class="ml-1 text-xs text-red-600">(Rupture de stock)</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                            {{ produit.seuil_alerte|default:0|intcomma }} {{ produit.unite_mesure|default:"unité" }}{{ produit.seuil_alerte|pluralize }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a href="{% url 'stock:detail_produit' produit.id %}" 
+                               class="text-blue-600 hover:text-blue-900 mr-3"
+                               title="Voir les détails">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'stock:ajouter_entree' %}?produit={{ produit.id }}" 
+                               class="text-green-600 hover:text-green-900"
+                               title="Ajouter au stock">
+                                <i class="fas fa-plus-circle"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            <i class="fas fa-check-circle text-4xl mb-2 text-green-500"></i>
+                            <p class="text-lg font-medium">Aucun produit en stock faible</p>
+                            <p class="text-sm mt-1">Tous vos produits sont au-dessus du seuil d'alerte.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pied de page -->
+        <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
+            <div class="text-sm text-gray-500">
+                Généré par {{ request.user.get_full_name|default:request.user.username }}
+            </div>
+            <div class="text-sm text-gray-500">
+                Page 1 sur 1
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #content, #content * {
+            visibility: visible;
+        }
+        #content {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+        .no-print {
+            display: none !important;
+        }
+        .table-responsive {
+            overflow: visible !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialisation des sélecteurs avec select2 si disponible
+    if (typeof $ !== 'undefined' && $.fn.select2) {
+        $('#categorie, #fournisseur').select2({
+            placeholder: 'Sélectionnez...',
+            allowClear: true,
+            width: '100%'
+        });
+    }
+    
+    // Gestion de l'export PDF
+    $('a[href*="export=pdf"]').on('click', function(e) {
+        e.preventDefault();
+        // Ici, vous pouvez ajouter la logique d'export PDF
+        alert('Fonctionnalité d\'export PDF à implémenter');
+    });
+});
+</script>
+{% endblock %}

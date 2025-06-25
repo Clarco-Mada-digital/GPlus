@@ -1,0 +1,184 @@
+{% extends 'stock/base.html' %}
+{% load i18n humanize %}
+
+{% block title %}{% trans 'Mes notifications' %} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <!-- En-tête -->
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h1 class="text-2xl font-semibold text-gray-800">{% trans 'Mes notifications' %}</h1>
+            <div class="flex space-x-2">
+                <button id="mark-all-read" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <i class="fas fa-check-double mr-1"></i> {% trans 'Tout marquer comme lu' %}
+                </button>
+            </div>
+        </div>
+
+        <!-- Liste des notifications -->
+        <div class="divide-y divide-gray-200">
+            {% if notifications %}
+                {% for notification in notifications %}
+                <div class="p-4 hover:bg-gray-50 transition-colors duration-150 {% if not notification.vue %}bg-blue-50{% endif %}"
+                     data-notification-id="{{ notification.id }}">
+                    <div class="flex items-start">
+                        <!-- Icône de notification -->
+                        <div class="flex-shrink-0 pt-0.5">
+                            {% if notification.niveau == 'danger' %}
+                                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-red-100">
+                                    <i class="fas fa-exclamation-circle text-red-600"></i>
+                                </span>
+                            {% elif notification.niveau == 'warning' %}
+                                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-yellow-100">
+                                    <i class="fas fa-exclamation-triangle text-yellow-600"></i>
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-100">
+                                    <i class="fas fa-info-circle text-blue-600"></i>
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Contenu de la notification -->
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-medium text-gray-900">
+                                    {{ notification.message|safe }}
+                                </p>
+                                <span class="text-xs text-gray-500 ml-2 whitespace-nowrap">
+                                    {{ notification.date_creation|timesince }}
+                                </span>
+                            </div>
+                            {% if notification.lien %}
+                            <div class="mt-1">
+                                <a href="{{ notification.lien }}" class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                                    {% trans 'Voir les détails' %} <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Bouton de marquage comme lu -->
+                        {% if not notification.vue %}
+                        <button class="mark-as-read ml-2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none" 
+                                data-notification-id="{{ notification.id }}">
+                            <i class="far fa-circle"></i>
+                            <span class="sr-only">{% trans 'Marquer comme lu' %}</span>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-700">
+                            {% blocktrans with page_obj.start_index as start and page_obj.end_index as end and paginator.count as total %}
+                                Affichage de {{ start }} à {{ end }} sur {{ total }} notifications
+                            {% endblocktrans %}
+                        </div>
+                        <div class="flex space-x-2">
+                            {% if page_obj.has_previous %}
+                                <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 border rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                    &larr; {% trans 'Précédent' %}
+                                </a>
+                            {% endif %}
+                            
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 border rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                    {% trans 'Suivant' %} &rarr;
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+            {% else %}
+                <!-- Aucune notification -->
+                <div class="p-8 text-center">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 text-gray-400 mb-4">
+                        <i class="far fa-bell-slash text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-1">{% trans 'Aucune notification' %}</h3>
+                    <p class="text-gray-500">{% trans 'Vous n\'avez pas encore de notifications.' %}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Marquer une notification comme lue
+    document.querySelectorAll('.mark-as-read').forEach(button => {
+        button.addEventListener('click', function() {
+            const notificationId = this.dataset.notificationId;
+            markAsRead(notificationId, this.closest('[data-notification-id]'));
+        });
+    });
+    
+    // Marquer toutes les notifications comme lues
+    document.getElementById('mark-all-read')?.addEventListener('click', function() {
+        fetch('{% url "stock:marquer_toutes_notifications_lues" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Mettre à jour l'interface utilisateur
+                document.querySelectorAll('.mark-as-read').forEach(btn => {
+                    btn.remove();
+                });
+                document.querySelectorAll('[data-notification-id]').forEach(el => {
+                    el.classList.remove('bg-blue-50');
+                });
+                updateNotificationCount(0);
+            }
+        });
+    });
+    
+    function markAsRead(notificationId, element) {
+        fetch(`/notifications/${notificationId}/marquer-lue/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Mettre à jour l'interface utilisateur
+                const badge = document.querySelector(`[data-notification-id="${notificationId}"] .mark-as-read`);
+                if (badge) badge.remove();
+                if (element) element.classList.remove('bg-blue-50');
+                updateNotificationCount();
+            }
+        });
+    }
+    
+    function updateNotificationCount(newCount) {
+        // Mettre à jour le compteur dans la barre de navigation
+        const counter = document.getElementById('notification-counter');
+        if (counter) {
+            if (newCount === 0 || (newCount === undefined && counter.textContent > 0)) {
+                counter.textContent = newCount || 0;
+                counter.classList.toggle('hidden', newCount === 0);
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,290 @@
+{% extends 'stock/base.html' %}
+{% load static i18n humanize %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<nav class="flex" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-4">
+        <li>
+            <div class="flex items-center">
+                <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+                <a href="{% url 'stock:rapports' %}" class="ml-4 text-sm font-medium text-gray-500 hover:text-blue-700">Rapports</a>
+            </div>
+        </li>
+        <li>
+            <div class="flex items-center">
+                <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+                <span class="ml-4 text-sm font-medium text-gray-500 hover:text-blue-700">{{ title }}</span>
+            </div>
+        </li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <!-- En-tête -->
+        <div class="bg-blue-600 text-white px-6 py-4">
+            <h2 class="text-xl font-semibold">
+                <i class="fas fa-exchange-alt mr-2"></i>{{ title }}
+            </h2>
+        </div>
+        
+        <div class="p-6">
+            <!-- Filtres -->
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm mb-6 overflow-hidden">
+                <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">
+                        <i class="fas fa-filter text-blue-600 mr-2"></i>{% trans 'Filtres' %}
+                    </h3>
+                </div>
+                <div class="p-4">
+                    <form method="get" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                            <div class="md:col-span-3">
+                                <label for="id_date_debut" class="block text-sm font-medium text-gray-700 mb-1">
+                                    {{ form.date_debut.label }}
+                                </label>
+                                <div class="relative">
+                                    <input type="date"
+                                           id="id_date_debut"
+                                           name="date_debut"
+                                           value="{{ request.GET.date_debut }}"
+                                           class="block w-full rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400"
+                                           required>
+                                    {% if form.date_debut.errors %}
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1.5"></i>
+                                            {{ form.date_debut.errors.0 }}
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="md:col-span-3">
+                                <label for="id_date_fin" class="block text-sm font-medium text-gray-700 mb-1">
+                                    {{ form.date_fin.label }}
+                                </label>
+                                <div class="relative">
+                                    <input type="date"
+                                           id="id_date_fin"
+                                           name="date_fin"
+                                           value="{{ request.GET.date_fin }}"
+                                           class="block w-full rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400"
+                                           required>
+                                    {% if form.date_fin.errors %}
+                                        <p class="mt-1 text-sm text-red-600 flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1.5"></i>
+                                            {{ form.date_fin.errors.0 }}
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="md:col-span-4">
+                                <label for="id_produit" class="block text-sm font-medium text-gray-700 mb-1">
+                                    {{ form.produit.label }}
+                                </label>
+                                <div class="relative">
+                                    <select id="id_produit" name="produit" class="block w-full rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400">
+                                        <option value="">{% trans 'Tous les produits' %}</option>
+                                        {% for produit in form.produit.field.queryset %}
+                                            <option value="{{ produit.pk }}" {% if request.GET.produit == produit.pk %}selected{% endif %}>{{ produit }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="md:col-span-2 flex items-end space-x-2">
+                                <button type="submit" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <i class="fas fa-search mr-2"></i> {% trans 'Filtrer' %}
+                                </button>
+                                <a href="{% url 'stock:rapport_mouvements' %}" class="flex items-center justify-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <i class="fas fa-redo"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Totaux -->
+            {% if mouvements %}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <!-- Total Entrées -->
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div class="text-center">
+                        <p class="text-sm font-medium text-green-800">
+                            <i class="fas fa-arrow-down text-green-600 mr-1"></i> {% trans 'Total Entrées' %}
+                        </p>
+                        <p class="mt-1 text-2xl font-semibold text-green-900">
+                            {{ total_entrees|floatformat:2|intcomma }} FCFA
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Total Sorties -->
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="text-center">
+                        <p class="text-sm font-medium text-red-800">
+                            <i class="fas fa-arrow-up text-red-600 mr-1"></i> {% trans 'Total Sorties' %}
+                        </p>
+                        <p class="mt-1 text-2xl font-semibold text-red-900">
+                            {{ total_sorties|floatformat:2|intcomma }} FCFA
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Solde -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="text-center">
+                        <p class="text-sm font-medium text-blue-800">
+                            <i class="fas fa-balance-scale text-blue-600 mr-1"></i> {% trans 'Solde' %}
+                        </p>
+                        <p class="mt-1 text-2xl font-semibold text-blue-900">
+                            {{ total_general|floatformat:2|intcomma }} FCFA
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Tableau des mouvements -->
+            <div class="overflow-hidden border border-gray-200 rounded-lg shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {% trans 'Date' %}
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {% trans 'Type' %}
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {% trans 'Produit' %}
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {% trans 'Quantité' %}
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {% trans 'Prix unitaire' %}
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {% trans 'Montant total' %}
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {% trans 'Référence' %}
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {% trans 'Utilisateur' %}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for mouvement in mouvements %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ mouvement.date|date:"d/m/Y H:i" }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium {% if mouvement.type == 'Entrée' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                        {{ mouvement.type }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ mouvement.produit.designation }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                                    {{ mouvement.quantite|floatformat:2|intcomma }} {{ mouvement.produit.unite_mesure|default:'' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                                    {{ mouvement.prix_unitaire|floatformat:2|intcomma }} FCFA
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-right">
+                                    {{ mouvement.montant_total|floatformat:2|intcomma }} FCFA
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ mouvement.reference|default:"-" }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ mouvement.utilisateur.get_full_name|default:mouvement.utilisateur.username }}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="px-6 py-8 text-center text-sm text-gray-500">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <i class="fas fa-inbox text-gray-400 text-4xl mb-2"></i>
+                                        <p class="mt-1">
+                                            {% trans 'Aucun mouvement trouvé avec les critères sélectionnés.' %}
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Boutons d'export et compteur -->
+            {% if mouvements %}
+            <div class="mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                <div class="text-sm text-gray-600">
+                    <i class="fas fa-info-circle text-blue-500 mr-1"></i>
+                    {% blocktrans count count=mouvements|length %}
+                        <span class="font-medium">{{ count }}</span> mouvement trouvé
+                    {% plural %}
+                        <span class="font-medium">{{ count }}</span> mouvements trouvés
+                    {% endblocktrans %}
+                    <span class="text-gray-400 mx-2">•</span>
+                    <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">
+                        <i class="far fa-clock mr-1"></i> Généré le {{ date_rapport|date:"d/m/Y à H:i" }}
+                    </span>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <a href="?{{ request.GET.urlencode }}&format=pdf" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <i class="fas fa-file-pdf mr-2"></i> {% trans 'Exporter en PDF' %}
+                    </a>
+                    <a href="?{{ request.GET.urlencode }}&format=excel" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <i class="fas fa-file-excel mr-2"></i> {% trans 'Exporter en Excel' %}
+                    </a>
+                    <button onclick="window.print()" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-print mr-2"></i> {% trans 'Imprimer' %}
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialisation des sélecteurs de date
+    document.addEventListener('DOMContentLoaded', function() {
+        // Si les champs de date existent, on les initialise avec la date d'aujourd'hui
+        const dateDebut = document.getElementById('id_date_debut');
+        const dateFin = document.getElementById('id_date_fin');
+        
+        // Si les dates ne sont pas déjà définies, on les initialise avec le mois en cours
+        if (dateDebut && !dateDebut.value) {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            dateDebut.valueAsDate = firstDay;
+            
+            if (dateFin && !dateFin.value) {
+                dateFin.valueAsDate = today;
+            }
+        }
+    });
+</script>
+{% endblock %}

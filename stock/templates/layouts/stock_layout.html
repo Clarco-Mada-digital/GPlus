@@ -1,0 +1,373 @@
+{% load tailwind_tags %}
+{% load static %}
+{% load humanize %}
+{% load currency_format %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GPlus StockPilot - Solution complète de gestion de stock">
+    {% tailwind_css %} 
+    <title>{% block title %}GPlus StockPilot{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'stock/img/favicon.ico' %}">
+    
+    <!-- Tailwind CSS -->
+    {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'stock/css/custom.css' %}">
+
+    <!-- Alpine.js -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{% static 'stock/js/main.js' %}" defer></script>
+    <style>
+        [x-cloak] {
+            display: none;
+        }
+    </style> 
+    
+    {% block extra_css %}{% endblock %}
+    {% block extra_js %}{% endblock %}
+</head>
+<body x-data="{ 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+        x-init="
+            darkMode = JSON.parse(localStorage.getItem('darkMode'));
+            sidebarToggle = JSON.parse(localStorage.getItem('sidebarToggle'));
+            $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
+            $watch('sidebarToggle', value => localStorage.setItem('sidebarToggle', JSON.stringify(value)));"
+        :class="{'dark bg-gray-900': darkMode === true}" x-cloak>
+    <!-- Header -->
+    {% comment %} <header class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'stock:tableau_bord' %}" class="text-2xl font-bold flex items-center">
+                    <i class="fas fa-boxes mr-2 text-blue-600"></i>
+                    <span class="hidden sm:inline">GStock</span>
+                </a>
+            </div>
+            
+            <!-- Navigation principale (desktop) -->
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="{% url 'stock:tableau_bord' %}" class="hover:text-blue-200 transition flex items-center {% if request.resolver_match.url_name == 'tableau_bord' %}text-white font-medium{% endif %}">
+                    <i class="fas fa-tachometer-alt mr-2"></i> Tableau de bord
+                </a>
+                <a href="{% url 'stock:liste_produits' %}" class="hover:text-blue-200 transition flex items-center {% if 'produit' in request.resolver_match.url_name or 'produits' in request.resolver_match.url_name %}text-white font-medium{% endif %}">
+                    <i class="fas fa-box mr-2"></i> Produits
+                </a>
+                <a href="{% url 'stock:liste_entrees' %}" class="hover:text-blue-200 transition flex items-center {% if 'entree' in request.resolver_match.url_name or 'entrees' in request.resolver_match.url_name %}text-white font-medium{% endif %}">
+                    <i class="fas fa-arrow-down mr-2"></i> Entrées
+                </a>
+                <a href="{% url 'stock:liste_sorties' %}" class="hover:text-blue-200 transition flex items-center {% if 'sortie' in request.resolver_match.url_name or 'sorties' in request.resolver_match.url_name %}text-white font-medium{% endif %}">
+                    <i class="fas fa-arrow-up mr-2"></i> Sorties
+                </a>
+                <a href="{% url 'stock:liste_fournisseurs' %}" class="hover:text-blue-200 transition flex items-center {% if 'fournisseur' in request.resolver_match.url_name or 'fournisseurs' in request.resolver_match.url_name %}text-white font-medium{% endif %}">
+                    <i class="fas fa-truck mr-2"></i> Fournisseurs
+                </a>
+                <a href="{% url 'stock:liste_categories' %}" class="hover:text-blue-200 transition flex items-center {% if 'categorie' in request.resolver_match.url_name or 'categories' in request.resolver_match.url_name %}text-white font-medium{% endif %}">
+                    <i class="fas fa-tags mr-2"></i> Catégories
+                </a>
+                <!-- <div class="relative group">
+                    <button class="hover:text-blue-200 transition flex items-center focus:outline-none">
+                        <i class="fas fa-exchange-alt mr-1"></i> Mouvements
+                        <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden group-hover:block">
+                        <a href="{% url 'stock:liste_entrees' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
+                            <i class="fas fa-arrow-down mr-2 text-green-500"></i> Entrées
+                        </a>
+                        <a href="{% url 'stock:liste_sorties' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
+                            <i class="fas fa-arrow-up mr-2 text-red-500"></i> Sorties
+                        </a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="{% url 'stock:ajouter_entree' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
+                            <i class="fas fa-plus-circle mr-2 text-green-500"></i> Nouvelle entrée
+                        </a>
+                        <a href="{% url 'stock:ajouter_sortie' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
+                            <i class="fas fa-plus-circle mr-2 text-red-500"></i> Nouvelle sortie
+                        </a>
+                    </div>
+                </div> -->
+                <a href="{% url 'stock:rapports' %}" class="hover:text-blue-200 transition flex items-center {% if 'rapports' in request.resolver_match.url_name %}text-white font-medium{% endif %}">
+                    <i class="fas fa-chart-bar mr-2"></i> Rapports
+                </a>
+            </nav>
+            
+            <!-- User menu -->
+            <div class="flex items-center space-x-4">
+                {% if user.is_authenticated %}
+                    <!-- Notifications -->
+                    <div class="relative group">
+                        <a href="{% url 'stock:liste_notifications' %}" class="relative p-2 text-white hover:text-blue-200 transition">
+                            <i class="fas fa-bell text-xl"></i>
+                            {% if unread_notifications_count > 0 %}
+                            <span id="notification-counter" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                {{ unread_notifications_count }}
+                            </span>
+                            {% endif %}
+                        </a>
+                        <!-- Menu déroulant des notifications récentes -->
+                        <div class="hidden absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-50 group-hover:block">
+                            <div class="p-3 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                                <h3 class="text-sm font-medium text-gray-900">Notifications</h3>
+                                <a href="{% url 'stock:liste_notifications' %}" class="text-xs text-blue-600 hover:text-blue-800">Voir tout</a>
+                            </div>
+                            <div id="recent-notifications" class="max-h-96 overflow-y-auto">
+                                {% for notification in recent_notifications %}
+                                <a href="{{ notification.lien|default:'#' }}" 
+                                   class="block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 {% if not notification.vue %}bg-blue-50{% endif %}">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 pt-0.5">
+                                            {% if notification.niveau == 'danger' %}
+                                                <i class="fas fa-exclamation-circle text-red-500"></i>
+                                            {% elif notification.niveau == 'warning' %}
+                                                <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                                            {% else %}
+                                                <i class="fas fa-info-circle text-blue-500"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm text-gray-800">{{ notification.message|truncatechars:60 }}</p>
+                                            <p class="text-xs text-gray-500 mt-1">Il y a {{ notification.date_creation|timesince }}</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                {% empty %}
+                                <div class="p-4 text-center text-gray-500 text-sm">
+                                    Aucune notification
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="p-2 bg-gray-50 text-center border-t border-gray-200">
+                                <a href="{% url 'stock:marquer_toutes_notifications_lues' %}" 
+                                   class="text-xs text-blue-600 hover:text-blue-800"
+                                   hx-post="{% url 'stock:marquer_toutes_notifications_lues' %}"
+                                   hx-target="#notification-counter"
+                                   hx-swap="outerHTML">
+                                    Tout marquer comme lu
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative group">
+                        <button class="flex items-center space-x-1 focus:outline-none">
+                            <span class="hidden md:inline">{{ user.get_full_name|default:user.email }}</span>
+                            <i class="fas fa-user-circle text-2xl"></i>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden group-hover:block">
+                            <a href="{% url 'stock:profil' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">
+                                <i class="fas fa-user mr-2"></i> Mon profil
+                            </a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <a href="{% url 'stock:deconnexion' %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Déconnexion
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="hover:text-blue-200 transition flex items-center">
+                        <i class="fas fa-sign-in-alt mr-1"></i> Connexion
+                    </a>
+                {% endif %}
+                <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-blue-700">
+            <div class="px-4 py-2 space-y-1">
+                <a href="{% url 'stock:liste_produits' %}" class="block py-2 px-4 rounded hover:bg-blue-600 flex items-center">
+                    <i class="fas fa-box mr-2 w-5 text-center"></i> Produits
+                </a>
+                <a href="{% url 'stock:liste_categories' %}" class="block py-2 px-4 rounded hover:bg-blue-600 flex items-center">
+                    <i class="fas fa-tags mr-2 w-5 text-center"></i> Catégories
+                </a>
+                <a href="{% url 'stock:liste_fournisseurs' %}" class="block py-2 px-4 rounded hover:bg-blue-600 flex items-center">
+                    <i class="fas fa-truck mr-2 w-5 text-center"></i> Fournisseurs
+                </a>
+                <a href="{% url 'stock:liste_entrees' %}" class="block py-2 px-4 rounded hover:bg-blue-600 flex items-center">
+                    <i class="fas fa-arrow-down mr-2 w-5 text-center"></i> Entrées
+                </a>
+                <a href="{% url 'stock:liste_sorties' %}" class="block py-2 px-4 rounded hover:bg-blue-600 flex items-center">
+                    <i class="fas fa-arrow-up mr-2 w-5 text-center"></i> Sorties
+                </a>
+                <a href="{% url 'stock:rapport_stock_faible' %}" class="block py-2 px-4 rounded hover:bg-blue-600 flex items-center">
+                    <i class="fas fa-chart-bar mr-2 w-5 text-center"></i> Rapports
+                </a>
+                {% if not user.is_authenticated %}
+                    <div class="border-t border-blue-600 my-2"></div>
+                    <a href="{% url 'login' %}" class="block py-2 px-4 rounded hover:bg-blue-600 flex items-center">
+                        <i class="fas fa-sign-in-alt mr-2 w-5 text-center"></i> Connexion
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </header> {% endcomment %}
+
+    <!-- ===== Preloader Start ===== -->
+    {% include 'includes/preloader.html' %}
+    <!-- ===== Preloader End ===== -->
+
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+    <!-- ===== Sidebar Start ===== -->
+    {% include 'includes/sidebar_stock.html' %}
+    <!-- ===== Sidebar End ===== -->
+
+    <!-- ===== Content Area Start ===== -->
+    <div class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto">
+    <!-- Small Device Overlay Start -->
+    {% include 'includes/overlay.html' %}
+    <!-- Small Device Overlay End -->
+
+    <!-- ===== Header Start ===== -->
+    {% include 'includes/header.html' %}
+    <!-- ===== Header End ===== -->
+    
+    <!-- Main Content -->
+    <main class="flex-grow mx-auto w-full px-4 py-6 md:p-6">
+        <!-- Breadcrumb -->
+        {% block breadcrumb %}
+            <nav class="flex mb-6" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{% url 'stock:tableau_bord' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                            <i class="fas fa-home mr-2"></i>
+                            Accueil
+                        </a>
+                    </li>
+                    {% block breadcrumb_items %}{% endblock %}
+                </ol>
+            </nav>
+        {% endblock %}
+        
+        <!-- Messages -->
+        {% if messages %}
+            <div class="mb-6 space-y-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} flex items-center justify-between p-4 rounded" role="alert" data-auto-dismiss="5000">
+                        <div class="flex items-center">
+                            {% if message.tags == 'success' %}
+                                <i class="fas fa-check-circle mr-2"></i>
+                            {% elif message.tags == 'error' %}
+                                <i class="fas fa-exclamation-circle mr-2"></i>
+                            {% elif message.tags == 'warning' %}
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                            {% else %}
+                                <i class="fas fa-info-circle mr-2"></i>
+                            {% endif %}
+                            <span>{{ message }}</span>
+                        </div>
+                        <button type="button" class="ml-4 text-gray-500 hover:text-gray-700" data-dismiss="alert" aria-label="Fermer">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <!-- Page Header -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <div>
+                <h1 class="text-2xl font-bold dark:text-white text-gray-800">
+                    {% block page_title %}{% endblock %}
+                </h1>
+                {% block page_subtitle %}{% endblock %}
+            </div>
+            <div class="mt-4 md:mt-0 flex flex-wrap gap-2">
+                {% block page_actions %}{% endblock %}
+            </div>
+        </div>
+        
+        <!-- Page Content -->
+        {% block content %}
+        <div class="bg-white shadow rounded-lg p-6">
+            <p class="text-gray-600">Contenu principal de la page.</p>
+        </div>
+        {% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-8">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-sm text-gray-600 mb-4 md:mb-0">
+                    &copy; {% now "Y" %} Gestion de Stock. Tous droits réservés.
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-gray-600" title="GitHub">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-blue-500" title="Twitter">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-blue-700" title="Facebook">
+                        <i class="fab fa-facebook text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2">
+        <!-- Toasts will be inserted here dynamically -->
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4 text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p class="text-gray-700">Chargement en cours...</p>
+        </div>
+    </div>
+    
+    <!-- Modal Container -->
+    <div id="modal-container">
+        <!-- Modals will be inserted here dynamically -->
+    </div>
+    
+    <!-- Initialize any scripts that need to run after the DOM is fully loaded -->
+    <script>
+        // Expose Django's CSRF token to JavaScript
+        const CSRF_TOKEN = '{{ csrf_token }}';
+        
+        // Initialize any global JavaScript functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            if (typeof tippy === 'function') {
+                tippy('[data-tippy-content]', {
+                    animation: 'scale',
+                    theme: 'light',
+                    arrow: true
+                });
+            }
+            
+            // Dismiss alert buttons
+            document.querySelectorAll('[data-dismiss="alert"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.alert').remove();
+                });
+            });
+        });
+    </script>
+    
+    {% block extra_scripts %}{% endblock %}
+
+    {% comment %} {% if debug %}
+    {% include 'django_browser_reload/reload.html' %}
+    {% endif %} {% endcomment %}
+</body>
+</html>

@@ -1,0 +1,294 @@
+{% extends 'stock/base.html' %}
+{% load humanize %}
+
+{% block title %}Entrées de stock - Gestion des stocks{% endblock %}
+
+{% block breadcrumb_items %}
+<nav class="flex" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-2">        
+        <li aria-current="page">
+            <div class="flex items-center">
+                <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">
+                    Entrées de stock
+                </span>
+            </div>
+        </li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block page_title %}
+    Entrées de stock
+    <p class="mt-1 text-sm font-normal text-gray-500">Gestion des entrées de produits en stock</p>
+{% endblock %}
+
+{% block page_actions %}
+    <a href="{% url 'stock:ajouter_entree' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        <i class="fas fa-plus mr-2"></i> Nouvelle entrée
+    </a>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <!-- En-tête avec filtres -->
+    <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div class="mb-4 md:mb-0">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Historique des entrées</h3>
+                <p class="mt-1 text-sm text-gray-500">
+                    {{ page_obj.paginator.count }} entrée{{ page_obj.paginator.count|pluralize }} trouvée{{ page_obj.paginator.count|pluralize }}
+                </p>
+            </div>
+            
+            <!-- Filtres -->
+            <form method="get" class="flex flex-col sm:flex-row gap-3">
+                <div class="relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" 
+                           name="q" 
+                           value="{{ request.GET.q }}" 
+                           class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                           placeholder="Rechercher...">
+                </div>
+                
+                <div class="relative">
+                    <select name="produit" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                        <option value="">Tous les produits</option>
+                        {% for p in produits %}
+                            <option value="{{ p.id }}" {% if request.GET.produit == p.id|stringformat:'s' %}selected{% endif %}>
+                                {{ p.designation }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="flex space-x-2">
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-filter mr-2"></i>Filtrer
+                    </button>
+                    {% if request.GET %}
+                        <a href="{% url 'stock:liste_entrees' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-times mr-2"></i>Réinitialiser
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Tableau des entrées -->
+    <div class="overflow-x-auto">
+        <div class="align-middle inline-block min-w-full">
+            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-b-lg">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Date
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Référence
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Produit
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Fournisseur
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Quantité
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Prix unitaire
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Montant total
+                            </th>
+                            <th scope="col" class="relative px-6 py-3">
+                                <span class="sr-only">Actions</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for entree in object_list %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ entree.date|date:"d/m/Y H:i" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                <a href="{% url 'stock:detail_entree' entree.pk %}" class="text-blue-600 hover:text-blue-800">
+                                    {{ entree.reference|default:"Sans référence" }}
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    {% if entree.produit.photo %}
+                                        <div class="flex-shrink-0 h-10 w-10 mr-4">
+                                            <img class="h-10 w-10 rounded-full object-cover" src="{{ entree.produit.photo.url }}" alt="{{ entree.produit.designation }}">
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ entree.produit.designation }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            {{ entree.produit.code }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">
+                                    {% if entree.fournisseur %}
+                                        <a href="{% url 'stock:detail_fournisseur' entree.fournisseur.pk %}" class="text-blue-600 hover:text-blue-800">
+                                            {{ entree.fournisseur.nom }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-gray-400">-</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                                {{ entree.quantite|intcomma }} {{ entree.produit.unite_mesure|default:"unité" }}{{ entree.quantite|pluralize }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                                {{ entree.prix_unitaire|default:0|floatformat:2 }} Ar
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <span class="text-green-600 font-medium">
+                                    {{ entree.montant_total|floatformat:2 }} Ar
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex justify-end space-x-3">
+                                    <a href="{% url 'stock:detail_entree' entree.pk %}" class="text-blue-600 hover:text-blue-800" title="Voir les détails">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'stock:modifier_entree' entree.pk %}" class="text-indigo-600 hover:text-indigo-800" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{% url 'stock:annuler_entree' entree.pk %}" method="post" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette entrée de stock ?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-red-600 hover:text-red-800" title="Annuler">
+                                            <i class="fas fa-times-circle"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="px-6 py-12 text-center text-sm text-gray-500">
+                                <i class="fas fa-inbox text-4xl text-gray-300 mb-2"></i>
+                                <p class="mt-2">Aucune entrée de stock trouvée.</p>
+                                {% if request.GET %}
+                                    <a href="{% url 'stock:liste_entrees' %}" class="mt-2 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        Réinitialiser les filtres
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+        <div class="flex-1 flex justify-between sm:hidden">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+               class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Précédent
+            </a>
+            {% endif %}
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+               class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Suivant
+            </a>
+            {% endif %}
+        </div>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm text-gray-700">
+                    Affichage de <span class="font-medium">{{ page_obj.start_index }}</span> à <span class="font-medium">{{ page_obj.end_index }}</span> sur <span class="font-medium">{{ page_obj.paginator.count }}</span> résultat{{ page_obj.paginator.count|pluralize }}
+                </p>
+            </div>
+            <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <span class="sr-only">Première page</span>
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                        <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                           class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <span class="sr-only">Précédent</span>
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                               class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                {{ num }}
+                            </a>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                               class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                           class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <span class="sr-only">Suivant</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <span class="sr-only">Dernière page</span>
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialisation des tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Gestion des filtres
+    const filterForm = document.querySelector('form[method="get"]');
+    const filterSelects = filterForm.querySelectorAll('select');
+    
+    filterSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            filterForm.submit();
+        });
+    });
+});
+</script>
+{% endblock %}

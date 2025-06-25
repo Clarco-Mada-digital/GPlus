@@ -1,0 +1,218 @@
+{% extends 'stock/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}{% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} une entrée en stock - GPlus StockPilot{% endblock %}
+
+{% block breadcrumb_items %}
+    <nav class="flex" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-2">
+            <li class="inline-flex items-center">
+                <a href="{% url 'stock:accueil' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-home mr-2"></i>
+                    Accueil
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a href="{% url 'stock:liste_entrees' %}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">
+                        Entrées en stock
+                    </a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">
+                        {% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} une entrée
+                    </span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block page_title %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">
+        {% if form.instance.pk %}
+            <i class="fas fa-edit text-blue-600 mr-2"></i>Modifier l'entrée de stock
+        {% else %}
+            <i class="fas fa-plus-circle text-blue-600 mr-2"></i>Nouvelle entrée en stock
+        {% endif %}
+    </h1>
+    <p class="mt-2 text-sm text-gray-600">
+        {% if form.instance.pk %}
+            Mettez à jour les détails de l'entrée en stock
+        {% else %}
+            Enregistrez une nouvelle entrée de produits en stock
+        {% endif %}
+    </p>
+</div>
+{% endblock %}
+
+{% block content %}
+<div x-data="entreeForm" class="bg-white shadow-lg rounded-xl overflow-hidden mb-8 border border-gray-100">
+    <form method="post" class="space-y-0" @submit.prevent="submitForm">
+        {% csrf_token %}
+        
+        <!-- Messages d'erreur généraux -->
+        {% if form.non_field_errors %}
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-lg shadow-sm">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 pt-0.5">
+                        <i class="fas fa-exclamation-circle text-red-500 text-lg"></i>
+                    </div>
+                    <div class="ml-3">
+                        <div class="text-sm text-red-700">
+                            {% for error in form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+            
+        <!-- Messages de succès -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-6 rounded-lg border-l-4 p-4 {% if message.tags == 'error' %}bg-red-50 border-red-500{% else %}bg-green-50 border-green-500{% endif %}">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 pt-0.5">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle text-red-500{% else %}fa-check-circle text-green-500{% endif %} text-lg"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm {% if message.tags == 'error' %}text-red-700{% else %}text-green-700{% endif %}">
+                                {{ message }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 px-4 sm:px-6 lg:px-8 py-6">
+            <!-- Colonne de gauche - Formulaire principal -->
+            <div class="lg:col-span-8">
+                <div class="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-clipboard-list text-blue-600 mr-3 text-xl"></i>
+                            <span>Détails de l'entrée</span>
+                        </h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Produit -->
+                        <div class="space-y-2 group" x-data="{ focused: false }">
+                            <label for="{{ form.produit.id_for_label }}" class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                                {{ form.produit.label }}
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <div class="mt-1 relative" :class="{ 'ring-2 ring-blue-500 rounded-lg': focused }">
+                                {% render_field form.produit class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" @change="updateProduitInfo($event.target.value)" %}
+                            </div>
+                            {% if form.produit.errors %}
+                                <p class="mt-1.5 text-sm text-red-600 flex items-center">
+                                    <i class="fas fa-exclamation-circle mr-1.5"></i>
+                                    {{ form.produit.errors|join:", " }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Fournisseur -->
+                        <div class="space-y-2 group" x-data="{ focused: false }">
+                            <label for="{{ form.fournisseur.id_for_label }}" class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                                {{ form.fournisseur.label }}
+                            </label>
+                            <div class="mt-1 relative" :class="{ 'ring-2 ring-blue-500 rounded-lg': focused }">
+                                {% render_field form.fournisseur class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" %}
+                            </div>
+                            {% if form.fournisseur.errors %}
+                                <p class="mt-1.5 text-sm text-red-600 flex items-center">
+                                    <i class="fas fa-exclamation-circle mr-1.5"></i>
+                                    {{ form.fournisseur.errors|join:", " }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Quantité -->
+                        <div class="space-y-2 group" x-data="{ focused: false }">
+                            <label for="{{ form.quantite.id_for_label }}" class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                                {{ form.quantite.label }}
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <div class="mt-1 relative" :class="{ 'ring-2 ring-blue-500 rounded-lg': focused }">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">
+                                        <i class="fas fa-boxes"></i>
+                                    </span>
+                                </div>
+                                {% render_field form.quantite class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 pl-10 pr-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false; updateTotal()" %}
+                            </div>
+                            {% if form.quantite.errors %}
+                                <p class="mt-1.5 text-sm text-red-600 flex items-center">
+                                    <i class="fas fa-exclamation-circle mr-1.5"></i>
+                                    {{ form.quantite.errors|join:", " }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Prix unitaire -->
+                        <div class="space-y-2 group" x-data="{ focused: false }">
+                            <label for="{{ form.prix_unitaire.id_for_label }}" class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                                {{ form.prix_unitaire.label }}
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <div class="mt-1 relative" :class="{ 'ring-2 ring-blue-500 rounded-lg': focused }">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">
+                                        <i class="fas fa-tag"></i>
+                                    </span>
+                                </div>
+                                {% render_field form.prix_unitaire class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 pl-10 pr-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false; updateTotal()" %}
+                            </div>
+                            {% if form.prix_unitaire.errors %}
+                                <p class="mt-1.5 text-sm text-red-600 flex items-center">
+                                    <i class="fas fa-exclamation-circle mr-1.5"></i>
+                                    {{ form.prix_unitaire.errors|join:", " }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Date d'entrée -->
+                        <div class="space-y-2 group" x-data="{ focused: false }">
+                            <label for="{{ form.date_entree.id_for_label }}" class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                                {{ form.date_entree.label }}
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <div class="mt-1 relative" :class="{ 'ring-2 ring-blue-500 rounded-lg': focused }">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="far fa-calendar text-gray-400"></i>
+                                </div>
+                                {% render_field form.date_entree class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 pl-10 pr-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" %}
+                            </div>
+                            {% if form.date_entree.errors %}
+                                <p class="mt-1.5 text-sm text-red-600 flex items-center">
+                                    <i class="fas fa-exclamation-circle mr-1.5"></i>
+                                    {{ form.date_entree.errors|join:", " }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Numéro de facture -->
+                        <div class="space-y-2 group" x-data="{ focused: false }">
+                            <label for="{{ form.numero_facture.id_for_label }}" class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                                {{ form.numero_facture.label }}
+                            </label>
+                            <div class="mt-1 relative" :class="{ 'ring-2 ring-blue-500 rounded-lg': focused }">
+                                {% render_field form.numero_facture class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" %}
+                            </div>
+                            {% if form.numero_facture.errors %}
+                                <p class="mt-1.5 text-sm text-red-600 flex items-center">
+                                    <i class="fas fa-exclamation-circle mr-1.5"></i>
+                                    {{ form.numero_facture.errors|join:", " }}
+                                </p>
+                            {% endif %}
+                        </div>

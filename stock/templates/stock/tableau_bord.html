@@ -1,0 +1,663 @@
+{% extends 'layouts/stock_layout.html' %}
+{% load humanize static %}
+{# Temporairement désactivé pour débogage #}
+
+{% block extra_head %}
+<style>
+    .stat-card {
+        @apply bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 relative overflow-hidden transition-all duration-300 hover:shadow-lg dark:shadow-slate-700/50;
+    }
+    .card-gradient-primary { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
+    .card-gradient-success { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); }
+    .card-gradient-warning { background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); }
+    .card-gradient-info { background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%); }
+    .stat-card i { @apply text-3xl mb-4 text-white; }
+    .stat-card h3 { @apply text-2xl font-bold text-white mb-1; }
+    .stat-card p { @apply text-white text-opacity-90; }
+    
+    .list-card { @apply bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden; }
+    .card-header { @apply px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center; }
+    .card-header h3 { @apply text-lg font-medium text-gray-900 dark:text-white; }
+    .card-body { @apply p-6 bg-white dark:bg-slate-800; }
+    
+    .table-container { @apply overflow-x-auto; }
+    table { @apply min-w-full divide-y divide-gray-200; }
+    th { @apply px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider; }
+    td { @apply px-6 py-4 whitespace-nowrap text-sm; }
+    tr.list-item { @apply hover:bg-gray-50 transition-colors; }
+    
+    .btn {
+        @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors;
+    }
+    .btn-primary { @apply bg-blue-600 hover:bg-blue-700 focus:ring-blue-500; }
+    .btn-success { @apply bg-green-600 hover:bg-green-700 focus:ring-green-500; }
+    .btn-warning { @apply bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500; }
+    .btn-danger { @apply bg-red-600 hover:bg-red-700 focus:ring-red-500; }
+    .btn-sm { @apply px-3 py-1.5 text-xs; }
+    .btn-outline-primary { @apply border border-blue-600 text-blue-600 bg-white hover:bg-blue-50; }
+    
+    .badge {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    }
+    .badge-success { @apply bg-green-100 text-green-800; }
+    .badge-warning { @apply bg-yellow-100 text-yellow-800; }
+    .badge-danger { @apply bg-red-100 text-red-800; }
+    
+    .chart-card { @apply bg-white dark:bg-slate-800 rounded-lg shadow-md p-6; }
+    .period-selector { @apply inline-flex rounded-md shadow-sm; }
+    .period-btn {
+        @apply px-4 py-2 text-sm font-medium border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500;
+    }
+    .period-btn:first-child { @apply rounded-l-md; }
+    .period-btn:last-child { @apply -ml-px rounded-r-md; }
+    .period-btn.active { @apply bg-blue-50 text-blue-600 border-blue-500; }
+</style>
+{% endblock %}
+
+{% block title %}Tableau de bord - Gestion de Stock{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/custom.css' %}">
+{% endblock %}
+
+{% block breadcrumb_items %}
+<nav class="flex" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-2">        
+        <li aria-current="page">
+            <div class="flex items-center">
+                <i class="fas fa-chevron-right text-gray-400 dark:text-slate-500 mx-2"></i>
+                <span class="ml-1 text-sm font-medium text-gray-500 dark:text-slate-400 md:ml-2">
+                    Tableau de bord
+                </span>
+            </div>
+        </li>
+    </ol>
+</nav>
+{% endblock %}
+
+
+{% block page_title %}
+    <span class="dark:text-white text-gray-800">Tableau de bord</span>
+    <p class="mt-1 text-sm font-normal text-gray-500 dark:text-slate-400">Aperçu global de votre gestion de stock</p>
+{% endblock %}
+
+{% block page_actions %}
+    <div class="flex flex-wrap gap-3">
+        <a href="{% url 'stock:ajouter_produit' %}" class="btn btn-primary">
+            <i class="fas fa-plus mr-2"></i> Nouveau produit
+        </a>
+        <a href="{% url 'stock:ajouter_entree' %}" class="btn btn-success">
+            <i class="fas fa-arrow-down mr-2"></i> Entrée stock
+        </a>
+        <a href="{% url 'stock:ajouter_sortie' %}" class="btn btn-warning">
+            <i class="fas fa-arrow-up mr-2"></i> Sortie stock
+        </a>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Carte Nombre de produits -->
+        <div class="stat-card card-gradient-primary">
+            <i class="fas fa-box"></i>
+            <h3>{{ stats.total_produits|intcomma }}</h3>
+            <p>Produits en stock</p>
+            <div class="absolute bottom-4 right-4 opacity-20">
+                <i class="fas fa-box text-4xl"></i>
+            </div>
+        </div>
+        
+        <!-- Carte Valeur du stock -->
+        <div class="stat-card card-gradient-success">
+            <i class="fas fa-coins"></i>
+            <h3>{{ stats.valeur_totale|floatformat:0|intcomma }} FCFA</h3>
+            <p>Valeur du stock</p>
+            <div class="absolute bottom-4 right-4 opacity-20">
+                <i class="fas fa-coins text-4xl"></i>
+            </div>
+        </div>
+        
+        <!-- Carte Produits en alerte -->
+        <div class="stat-card card-gradient-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>{{ stats.produits_en_alerte|intcomma }}</h3>
+            <p>Produits en alerte</p>
+            <div class="absolute bottom-4 right-4 opacity-20">
+                <i class="fas fa-exclamation-triangle text-4xl"></i>
+            </div>
+            <div class="absolute top-4 right-4 text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full">
+                {{ stats.produits_en_alerte }} sur {{ stats.total_produits }}
+            </div>
+        </div>
+        
+        <!-- Carte Mouvements récents -->
+        <div class="stat-card card-gradient-info">
+            <i class="fas fa-exchange-alt"></i>
+            <h3>{{ stats.mouvements_7j|intcomma }}</h3>
+            <p>Mouvements (7j)</p>
+            <div class="absolute bottom-4 right-4 opacity-20">
+                <i class="fas fa-exchange-alt text-4xl"></i>
+            </div>
+            <div class="absolute top-4 right-4 text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full">
+                <i class="fas fa-arrow-down"></i> {{ stats.entrees_7j }} | 
+                <i class="fas fa-arrow-up"></i> {{ stats.sorties_7j }}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Graphique d'activité -->
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden mb-6 border border-gray-200 dark:border-slate-700">
+        <div class="p-5 border-b border-gray-200 dark:border-slate-700">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Activité des {{ nb_jours }} derniers jours</h3>
+            <p class="text-sm text-gray-500 dark:text-slate-400">Évolution des entrées et sorties de stock</p>
+        </div>
+        <div class="p-4 bg-white dark:bg-slate-800">
+            <canvas id="activityChart" height="120"></canvas>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Derniers mouvements de stock -->
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-slate-700">
+            <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Derniers mouvements</h3>
+                <a href="{% url 'stock:liste_entrees' %}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600">
+                    Voir tout <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 bg-gray-50 dark:bg-slate-700 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-3 bg-gray-50 dark:bg-slate-700 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Type</th>
+                                <th class="px-6 py-3 bg-gray-50 dark:bg-slate-700 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Produit</th>
+                                <th class="px-6 py-3 bg-gray-50 dark:bg-slate-700 text-right text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Quantité</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mouvement in derniers_mouvements %}
+                            <tr class="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                                <td class="px-4 py-3  text-sm text-gray-600">
+                                    <div class="flex items-center text-gray-600 dark:text-slate-300">
+                                        <i class="far fa-calendar-alt mr-2 text-gray-400 dark:text-slate-500"></i>
+                                        {{ mouvement.date|date:"d/m/Y H:i" }}
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    {% if mouvement.type_mouvement == 'entree' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                        <i class="fas fa-arrow-down mr-1"></i> Entrée
+                                    </span>
+                                    {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500">
+                                        <i class="fas fa-arrow-up mr-1"></i> Sortie
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if mouvement.produit %}
+                                    <a href="{% url 'stock:detail_produit' mouvement.produit.id %}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                        {{ mouvement.produit.designation|default:"Produit supprimé" }}
+                                    </a>
+                                    {% else %}
+                                    <span class="text-gray-500">Produit supprimé</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right">
+                                    {{ mouvement.quantite|intcomma }}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-8 text-gray-500">
+                                    <i class="fas fa-inbox text-3xl mb-3 opacity-50"></i>
+                                    <p class="text-sm">Aucun mouvement récent</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Produits en alerte de stock -->
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-slate-700">
+            <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Produits en alerte de stock</h3>
+                <a href="{% url 'stock:rapport_stock_faible' %}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600">
+                    Voir tout <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 bg-gray-50 dark:bg-slate-700 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Produit</th>
+                                <th class="px-6 py-3 bg-gray-50 dark:bg-slate-700 text-left text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Référence</th>
+                                <th class="px-6 py-3 bg-gray-50 dark:bg-slate-700 text-right text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Stock actuel</th>
+                                <th class="px-6 py-3 bg-gray-50 dark:bg-slate-700 text-right text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Seuil d'alerte</th>
+                                <th class="px-6 py-3 bg-gray-50 dark:bg-slate-700 text-right text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for produit in produits_alerte_liste %}
+                            <tr class="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                                <td class="font-medium">
+                                    <a href="{% url 'stock:detail_produit' produit.id %}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                        {{ produit.designation|truncatechars:30 }}
+                                    </a>
+                                </td>
+                                <td class="text-gray-600">
+                                    {% if produit.code %}{{ produit.code }}{% else %}-{% endif %}
+                                </td>
+                                <td class="text-right font-medium {% if produit.quantite_stock <= 0 %}text-red-600{% else %}text-amber-600{% endif %}">
+                                    {{ produit.quantite_stock|intcomma }}
+                                </td>
+                                <td class="text-right text-gray-600">
+                                    {{ produit.seuil_alerte|intcomma|default:"-" }}
+                                </td>
+                                <td class="text-right">
+                                    {% if produit.quantite_stock <= 0 %}
+                                    <span class="badge badge-danger">
+                                        <i class="fas fa-times-circle mr-1"></i> Rupture
+                                    </span>
+                                    {% else %}
+                                    <span class="badge badge-warning">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i> Alerte
+                                    </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-8 text-gray-500">
+                                    <i class="fas fa-check-circle text-3xl mb-3 text-green-400"></i>
+                                    <p class="font-medium">Aucun produit en alerte</p>
+                                    <p class="text-sm mt-1">Tous les produits sont en stock</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistiques par catégorie -->
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden mb-6 border border-gray-200 dark:border-slate-700">
+        <div class="p-5 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Statistiques par catégorie</h3>
+            <p class="text-sm text-gray-500 dark:text-slate-400">Répartition des produits et alertes par catégorie</p>
+        </div>
+        <div class="p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                {% for categorie in categories_stats %}
+                <div class="bg-gray-50 dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-medium text-gray-900 dark:text-white truncate">{{ categorie.nom }}</h4>
+                        <span class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-1 rounded-full">
+                            {{ categorie.nb_produits }} produit{{ categorie.nb_produits|pluralize }}
+                        </span>
+                    </div>
+                    {% if categorie.nb_alertes > 0 %}
+                    <div class="mt-2">
+                        <div class="flex items-center justify-between text-xs text-gray-600 dark:text-slate-300 mb-1">
+                            <span>Alertes</span>
+                            <span class="font-medium">{{ categorie.nb_alertes }}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-slate-600 rounded-full h-1.5">
+                            <div class="bg-yellow-500 h-1.5 rounded-full" 
+                                 style="width: {% widthratio categorie.nb_alertes categorie.nb_produits 100 %}%">
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-xs text-green-600 dark:text-green-400 mt-2">
+                        <i class="fas fa-check-circle mr-1"></i> Stock suffisant
+                    </p>
+                    {% endif %}
+                    <a href="{% url 'stock:liste_produits' %}?categorie={{ categorie.id }}" 
+                       class="mt-3 inline-block text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                        Voir les produits <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+                {% empty %}
+                <div class="col-span-5 text-center py-8 text-gray-500">
+                    <i class="fas fa-inbox text-3xl mb-3 opacity-50"></i>
+                    <p class="text-sm">Aucune catégorie trouvée</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 gap-6 mb-8">
+        <!-- Actions rapides -->
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
+            <div class="p-5 border-b border-gray-200 dark:border-slate-700">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Actions rapides</h3>
+                <p class="text-sm text-gray-500 dark:text-slate-400">Accédez rapidement aux fonctionnalités principales</p>
+            </div>
+            <div class="p-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <a href="{% url 'stock:ajouter_produit' %}" class="p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-blue-100 rounded-lg text-blue-600 mr-3">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Nouveau produit</h4>
+                                <p class="text-xs text-gray-500">Ajouter un produit au catalogue</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="{% url 'stock:ajouter_entree' %}" class="p-4 border border-gray-200 rounded-lg hover:bg-green-50 transition-colors">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-green-100 rounded-lg text-green-600 mr-3">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Nouvelle entrée</h4>
+                                <p class="text-xs text-gray-500">Enregistrer une entrée de stock</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="{% url 'stock:ajouter_sortie' %}" class="p-4 border border-gray-200 rounded-lg hover:bg-yellow-50 transition-colors">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-yellow-100 rounded-lg text-yellow-600 mr-3">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Nouvelle sortie</h4>
+                                <p class="text-xs text-gray-500">Enregistrer une sortie de stock</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="{% url 'stock:rapports' %}" class="p-4 border border-gray-200 rounded-lg hover:bg-purple-50 transition-colors">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-purple-100 rounded-lg text-purple-600 mr-3">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Rapports</h4>
+                                <p class="text-xs text-gray-500">Générer des rapports détaillés</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-slate-700 mb-8">
+        <!-- Graphique des mouvements -->
+        <div class="p-5">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2 md:mb-0" id="chart-title">Mouvements des 7 derniers jours</h3>
+                <div class="inline-flex rounded-md shadow-sm" role="group">
+                    <button type="button" class="px-4 py-2 text-sm font-medium rounded-l-lg bg-blue-600 text-white hover:bg-blue-700 focus:z-10 transition-colors duration-200 period-btn dark:bg-blue-700 dark:hover:bg-blue-600" id="btn-7j">
+                        7 jours
+                    </button>
+                    <button type="button" class="px-4 py-2 text-sm font-medium bg-white border-t border-b border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-700 focus:z-10 transition-colors duration-200 period-btn dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:hover:bg-slate-600" id="btn-30j">
+                        30 jours
+                    </button>
+                    <button type="button" class="px-4 py-2 text-sm font-medium bg-white border border-l-0 border-gray-300 rounded-r-md text-gray-700 hover:bg-gray-50 hover:text-gray-700 focus:z-10 transition-colors duration-200 period-btn dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:hover:bg-slate-600" id="btn-90j">
+                        90 jours
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 pt-0">
+            <div class="chart-container">
+                <div id="chart-loading" class="flex items-center justify-center h-64">
+                    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+                <canvas id="mouvementsChart" class="w-full h-[300px] p-4 rounded-lg hidden"></canvas>
+            </div>
+        </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Graphique d'activité (données chargées côté serveur)
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('activityChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ dates|safe }},
+                datasets: [{
+                    label: 'Entrées',
+                    data: {{ serie_entrees|safe }},
+                    borderColor: 'rgb(16, 185, 129)',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.3,
+                    fill: true,
+                    borderWidth: 2
+                }, {
+                    label: 'Sorties',
+                    data: {{ serie_sorties|safe }},
+                    borderColor: 'rgb(245, 158, 11)',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    tension: 0.3,
+                    fill: true,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 14 },
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 12 } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [4, 4] },
+                        ticks: { 
+                            precision: 0,
+                            font: { size: 12 }
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                },
+                animation: { duration: 1000 }
+            }
+        });
+    }
+});
+</script>
+
+<!-- Script pour le graphique des mouvements -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let mouvementsChart = null;
+    
+    // Fonction pour initialiser le graphique
+    function initChart(data) {
+        const chartCanvas = document.getElementById('mouvementsChart');
+        const chartLoading = document.getElementById('chart-loading');
+        
+        // Afficher le canvas et masquer le loader
+        chartCanvas.classList.remove('hidden');
+        chartLoading.classList.add('hidden');
+        
+        const ctx = chartCanvas.getContext('2d');
+        
+        // Détruire le graphique existant s'il existe
+        if (mouvementsChart) {
+            mouvementsChart.destroy();
+        }
+        
+        // Créer le nouveau graphique
+        mouvementsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.dates,
+                datasets: [{
+                    label: 'Entrées',
+                    data: data.entrees,
+                    borderColor: 'rgb(16, 185, 129)',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }, {
+                    label: 'Sorties',
+                    data: data.sorties,
+                    borderColor: 'rgb(245, 158, 11)',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 14 },
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.raw.toLocaleString()}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 12 } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [4, 4] },
+                        ticks: { 
+                            precision: 0,
+                            font: { size: 12 }
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                },
+                animation: { duration: 1000 }
+            }
+        });
+    }
+    
+    // Fonction pour charger les données du graphique
+    function loadChartData(periode) {
+        const nbJours = periode === '7j' ? '7' : periode === '30j' ? '30' : '90';
+        const chartContainer = document.getElementById('mouvementsChart').parentNode;
+        const chartLoading = document.getElementById('chart-loading');
+        const chartTitle = document.getElementById('chart-title');
+        
+        // Afficher le loader et masquer le graphique
+        chartContainer.querySelector('canvas').classList.add('hidden');
+        chartLoading.classList.remove('hidden');
+        
+        // Mettre à jour le titre avec une animation de fondu
+        chartTitle.style.opacity = '0.5';
+        setTimeout(() => {
+            chartTitle.textContent = `Mouvements des ${nbJours} derniers jours`;
+            chartTitle.style.opacity = '1';
+        }, 200);
+        
+        // Désactiver tous les boutons
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.classList.remove('bg-blue-600', 'text-white');
+            btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300');
+        });
+        
+        // Activer le bouton sélectionné
+        const btn = document.getElementById(`btn-${periode}`);
+        if (btn) {
+            btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-300');
+            btn.classList.add('bg-blue-600', 'text-white');
+        }
+        
+        // Récupérer les données
+        fetch(`{% url 'stock:chart_data' %}?days=${nbJours}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur lors du chargement des données');
+                return response.json();
+            })
+            .then(data => {
+                initChart(data);
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                chartLoading.innerHTML = `
+                    <div class="text-center p-4 text-red-600">
+                        <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                        <p>Erreur lors du chargement des données du graphique.</p>
+                        <p class="text-sm text-gray-500">${error.message}</p>
+                    </div>`;
+            });
+    }
+    
+    // Gestion des clics sur les boutons de période
+    document.getElementById('btn-7j').addEventListener('click', () => loadChartData('7j'));
+    document.getElementById('btn-30j').addEventListener('click', () => loadChartData('30j'));
+    document.getElementById('btn-90j').addEventListener('click', () => loadChartData('90j'));
+    
+    // Charger les données initiales (7 jours par défaut)
+    loadChartData('7j');
+});
+</script>
+{% endblock %}

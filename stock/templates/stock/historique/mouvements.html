@@ -1,0 +1,428 @@
+{% extends 'stock/base.html' %}
+{% load static humanize math_filters %}
+
+{% block title %}Historique des mouvements - Gestion de Stock{% endblock %}
+
+{% block breadcrumb_items %}
+    <li class="inline-flex items-center">
+        <a href="{% url 'stock:accueil' %}" class="text-blue-600 hover:text-blue-800">Accueil</a>
+        <span class="mx-2">/</span>
+    </li>
+    <li class="inline-flex items-center">
+        <a href="{% url 'stock:rapports' %}" class="text-blue-600 hover:text-blue-800">Rapports</a>
+        <span class="mx-2">/</span>
+    </li>
+    <li class="inline-flex items-center text-gray-500">
+        Historique des mouvements
+    </li>
+{% endblock %}
+
+{% block page_title %}
+    Historique des mouvements
+    <p class="mt-1 text-sm font-normal text-gray-500">
+        Suivi complet des entrées et sorties de stock
+    </p>
+{% endblock %}
+
+{% block page_actions %}
+    <div class="flex space-x-2">
+        <button onclick="window.print()" class="btn btn-secondary">
+            <i class="fas fa-print mr-2"></i> Imprimer
+        </button>
+        <a href="?export=pdf" class="btn btn-secondary">
+            <i class="fas fa-file-pdf mr-2"></i> Exporter
+        </a>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <!-- Filtres -->
+    <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+        <div class="p-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Filtres</h3>
+        </div>
+        <div class="p-4">
+            <form method="get" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Période -->
+                    <div>
+                        <label for="periode" class="block text-sm font-medium text-gray-700 mb-1">Période</label>
+                        <select name="periode" id="periode" class="form-select w-full">
+                            <option value="7" {% if not request.GET.periode or request.GET.periode == '7' %}selected{% endif %}>7 derniers jours</option>
+                            <option value="30" {% if request.GET.periode == '30' %}selected{% endif %}>30 derniers jours</option>
+                            <option value="90" {% if request.GET.periode == '90' %}selected{% endif %}>3 derniers mois</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Produit -->
+                    <div>
+                        <label for="produit" class="block text-sm font-medium text-gray-700 mb-1">Produit</label>
+                        <select name="produit" id="produit" class="form-select w-full">
+                            <option value="">Tous les produits</option>
+                            {% for produit in produits %}
+                                <option value="{{ produit.id }}" {% if request.GET.produit == produit.id|stringformat:'s' %}selected{% endif %}>
+                                    {{ produit.designation }}
+                                    {% if produit.code %}({{ produit.code }}){% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Type de mouvement -->
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-gray-700 mb-1">Type de mouvement</label>
+                        <select name="type" id="type" class="form-select w-full">
+                            <option value="">Tous les types</option>
+                            <option value="entree" {% if request.GET.type == 'entree' %}selected{% endif %}>Entrées uniquement</option>
+                            <option value="sortie" {% if request.GET.type == 'sortie' %}selected{% endif %}>Sorties uniquement</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Boutons -->
+                    <div class="flex items-end space-x-2">
+                        <button type="submit" class="btn btn-primary w-full">
+                            <i class="fas fa-filter mr-2"></i>Filtrer
+                        </button>
+                        <a href="{% url 'stock:historique_mouvements' %}" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cartes de synthèse -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <!-- Carte Entrées -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Entrées totales</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ total_entrees|intcomma }}</p>
+                </div>
+                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+            </div>
+            <div class="mt-4">
+                <p class="text-xs text-gray-500">Période : {{ periode_libelle }}</p>
+            </div>
+        </div>
+        
+        <!-- Carte Sorties -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Sorties totales</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ total_sorties|intcomma }}</p>
+                </div>
+                <div class="p-3 rounded-full bg-red-100 text-red-600">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+            </div>
+            <div class="mt-4">
+                <p class="text-xs text-gray-500">Période : {{ periode_libelle }}</p>
+            </div>
+        </div>
+        
+        <!-- Carte Solde -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 {% if total_entrees >= total_sorties %}border-green-500{% else %}border-yellow-500{% endif %}">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Solde</p>
+                    <p class="text-2xl font-semibold text-gray-900">
+                        {{ total_entrees|sub:total_sorties|intcomma }}
+                    </p>
+                </div>
+                <div class="p-3 rounded-full {% if total_entrees >= total_sorties %}bg-green-100 text-green-600{% else %}bg-yellow-100 text-yellow-600{% endif %}">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+            </div>
+            <div class="mt-4">
+                {% if total_entrees > total_sorties %}
+                    <p class="text-xs text-green-600">
+                        <i class="fas fa-arrow-up"></i> Entrées supérieures aux sorties
+                    </p>
+                {% elif total_entrees < total_sorties %}
+                    <p class="text-xs text-yellow-600">
+                        <i class="fas fa-exclamation-triangle"></i> Sorties supérieures aux entrées
+                    </p>
+                {% else %}
+                    <p class="text-xs text-gray-500">
+                        <i class="fas fa-equals"></i> Équilibre parfait
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphique d'évolution -->
+    <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+        <div class="p-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Évolution des mouvements</h3>
+            <p class="text-sm text-gray-500">Répartition des entrées et sorties sur la période</p>
+        </div>
+        <div class="p-6">
+            <canvas id="evolutionChart" height="300"></canvas>
+        </div>
+    </div>
+
+    <!-- Tableau des mouvements récents -->
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-medium text-gray-900">Mouvements récents</h3>
+                <p class="text-sm text-gray-500">Les 50 derniers mouvements</p>
+            </div>
+            <div class="text-sm text-gray-500">
+                {{ mouvements_recents|length }} mouvement{{ mouvements_recents|pluralize }}
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Date
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Type
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Produit
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Quantité
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Prix unitaire
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Total
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Utilisateur
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for mouvement in mouvements_recents %}
+                    <tr class="{% cycle 'bg-white' 'bg-gray-50' %}">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ mouvement.date|date:"d/m/Y H:i" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if mouvement.type == 'entree' %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    Entrée
+                                </span>
+                            {% else %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                    Sortie
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">
+                                {{ mouvement.produit.designation }}
+                                {% if mouvement.produit.code %}
+                                    <span class="text-xs text-gray-500 ml-1">({{ mouvement.produit.code }})</span>
+                                {% endif %}
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                {{ mouvement.produit.categorie|default:"" }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                            {{ mouvement.quantite|intcomma }} {{ mouvement.produit.unite_mesure|default:"unité" }}{{ mouvement.quantite|pluralize }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                            {{ mouvement.prix_unitaire|floatformat:2|intcomma }} €
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <span class="{% if mouvement.type == 'entree' %}text-green-600{% else %}text-red-600{% endif %}">
+                                {{ mouvement.total|floatformat:2|intcomma }} €
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                            {{ mouvement.utilisateur.get_full_name|default:mouvement.utilisateur.username }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            <i class="fas fa-inbox text-4xl mb-2 opacity-50"></i>
+                            <p>Aucun mouvement trouvé pour cette période</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Styles pour l'impression */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #content, #content * {
+            visibility: visible;
+        }
+        #content {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+        .no-print {
+            display: none !important;
+        }
+        .table-responsive {
+            overflow: visible !important;
+        }
+        .btn, .form-select, .form-input {
+            border: 1px solid #e5e7eb !important;
+            box-shadow: none !important;
+        }
+        canvas {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+    }
+    
+    /* Styles pour les graphiques */
+    .chart-container {
+        position: relative;
+        margin: auto;
+        height: 300px;
+        width: 100%;
+    }
+    
+    /* Amélioration de la lisibilité des tableaux */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    th, td {
+        border: 1px solid #e5e7eb;
+        padding: 8px 12px;
+    }
+    
+    /* Styles pour les cartes de synthèse */
+    .stat-card {
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Inclure Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Inclure date-fns pour le formatage des dates -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/2.23.0/date_fns.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Données pour le graphique d'évolution
+    const evolutionCtx = document.getElementById('evolutionChart').getContext('2d');
+    
+    // Préparation des données pour le graphique
+    const dates = {{ mouvements_par_jour|safe|default:'[]' }}.map(item => {
+        return new Date(item.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+    });
+    
+    const entreesData = {{ mouvements_par_jour|safe|default:'[]' }}.map(item => item.entrees);
+    const sortiesData = {{ mouvements_par_jour|safe|default:'[]' }}.map(item => item.sorties);
+    
+    // Création du graphique d'évolution
+    const evolutionChart = new Chart(evolutionCtx, {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: [
+                {
+                    label: 'Entrées',
+                    data: entreesData,
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Sorties',
+                    data: sortiesData,
+                    borderColor: 'rgb(239, 68, 68)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: false
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            }
+        }
+    });
+    
+    // Gestion de la soumission du formulaire
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function() {
+            // Afficher un indicateur de chargement
+            const submitButton = this.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Chargement...';
+            }
+        });
+    }
+    
+    // Initialisation des sélecteurs avec select2 si disponible
+    if (typeof $ !== 'undefined' && $.fn.select2) {
+        $('#produit, #type, #periode').select2({
+            width: '100%',
+            placeholder: 'Sélectionnez...',
+            allowClear: true
+        });
+    }
+});
+</script>
+{% endblock %}
