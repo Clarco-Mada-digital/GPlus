@@ -1,4 +1,4 @@
-{% extends 'stock/base.html' %}
+{% extends 'layouts/stock_layout.html' %}
 {% load static %}
 
 {% block title %}Liste des catégories - Gestion de Stock{% endblock %}
@@ -107,14 +107,14 @@
 
 {% block content %}
 <div class="bg-white shadow rounded-lg overflow-hidden">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between p-4 space-y-4 md:space-y-0">
-        <form method="get" class="flex flex-col md:flex-row md:items-center md:space-x-4 w-full md:w-auto">
-            <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Rechercher une catégorie..." class="form-input block w-full md:w-64 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 py-2 px-3 text-sm text-gray-700" />
-            <button type="submit" class="mt-2 md:mt-0 inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+    <div class="flex flex-col dark:bg-slate-700 md:flex-row md:items-center md:justify-between p-4 space-y-4 md:space-y-0">
+        <form method="get" class="flex flex-col dark:bg-slate-700 md:flex-row md:items-center md:space-x-4 w-full md:w-auto">
+            <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Rechercher une catégorie..." class="form-input block w-full md:w-64 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 py-2 px-3 text-sm text-gray-700 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500 dark:ring-offset-slate-800" />
+            <button type="submit" class="mt-2 md:mt-0 inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:ring-offset-slate-800">
                 <i class="fas fa-search mr-2"></i> Rechercher
             </button>
             {% if request.GET.q %}
-            <a href="{% url 'stock:liste_categories' %}" class="mt-2 md:mt-0 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <a href="{% url 'stock:liste_categories' %}" class="mt-2 md:mt-0 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:ring-offset-slate-800">
                 Réinitialiser
             </a>
             {% endif %}
@@ -128,8 +128,8 @@
     </div>
 
     <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700 dark:bg-slate-700">
+            <thead class="bg-gray-50 dark:bg-slate-800">
                 <tr>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/4">Nom</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-1/4">Nombre de produits</th>
@@ -137,28 +137,28 @@
                     <th scope="col" class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white divide-y divide-gray-200 dark:bg-slate-700 dark:divide-slate-700">
                 {% for categorie in categories %}
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-gray-50 dark:hover:bg-slate-700">
                     <td class="px-6 py-4 whitespace-nowrap w-1/4">
-                        <div class="font-medium text-gray-900">{{ categorie.nom }}</div>
+                        <div class="font-medium text-gray-900 dark:text-white">{{ categorie.nom }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap w-1/4">
-                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-600 dark:text-white dark:ring-offset-slate-800 dark:ring-2 dark:ring-blue-500">
                             {{ categorie.nb_produits }} produit{{ categorie.nb_produits|pluralize }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-gray-500 text-sm truncate max-w-2xl w-1/2">
+                    <td class="px-6 py-4 text-gray-500 dark:text-white text-sm truncate max-w-2xl w-1/2">
                         {{ categorie.description|default:"Aucune description"|truncatechars:60 }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="{% url 'stock:modifier_categorie' categorie.pk %}" class="text-blue-600 hover:text-blue-900" title="Modifier">
+                        <a href="{% url 'stock:modifier_categorie' categorie.pk %}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300" title="Modifier">
                             <i class="fas fa-edit"></i>
                         </a>
                         {% if perms.stock.delete_categorie and categorie.nb_produits == 0 %}
                         <form method="post" action="{% url 'stock:supprimer_categorie' categorie.pk %}" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');">
                             {% csrf_token %}
-                            <button type="submit" class="text-red-600 hover:text-red-900" title="Supprimer">
+                            <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300" title="Supprimer">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </form>
@@ -167,7 +167,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">Aucune catégorie trouvée</td>
+                    <td colspan="4" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-white">Aucune catégorie trouvée</td>
                 </tr>
                 {% endfor %}
             </tbody>

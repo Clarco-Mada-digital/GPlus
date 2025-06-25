@@ -1,4 +1,4 @@
-{% extends 'stock/base.html' %}
+{% extends 'layouts/stock_layout.html' %}
 {% load widget_tweaks %}
 
 {% block title %}{% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} une entrée en stock - GPlus StockPilot{% endblock %}
@@ -8,16 +8,16 @@
     <ol class="inline-flex items-center space-x-1 md:space-x-2">        
         <li>
             <div class="flex items-center">
-                <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                <a href="{% url 'stock:liste_entrees' %}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">
+                <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 mx-2"></i>
+                <a href="{% url 'stock:liste_entrees' %}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 md:ml-2">
                     Entrées en stock
                 </a>
             </div>
         </li>
         <li aria-current="page">
             <div class="flex items-center">
-                <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">
+                <i class="fas fa-chevron-right text-gray-400 dark:text-gray-500 mx-2"></i>
+                <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">
                     {% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} une entrée
                 </span>
             </div>
@@ -28,14 +28,14 @@
 
 {% block page_title %}
 <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
         {% if form.instance.pk %}
-            <i class="fas fa-edit text-blue-600 mr-2"></i>Modifier l'entrée de stock
+            <i class="fas fa-edit text-blue-600 dark:text-blue-400 mr-2"></i>Modifier l'entrée de stock
         {% else %}
-            <i class="fas fa-plus-circle text-blue-600 mr-2"></i>Nouvelle entrée en stock
+            <i class="fas fa-plus-circle text-blue-600 dark:text-blue-400 mr-2"></i>Nouvelle entrée en stock
         {% endif %}
     </h1>
-    <p class="mt-2 text-sm text-gray-600">
+    <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
         {% if form.instance.pk %}
             Mettez à jour les détails de l'entrée en stock
         {% else %}
@@ -49,63 +49,51 @@
 <style>
     /* Style amélioré des champs et panneau résumé */
     input, select, textarea {
-        background-color: #f9fafb;
-        color: #1f2937;
-        border: 2px solid #6b7280;
-        border-radius: 0.375rem;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        @apply bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white border-2 border-gray-200 dark:border-gray-600 rounded-md transition-all duration-200;
     }
+    
     input:focus, select:focus, textarea:focus {
-        background-color: #ffffff;
-        border-color: #2563eb;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
-        outline: none;
-        color: #111827;
+        @apply bg-white dark:bg-gray-800 border-blue-500 dark:border-blue-400 ring-2 ring-blue-200 dark:ring-blue-900 outline-none;
     }
+    
     ::placeholder {
-        color: #6b7280;
-        opacity: 1;
+        @apply text-gray-500 dark:text-gray-400;
     }
-
+    
     .product-details {
-        background-color: #f3f4f6;
-        border: 2px solid #6b7280;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        margin-top: 1rem;
-        color: #374151;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        @apply bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg p-4 mt-4 text-gray-700 dark:text-gray-200 shadow-sm;
     }
+    
     .product-details h4 {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
+        @apply font-semibold text-gray-900 dark:text-white mb-2;
     }
+    
     .product-details p {
-        margin-bottom: 0.25rem;
+        @apply mb-1 text-sm;
     }
+    
     @media (min-width: 1024px) {
         .product-details {
-            margin-top: 0;
-            margin-left: 1rem;
+            @apply mt-0 ml-4;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div x-data="entreeForm" class="bg-white shadow-lg rounded-xl overflow-hidden mb-8 border border-gray-100">
+<div x-data="entreeForm" class="bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden mb-8 border border-gray-100 dark:border-gray-700">
     <form method="post" class="space-y-0" @submit.prevent="submitForm">
         {% csrf_token %}
         
         <!-- Messages d'erreur généraux -->
         {% if form.non_field_errors %}
-            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-lg shadow-sm">
+            <div class="bg-red-50 dark:bg-red-900 border-l-4 border-red-500 dark:border-red-700 p-4 mb-6 rounded-r-lg shadow-sm">
                 <div class="flex items-start">
                     <div class="flex-shrink-0 pt-0.5">
-                        <i class="fas fa-exclamation-circle text-red-500 text-lg"></i>
+                        <i class="fas fa-exclamation-circle text-red-500 dark:text-red-400 text-lg"></i>
                     </div>
                     <div class="ml-3">
-                        <div class="text-sm text-red-700">
+                        <div class="text-sm text-red-700 dark:text-red-300">
                             {% for error in form.non_field_errors %}
                                 <p>{{ error }}</p>
                             {% endfor %}
@@ -118,13 +106,13 @@
         <!-- Messages de succès -->
         {% if messages %}
             {% for message in messages %}
-                <div class="mb-6 rounded-lg border-l-4 p-4 {% if message.tags == 'error' %}bg-red-50 border-red-500{% else %}bg-green-50 border-green-500{% endif %}">
+                <div class="mb-6 rounded-lg border-l-4 p-4 {% if message.tags == 'error' %}bg-red-50 dark:bg-red-900 border-red-500 dark:border-red-700{% else %}bg-green-50 dark:bg-green-900 border-green-500 dark:border-green-700{% endif %}">
                     <div class="flex items-start">
                         <div class="flex-shrink-0 pt-0.5">
-                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle text-red-500{% else %}fa-check-circle text-green-500{% endif %} text-lg"></i>
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle text-red-500 dark:text-red-400{% else %}fa-check-circle text-green-500 dark:text-green-400{% endif %} text-lg"></i>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm {% if message.tags == 'error' %}text-red-700{% else %}text-green-700{% endif %}">
+                            <p class="text-sm {% if message.tags == 'error' %}text-red-700 dark:text-red-300{% else %}text-green-700 dark:text-green-300{% endif %}">
                                 {{ message }}
                             </p>
                         </div>
@@ -136,10 +124,10 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 px-4 sm:px-6 lg:px-8 py-6">
             <!-- Colonne de gauche - Formulaire principal -->
             <div class="lg:col-span-8">
-                <div class="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
-                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                            <i class="fas fa-clipboard-list text-blue-600 mr-3 text-xl"></i>
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                            <i class="fas fa-clipboard-list text-blue-600 dark:text-blue-400 mr-3 text-xl"></i>
                             <span>Détails de l'entrée</span>
                         </h3>
                     </div>
@@ -147,12 +135,12 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Produit -->
                         <div class="space-y-2 group" x-data="{ focused: false }">
-                            <label for="{{ form.produit.id_for_label }}" class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                            <label for="{{ form.produit.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 transition-colors">
                                 {{ form.produit.label }}
                                 <span class="text-red-500">*</span>
                             </label>
                             <div class="mt-1 relative" :class="{ 'ring-2 ring-blue-500 rounded-lg': focused }">
-                                {% render_field form.produit class="block w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" x-on:change="updateProduitInfo($event.target.value)" %}
+                                {% render_field form.produit class="block dark:bg-gray-700 dark:text-white w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" x-on:change="updateProduitInfo($event.target.value)" %}
                             </div>
                             {% if form.produit.errors %}
                                 <p class="mt-1.5 text-sm text-red-600 flex items-center">
@@ -164,11 +152,11 @@
 
                         <!-- Fournisseur -->
                         <div class="space-y-2 group" x-data="{ focused: false }">
-                            <label for="{{ form.fournisseur.id_for_label }}" class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                            <label for="{{ form.fournisseur.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 transition-colors">
                                 {{ form.fournisseur.label }}
                             </label>
                             <div class="mt-1 relative" :class="{ 'ring-2 ring-blue-500 rounded-lg': focused }">
-                                {% render_field form.fournisseur class="block w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" %}
+                                {% render_field form.fournisseur class="block dark:bg-gray-700 dark:text-white w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" %}
                             </div>
                             {% if form.fournisseur.errors %}
                                 <p class="mt-1.5 text-sm text-red-600 flex items-center">
@@ -180,11 +168,11 @@
 
                         <!-- Reference -->
                         <div class="space-y-2 group" x-data="{ focused: false }">
-                            <label for="{{ form.reference.id_for_label }}" class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                            <label for="{{ form.reference.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 transition-colors">
                                 {{ form.reference.label }}
                             </label>
                             <div class="mt-1 relative" :class="{ 'ring-2 ring-blue-500 rounded-lg': focused }">
-                                {% render_field form.reference class="block w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" %}
+                                {% render_field form.reference class="block dark:bg-gray-700 dark:text-white w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" %}
                             </div>
                             {% if form.reference.errors %}
                                 <p class="mt-1.5 text-sm text-red-600 flex items-center">
@@ -196,17 +184,17 @@
 
                         <!-- Quantité -->
                         <div class="space-y-2 group" x-data="{ focused: false }">
-                            <label for="{{ form.quantite.id_for_label }}" class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                            <label for="{{ form.quantite.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 transition-colors">
                                 {{ form.quantite.label }}
                                 <span class="text-red-500">*</span>
                             </label>
                             <div class="mt-1 relative" :class="{ 'ring-2 ring-blue-500 rounded-lg': focused }">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-sm">
+                                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm">
                                         <i class="fas fa-boxes"></i>
                                     </span>
                                 </div>
-                                {% render_field form.quantite class="block w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 pl-10 pr-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" @input="updateQuantite($event)" %}
+                                {% render_field form.quantite class="block dark:bg-gray-700 dark:text-white w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 pl-10 pr-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" @input="updateQuantite($event)" %}
                             </div>
                             {% if form.quantite.errors %}
                                 <p class="mt-1.5 text-sm text-red-600 flex items-center">
@@ -218,17 +206,17 @@
 
                         <!-- Prix unitaire -->
                         <div class="space-y-2 group" x-data="{ focused: false }">
-                            <label for="{{ form.prix_unitaire.id_for_label }}" class="block text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                            <label for="{{ form.prix_unitaire.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 transition-colors">
                                 {{ form.prix_unitaire.label }}
                                 <span class="text-red-500">*</span>
                             </label>
                             <div class="mt-1 relative" :class="{ 'ring-2 ring-blue-500 rounded-lg': focused }">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-sm">
+                                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm">
                                         <i class="fas fa-tag"></i>
                                     </span>
                                 </div>
-                                {% render_field form.prix_unitaire class="block w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 pl-10 pr-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" @input="updatePrixUnitaire($event)" %}
+                                {% render_field form.prix_unitaire class="block w-full dark:bg-gray-700 dark:text-white p-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 pl-10 pr-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" @input="updatePrixUnitaire($event)" %}
                             </div>
                             {% if form.prix_unitaire.errors %}
                                 <p class="mt-1.5 text-sm text-red-600 flex items-center">
@@ -240,15 +228,15 @@
 
                         <!-- Date d'entrée -->
                         <div class="space-y-2 group" x-data="{ focused: false }">
-                            <label for="{{ form.date_entree.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            <label for="{{ form.date_entree.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Date d'entrée
                                 <span class="text-red-500">*</span>
                             </label>
                             <div class="relative" :class="{ 'ring-2 ring-blue-500 rounded-lg': focused }">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="far fa-calendar text-gray-400"></i>
+                                    <i class="far fa-calendar text-gray-400 dark:text-gray-500"></i>
                                 </div>
-                                <input type="date" id="{{ form.date_entree.id_for_label }}" name="{{ form.date_entree.html_name }}" value="{{ form.date_entree.value|default_if_none:'' }}" class="block w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 pl-10 pr-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" :class="{ 'ring-2 ring-blue-500': focused }">
+                                <input type="date" id="{{ form.date_entree.id_for_label }}" name="{{ form.date_entree.html_name }}" value="{{ form.date_entree.value|default_if_none:'' }}" class="block w-full p-3 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 pl-10 pr-3 transition-colors hover:border-gray-400" x-on:focus="focused = true" x-on:blur="focused = false" :class="{ 'ring-2 ring-blue-500': focused }">
                             </div>
                             {% if form.date_entree.errors %}
                                 <p class="mt-1.5 text-sm text-red-600 flex items-center">
@@ -260,11 +248,11 @@
 
                         <!-- Notes -->
                         <div class="col-span-2 border-gray-100 flex flex-col h-full">
-                            <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="far fa-sticky-note text-blue-600 mr-1"></i>
+                            <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <i class="far fa-sticky-note text-blue-600 dark:text-blue-400 mr-1"></i>
                                 {{ form.notes.label }}
                             </label>
-                            {% render_field form.notes class="block w-full h-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3 flex flex-col" rows="3" %}
+                            {% render_field form.notes class="dark:bg-gray-700 dark:text-white w-full h-full p-3 rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3 flex flex-col" rows="3" %}
                             {% if form.notes.errors %}
                                 <p class="mt-1 text-sm text-red-600">{{ form.notes.errors|join:", " }}</p>
                             {% endif %}
@@ -275,11 +263,11 @@
 
             <!-- Colonne de droite - Panneau d'information -->
             <div class="lg:col-span-4">
-                <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden sticky top-6">
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden sticky top-6">
                     <!-- En-tête du panneau -->
-                    <div class="px-4 py-5 sm:px-6 bg-gradient-to-r from-blue-50 to-blue-100">
-                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                            <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                    <div class="px-4 py-5 sm:px-6 bg-gradient-to-r from-blue-50 dark:from-blue-900/30 to-blue-100 dark:to-blue-800/30">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                            <i class="fas fa-info-circle text-blue-600 dark:text-blue-400 mr-2"></i>
                             <span>Résumé de l'entrée</span>
                         </h3>
                     </div>
@@ -288,33 +276,33 @@
                     <div class="p-6">
                         <!-- Section d'information sur le produit -->
                         <div id="produit-info" class="space-y-4">
-                            <div class="text-center py-6 px-4 bg-gray-50 rounded-lg border border-dashed border-gray-300" x-show="!produitDetails">
+                            <div class="text-center py-6 px-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-dashed border-gray-300 dark:border-gray-600" x-show="!produitDetails">
                                 <i class="fas fa-cube text-4xl text-gray-300 mb-3"></i>
-                                <p class="text-sm text-gray-500">Sélectionnez un produit pour voir les détails</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Sélectionnez un produit pour voir les détails</p>
                             </div>
                             
                             <!-- Template pour afficher les détails du produit -->
                             <div id="produit-details" class="space-y-4" x-show="produitDetails">
                                 <!-- Image et nom du produit -->
                                 <div class="flex items-start space-x-3">
-                                    <div id="produit-image" class="flex-shrink-0 h-16 w-16 rounded-md bg-gray-100 flex items-center justify-center overflow-hidden">
-                                        <i class="fas fa-box text-gray-400 text-xl"></i>
+                                    <div id="produit-image" class="flex-shrink-0 h-16 w-16 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+                                        <i class="fas fa-box text-gray-400 dark:text-gray-500 text-xl"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <h4 id="produit-nom" class="text-sm font-medium text-gray-900 truncate" x-text="produitDetails.designation"></h4>
-                                        <p id="produit-reference" class="text-xs text-gray-500 mt-1" x-text="produitDetails.code"></p>
-                                        <p id="produit-categorie" class="text-xs text-gray-500" x-text="produitDetails.categorie"></p>
+                                        <h4 id="produit-nom" class="text-sm font-medium text-gray-900 dark:text-white truncate" x-text="produitDetails.designation"></h4>
+                                        <p id="produit-reference" class="text-xs text-gray-500 dark:text-gray-400 mt-1" x-text="produitDetails.code"></p>
+                                        <p id="produit-categorie" class="text-xs text-gray-500 dark:text-gray-400" x-text="produitDetails.categorie"></p>
                                     </div>
                                 </div>
                                 
                                 <!-- Stock actuel -->
-                                <div class="space-y-2">
+                                <div class="space-y-4 text-gray-700 dark:text-gray-300">
                                     <div class="flex justify-between text-sm">
-                                        <span class="font-medium text-gray-700">Stock actuel :</span>
+                                        <span class="font-medium text-gray-700 dark:text-gray-300">Stock actuel :</span>
                                         <span id="stock-actuel" class="font-semibold" x-text="stockActuel"></span>
                                     </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div id="stock-progress" class="bg-blue-600 h-2 rounded-full" :style="`width: ${(stockActuel / (stockActuel + quantite)) * 100}%`"></div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                        <div id="stock-progress" class="bg-blue-600 dark:bg-blue-400 h-2 rounded-full" :style="`width: ${(stockActuel / (stockActuel + quantite)) * 100}%`"></div>
                                     </div>
                                     <div class="flex justify-between text-xs text-gray-500">
                                         <span>0</span>
@@ -340,16 +328,16 @@
                             </div>
                             
                             <!-- Ligne de séparation -->
-                            <div class="mt-6 pt-6 border-t border-gray-200">
+                            <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-base font-semibold text-gray-900">Total</span>
-                                    <span id="total-entree" class="text-2xl font-bold text-blue-600" x-text="montantTotal.toFixed(2) + ' Ar'"></span>
+                                    <span class="text-base font-semibold text-gray-900 dark:text-white">Total</span>
+                                    <span id="total-entree" class="text-2xl font-bold text-blue-600 dark:text-blue-400" x-text="montantTotal.toFixed(2) + ' Ar'"></span>
                                 </div>
                                 <p class="mt-1 text-xs text-gray-500">HT, avant taxes et remises</p>
                             </div>
                             
                             <!-- Boutons d'action -->
-                            <div class="mt-6 space-y-3">
+                            <div class="mt-6 space-y-3 text-gray-900 dark:text-white">
                                 <button type="submit" 
                                         @click="submitForm()"
                                         class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 disabled:opacity-50"
@@ -362,7 +350,7 @@
                                 </button>
                                 
                                 <a href="{% url 'stock:liste_entrees' %}" 
-                                   class="w-full flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150">
+                                   class="w-full flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-white bg-red/60 hover:bg-red/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150">
                                     <i class="fas fa-times-circle mr-2"></i>
                                     Annuler
                                 </a>

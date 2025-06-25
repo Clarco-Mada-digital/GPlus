@@ -345,47 +345,47 @@
             </div>
             <div class="p-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <a href="{% url 'stock:ajouter_produit' %}" class="p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors">
+                    <a href="{% url 'stock:ajouter_produit' %}" class="p-4 border border-gray-200 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
                         <div class="flex items-center">
                             <div class="p-2 bg-blue-100 rounded-lg text-blue-600 mr-3">
                                 <i class="fas fa-plus"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">Nouveau produit</h4>
-                                <p class="text-xs text-gray-500">Ajouter un produit au catalogue</p>
+                                <h4 class="font-medium text-gray-900 dark:text-white">Nouveau produit</h4>
+                                <p class="text-xs text-gray-500 dark:text-slate-400">Ajouter un produit au catalogue</p>
                             </div>
                         </div>
                     </a>
-                    <a href="{% url 'stock:ajouter_entree' %}" class="p-4 border border-gray-200 rounded-lg hover:bg-green-50 transition-colors">
+                    <a href="{% url 'stock:ajouter_entree' %}" class="p-4 border border-gray-200 rounded-lg hover:bg-green-50 dark:hover:bg-gray-700 transition-colors">
                         <div class="flex items-center">
                             <div class="p-2 bg-green-100 rounded-lg text-green-600 mr-3">
                                 <i class="fas fa-arrow-down"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">Nouvelle entrée</h4>
-                                <p class="text-xs text-gray-500">Enregistrer une entrée de stock</p>
+                                <h4 class="font-medium text-gray-900 dark:text-white">Nouvelle entrée</h4>
+                                <p class="text-xs text-gray-500 dark:text-slate-400">Enregistrer une entrée de stock</p>
                             </div>
                         </div>
                     </a>
-                    <a href="{% url 'stock:ajouter_sortie' %}" class="p-4 border border-gray-200 rounded-lg hover:bg-yellow-50 transition-colors">
+                    <a href="{% url 'stock:ajouter_sortie' %}" class="p-4 border border-gray-200 rounded-lg hover:bg-yellow-50 dark:hover:bg-gray-700 transition-colors">
                         <div class="flex items-center">
                             <div class="p-2 bg-yellow-100 rounded-lg text-yellow-600 mr-3">
                                 <i class="fas fa-arrow-up"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">Nouvelle sortie</h4>
-                                <p class="text-xs text-gray-500">Enregistrer une sortie de stock</p>
+                                <h4 class="font-medium text-gray-900 dark:text-white">Nouvelle sortie</h4>
+                                <p class="text-xs text-gray-500 dark:text-slate-400">Enregistrer une sortie de stock</p>
                             </div>
                         </div>
                     </a>
-                    <a href="{% url 'stock:rapports' %}" class="p-4 border border-gray-200 rounded-lg hover:bg-purple-50 transition-colors">
+                    <a href="{% url 'stock:rapports' %}" class="p-4 border border-gray-200 rounded-lg hover:bg-purple-50 dark:hover:bg-gray-700 transition-colors">
                         <div class="flex items-center">
                             <div class="p-2 bg-purple-100 rounded-lg text-purple-600 mr-3">
                                 <i class="fas fa-chart-bar"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">Rapports</h4>
-                                <p class="text-xs text-gray-500">Générer des rapports détaillés</p>
+                                <h4 class="font-medium text-gray-900 dark:text-white">Rapports</h4>
+                                <p class="text-xs text-gray-500 dark:text-slate-400">Générer des rapports détaillés</p>
                             </div>
                         </div>
                     </a>
@@ -413,7 +413,7 @@
             </div>
         </div>
         <div class="p-4 pt-0">
-            <div class="chart-container">
+            <div class="chart-container bg-white dark:bg-slate-800">
                 <div id="chart-loading" class="flex items-center justify-center h-64">
                     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
@@ -620,15 +620,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Désactiver tous les boutons
         document.querySelectorAll('.period-btn').forEach(btn => {
-            btn.classList.remove('bg-blue-600', 'text-white');
-            btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300');
+            btn.classList.remove('bg-blue-600', 'text-white', 'dark:bg-blue-600', 'dark:text-white');
+            btn.classList.add('bg-white', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-white', 'border-gray-300');
         });
         
         // Activer le bouton sélectionné
         const btn = document.getElementById(`btn-${periode}`);
         if (btn) {
-            btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-300');
-            btn.classList.add('bg-blue-600', 'text-white');
+            btn.classList.remove('bg-white', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-white', 'border-gray-300');
+            btn.classList.add('bg-blue-600', 'text-white', 'dark:bg-blue-600', 'dark:text-white');
         }
         
         // Récupérer les données

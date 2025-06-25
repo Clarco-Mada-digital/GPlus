@@ -2,8 +2,11 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.utils import timezone
+from datetime import timedelta
 from django.utils.translation import gettext_lazy as _
-from django.db.models import Count, Sum, F
+from django.db.models import Count, Sum, F, DecimalField, ExpressionWrapper
+from django.db.models.functions import TruncMonth
 from django.shortcuts import get_object_or_404
 
 from ..models import Fournisseur, EntreeStock, Produit
@@ -19,8 +22,13 @@ class ListeFournisseursView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = Fournisseur.objects.annotate(
             nombre_produits=Count('produit', distinct=True),
-            nombre_entrees=Count('entrees', distinct=True),
-            total_achats=Sum('entrees__quantite' * F('entrees__prix_unitaire'))
+            nombre_entrees=Count('entreestock', distinct=True),
+            total_achats=Sum(
+                ExpressionWrapper(
+                    F('entreestock__quantite') * F('entreestock__prix_unitaire'),
+                    output_field=DecimalField()
+                )
+            )
         ).order_by('nom')
         
         # Filtre par recherche
@@ -87,30 +95,33 @@ class SupprimerFournisseurView(LoginRequiredMixin, PermissionRequiredMixin, Dele
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        fournisseur = self.get_object()
-        
-        # Compter les produits associés
-        context['produits_associes'] = fournisseur.produit_set.count()
-        
-        # Compter les entrées de stock associées
-        context['entrees_associees'] = fournisseur.entrees.count()
-        
+        context['title'] = _("Supprimer le fournisseur")
+        context['message'] = _("Êtes-vous sûr de vouloir supprimer ce fournisseur ?")
+        context['cancel_url'] = reverse_lazy('stock:liste_fournisseurs')
         return context
     
     def delete(self, request, *args, **kwargs):
-        fournisseur = self.get_object()
+        self.object = self.get_object()
+        success_url = self.get_success_url()
         
-        # Vérifier s'il y a des produits ou des entrées associés
-        if fournisseur.produit_set.exists() or fournisseur.entrees.exists():
+        # Vérifier si le fournisseur a des produits associés
+        if self.object.produit_set.exists():
             messages.error(
-                request,
-                _("Impossible de supprimer ce fournisseur car il est utilisé par des produits ou des entrées de stock.")
+                self.request,
+                _("Impossible de supprimer ce fournisseur car il est associé à des produits.")
             )
-            return self.get(request, *args, **kwargs)
-        
-        response = super().delete(request, *args, **kwargs)
-        messages.success(request, _("Le fournisseur a été supprimé avec succès."))
-        return response
+            return self.render_to_response(self.get_context_data())
+            
+        # Vérifier si le fournisseur a des entrées en stock
+        if self.object.entree_stock.exists():
+            messages.error(
+                self.request,
+                _("Impossible de supprimer ce fournisseur car il a des entrées en stock associées.")
+            )
+            return self.render_to_response(self.get_context_data())
+            
+        messages.success(self.request, _("Le fournisseur a été supprimé avec succès."))
+        return super().delete(request, *args, **kwargs)
 
 
 class DetailFournisseurView(LoginRequiredMixin, DetailView):
@@ -122,21 +133,25 @@ class DetailFournisseurView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         fournisseur = self.get_object()
         
-        # Dernières entrées de stock
-        context['dernieres_entrees'] = fournisseur.entrees.select_related('produit', 'utilisateur') \
-            .order_by('-date')[:5]
+        # Récupérer les produits du fournisseur avec les informations nécessaires
+        produits = fournisseur.produit_set.all().select_related('categorie').annotate(
+            quantite=Sum('entreestock__quantite', distinct=True)
+        )
         
-        # Produits fournis
-        context['produits'] = fournisseur.produit_set.all()
+        # Récupérer les entrées de stock récentes
+        entrees = fournisseur.entreestock_set.select_related('produit').order_by('-date')[:10]
         
         # Statistiques des achats (30 derniers jours)
         date_limite = timezone.now() - timedelta(days=30)
         
-        total_achats = fournisseur.entrees.filter(date__gte=date_limite) \
+        total_achats = fournisseur.entreestock_set.filter(date__gte=date_limite) \
             .aggregate(total=Sum(F('quantite') * F('prix_unitaire')))['total'] or 0
         
-        nombre_entrees = fournisseur.entrees.filter(date__gte=date_limite).count()
+        nombre_entrees = fournisseur.entreestock_set.filter(date__gte=date_limite).count()
         
+        # Ajouter les données au contexte
+        context['produits'] = produits
+        context['entrees_recentes'] = entrees
         context['total_achats'] = total_achats
         context['nombre_entrees'] = nombre_entrees
         
@@ -144,7 +159,7 @@ class DetailFournisseurView(LoginRequiredMixin, DetailView):
         maintenant = timezone.now()
         six_mois = maintenant - timedelta(days=180)
         
-        achats_par_mois = fournisseur.entrees.filter(date__gte=six_mois) \
+        achats_par_mois = fournisseur.entreestock_set.filter(date__gte=six_mois) \
             .annotate(mois=TruncMonth('date')) \
             .values('mois') \
             .annotate(total=Sum(F('quantite') * F('prix_unitaire'))) \

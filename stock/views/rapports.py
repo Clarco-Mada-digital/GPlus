@@ -153,7 +153,7 @@ class RapportMouvementsView(LoginRequiredMixin, TemplateView):
         
         if date_debut and date_fin:
             # Générer une plage de dates
-            from datetime import datetime, timedelta
+            from datetime import datetime
             
             start_date = datetime.strptime(date_debut, '%Y-%m-%d').date()
             end_date = datetime.strptime(date_fin, '%Y-%m-%d').date()

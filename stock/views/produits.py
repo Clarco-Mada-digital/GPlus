@@ -1,8 +1,10 @@
+from datetime import timedelta
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db.models import Q, F, Sum
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.detail import DetailView
@@ -155,7 +157,7 @@ class DetailProduitView(LoginRequiredMixin, DetailView):
 
 class StockFaibleView(LoginRequiredMixin, ListView):
     model = Produit
-    template_name = 'stock/produits/stock_faible.html'
+    template_name = 'stock/rapports/stock_faible.html'
     context_object_name = 'produits'
     
     def get_queryset(self):

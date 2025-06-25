@@ -130,12 +130,12 @@
                 <div class="space-y-6">
                     <!-- Code du produit -->
                     <div class="form-group">
-                        <label for="{{ form.code.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        <label for="{{ form.code.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             {{ form.code.label }}
                             {% if form.code.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
                         <div class="mt-1">
-                            {{ form.code|add_class:"form-input block p-3 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500"|attr:"placeholder:dark:text-gray-400" }}
+                            {{ form.code|add_class:"form-input block p-3 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500"|attr:"placeholder:PR-001" }}
                             {% if form.code.help_text %}
                                 <p class="mt-1 text-sm text-gray-500">{{ form.code.help_text }}</p>
                             {% endif %}
@@ -147,12 +147,12 @@
                     
                     <!-- Désignation -->
                     <div class="form-group">
-                        <label for="{{ form.designation.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        <label for="{{ form.designation.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             {{ form.designation.label }}
                             {% if form.designation.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
                         <div class="mt-1">
-                            {{ form.designation|add_class:"form-input block p-3 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500"|attr:"placeholder:dark:text-gray-400" }}
+                            {{ form.designation|add_class:"form-input block p-3 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500"|attr:"placeholder:Produit 1" }}
                             {% if form.designation.help_text %}
                                 <p class="mt-1 text-sm text-gray-500">{{ form.designation.help_text }}</p>
                             {% endif %}
@@ -164,7 +164,7 @@
                     
                     <!-- Catégorie -->
                     <div class="form-group">
-                        <label for="{{ form.categorie.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        <label for="{{ form.categorie.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             {{ form.categorie.label }}
                             {% if form.categorie.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
@@ -181,7 +181,7 @@
                     
                     <!-- Fournisseur -->
                     <div class="form-group">
-                        <label for="{{ form.fournisseur.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        <label for="{{ form.fournisseur.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             {{ form.fournisseur.label }}
                             {% if form.fournisseur.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
@@ -197,7 +197,7 @@
                     </div>
                                         <!-- Photo du produit -->
                         <div class="form-group">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                                 {{ form.photo.label }}
                                 {% if form.photo.field.required %}<span class="text-red-500">*</span>{% endif %}
                             </label>
@@ -218,7 +218,7 @@
                                 <!-- Zone de dépôt et bouton de téléchargement -->
                                 <div class="flex-1">
                                     <div class="flex items-center">
-                                        <label for="{{ form.photo.id_for_label }}" class="relative cursor-pointer">
+                                        <label for="{{ form.photo.id_for_label }}" class="relative cursor-pointer dark:text-gray-300">
                                             <span class="px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:hover:bg-slate-600">
                                                 Choisir une photo
                                             </span>
@@ -234,7 +234,7 @@
                                     </div>
                                     
                                     <!-- Nom du fichier sélectionné -->
-                                    <p id="file-name" class="mt-2 text-xs text-gray-500">
+                                    <p id="file-name" class="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                         {% if form.instance.photo %}
                                             {{ form.instance.photo.name|slice:"7:" }}
                                         {% else %}
@@ -243,7 +243,7 @@
                                     </p>
                                     
                                     <!-- Aide et formats acceptés -->
-                                    <p class="mt-1 text-xs text-gray-500">
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                         Formats acceptés : JPG, JPEG, PNG, GIF (max. 5 Mo)
                                     </p>
                                     
@@ -255,7 +255,7 @@
                                                name="{{ form.supprimer_photo.name }}" 
                                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                                                onchange="togglePhotoDeletion(this)">
-                                        <label for="{{ form.supprimer_photo.id_for_label }}" class="ml-2 text-sm text-gray-600">
+                                        <label for="{{ form.supprimer_photo.id_for_label }}" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
                                             Supprimer la photo actuelle
                                         </label>
                                     </div>
@@ -274,7 +274,7 @@
                 <div class="space-y-6">
                     <!-- Prix d'achat -->
                     <div class="form-group">
-                        <label for="{{ form.prix_achat.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        <label for="{{ form.prix_achat.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             {{ form.prix_achat.label }}
                             {% if form.prix_achat.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
@@ -282,7 +282,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 sm:text-sm">€</span>
                             </div>
-                            {{ form.prix_achat|add_class:"pl-7 p-3 form-input block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" }}
+                            {{ form.prix_achat|add_class:"pl-7 p-3 form-input block w-full rounded-md border border-gray-300 shadow-sm dark:bg-slate-700 dark:border-slate-600 dark:text-white focus:border-blue-500 focus:ring-blue-500" }}
                         </div>
                         {% if form.prix_achat.help_text %}
                             <p class="mt-1 text-sm text-gray-500">{{ form.prix_achat.help_text }}</p>
@@ -294,7 +294,7 @@
                     
                     <!-- Prix de vente -->
                     <div class="form-group">
-                        <label for="{{ form.prix_vente.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        <label for="{{ form.prix_vente.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             {{ form.prix_vente.label }}
                             {% if form.prix_vente.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
@@ -302,7 +302,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 dark:text-gray-400 sm:text-sm">€</span>
                             </div>
-                            {{ form.prix_vente|add_class:"pl-7 p-3 form-input block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500"|attr:"placeholder:dark:text-gray-400" }}
+                            {{ form.prix_vente|add_class:"pl-7 p-3 form-input block w-full rounded-md border border-gray-300 shadow-sm dark:bg-slate-700 dark:border-slate-600 dark:text-white focus:border-blue-500 focus:ring-blue-500"|attr:"placeholder:dark:text-gray-400" }}
                         </div>
                         {% if form.prix_vente.help_text %}
                             <p class="mt-1 text-sm text-gray-500">{{ form.prix_vente.help_text }}</p>
@@ -314,7 +314,7 @@
                     
                     <!-- Quantité en stock -->
                     <div class="form-group">
-                        <label for="{{ form.quantite_stock.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        <label for="{{ form.quantite_stock.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             {{ form.quantite_stock.label }}
                             {% if form.quantite_stock.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
@@ -331,7 +331,7 @@
                     
                     <!-- Seuil d'alerte -->
                     <div class="form-group">
-                        <label for="{{ form.seuil_alerte.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        <label for="{{ form.seuil_alerte.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             {{ form.seuil_alerte.label }}
                             {% if form.seuil_alerte.field.required %}<span class="text-red-500">*</span>{% endif %}
                         </label>
@@ -350,7 +350,7 @@
             
             <!-- Description -->
             <div class="form-group">
-                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ form.description.label }}
                     {% if form.description.field.required %}<span class="text-red-500">*</span>{% endif %}
                 </label>

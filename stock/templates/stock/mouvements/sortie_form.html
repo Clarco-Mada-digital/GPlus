@@ -1,4 +1,4 @@
-{% extends 'stock/base.html' %}
+{% extends 'layouts/stock_layout.html' %}
 {% load widget_tweaks %}
 
 {% block title %}{% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} une sortie de stock - GPlus StockPilot{% endblock %}
@@ -9,7 +9,7 @@
         <li>
             <div class="flex items-center">
                 <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                <a href="{% url 'stock:liste_sorties' %}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">
+                <a href="{% url 'stock:liste_sorties' %}" class="ml-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 md:ml-2">
                     Sorties de stock
                 </a>
             </div>
@@ -17,7 +17,7 @@
         <li aria-current="page">
             <div class="flex items-center">
                 <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">
+                <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">
                     {% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} une sortie
                 </span>
             </div>
@@ -46,13 +46,13 @@
 {% endblock %}
 
 {% block content %}
-<div x-data="sortieForm" class="bg-white shadow-lg rounded-xl overflow-hidden mb-8 border border-gray-100">
+<div x-data="sortieForm" class="bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden mb-8 border border-gray-100 dark:border-gray-700">
     <form method="post" class="space-y-0" @submit.prevent="submitForm">
         {% csrf_token %}
         
         <!-- Messages d'erreur généraux -->
         {% if form.non_field_errors %}
-            <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
+            <div class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-600 p-4 mb-4">
                 <div class="flex">
                     <div class="flex-shrink-0">
                         <i class="fas fa-exclamation-circle text-red-400"></i>
@@ -71,84 +71,84 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 p-6">
             <!-- Colonne de gauche - Formulaire principal -->
             <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-6 pb-2 border-b border-gray-100">
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6 pb-2 border-b border-gray-100 dark:border-gray-700">
                         <i class="fas fa-clipboard-list text-red-600 mr-2"></i>Détails de la sortie
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Produit -->
                         <div class="space-y-2">
-                            <label for="{{ form.produit.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            <label for="{{ form.produit.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 {{ form.produit.label }}
                                 <span class="text-red-500">*</span>
                             </label>
                             <div class="relative mt-1">
-                                {% render_field form.produit class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pl-3 pr-10" x-on:change="updateProduitInfo($event.target.value)" %}                              
+                                {% render_field form.produit class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pl-3 pr-10" x-on:change="updateProduitInfo($event.target.value)" %}                              
                             </div>
                             {% if form.produit.errors %}
-                                <p class="mt-1 text-sm text-red-600">{{ form.produit.errors|join:", " }}</p>
+                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.produit.errors|join:", " }}</p>
                             {% endif %}
                         </div>
                         
                         <!-- Client -->
                         <div class="space-y-2">
-                            <label for="{{ form.client.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            <label for="{{ form.client.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 {{ form.client.label }}
                             </label>
                             <div class="relative mt-1">
-                                {% render_field form.client class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pl-3 pr-10" %}
+                                {% render_field form.client class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pl-3 pr-10" %}
                             </div>
                             {% if form.client.errors %}
-                                <p class="mt-1 text-sm text-red-600">{{ form.client.errors|join:", " }}</p>
+                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.client.errors|join:", " }}</p>
                             {% endif %}
                         </div>
                         
                         <!-- Quantité -->
                         <div class="space-y-2">
-                            <label for="{{ form.quantite.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            <label for="{{ form.quantite.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 {{ form.quantite.label }}
                                 <span class="text-red-500">*</span>
                             </label>
                             <div class="mt-1">
-                                {% render_field form.quantite class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3" %}
+                                {% render_field form.quantite class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3" %}
                             </div>
                             {% if form.quantite.errors %}
-                                <p class="mt-1 text-sm text-red-600">{{ form.quantite.errors|join:", " }}</p>
+                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.quantite.errors|join:", " }}</p>
                             {% endif %}
                         </div>
                         
                         <!-- Prix unitaire -->
                         <div class="space-y-2">
-                            <label for="{{ form.prix_unitaire.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            <label for="{{ form.prix_unitaire.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 {{ form.prix_unitaire.label }}
                                 <span class="text-red-500">*</span>
                             </label>
                             <div class="mt-1 relative rounded-md shadow-sm">
-                                {% render_field form.prix_unitaire class="block w-full rounded-md border border-gray-300 pl-7 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pr-3" %}
+                                {% render_field form.prix_unitaire class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white pl-7 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pr-3" %}
                             </div>
                             {% if form.prix_unitaire.errors %}
-                                <p class="mt-1 text-sm text-red-600">{{ form.prix_unitaire.errors|join:", " }}</p>
+                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.prix_unitaire.errors|join:", " }}</p>
                             {% endif %}
                         </div>
                         
                         <!-- Référence -->
                         <div class="space-y-2">
-                            <label for="{{ form.reference.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            <label for="{{ form.reference.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 {{ form.reference.label }}
                             </label>
                             <div class="mt-1">
-                                {% render_field form.reference class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3" %}
+                                {% render_field form.reference class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3" %}
                             </div>
                             {% if form.reference.errors %}
-                                <p class="mt-1 text-sm text-red-600">{{ form.reference.errors|join:", " }}</p>
+                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.reference.errors|join:", " }}</p>
                             {% endif %}
                         </div>
                         
                         <!-- Date (si édition) -->
                         {% if form.instance.pk %}
                             <div class="space-y-2">
-                                <label class="block text-sm font-medium text-gray-700">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Date de sortie
                                 </label>
                                 <div class="mt-1">
@@ -157,7 +157,7 @@
                                             <i class="far fa-calendar text-gray-400"></i>
                                         </div>
                                         <input type="text" readonly 
-                                               class="block w-full rounded-md border border-gray-300 bg-gray-50 pl-10 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pr-3" 
+                                               class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 pl-10 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pr-3 text-gray-900 dark:text-white" 
                                                value="{{ form.instance.date|date:'d/m/Y H:i' }}">
                                     </div>
                                 </div>
@@ -166,16 +166,16 @@
                     </div>
                     
                     <!-- Notes -->
-                    <div class="mt-6 pt-4 border-t border-gray-100">
-                        <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                        <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             <i class="far fa-sticky-note text-blue-600 mr-1"></i>
                             {{ form.notes.label }}
                         </label>
                         <div class="mt-1">
-                            {% render_field form.notes class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3" rows="3" %}
+                            {% render_field form.notes class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3" rows="3" %}
                         </div>
                         {% if form.notes.errors %}
-                            <p class="mt-1 text-sm text-red-600">{{ form.notes.errors|join:", " }}</p>
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.notes.errors|join:", " }}</p>
                         {% endif %}
                     </div>
                 </div>
@@ -183,22 +183,22 @@
             
             <!-- Colonne de droite - Panneau d'information -->
             <div class="lg:col-span-1">
-                <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden sticky top-6">
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden sticky top-6">
                     <!-- En-tête du panneau -->
-                    <div class="px-4 py-5 sm:px-6 bg-gradient-to-r from-red-50 to-red-100 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <div class="px-4 py-5 sm:px-6 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-900/50 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                             <i class="fas fa-info-circle text-red-600 mr-2"></i>
                             <span>Résumé de la sortie</span>
                         </h3>
                     </div>
                     
                     <!-- Contenu du panneau -->
-                    <div class="p-6">
+                    <div class="p-6" x-data>
                         <!-- Section d'information sur le produit -->
                         <div id="produit-info" class="space-y-4">
                             <!-- État vide -->
-                            <div class="text-center py-6 px-4 bg-gray-50 rounded-lg border border-dashed border-gray-300" 
-                                 x-show="!produitDetails"
+                            <div class="text-center py-6 px-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-600" 
+                                 x-show="!$store.sortieForm.produitDetails"
                                  x-transition:enter="transition ease-out duration-200"
                                  x-transition:enter-start="opacity-0 translate-y-2"
                                  x-transition:enter-end="opacity-100 translate-y-0">
@@ -207,7 +207,7 @@
                             </div>
                             
                             <!-- Détails du produit -->
-                            <div x-show="produitDetails" 
+                            <div x-show="$store.sortieForm.produitDetails" 
                                  x-transition:enter="transition ease-out duration-200"
                                  x-transition:enter-start="opacity-0 translate-y-2"
                                  x-transition:enter-end="opacity-100 translate-y-0"
@@ -215,78 +215,91 @@
                                 <!-- En-tête avec image et désignation -->
                                 <div class="flex items-start space-x-4">
                                     <!-- Image du produit -->
-                                    <div id="produit-image" class="flex-shrink-0 h-16 w-16 rounded-lg bg-gray-100 overflow-hidden flex items-center justify-center">
-                                        <i class="fas fa-box text-gray-400 text-2xl"></i>
+                                    <div id="produit-image" class="flex-shrink-0 h-16 w-16 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden flex items-center justify-center">
+                                        <i class="fas fa-box text-gray-400 dark:text-gray-500 text-2xl"></i>
                                     </div>
                                     <!-- Désignation et catégorie -->
                                     <div class="flex-1 min-w-0">
-                                        <h4 class="text-base font-semibold text-gray-900 truncate" x-text="produitDetails.designation"></h4>
-                                        <p class="text-sm text-gray-500" x-text="produitDetails.categorie || 'Aucune catégorie'"></p>
+                                        <h4 class="text-base font-semibold text-gray-900 dark:text-white truncate" 
+                                            x-text="$store.sortieForm.produitDetails?.designation || 'Sélectionnez un produit'"></h4>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400" 
+                                           x-text="$store.sortieForm.produitDetails?.categorie || 'Aucune catégorie'"></p>
                                     </div>
                                 </div>
                                 
                                 <!-- Informations de stock -->
-                                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-800">
                                     <div class="flex justify-between items-center mb-2">
-                                        <span class="text-sm font-medium text-blue-800">Stock actuel</span>
-                                        <span class="text-base font-bold text-blue-900" x-text="stockActuel"></span>
+                                        <span class="text-sm font-medium text-blue-800 dark:text-blue-200">Stock actuel</span>
+                                        <span class="text-base font-bold text-blue-900 dark:text-blue-100" 
+                                              x-text="$store.sortieForm.stockActuel || 0"></span>
                                     </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-blue-600 h-2 rounded-full progress-bar" 
-                                             :class="{'bg-green-500': stockActuel > stockMin, 'bg-yellow-500': stockActuel > 0 && stockActuel <= stockMin, 'bg-red-500': stockActuel <= 0}"
-                                             :style="'width: ' + Math.min(100, (stockActuel / (stockMin * 1.5)) * 100) + '%'">
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                        <div class="h-2 rounded-full progress-bar" 
+                                             :class="{
+                                               'bg-green-500': $store.sortieForm.stockActuel > $store.sortieForm.stockMin, 
+                                               'bg-yellow-500': $store.sortieForm.stockActuel > 0 && $store.sortieForm.stockActuel <= $store.sortieForm.stockMin, 
+                                               'bg-red-500': $store.sortieForm.stockActuel <= 0
+                                             }"
+                                             :style="'width: ' + Math.min(100, ($store.sortieForm.stockActuel / ($store.sortieForm.stockMin * 1.5)) * 100) + '%'">
                                         </div>
                                     </div>
-                                    <div class="mt-1 flex justify-between text-xs text-gray-500">
+                                    <div class="mt-1 flex justify-between text-xs text-gray-500 dark:text-gray-400">
                                         <span>0</span>
-                                        <span x-text="stockMin + ' (min)'"></span>
-                                        <span x-text="Math.round(stockMin * 1.5)"></span>
+                                        <span x-text="'Seuil: ' + ($store.sortieForm.stockMin || 0)"></span>
+                                        <span x-text="Math.round(($store.sortieForm.stockMin || 0) * 1.5)"></span>
                                     </div>
                                 </div>
                                 
                                 <!-- Stock après sortie -->
-                                <div class="bg-red-50 p-3 rounded-lg border border-red-100">
+                                <div class="bg-red-50 dark:bg-red-900/10 p-3 rounded-lg border border-red-100 dark:border-red-800/50">
                                     <div class="flex justify-between items-center">
-                                        <span class="text-sm font-medium text-red-800">Stock après sortie</span>
+                                        <span class="text-sm font-medium text-red-800 dark:text-red-200">Stock après sortie</span>
                                         <span class="text-base font-bold" 
                                               :class="{
-                                                'text-green-600': (stockActuel - quantite) > stockMin,
-                                                'text-yellow-600': (stockActuel - quantite) > 0 && (stockActuel - quantite) <= stockMin,
-                                                'text-red-600': (stockActuel - quantite) <= 0
+                                                'text-green-600': ($store.sortieForm.stockActuel - $store.sortieForm.quantite) > $store.sortieForm.stockMin,
+                                                'text-yellow-600': ($store.sortieForm.stockActuel - $store.sortieForm.quantite) > 0 && ($store.sortieForm.stockActuel - $store.sortieForm.quantite) <= $store.sortieForm.stockMin,
+                                                'text-red-600': ($store.sortieForm.stockActuel - $store.sortieForm.quantite) <= 0
                                               }"
-                                              x-text="stockApresSortie = Math.max(0, stockActuel - quantite)">
+                                              x-text="Math.max(0, ($store.sortieForm.stockActuel || 0) - ($store.sortieForm.quantite || 0))">
                                         </span>
                                     </div>
+                                    
                                     <!-- Avertissement de stock faible -->
-                                    <div id="stock-warning" class="mt-2 text-sm text-yellow-700 bg-yellow-50 p-2 rounded hidden">
+                                    <div x-show="($store.sortieForm.stockActuel - $store.sortieForm.quantite) > 0 && ($store.sortieForm.stockActuel - $store.sortieForm.quantite) <= $store.sortieForm.stockMin"
+                                         class="mt-2 text-sm text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900/30 p-2 rounded">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>
                                         Le stock sera en dessous du seuil minimum après cette sortie.
                                     </div>
+                                    
                                     <!-- Erreur de stock insuffisant -->
-                                    <div id="stock-error" class="mt-2 text-sm text-red-700 bg-red-50 p-2 rounded hidden">
+                                    <div x-show="($store.sortieForm.stockActuel - $store.sortieForm.quantite) < 0"
+                                         class="mt-2 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/30 p-2 rounded">
                                         <i class="fas fa-times-circle mr-1"></i>
                                         Stock insuffisant pour effectuer cette sortie.
                                     </div>
                                 </div>
                                 
                                 <!-- Dernier prix d'achat -->
-                                <div class="text-sm space-y-1">
-                                    <div class="flex justify-between py-1">
-                                        <span class="text-gray-600">Dernier prix d'achat :</span>
-                                        <span class="font-medium text-gray-900" x-text="produitDetails.prix_achat ? (parseFloat(produitDetails.prix_achat).toFixed(2) + ' Ar') : 'N/A'"></span>
+                                <div class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                                    <div class="flex justify-between py-1 border-b border-gray-100 dark:border-gray-700">
+                                        <div class="text-gray-600 dark:text-gray-400">Dernier prix d'achat :</div>
+                                        <span class="font-medium text-gray-900 dark:text-white" 
+                                              x-text="$store.sortieForm.produitDetails?.prix_achat ? (parseFloat($store.sortieForm.produitDetails.prix_achat).toFixed(2) + ' Ar') : 'N/A'">
+                                        </span>
                                     </div>
-                                <p class="mt-1 text-xs text-gray-500">HT, avant taxes et remises</p>
-                            </div>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">HT, avant taxes et remises</p>
+                                </div>
                             
                             <!-- Boutons d'action -->
                             <div class="p-6 pt-0">
                                 <button type="submit" 
-                                        class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                        class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red/65 hover:bg-red/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red/50 dark:bg-red/70 dark:hover:bg-red/80">
                                     <i class="fas fa-save mr-2"></i>
                                     {% if form.instance.pk %}Mettre à jour{% else %}Enregistrer{% endif %} la sortie
                                 </button>
                                 <a href="{% url 'stock:liste_sorties' %}" 
-                                class="mt-3 w-full flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                class="mt-3 w-full flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray/70 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red/50 dark:focus:ring-red/60">
                                     <i class="fas fa-times mr-2"></i>
                                     Annuler
                                 </a>
@@ -383,29 +396,48 @@
 
 {% block extra_js %}
 <script>
+// Initialisation du store Alpine.js
+document.addEventListener('alpine:init', () => {
+    // Définition du store global
+    Alpine.store('sortieForm', {
+        produitDetails: null,
+        stockActuel: 0,
+        stockMin: 0,
+        quantite: 0,
+        prixUnitaire: 0,
+        tva: 20 // Taux de TVA par défaut
+    });
+
     // Définition du composant Alpine
-    document.addEventListener('alpine:init', () => {
-        console.log('Initialisation du composant Alpine...');
-        
-        Alpine.data('sortieForm', () => ({
-            // Données réactives
-            produitId: null,
-            quantite: 0,
-            prixUnitaire: 0,
-            tva: 20, // Taux de TVA par défaut
-            montantTotal: 0,
-            montantTVA: 0,
-            montantTTC: 0,
-            produitDetails: null,
-            stockActuel: 0,
-            stockMin: 0,
+    Alpine.data('sortieForm', () => ({
+        // Données réactives
+        produitId: null,
+        quantite: 0,
+        prixUnitaire: 0,
+        tva: 20, // Taux de TVA par défaut
+        montantTotal: 0,
+        montantTVA: 0,
+        montantTTC: 0,
             
             init() {
                 console.log('Initialisation du composant sortieForm');
                 
                 // Initialiser les valeurs depuis le formulaire si elles existent
                 const produitSelect = document.getElementById('id_produit');
+                const store = Alpine.store('sortieForm');
                 console.log('Sélecteur de produit trouvé:', !!produitSelect);
+                
+                // Lier les valeurs du formulaire au store
+                this.$watch('quantite', (value) => {
+                    store.quantite = parseFloat(value) || 0;
+                    this.verifierStock();
+                    this.calculerMontantTotal();
+                });
+
+                this.$watch('prixUnitaire', (value) => {
+                    store.prixUnitaire = parseFloat(value) || 0;
+                    this.calculerMontantTotal();
+                });
                 
                 // Si un produit est déjà sélectionné, charger ses détails
                 if (produitSelect) {
@@ -452,18 +484,47 @@
             
             async chargerDetailsProduit(produitId) {
                 console.log('Chargement des détails pour le produit ID:', produitId);
+                const store = Alpine.store('sortieForm');
                 
                 if (!produitId) {
                     console.log('Aucun ID de produit fourni, réinitialisation des détails');
-                    this.produitDetails = null;
-                    this.stockActuel = 0;
-                    this.stockMin = 0;
+                    store.produitDetails = null;
+                    store.stockActuel = 0;
+                    store.stockMin = 0;
                     return;
                 }
                 
                 try {
-                    console.log(`Requête API vers: /api/produits/${produitId}/`);
-                    const response = await fetch(`/api/produits/${produitId}/`);
+                    const apiUrl = `/stock/api/produits/${produitId}/`;
+                    console.log(`Requête API vers: ${apiUrl}`);
+                    
+                    // Récupérer le token CSRF du cookie
+                    function getCookie(name) {
+                        let cookieValue = null;
+                        if (document.cookie && document.cookie !== '') {
+                            const cookies = document.cookie.split(';');
+                            for (let i = 0; i < cookies.length; i++) {
+                                const cookie = cookies[i].trim();
+                                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    }
+                    
+                    const csrftoken = getCookie('csrftoken');
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': csrftoken
+                        },
+                        credentials: 'include'  // Important pour inclure les cookies de session
+                    });
                     
                     if (!response.ok) {
                         throw new Error(`Erreur HTTP: ${response.status}`);
@@ -475,20 +536,21 @@
                     if (data.status === 'success' && data.data) {
                         console.log('Données du produit reçues:', data.data);
                         
-                        // Mettre à jour les données réactives
-                        this.produitDetails = data.data;
-                        this.stockActuel = parseFloat(data.data.quantite_stock) || 0;
-                        this.stockMin = parseFloat(data.data.seuil_alerte) || 0;
+                        // Mettre à jour le store avec les nouvelles données
+                        store.produitDetails = data.data;
+                        store.stockActuel = parseFloat(data.data.quantite_stock) || 0;
+                        store.stockMin = parseFloat(data.data.seuil_alerte) || 0;
                         
-                        console.log('Données mises à jour:', {
-                            produitDetails: this.produitDetails,
-                            stockActuel: this.stockActuel,
-                            stockMin: this.stockMin
+                        console.log('Données mises à jour dans le store:', {
+                            produitDetails: store.produitDetails,
+                            stockActuel: store.stockActuel,
+                            stockMin: store.stockMin
                         });
                         
                         // Mettre à jour le prix unitaire si vide avec le dernier prix d'achat
                         if (this.prixUnitaire === 0 && data.data.prix_achat) {
                             this.prixUnitaire = parseFloat(data.data.prix_achat);
+                            store.prixUnitaire = this.prixUnitaire;
                             const prixInput = document.getElementById('id_prix_unitaire');
                             if (prixInput) {
                                 prixInput.value = this.prixUnitaire.toFixed(2);
@@ -633,11 +695,10 @@
                 
                 return false;
             }
-        }));
-        
-        console.log('Composant entreeForm enregistré avec succès');
-    });
+    }));
+    
+    console.log('Composant sortieForm enregistré avec succès');
+});
 </script>
 {% endblock %}
-
                  

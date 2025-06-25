@@ -1,20 +1,25 @@
 <div
-  class="relative group bg-gray-300 broder-gray400 dark:bg-gray-900 sm:py-20 px-4 min-h-[280px] flex flex-col justify-center items-center cursor-pointer rounded-xl shadow hover:bg-primary/25 dark:hover:bg-gray-900/45 hover:smooth-hover"
+  class="relative group bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 sm:py-20 px-4 min-h-[280px] flex flex-col justify-center items-center cursor-pointer rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:bg-blue-50 dark:hover:bg-gray-600/50"
 >
-  <div class='flex flex-col items-center'>
-    <img
-      class="w-24 h-24 object-cover object-center"
-      src="{{ image }}"
-      alt="cuisine"
-    />
-    <h4 class="text-gray-800 dark:text-white text-md font-bold capitalize text-center">
+  <div class='flex flex-col items-center transform group-hover:scale-105 transition-transform duration-300'>
+    <div class="mb-4 p-3 bg-blue-50 dark:bg-gray-600 rounded-full">
+      <img
+        class="w-20 h-20 object-contain"
+        src="{{ image }}"
+        alt="{{ title }}"
+      />
+    </div>
+    <h4 class="text-gray-800 dark:text-white text-lg font-semibold capitalize text-center mb-1">
       {{ title }}
     </h4>
-    <p class="absolute top-2 text-gray-800 dark:text-white/20 inline-flex w-full justify-center items-center text-xs">
-      <span
-        class="mr-2 w-2 h-2 block bg-green-500 rounded-full group-hover:animate-pulse"
-      ></span>
-      {{ notification_msg }}
+    <p class="text-sm text-gray-600 dark:text-gray-300 text-center mb-2">
+      {{ description }}
+    </p>
+    <p class="absolute top-3 left-0 right-0 text-center">
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+        <span class="w-2 h-2 mr-1.5 rounded-full bg-green-500 animate-pulse"></span>
+        {{ notification_msg }}
+      </span>
     </p>
   </div>
 </div>

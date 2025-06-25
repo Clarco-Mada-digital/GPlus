@@ -1,5 +1,11 @@
-{% extends 'stock/base.html' %}
+{% extends 'layouts/stock_layout.html' %}
 {% load static %}
+
+{% block extra_head %}
+<script>
+    document.documentElement.classList.add('dark');
+</script>
+{% endblock %}
 
 {% block title %}Rapports - Gestion de Stock{% endblock %}
 
@@ -7,7 +13,7 @@
 <li aria-current="page">
     <div class="flex items-center">
         <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-        <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">Rapports</span>
+        <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">Rapports</span>
     </div>
 </li>
 {% endblock %}
@@ -16,7 +22,7 @@
 <div class="container mx-auto px-4 py-6">
     <!-- En-tête de la page -->
     <div class="mb-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
             <i class="fas fa-chart-bar text-blue-600 mr-2"></i>Rapports
         </h2>
     </div>
@@ -24,60 +30,60 @@
     <!-- Cartes de rapports -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <!-- Carte Rapport de stock faible -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
                         <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>Stock faible
                     </h3>
-                    <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+                    <span class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
                         <i class="fas fa-boxes mr-1"></i> {{ produits_en_alerte|length }}
                     </span>
                 </div>
-                <p class="text-gray-600 text-sm mb-4">
+                <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
                     Liste des produits dont le niveau de stock est inférieur ou égal au seuil d'alerte.
                 </p>
-                <a href="{% url 'stock:rapport_stock_faible' %}" class="inline-flex items-center px-4 py-2 border border-yellow-300 text-sm font-medium rounded-md text-yellow-700 bg-yellow-50 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                <a href="{% url 'stock:rapport_stock_faible' %}" class="inline-flex items-center px-4 py-2 border border-yellow-300 dark:border-yellow-700 text-sm font-medium rounded-md text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900/30 hover:bg-yellow-100 dark:hover:bg-yellow-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
                     <i class="fas fa-file-alt mr-2"></i>Voir le rapport
                 </a>
             </div>
         </div>
 
         <!-- Carte Rapport des mouvements -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
                         <i class="fas fa-exchange-alt text-blue-600 mr-2"></i>Mouvements
                     </h3>
-                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+                    <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
                         <i class="fas fa-chart-line mr-1"></i> Historique
                     </span>
                 </div>
-                <p class="text-gray-600 text-sm mb-4">
+                <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
                     Consultez l'historique complet des entrées et sorties de stock avec des filtres avancés.
                 </p>
-                <a href="{% url 'stock:rapport_mouvements' %}" class="inline-flex items-center px-4 py-2 border border-blue-300 text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <a href="{% url 'stock:rapport_mouvements' %}" class="inline-flex items-center px-4 py-2 border border-blue-300 dark:border-blue-700 text-sm font-medium rounded-md text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     <i class="fas fa-chart-bar mr-2"></i>Voir les mouvements
                 </a>
             </div>
         </div>
 
         <!-- Carte Rapport des ventes -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
                         <i class="fas fa-shopping-cart text-green-600 mr-2"></i>Ventes
                     </h3>
-                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+                    <span class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
                         <i class="fas fa-chart-pie mr-1"></i> Analyse
                     </span>
                 </div>
-                <p class="text-gray-600 text-sm mb-4">
+                <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
                     Analysez les performances des ventes par période, catégorie ou produit.
                 </p>
-                <button class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-gray-50 cursor-not-allowed opacity-70" disabled>
+                <button class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 cursor-not-allowed opacity-70" disabled>
                     <i class="fas fa-lock mr-2"></i>Bientôt disponible
                 </button>
             </div>
@@ -85,45 +91,45 @@
     </div>
 
     <!-- Section d'aide -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
+        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
                 <i class="fas fa-info-circle text-blue-600 mr-2"></i>Comment utiliser les rapports
             </h3>
         </div>
-        <div class="p-6">
+        <div class="p-6 dark:bg-gray-800">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <h4 class="font-medium text-gray-900 mb-2">
+                    <h4 class="font-medium text-gray-900 dark:text-gray-100 mb-2">
                         <i class="fas fa-check-circle text-green-500 mr-2"></i>Stock faible
                     </h4>
-                    <p class="text-sm text-gray-600">
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
                         Identifiez rapidement les produits dont le niveau de stock est critique pour éviter les ruptures.
                     </p>
                 </div>
                 <div>
-                    <h4 class="font-medium text-gray-900 mb-2">
+                    <h4 class="font-medium text-gray-900 dark:text-gray-100 mb-2">
                         <i class="fas fa-check-circle text-green-500 mr-2"></i>Mouvements de stock
                     </h4>
-                    <p class="text-sm text-gray-600">
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
                         Suivez l'historique complet des entrées et sorties avec des options de filtrage avancées.
                     </p>
                 </div>
                 <div class="md:col-span-2">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <h4 class="font-medium text-gray-900 mb-2">
+                            <h4 class="font-medium text-gray-900 dark:text-gray-100 mb-2">
                                 <i class="far fa-clock text-gray-500 mr-2"></i>Bientôt disponible
                             </h4>
-                            <p class="text-sm text-gray-600">
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
                                 D'autres rapports seront bientôt ajoutés pour une analyse plus approfondie.
                             </p>
                         </div>
                         <div>
-                            <h4 class="font-medium text-gray-900 mb-2">
+                            <h4 class="font-medium text-gray-900 dark:text-gray-100 mb-2">
                                 <i class="fas fa-download text-blue-500 mr-2"></i>Exportation
                             </h4>
-                            <p class="text-sm text-gray-600">
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
                                 Exportez vos rapports aux formats PDF et Excel pour une analyse plus approfondie.
                             </p>
                         </div>

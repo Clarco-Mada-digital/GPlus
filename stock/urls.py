@@ -14,6 +14,7 @@ urlpatterns = [
     # Produits
     path('produits/', login_required(views.produits.ListeProduitsView.as_view()), name='liste_produits'),
     path('produits/ajouter/', login_required(views.produits.AjouterProduitView.as_view()), name='ajouter_produit'),
+    path('produits/<int:pk>/', login_required(views.produits.DetailProduitView.as_view()), name='detail_produit'),
     path('produits/modifier/<int:pk>/', login_required(views.produits.ModifierProduitView.as_view()), name='modifier_produit'),
     path('produits/supprimer/<int:pk>/', login_required(views.produits.SupprimerProduitView.as_view()), name='supprimer_produit'),
     path('produits/stock-faible/', login_required(views.produits.StockFaibleView.as_view()), name='stock_faible'),
@@ -27,12 +28,15 @@ urlpatterns = [
     # Fournisseurs
     path('fournisseurs/', login_required(views.fournisseurs.ListeFournisseursView.as_view()), name='liste_fournisseurs'),
     path('fournisseurs/ajouter/', login_required(views.fournisseurs.AjouterFournisseurView.as_view()), name='ajouter_fournisseur'),
+    path('fournisseurs/<int:pk>/', login_required(views.fournisseurs.DetailFournisseurView.as_view()), name='detail_fournisseur'),
     path('fournisseurs/modifier/<int:pk>/', login_required(views.fournisseurs.ModifierFournisseurView.as_view()), name='modifier_fournisseur'),
     path('fournisseurs/supprimer/<int:pk>/', login_required(views.fournisseurs.SupprimerFournisseurView.as_view()), name='supprimer_fournisseur'),
     
     # Mouvements de stock
     path('entrees/', login_required(views.mouvements.ListeEntreesView.as_view()), name='liste_entrees'),
     path('entrees/ajouter/', login_required(views.mouvements.AjouterEntreeView.as_view()), name='ajouter_entree'),
+    path('entrees/<int:pk>/', login_required(views.mouvements.DetailEntreeView.as_view()), name='detail_entree'),
+    path('entrees/modifier/<int:pk>/', login_required(views.mouvements.ModifierEntreeView.as_view()), name='modifier_entree'),
     path('entrees/annuler/<int:pk>/', login_required(views.mouvements.AnnulerEntreeView.as_view()), name='annuler_entree'),
     path('sorties/', login_required(views.mouvements.ListeSortiesView.as_view()), name='liste_sorties'),
     path('sorties/ajouter/', login_required(views.mouvements.AjouterSortieView.as_view()), name='ajouter_sortie'),

@@ -26,9 +26,17 @@ class TableauBordView(LoginRequiredMixin, TemplateView):
         
         # Calcul des mouvements des 7 derniers jours
         date_limite = timezone.now() - timedelta(days=7)
-        stats_mouvements = {
-            'entrees': EntreeStock.objects.filter(date__gte=date_limite).count(),
-            'sorties': SortieStock.objects.filter(date__gte=date_limite).count(),
+        entrees_7j = EntreeStock.objects.filter(date__gte=date_limite).count()
+        sorties_7j = SortieStock.objects.filter(date__gte=date_limite).count()
+        
+        # Création du dictionnaire stats avec toutes les données nécessaires
+        context['stats'] = {
+            'total_produits': stats_produits.get('total', 0),
+            'valeur_totale': stats_produits.get('valeur_totale', 0) or 0,
+            'produits_en_alerte': stats_produits.get('en_alerte', 0),
+            'mouvements_7j': entrees_7j + sorties_7j,
+            'entrees_7j': entrees_7j,
+            'sorties_7j': sorties_7j
         }
         
         # Derniers mouvements optimisés avec une seule requête
@@ -112,6 +120,27 @@ class TableauBordView(LoginRequiredMixin, TemplateView):
             ]
         else:
             context['produits_vendus'] = []
+            
+        # Statistiques par catégorie
+        categories_stats = Categorie.objects.annotate(
+            nb_produits=Count('produit', distinct=True),
+            nb_alertes=Count(
+                'produit',
+                filter=Q(produit__quantite_stock__lte=F('produit__seuil_alerte')),
+                distinct=True
+            )
+        ).order_by('nom')
+        
+        # Ajouter les statistiques par catégorie au contexte
+        context['categories_stats'] = [
+            {
+                'id': cat.id,
+                'nom': cat.nom,
+                'nb_produits': cat.nb_produits or 0,
+                'nb_alertes': cat.nb_alertes or 0
+            }
+            for cat in categories_stats
+        ]
         
         return context
 

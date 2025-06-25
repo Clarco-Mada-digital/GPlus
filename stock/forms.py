@@ -122,6 +122,11 @@ class EntreeStockForm(ModelForm):
     """
     Formulaire pour la création des entrées de stock.
     """
+    def __init__(self, *args, **kwargs):
+        """Initialise le formulaire avec l'utilisateur actuel."""
+        self.user = kwargs.pop('utilisateur', None)
+        super().__init__(*args, **kwargs)
+    
     class Meta:
         model = EntreeStock
         fields = [
@@ -179,7 +184,10 @@ class SortieStockForm(ModelForm):
     
     def __init__(self, *args, **kwargs):
         """Initialise le formulaire avec l'utilisateur actuel."""
+        # Gère à la fois 'user' et 'utilisateur' pour la rétrocompatibilité
         self.user = kwargs.pop('user', None)
+        if self.user is None:
+            self.user = kwargs.pop('utilisateur', None)
         super().__init__(*args, **kwargs)
     
     def clean_quantite(self):

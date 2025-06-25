@@ -1,4 +1,4 @@
-{% extends 'stock/base.html' %}
+{% extends 'layouts/stock_layout.html' %}
 {% load humanize %}
 
 {% block title %}Détail de l'entrée #{{ entree.id }} - Gestion des stocks{% endblock %}
@@ -6,39 +6,39 @@
 {% block breadcrumb_items %}
     <li>
         <div class="flex items-center">
-            <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <svg class="flex-shrink-0 h-5 w-5 text-gray-400 dark:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
             </svg>
-            <a href="{% url 'stock:liste_entrees' %}" class="ml-1 text-sm font-medium text-blue-600 hover:text-blue-800 md:ml-2">Entrées de stock</a>
+            <a href="{% url 'stock:liste_entrees' %}" class="ml-1 text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 md:ml-2">Entrées de stock</a>
         </div>
     </li>
     <li>
         <div class="flex items-center">
-            <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <svg class="flex-shrink-0 h-5 w-5 text-gray-400 dark:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
             </svg>
-            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">Entrée #{{ entree.id }} - {{ entree.produit.designation }}</span>
+            <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-300 md:ml-2">Entrée #{{ entree.id }} - {{ entree.produit.designation }}</span>
         </div>
     </li>
 {% endblock %}
 
 {% block page_title %}
     Entrée de stock #{{ entree.id }} - {{ entree.produit.designation }}
-    <p class="mt-1 text-sm font-normal text-gray-500">Détails de l'entrée en stock</p>
+    <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">Détails de l'entrée en stock</p>
 {% endblock %}
 
 {% block page_actions %}
-    <div class="flex space-x-3">
-        <a href="{% url 'stock:liste_entrees' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+    <div class="flex flex-wrap gap-3">
+        <a href="{% url 'stock:liste_entrees' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800">
             <i class="fas fa-arrow-left mr-2"></i> Retour à la liste
         </a>
         {% if not entree.annulee %}
-            <a href="{% url 'stock:modifier_entree' entree.pk %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <a href="{% url 'stock:modifier_entree' entree.pk %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
                 <i class="fas fa-edit mr-2"></i> Modifier
             </a>
             <form action="{% url 'stock:annuler_entree' entree.pk %}" method="post" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette entrée de stock ?');">
                 {% csrf_token %}
-                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red/60 hover:bg-red/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red/50 dark:focus:ring-offset-gray-800">
                     <i class="fas fa-times-circle mr-2"></i> Annuler l'entrée
                 </button>
             </form>
@@ -47,34 +47,34 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-white shadow overflow-hidden sm:rounded-lg">
-    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-        <div class="flex justify-between items-center">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
+<div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
                 Détails de l'entrée de stock
             </h3>
             {% if entree.annulee %}
-                <span class="px-2 inline-flex text-md leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                <span class="px-2.5 py-0.5 inline-flex text-xs sm:text-sm leading-5 font-semibold rounded-full bg-red/10 text-red/80 dark:bg-red/90 dark:text-red/20">
                     Annulée
                 </span>
             {% else %}
-                <span class="px-2 inline-flex text-md leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                <span class="px-2.5 py-0.5 inline-flex text-xs sm:text-sm leading-5 font-semibold rounded-full bg-green/100 text-green/80 dark:bg-green/900 dark:text-green/200">
                     Validée
                 </span>
             {% endif %}
         </div>
-        <p class="mt-1 max-w-2xl text-sm text-gray-500">
-            Référence: <span class="font-medium">{{ entree.reference|default:"Non spécifiée" }}</span>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
+            Référence: <span class="font-medium text-gray-700 dark:text-gray-200">{{ entree.reference|default:"Non spécifiée" }}</span>
         </p>
     </div>
     
-    <div class="border-t border-gray-200">
+    <div class="border-t border-gray-200 dark:border-gray-700">
         <dl>
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-gray-50 dark:bg-gray-700 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">
                     Produit
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 sm:mt-0 sm:col-span-2">
                     <div class="flex items-center">
                         {% if entree.produit.photo %}
                             <div class="flex-shrink-0 h-10 w-10">
@@ -82,10 +82,10 @@
                             </div>
                         {% endif %}
                         <div class="ml-4">
-                            <div class="text-sm font-medium text-gray-900">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
                                 {{ entree.produit.designation }}
                             </div>
-                            <div class="text-sm text-gray-500">
+                            <div class="text-sm text-gray-500 dark:text-gray-300">
                                 {{ entree.produit.code }}
                             </div>
                         </div>
@@ -93,100 +93,100 @@
                 </dd>
             </div>
             
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">
                     Fournisseur
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 sm:mt-0 sm:col-span-2">
                     {% if entree.fournisseur %}
-                        <a href="{% url 'stock:detail_fournisseur' entree.fournisseur.pk %}" class="text-blue-600 hover:text-blue-800">
+                        <a href="{% url 'stock:detail_fournisseur' entree.fournisseur.pk %}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                             {{ entree.fournisseur.nom }}
                         </a>
                     {% else %}
-                        <span class="text-gray-400">Non spécifié</span>
+                        <span class="text-gray-400 dark:text-gray-500">Non spécifié</span>
                     {% endif %}
                 </dd>
             </div>
             
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-gray-50 dark:bg-gray-700 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">
                     Quantité
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 sm:mt-0 sm:col-span-2">
                     {{ entree.quantite|intcomma }} {{ entree.produit.unite_mesure|default:"unité" }}{{ entree.quantite|pluralize }}
                 </dd>
             </div>
             
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">
                     Prix unitaire
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 sm:mt-0 sm:col-span-2">
                     {{ entree.prix_unitaire|default:0|floatformat:2 }} €
                 </dd>
             </div>
             
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-gray-50 dark:bg-gray-700 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">
                     Montant total
                 </dt>
-                <dd class="mt-1 text-sm font-semibold text-green-600 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm font-semibold text-green-600 dark:text-green-400 sm:mt-0 sm:col-span-2">
                     {{ entree.montant_total|default:0|floatformat:2 }} €
                 </dd>
             </div>
             
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">
                     Date et heure
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 sm:mt-0 sm:col-span-2">
                     {{ entree.date|date:"d/m/Y H:i" }}
                 </dd>
             </div>
             
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-gray-50 dark:bg-gray-700 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">
                     Effectuée par
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 sm:mt-0 sm:col-span-2">
                     {{ entree.utilisateur.get_full_name|default:entree.utilisateur.username }}
                 </dd>
             </div>
             
             {% if entree.notes %}
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-white dark:bg-gray-800 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">
                     Notes
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 sm:mt-0 sm:col-span-2 whitespace-pre-line">
                     {{ entree.notes|linebreaksbr }}
                 </dd>
             </div>
             {% endif %}
             
             {% if entree.annulee %}
-            <div class="bg-red-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-red-500">
+            <div class="bg-red/50 dark:bg-red/95 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-red/50 dark:text-red/50">
                     Annulée le
                 </dt>
-                <dd class="mt-1 text-sm text-red-700 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-red/50 dark:text-red/50 sm:mt-0 sm:col-span-2">
                     {{ entree.date_annulation|date:"d/m/Y H:i" }}
                 </dd>
                 
                 {% if entree.utilisateur_annulation %}
-                <dt class="text-sm font-medium text-red-500">
+                <dt class="text-sm font-medium text-red/50 dark:text-red/50">
                     Annulée par
                 </dt>
-                <dd class="mt-1 text-sm text-red-700 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-red/50 dark:text-red/50 sm:mt-0 sm:col-span-2">
                     {{ entree.utilisateur_annulation.get_full_name|default:entree.utilisateur_annulation.username }}
                 </dd>
                 {% endif %}
                 
                 {% if entree.motif_annulation %}
-                <dt class="text-sm font-medium text-red-500">
+                <dt class="text-sm font-medium text-red/50 dark:text-red/50">
                     Motif d'annulation
                 </dt>
-                <dd class="mt-1 text-sm text-red-700 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-red/50 dark:text-red/50 sm:mt-0 sm:col-span-2">
                     {{ entree.motif_annulation }}
                 </dd>
                 {% endif %}
@@ -195,9 +195,9 @@
         </dl>
     </div>
     
-    <div class="bg-gray-50 px-4 py-4 sm:px-6 border-t border-gray-200">
-        <div class="flex justify-between items-center">
-            <div class="text-sm text-gray-500">
+    <div class="bg-gray-50 dark:bg-gray-700 px-4 py-4 sm:px-6 border-t border-gray-200 dark:border-gray-600">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="text-sm text-gray-500 dark:text-gray-400">
                 Créée le {{ entree.date_creation|date:"d/m/Y" }}
                 {% if entree.date_modification %}
                     <span class="mx-1">•</span>
@@ -211,7 +211,7 @@
                 {% if not entree.annulee %}
                 <form action="{% url 'stock:annuler_entree' entree.pk %}" method="post" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette entrée de stock ?');">
                     {% csrf_token %}
-                    <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-red/60 hover:bg-red/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red/50">
                         <i class="fas fa-times-circle mr-1"></i> Annuler l'entrée
                     </button>
                 </form>

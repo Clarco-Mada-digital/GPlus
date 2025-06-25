@@ -1,4 +1,4 @@
-{% extends 'stock/base.html' %}
+{% extends 'layouts/stock_layout.html' %}
 {% load static %}
 
 {% block title %}{% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} un fournisseur - Gestion de Stock{% endblock %}
@@ -38,7 +38,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
         <form method="post" class="p-6 space-y-6">
             {% csrf_token %}
             
@@ -59,11 +59,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Nom -->
                 <div class="col-span-2 md:col-span-1">
-                    <label for="{{ form.nom.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                    <label for="{{ form.nom.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ form.nom.label }} <span class="text-red-500">*</span>
                     </label>
                     <input type="text" name="{{ form.nom.name }}" id="{{ form.nom.id_for_label }}" 
-                           class="mt-1 block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3"
+                           class="mt-1 block w-full p-3 rounded-md border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 dark:bg-gray-700 dark:text-white"
                            value="{{ form.nom.value|default_if_none:'' }}" required>
                     {% if form.nom.errors %}
                         <p class="mt-1 text-sm text-red-600">{{ form.nom.errors|join:", " }}</p>
@@ -73,11 +73,11 @@
 
                 <!-- Contact -->
                 <div class="col-span-2 md:col-span-1">
-                    <label for="{{ form.contact.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                    <label for="{{ form.contact.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ form.contact.label }}
                     </label>
                     <input type="text" name="{{ form.contact.name }}" id="{{ form.contact.id_for_label }}" 
-                           class="mt-1 block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3"
+                           class="mt-1 block w-full p-3 rounded-md border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 dark:bg-gray-700 dark:text-white"
                            value="{{ form.contact.value|default_if_none:'' }}">
                     {% if form.contact.errors %}
                         <p class="mt-1 text-sm text-red-600">{{ form.contact.errors|join:", " }}</p>
@@ -87,11 +87,11 @@
 
                 <!-- Email -->
                 <div class="col-span-2 md:col-span-1">
-                    <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                    <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ form.email.label }} <span class="text-red-500">*</span>
                     </label>
                     <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" 
-                           class="mt-1 block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3"
+                           class="mt-1 block w-full p-3 rounded-md border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 dark:bg-gray-700 dark:text-white"
                            value="{{ form.email.value|default_if_none:'' }}" required>
                     {% if form.email.errors %}
                         <p class="mt-1 text-sm text-red-600">{{ form.email.errors|join:", " }}</p>
@@ -101,11 +101,11 @@
 
                 <!-- Téléphone -->
                 <div class="col-span-2 md:col-span-1">
-                    <label for="{{ form.telephone.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                    <label for="{{ form.telephone.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ form.telephone.label }}
                     </label>
                     <input type="tel" name="{{ form.telephone.name }}" id="{{ form.telephone.id_for_label }}" 
-                           class="mt-1 block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3"
+                           class="mt-1 block w-full p-3 rounded-md border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 dark:bg-gray-700 dark:text-white"
                            value="{{ form.telephone.value|default_if_none:'' }}">
                     {% if form.telephone.errors %}
                         <p class="mt-1 text-sm text-red-600">{{ form.telephone.errors|join:", " }}</p>
@@ -115,11 +115,11 @@
 
                 <!-- Adresse -->
                 <div class="col-span-2">
-                    <label for="{{ form.adresse.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                    <label for="{{ form.adresse.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ form.adresse.label }}
                     </label>
                     <textarea name="{{ form.adresse.name }}" id="{{ form.adresse.id_for_label }}" 
-                              class="mt-1 block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3"
+                              class="mt-1 block w-full p-3 rounded-md border border-gray-300 dark:border-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 dark:bg-gray-700 dark:text-white"
                               rows="3">{{ form.adresse.value|default_if_none:'' }}</textarea>
                     {% if form.adresse.errors %}
                         <p class="mt-1 text-sm text-red-600">{{ form.adresse.errors|join:", " }}</p>
@@ -128,9 +128,9 @@
                 </div>
             </div>
 
-            <div class="mt-8 pt-5 border-t border-gray-200 flex items-center justify-end space-x-3">
-                <a href="{% if form.instance.pk %}{% url 'stock:detail_fournisseur' form.instance.pk %}{% else %}{% url 'stock:liste_fournisseurs' %}{% endif %}" 
-                   class="text-red-600 hover:text-red-900 hover:underline transition">
+            <div class="mt-8 pt-5 border-t border-gray-200 dark:border-gray-700 flex items-center justify-end space-x-3">
+                <a href="{% if form.instance.pk %}{% url 'stock:detail_fournisseur' form.instance.pk %}{% else %}{% url 'stock:liste_fournisseurs' %}{% endif %}"
+                   class="text-white dark:text-white bg-red dark:bg-red rounded-lg hover:text-red/95 dark:hover:text-white transition p-2">
                     <i class="fas fa-times mr-2"></i> Annuler
                 </a>
                 <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">

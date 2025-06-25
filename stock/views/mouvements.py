@@ -1,4 +1,4 @@
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View, DetailView
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
@@ -18,7 +18,7 @@ from ..forms import EntreeStockForm, SortieStockForm, AnnulerEntreeForm
 
 class ListeEntreesView(LoginRequiredMixin, ListView):
     model = EntreeStock
-    template_name = 'stock/mouvements/liste_entrees.html'
+    template_name = 'stock/mouvements/entree_liste.html'
     context_object_name = 'entrees'
     paginate_by = 20
     
@@ -28,14 +28,14 @@ class ListeEntreesView(LoginRequiredMixin, ListView):
         ).order_by('-date')
         
         # Filtre par produit
-        produit_id = self.request.GET.get('produit')
-        if produit_id:
-            queryset = queryset.filter(produit_id=produit_id)
+        produit_id = self.request.GET.get('produit', '').strip()
+        if produit_id and produit_id.isdigit():
+            queryset = queryset.filter(produit_id=int(produit_id))
         
         # Filtre par fournisseur
-        fournisseur_id = self.request.GET.get('fournisseur')
-        if fournisseur_id:
-            queryset = queryset.filter(fournisseur_id=fournisseur_id)
+        fournisseur_id = self.request.GET.get('fournisseur', '').strip()
+        if fournisseur_id and fournisseur_id.isdigit():
+            queryset = queryset.filter(fournisseur_id=int(fournisseur_id))
         
         # Filtre par date
         date_debut = self.request.GET.get('date_debut')
@@ -82,10 +82,39 @@ class ListeEntreesView(LoginRequiredMixin, ListView):
         return context
 
 
+class DetailEntreeView(LoginRequiredMixin, DetailView):
+    model = EntreeStock
+    template_name = 'stock/mouvements/entree_detail.html'
+    context_object_name = 'entree'
+    permission_required = 'stock.view_entree_stock'
+
+    def get_queryset(self):
+        return EntreeStock.objects.select_related('produit', 'fournisseur', 'utilisateur')
+
+
+class ModifierEntreeView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = EntreeStock
+    form_class = EntreeStockForm
+    template_name = 'stock/mouvements/entree_form.html'
+    context_object_name = 'entree'
+    permission_required = 'stock.change_entree_stock'
+
+    def get_queryset(self):
+        return EntreeStock.objects.select_related('produit', 'fournisseur', 'utilisateur')
+
+    def get_success_url(self):
+        return reverse('stock:detail_entree', kwargs={'pk': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titre'] = "Modifier une entrée de stock"
+        return context
+
+
 class AjouterEntreeView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = EntreeStock
     form_class = EntreeStockForm
-    template_name = 'stock/mouvements/form_entree.html'
+    template_name = 'stock/mouvements/entree_form.html'
     permission_required = 'stock.add_entree_stock'
     
     def get_form_kwargs(self):
@@ -144,7 +173,7 @@ class AnnulerEntreeView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
 
 class ListeSortiesView(LoginRequiredMixin, ListView):
     model = SortieStock
-    template_name = 'stock/mouvements/liste_sorties.html'
+    template_name = 'stock/mouvements/sortie_liste.html'
     context_object_name = 'sorties'
     paginate_by = 20
     
@@ -202,7 +231,7 @@ class ListeSortiesView(LoginRequiredMixin, ListView):
 class AjouterSortieView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = SortieStock
     form_class = SortieStockForm
-    template_name = 'stock/mouvements/form_sortie.html'
+    template_name = 'stock/mouvements/sortie_form.html'
     permission_required = 'stock.add_sortiestock'
     
     def get_form_kwargs(self):
