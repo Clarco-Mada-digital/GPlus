@@ -1,4 +1,5 @@
 from rest_framework import viewsets, status, permissions
+from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -26,6 +27,16 @@ class ProduitViewSet(viewsets.ModelViewSet):
         if self.action == 'retrieve':
             return ProduitDetailSerializer
         return self.serializer_class
+        
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action == 'retrieve':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+        return [permission() for permission in permission_classes]
     
     def get_queryset(self):
         queryset = self.queryset

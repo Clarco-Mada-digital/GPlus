@@ -276,13 +276,13 @@
                     <div class="p-6">
                         <!-- Section d'information sur le produit -->
                         <div id="produit-info" class="space-y-4">
-                            <div class="text-center py-6 px-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-dashed border-gray-300 dark:border-gray-600" x-show="!produitDetails">
+                            <div class="text-center py-6 px-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-dashed border-gray-300 dark:border-gray-600" x-show='!produitDetails' >
                                 <i class="fas fa-cube text-4xl text-gray-300 mb-3"></i>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Sélectionnez un produit pour voir les détails</p>
                             </div>
                             
                             <!-- Template pour afficher les détails du produit -->
-                            <div id="produit-details" class="space-y-4" x-show="produitDetails">
+                            <div id="produit-details" class="space-y-4" x-show="produitDetails != null">
                                 <!-- Image et nom du produit -->
                                 <div class="flex items-start space-x-3">
                                     <div id="produit-image" class="flex-shrink-0 h-16 w-16 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
@@ -314,11 +314,11 @@
                                 <div class="text-sm">
                                     <div class="flex justify-between py-1">
                                         <span class="text-gray-600">Dernier prix d'achat :</span>
-                                        <span id="dernier-prix" class="font-medium text-gray-900" x-text="produitDetails.prix_achat + ' Ar'"></span>
+                                        <span id="dernier-prix" class="font-medium text-gray-900 dark:text-gray-300" x-text="produitDetails.prix_achat ? produitDetails.prix_achat + ' Ar' : 'Non défini'"></span>
                                     </div>
                                     <div class="flex justify-between py-1">
                                         <span class="text-gray-600">Stock minimum :</span>
-                                        <span id="stock-min" class="font-medium text-gray-900" x-text="stockMin"></span>
+                                        <span id="stock-min" class="font-medium text-gray-900 dark:text-gray-300" x-text="produitDetails.seuil_alerte || 'Non défini'"></span>
                                     </div>
                                     <div class="flex justify-between py-1">
                                         <span class="text-gray-600">Stock après entrée :</span>
@@ -399,10 +399,8 @@
 
 <script>
     // Définition du composant Alpine
-    document.addEventListener('alpine:init', () => {
-        console.log('Initialisation du composant Alpine...');
-        
-        Alpine.data('entreeForm', () => ({
+    function entreeForm() {
+        return {
             // Données réactives
             produitId: null,
             quantite: 0,
@@ -475,21 +473,36 @@
                 }
                 
                 try {
-                    console.log(`Requête API vers: /api/produits/${produitId}/`);
-                    const response = await fetch(`/api/produits/${produitId}/`);
+                    console.log(`Requête API vers: /stock/api/produits/${produitId}/`);
+                    const response = await fetch(`/stock/api/produits/${produitId}/`, {
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'same-origin'
+                    });
                     console.log('Réponse reçue, statut:', response.status);
                     
                     if (response.ok) {
                         const data = await response.json();
                         console.log('Données reçues:', data);
                         
-                        if (data.status === 'success') {
-                            console.log('Données du produit reçues:', data.data);
+                        // Vérifier si la réponse contient directement les données du produit
+                        if (data) {
+                            console.log('Données du produit reçues:', data);
                             
                             // Mettre à jour les données réactives
-                            this.produitDetails = data.data;
-                            this.stockActuel = parseFloat(data.data.quantite_stock) || 0;
-                            this.stockMin = parseFloat(data.data.seuil_alerte) || 0;
+                            console.log('Données reçues de l\'API:', data);
+                            this.produitDetails = data;
+                            this.stockActuel = parseFloat(data.quantite_stock) || 0;
+                            this.stockMin = parseFloat(data.seuil_alerte) || 0;
+                            
+                            // Forcer la mise à jour de l'interface
+                            this.$nextTick(() => {
+                                console.log('Mise à jour de l\'interface');
+                                console.log('prix_achat:', data.prix_achat);
+                                console.log('seuil_alerte:', data.seuil_alerte);
+                            });
                             
                             console.log('Données mises à jour:', {
                                 produitDetails: this.produitDetails,
@@ -498,8 +511,8 @@
                             });
                             
                             // Mettre à jour le prix unitaire si vide avec le dernier prix d'achat
-                            if (this.prixUnitaire === 0 && data.data.prix_achat) {
-                                this.prixUnitaire = parseFloat(data.data.prix_achat);
+                            if (this.prixUnitaire === 0 && data.prix_achat) {
+                                this.prixUnitaire = parseFloat(data.prix_achat);
                                 const prixInput = document.getElementById('id_prix_unitaire');
                                 if (prixInput) {
                                     prixInput.value = this.prixUnitaire.toFixed(2);
@@ -510,8 +523,8 @@
                             // Mettre à jour l'image du produit si disponible
                             const produitImage = document.getElementById('produit-image');
                             if (produitImage) {
-                                if (data.data.photo) {
-                                    produitImage.innerHTML = `<img src="${data.data.photo}" alt="${data.data.designation}" class="h-full w-full object-cover">`;
+                                if (data.photo) {
+                                    produitImage.innerHTML = `<img src="${data.photo}" alt="${data.designation}" class="h-full w-full object-cover">`;
                                 } else {
                                     produitImage.innerHTML = '<i class="fas fa-box text-gray-400 text-2xl"></i>';
                                 }
@@ -606,9 +619,7 @@
                 
                 return false;
             }
-        }));
-        
-        console.log('Composant entreeForm enregistré avec succès');
-    });
+        };
+    }
 </script>
 {% endblock %}

@@ -84,7 +84,7 @@
                                 <span class="text-red-500">*</span>
                             </label>
                             <div class="relative mt-1">
-                                {% render_field form.produit class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pl-3 pr-10" x-on:change="updateProduitInfo($event.target.value)" %}                              
+                                {% render_field form.produit class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pl-3 pr-10" x-model="produitId" @change="chargerDetailsProduit($event.target.value)" %}                              
                             </div>
                             {% if form.produit.errors %}
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.produit.errors|join:", " }}</p>
@@ -97,7 +97,7 @@
                                 {{ form.client.label }}
                             </label>
                             <div class="relative mt-1">
-                                {% render_field form.client class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pl-3 pr-10" %}
+                                {% render_field form.client class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pl-3 pr-10" x-model="clientId" %}
                             </div>
                             {% if form.client.errors %}
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.client.errors|join:", " }}</p>
@@ -111,7 +111,7 @@
                                 <span class="text-red-500">*</span>
                             </label>
                             <div class="mt-1">
-                                {% render_field form.quantite class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3" %}
+                                {% render_field form.quantite class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3" x-model="quantite" @input="calculerMontantTotal()" %}
                             </div>
                             {% if form.quantite.errors %}
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.quantite.errors|join:", " }}</p>
@@ -125,7 +125,7 @@
                                 <span class="text-red-500">*</span>
                             </label>
                             <div class="mt-1 relative rounded-md shadow-sm">
-                                {% render_field form.prix_unitaire class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white pl-7 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pr-3" %}
+                                {% render_field form.prix_unitaire class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white pl-7 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pr-3" x-model="prixUnitaire" @input="calculerMontantTotal()" %}
                             </div>
                             {% if form.prix_unitaire.errors %}
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.prix_unitaire.errors|join:", " }}</p>
@@ -138,7 +138,7 @@
                                 {{ form.reference.label }}
                             </label>
                             <div class="mt-1">
-                                {% render_field form.reference class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3" %}
+                                {% render_field form.reference class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3" x-model="reference" %}
                             </div>
                             {% if form.reference.errors %}
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.reference.errors|join:", " }}</p>
@@ -157,8 +157,8 @@
                                             <i class="far fa-calendar text-gray-400"></i>
                                         </div>
                                         <input type="text" readonly 
-                                               class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 pl-10 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pr-3 text-gray-900 dark:text-white" 
-                                               value="{{ form.instance.date|date:'d/m/Y H:i' }}">
+                                            class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 pl-10 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 pr-3 text-gray-900 dark:text-white" 
+                                            value="{{ form.instance.date|date:'d/m/Y H:i' }}">
                                     </div>
                                 </div>
                             </div>
@@ -172,7 +172,7 @@
                             {{ form.notes.label }}
                         </label>
                         <div class="mt-1">
-                            {% render_field form.notes class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3" rows="3" %}
+                            {% render_field form.notes class="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3" rows="3" x-model="notes" %}
                         </div>
                         {% if form.notes.errors %}
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.notes.errors|join:", " }}</p>
@@ -196,84 +196,86 @@
                     <div class="p-6" x-data>
                         <!-- Section d'information sur le produit -->
                         <div id="produit-info" class="space-y-4">
-                            <!-- État vide -->
-                            <div class="text-center py-6 px-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-600" 
-                                 x-show="!$store.sortieForm.produitDetails"
-                                 x-transition:enter="transition ease-out duration-200"
-                                 x-transition:enter-start="opacity-0 translate-y-2"
-                                 x-transition:enter-end="opacity-100 translate-y-0">
+                            <div class="text-center py-6 px-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-dashed border-gray-300 dark:border-gray-600" x-show="!produitDetails">
                                 <i class="fas fa-cube text-4xl text-gray-300 mb-3"></i>
-                                <p class="text-sm text-gray-500">Sélectionnez un produit pour voir les détails</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Sélectionnez un produit pour voir les détails</p>
                             </div>
                             
                             <!-- Détails du produit -->
-                            <div x-show="$store.sortieForm.produitDetails" 
-                                 x-transition:enter="transition ease-out duration-200"
-                                 x-transition:enter-start="opacity-0 translate-y-2"
-                                 x-transition:enter-end="opacity-100 translate-y-0"
-                                 class="space-y-4">
-                                <!-- En-tête avec image et désignation -->
-                                <div class="flex items-start space-x-4">
-                                    <!-- Image du produit -->
-                                    <div id="produit-image" class="flex-shrink-0 h-16 w-16 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden flex items-center justify-center">
-                                        <i class="fas fa-box text-gray-400 dark:text-gray-500 text-2xl"></i>
+                            <div id="produit-details" class="space-y-4" x-show="produitDetails">
+                                <!-- Image et nom du produit -->
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0 h-16 w-16 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+                                        <template x-if="produitDetails.photo">
+                                            <img :src="produitDetails.photo" :alt="produitDetails.designation" class="h-full w-full object-cover">
+                                        </template>
+                                        <template x-if="!produitDetails.photo">
+                                            <i class="fas fa-box text-gray-400 dark:text-gray-500 text-xl"></i>
+                                        </template>
                                     </div>
-                                    <!-- Désignation et catégorie -->
                                     <div class="flex-1 min-w-0">
-                                        <h4 class="text-base font-semibold text-gray-900 dark:text-white truncate" 
-                                            x-text="$store.sortieForm.produitDetails?.designation || 'Sélectionnez un produit'"></h4>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400" 
-                                           x-text="$store.sortieForm.produitDetails?.categorie || 'Aucune catégorie'"></p>
+                                        <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate" x-text="produitDetails.designation || 'Sans désignation'"></h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" x-text="'Réf: ' + (produitDetails.code || 'N/A')"></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400" x-text="'Catégorie: ' + (produitDetails.categorie_nom || 'Non catégorisé')"></p>
                                     </div>
                                 </div>
                                 
                                 <!-- Informations de stock -->
                                 <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-800">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <span class="text-sm font-medium text-blue-800 dark:text-blue-200">Stock actuel</span>
-                                        <span class="text-base font-bold text-blue-900 dark:text-blue-100" 
-                                              x-text="$store.sortieForm.stockActuel || 0"></span>
+                                    <!-- Stock actuel -->
+                                <div class="space-y-4 text-gray-700 dark:text-gray-300">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="font-medium text-gray-700 dark:text-gray-300">Stock actuel :</span>
+                                        <span class="font-semibold" x-text="produitDetails.quantite_stock || 0"></span>
                                     </div>
                                     <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                        <div class="h-2 rounded-full progress-bar" 
+                                        <div class="h-2 rounded-full" 
                                              :class="{
-                                               'bg-green-500': $store.sortieForm.stockActuel > $store.sortieForm.stockMin, 
-                                               'bg-yellow-500': $store.sortieForm.stockActuel > 0 && $store.sortieForm.stockActuel <= $store.sortieForm.stockMin, 
-                                               'bg-red-500': $store.sortieForm.stockActuel <= 0
+                                                 'bg-red-500': produitDetails.quantite_stock <= 0,
+                                                 'bg-yellow-500': produitDetails.quantite_stock > 0 && produitDetails.quantite_stock <= produitDetails.seuil_alerte,
+                                                 'bg-green-500': produitDetails.quantite_stock > produitDetails.seuil_alerte
                                              }"
-                                             :style="'width: ' + Math.min(100, ($store.sortieForm.stockActuel / ($store.sortieForm.stockMin * 1.5)) * 100) + '%'">
+                                             :style="'width: ' + Math.min(100, (produitDetails.quantite_stock / Math.max(produitDetails.quantite_stock, produitDetails.seuil_alerte * 1.5)) * 100) + '%'">
                                         </div>
                                     </div>
-                                    <div class="mt-1 flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                                    <div class="flex justify-between text-xs text-gray-500">
                                         <span>0</span>
-                                        <span x-text="'Seuil: ' + ($store.sortieForm.stockMin || 0)"></span>
-                                        <span x-text="Math.round(($store.sortieForm.stockMin || 0) * 1.5)"></span>
+                                        <span x-text="Math.max(produitDetails.quantite_stock, produitDetails.seuil_alerte * 1.5).toFixed(0)"></span>
                                     </div>
                                 </div>
                                 
                                 <!-- Stock après sortie -->
-                                <div class="bg-red-50 dark:bg-red-900/10 p-3 rounded-lg border border-red-100 dark:border-red-800/50">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-sm font-medium text-red-800 dark:text-red-200">Stock après sortie</span>
-                                        <span class="text-base font-bold" 
+                                <!-- Informations supplémentaires -->
+                                <div class="text-sm space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Stock après sortie :</span>
+                                        <span class="font-semibold" 
                                               :class="{
-                                                'text-green-600': ($store.sortieForm.stockActuel - $store.sortieForm.quantite) > $store.sortieForm.stockMin,
-                                                'text-yellow-600': ($store.sortieForm.stockActuel - $store.sortieForm.quantite) > 0 && ($store.sortieForm.stockActuel - $store.sortieForm.quantite) <= $store.sortieForm.stockMin,
-                                                'text-red-600': ($store.sortieForm.stockActuel - $store.sortieForm.quantite) <= 0
-                                              }"
-                                              x-text="Math.max(0, ($store.sortieForm.stockActuel || 0) - ($store.sortieForm.quantite || 0))">
+                                                  'text-red-600': (produitDetails.quantite_stock - parseFloat(quantite || 0)) < 0,
+                                                  'text-yellow-600': (produitDetails.quantite_stock - parseFloat(quantite || 0)) >= 0 && (produitDetails.quantite_stock - parseFloat(quantite || 0)) <= produitDetails.seuil_alerte,
+                                                  'text-green-600': (produitDetails.quantite_stock - parseFloat(quantite || 0)) > produitDetails.seuil_alerte
+                                              }" 
+                                              x-text="Math.max(0, (produitDetails.quantite_stock || 0) - parseFloat(quantite || 0))">
                                         </span>
                                     </div>
-                                    
-                                    <!-- Avertissement de stock faible -->
-                                    <div x-show="($store.sortieForm.stockActuel - $store.sortieForm.quantite) > 0 && ($store.sortieForm.stockActuel - $store.sortieForm.quantite) <= $store.sortieForm.stockMin"
-                                         class="mt-2 text-sm text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900/30 p-2 rounded">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>
-                                        Le stock sera en dessous du seuil minimum après cette sortie.
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600 dark:text-gray-400">Stock minimum :</span>
+                                        <span class="font-medium text-gray-900 dark:text-white" x-text="produitDetails.seuil_alerte || 'Non défini'"></span>
                                     </div>
-                                    
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600 dark:text-gray-400">Dernier prix de vente :</span>
+                                        <span class="font-medium text-gray-900 dark:text-white">
+                                            <template x-if="produitDetails.prix_vente">
+                                                <span x-text="formatNumber(produitDetails.prix_vente) + ' Ar'"></span>
+                                            </template>
+                                            <template x-if="!produitDetails.prix_vente">
+                                                <span class="text-gray-400">Non défini</span>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </div>    
                                     <!-- Erreur de stock insuffisant -->
-                                    <div x-show="($store.sortieForm.stockActuel - $store.sortieForm.quantite) < 0"
+                                    <div x-show="produitDetails && (produitDetails.quantite_stock - quantite) < 0" 
                                          class="mt-2 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/30 p-2 rounded">
                                         <i class="fas fa-times-circle mr-1"></i>
                                         Stock insuffisant pour effectuer cette sortie.
@@ -306,28 +308,43 @@
                             </div>
                             
                             <!-- Message d'avertissement pour le stock faible -->
-                            <div id="stock-warning" class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r hidden">
+                            <div x-show="produitDetails && (produitDetails.quantite_stock - parseFloat(quantite || 0)) >= 0 && (produitDetails.quantite_stock - parseFloat(quantite || 0)) <= produitDetails.seuil_alerte" 
+                                 class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 rounded-r"
+                                 x-transition:enter="transition duration-300 ease-out"
+                                 x-transition:enter-start="transform opacity-0"
+                                 x-transition:enter-end="transform opacity-100"
+                                 x-transition:leave="transition duration-300 ease-in"
+                                 x-transition:leave-start="transform opacity-100"
+                                 x-transition:leave-end="transform opacity-0">
                                 <div class="flex">
                                     <div class="flex-shrink-0">
                                         <i class="fas fa-exclamation-triangle text-yellow-400"></i>
                                     </div>
                                     <div class="ml-3">
-                                        <p class="text-sm text-yellow-700">
-                                            Attention : Le stock après cette entrée sera inférieur au stock minimum recommandé.
+                                        <p class="text-sm text-yellow-700 dark:text-yellow-300">
+                                            Attention : Le stock après cette sortie sera inférieur au stock minimum recommandé.
                                         </p>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Message d'erreur pour stock insuffisant -->
-                            <div id="stock-error" class="mt-4 p-3 bg-red-50 border-l-4 border-red-400 rounded-r hidden">
+                            <div x-show="produitDetails && (produitDetails.quantite_stock - parseFloat(quantite || 0)) < 0" 
+                                 class="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 rounded-r"
+                                 x-transition:enter="transition duration-300 ease-out"
+                                 x-transition:enter-start="transform opacity-0"
+                                 x-transition:enter-end="transform opacity-100"
+                                 x-transition:leave="transition duration-300 ease-in"
+                                 x-transition:leave-start="transform opacity-100"
+                                 x-transition:leave-end="transform opacity-0">
                                 <div class="flex">
                                     <div class="flex-shrink-0">
                                         <i class="fas fa-exclamation-circle text-red-400"></i>
                                     </div>
                                     <div class="ml-3">
-                                        <p class="text-sm text-red-700">
-                                            Erreur : Stock insuffisant pour effectuer cette entrée.
+{{ ... }}
+                                        <p class="text-sm text-red-700 dark:text-red-300">
+                                            Erreur : Stock insuffisant pour effectuer cette sortie.
                                         </p>
                                     </div>
                                 </div>
@@ -395,88 +412,85 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Chargement d'Alpine.js -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
 <script>
 // Initialisation du store Alpine.js
 document.addEventListener('alpine:init', () => {
-    // Définition du store global
-    Alpine.store('sortieForm', {
-        produitDetails: null,
-        stockActuel: 0,
-        stockMin: 0,
-        quantite: 0,
-        prixUnitaire: 0,
-        tva: 20 // Taux de TVA par défaut
-    });
-
     // Définition du composant Alpine
     Alpine.data('sortieForm', () => ({
         // Données réactives
-        produitId: null,
-        quantite: 0,
-        prixUnitaire: 0,
-        tva: 20, // Taux de TVA par défaut
+        produitId: '{{ form.produit.value|default:'' }}',
+        clientId: '{{ form.client.value|default:'' }}',
+        reference: '{{ form.reference.value|default:'' }}',
+        notes: '{{ form.notes.value|default:'' }}',
+        produitDetails: null,
+        quantite: {{ form.quantite.value|default:'0' }},
+        prixUnitaire: {{ form.prix_unitaire.value|default:'0' }},
+        tva: {{ form.tva.value|default:'20' }}, // Taux de TVA par défaut
         montantTotal: 0,
         montantTVA: 0,
         montantTTC: 0,
+        
+        // Formatage des nombres
+        formatNumber(number) {
+            return new Intl.NumberFormat('fr-FR').format(parseFloat(number) || 0);
+        },
             
             init() {
                 console.log('Initialisation du composant sortieForm');
                 
                 // Initialiser les valeurs depuis le formulaire si elles existent
                 const produitSelect = document.getElementById('id_produit');
-                const store = Alpine.store('sortieForm');
                 console.log('Sélecteur de produit trouvé:', !!produitSelect);
-                
-                // Lier les valeurs du formulaire au store
-                this.$watch('quantite', (value) => {
-                    store.quantite = parseFloat(value) || 0;
-                    this.verifierStock();
-                    this.calculerMontantTotal();
-                });
-
-                this.$watch('prixUnitaire', (value) => {
-                    store.prixUnitaire = parseFloat(value) || 0;
-                    this.calculerMontantTotal();
-                });
                 
                 // Si un produit est déjà sélectionné, charger ses détails
                 if (produitSelect) {
                     // Écouter les changements de sélection de produit
-                    produitSelect.addEventListener('change', (e) => {
-                        console.log('Changement de produit détecté:', e.target.value);
-                        this.produitId = e.target.value;
-                        this.chargerDetailsProduit(this.produitId);
+                    this.$watch('produitId', (newId) => {
+                        console.log('Changement de produit détecté:', newId);
+                        this.chargerDetailsProduit(newId);
                     });
                     
+                    // Écouter les changements de sélection dans le DOM
+                    produitSelect.addEventListener('change', (e) => {
+                        this.produitId = e.target.value;
+                    });
+                    
+                    // Charger le produit présélectionné si nécessaire
                     if (produitSelect.value) {
                         console.log('Chargement du produit présélectionné...');
                         this.produitId = produitSelect.value;
-                        this.chargerDetailsProduit(this.produitId);
                     }
                 }
                 
-                // Configurer les observateurs pour les champs du formulaire
-                this.$watch('quantite', (newValue, oldValue) => {
-                    console.log('Quantité modifiée:', newValue);
-                    this.verifierStock();
+                // Mettre à jour les champs cachés quand les valeurs changent
+                this.$watch('quantite', (value) => {
+                    const input = document.getElementById('id_quantite');
+                    if (input) input.value = value || '0';
                     this.calculerMontantTotal();
                 });
                 
-                this.$watch('prixUnitaire', (newValue, oldValue) => {
-                    console.log('Prix unitaire modifié:', newValue);
+                this.$watch('prixUnitaire', (value) => {
+                    const input = document.getElementById('id_prix_unitaire');
+                    if (input) input.value = value || '0';
                     this.calculerMontantTotal();
                 });
                 
-                // Initialiser les valeurs des champs
-                const quantiteInput = document.getElementById('id_quantite');
-                if (quantiteInput) {
-                    this.quantite = parseFloat(quantiteInput.value) || 0;
-                }
+                this.$watch('clientId', (value) => {
+                    const input = document.getElementById('id_client');
+                    if (input) input.value = value || '';
+                });
                 
-                const prixInput = document.getElementById('id_prix_unitaire');
-                if (prixInput) {
-                    this.prixUnitaire = parseFloat(prixInput.value) || 0;
-                }
+                this.$watch('reference', (value) => {
+                    const input = document.getElementById('id_reference');
+                    if (input) input.value = value || '';
+                });
+                
+                this.$watch('notes', (value) => {
+                    const input = document.getElementById('id_notes');
+                    if (input) input.value = value || '';
+                });
                 
                 // Calculer le montant total initial
                 this.calculerMontantTotal();
@@ -484,46 +498,22 @@ document.addEventListener('alpine:init', () => {
             
             async chargerDetailsProduit(produitId) {
                 console.log('Chargement des détails pour le produit ID:', produitId);
-                const store = Alpine.store('sortieForm');
                 
                 if (!produitId) {
                     console.log('Aucun ID de produit fourni, réinitialisation des détails');
-                    store.produitDetails = null;
-                    store.stockActuel = 0;
-                    store.stockMin = 0;
+                    this.produitDetails = null;
                     return;
                 }
                 
                 try {
-                    const apiUrl = `/stock/api/produits/${produitId}/`;
-                    console.log(`Requête API vers: ${apiUrl}`);
-                    
-                    // Récupérer le token CSRF du cookie
-                    function getCookie(name) {
-                        let cookieValue = null;
-                        if (document.cookie && document.cookie !== '') {
-                            const cookies = document.cookie.split(';');
-                            for (let i = 0; i < cookies.length; i++) {
-                                const cookie = cookies[i].trim();
-                                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                                    break;
-                                }
-                            }
-                        }
-                        return cookieValue;
-                    }
-                    
-                    const csrftoken = getCookie('csrftoken');
-                    
-                    const response = await fetch(apiUrl, {
+                    const response = await fetch(`/stock/api/produits/${produitId}/`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRFToken': csrftoken
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                         },
-                        credentials: 'include'  // Important pour inclure les cookies de session
+                        credentials: 'same-origin'
                     });
                     
                     if (!response.ok) {
@@ -533,112 +523,48 @@ document.addEventListener('alpine:init', () => {
                     const data = await response.json();
                     console.log('Données reçues:', data);
                     
-                    if (data.status === 'success' && data.data) {
-                        console.log('Données du produit reçues:', data.data);
-                        
-                        // Mettre à jour le store avec les nouvelles données
-                        store.produitDetails = data.data;
-                        store.stockActuel = parseFloat(data.data.quantite_stock) || 0;
-                        store.stockMin = parseFloat(data.data.seuil_alerte) || 0;
-                        
-                        console.log('Données mises à jour dans le store:', {
-                            produitDetails: store.produitDetails,
-                            stockActuel: store.stockActuel,
-                            stockMin: store.stockMin
-                        });
-                        
-                        // Mettre à jour le prix unitaire si vide avec le dernier prix d'achat
-                        if (this.prixUnitaire === 0 && data.data.prix_achat) {
-                            this.prixUnitaire = parseFloat(data.data.prix_achat);
-                            store.prixUnitaire = this.prixUnitaire;
-                            const prixInput = document.getElementById('id_prix_unitaire');
-                            if (prixInput) {
-                                prixInput.value = this.prixUnitaire.toFixed(2);
-                            }
-                            this.calculerMontantTotal();
+                    // Mettre à jour les données du produit
+                    this.produitDetails = data;
+                    
+                    // Mettre à jour le prix unitaire si vide avec le dernier prix de vente
+                    if (this.prixUnitaire === 0 && data.prix_vente) {
+                        this.prixUnitaire = parseFloat(data.prix_vente);
+                        const prixInput = document.getElementById('id_prix_unitaire');
+                        if (prixInput) {
+                            prixInput.value = this.prixUnitaire.toFixed(2);
                         }
-                        
-                        // Mettre à jour les champs du formulaire avec les données du produit
-                        this.verifierStock();
-                    } else {
-                        console.error('Réponse API invalide:', data);
-                        throw new Error('Données du produit non valides');
                     }
+                    
+                    // Mettre à jour la quantité maximale disponible
+                    const quantiteInput = document.getElementById('id_quantite');
+                    if (quantiteInput) {
+                        quantiteInput.max = data.quantite_stock || 0;
+                    }
+                    
+                    // Recalculer les totaux
+                    this.calculerMontantTotal();
+                    
                 } catch (error) {
                     console.error('Erreur lors du chargement des détails du produit:', error);
                     this.produitDetails = null;
-                    this.stockActuel = 0;
-                    this.stockMin = 0;
                     this.showNotification('Erreur lors du chargement des détails du produit', 'error');
                 }
-                },
+            },
             
             verifierStock() {
                 if (!this.produitDetails) return;
                 
-                // Calculer le stock après sortie
-                const stockApresSortie = this.stockActuel - this.quantite;
-                
-                // Mettre à jour l'affichage du stock après sortie
-                const stockApresElement = document.querySelector('[x-text="stockApresSortie"]');
-                if (stockApresElement) {
-                    // Mettre à jour les classes en fonction du niveau de stock
-                    if (stockApresSortie < 0) {
-                        // Stock insuffisant
-                        stockApresElement.classList.remove('text-green-600', 'text-yellow-600');
-                        stockApresElement.classList.add('text-red-600');
-                        
-                        // Afficher le message d'erreur de stock insuffisant
-                        const stockError = document.getElementById('stock-error');
-                        if (stockError) stockError.classList.remove('hidden');
-                        
-                        // Cacher l'avertissement de stock faible
-                        const stockWarning = document.getElementById('stock-warning');
-                        if (stockWarning) stockWarning.classList.add('hidden');
-                    } else if (stockApresSortie <= this.stockMin) {
-                        // Stock faible
-                        stockApresElement.classList.remove('text-green-600', 'text-red-600');
-                        stockApresElement.classList.add('text-yellow-600');
-                        
-                        // Afficher l'avertissement de stock faible
-                        const stockWarning = document.getElementById('stock-warning');
-                        if (stockWarning) stockWarning.classList.remove('hidden');
-                        
-                        // Cacher l'erreur de stock insuffisant
-                        const stockError = document.getElementById('stock-error');
-                        if (stockError) stockError.classList.add('hidden');
-                    } else {
-                        // Stock suffisant
-                        stockApresElement.classList.remove('text-yellow-600', 'text-red-600');
-                        stockApresElement.classList.add('text-green-600');
-                        
-                        // Cacher tous les messages d'avertissement
-                        const stockWarning = document.getElementById('stock-warning');
-                        if (stockWarning) stockWarning.classList.add('hidden');
-                        
-                        const stockError = document.getElementById('stock-error');
-                        if (stockError) stockError.classList.add('hidden');
-                    }
-                }
-                
-                // Mettre à jour la barre de progression
-                const maxStock = Math.max(this.stockActuel, this.stockMin * 1.5);
-                const pourcentageRemplissage = (this.stockActuel / maxStock) * 100;
-                
-                const progressBar = document.querySelector('.progress-bar');
-                if (progressBar) {
-                    progressBar.style.width = `${Math.min(100, pourcentageRemplissage)}%`;
+                // Mettre à jour la quantité maximale autorisée
+                const quantiteInput = document.getElementById('id_quantite');
+                if (quantiteInput) {
+                    const maxStock = this.produitDetails.quantite_stock || 0;
+                    quantiteInput.max = maxStock;
                     
-                    // Mettre à jour la couleur de la barre de progression
-                    if (this.stockActuel <= 0) {
-                        progressBar.classList.remove('bg-green-500', 'bg-yellow-500');
-                        progressBar.classList.add('bg-red-500');
-                    } else if (this.stockActuel <= this.stockMin) {
-                        progressBar.classList.remove('bg-green-500', 'bg-red-500');
-                        progressBar.classList.add('bg-yellow-500');
-                    } else {
-                        progressBar.classList.remove('bg-yellow-500', 'bg-red-500');
-                        progressBar.classList.add('bg-green-500');
+                    // Ajuster la quantité si elle dépasse le stock disponible
+                    if (parseFloat(this.quantite) > maxStock) {
+                        this.quantite = maxStock;
+                        quantiteInput.value = maxStock;
+                        this.calculerMontantTotal();
                     }
                 }
             },
@@ -652,48 +578,126 @@ document.addEventListener('alpine:init', () => {
                 this.montantTVA = (this.montantTotal * tauxTVA) / 100;
                 this.montantTTC = this.montantTotal + this.montantTVA;
                 
-                // Mettre à jour l'affichage du total
-                const totalElement = document.getElementById('total-entree');
-                if (totalElement) {
-                    totalElement.textContent = `${this.montantTotal.toFixed(2)} Ar`;
+                // Mettre à jour le champ de montant total si nécessaire
+                const montantTotalInput = document.getElementById('id_montant_total');
+                if (montantTotalInput) {
+                    montantTotalInput.value = this.montantTotal.toFixed(2);
+                }
+                
+                // Mettre à jour le champ de TVA si nécessaire
+                const tvaInput = document.getElementById('id_tva');
+                if (tvaInput) {
+                    tvaInput.value = this.montantTVA.toFixed(2);
+                }
+                
+                // Mettre à jour le champ de montant TTC si nécessaire
+                const montantTTCInput = document.getElementById('id_montant_ttc');
+                if (montantTTCInput) {
+                    montantTTCInput.value = this.montantTTC.toFixed(2);
                 }
             },
             
-            submitForm() {
-                if (!this.produitId) {
-                    alert('Veuillez sélectionner un produit');
-                    return false;
-                }
+            async submitForm() {
+                console.log('Début de la soumission du formulaire...');
                 
-                // Vérifier que la quantité est valide
-                if (this.quantite <= 0) {
-                    alert('La quantité doit être supérieure à zéro');
-                    return false;
-                }
-                
-                // Vérifier que le prix unitaire est valide
-                if (this.prixUnitaire < 0) {
-                    alert('Le prix unitaire ne peut pas être négatif');
-                    return false;
-                }
-                
-                // Afficher le spinner de chargement
-                const spinner = document.getElementById('submit-spinner');
-                if (spinner) spinner.classList.remove('hidden');
-                
-                // Soumettre le formulaire manuellement
-                const form = this.$el.closest('form');
-                if (form) {
+                try {
+                    // Convertir les valeurs en nombres
+                    const quantite = parseFloat(this.quantite) || 0;
+                    const prixUnitaire = parseFloat(this.prixUnitaire) || 0;
+                    
+                    // Validation des champs obligatoires
+                    if (!this.produitId) {
+                        this.showNotification('Veuillez sélectionner un produit', 'error');
+                        return false;
+                    }
+                    
+                    // Vérifier que la quantité est valide
+                    if (isNaN(quantite) || quantite <= 0) {
+                        this.showNotification('La quantité doit être un nombre supérieur à zéro', 'error');
+                        return false;
+                    }
+                    
+                    // Vérifier que le prix unitaire est valide
+                    if (isNaN(prixUnitaire) || prixUnitaire < 0) {
+                        this.showNotification('Le prix unitaire doit être un nombre positif ou zéro', 'error');
+                        return false;
+                    }
+                    
+                    // Vérifier le stock disponible
+                    if (this.produitDetails) {
+                        const stockDisponible = parseFloat(this.produitDetails.quantite_stock || 0);
+                        if (quantite > stockDisponible) {
+                            this.showNotification(`Stock insuffisant. Quantité disponible : ${stockDisponible}`, 'error');
+                            return false;
+                        }
+                    }
+                    
+                    // Le formulaire est l'élément racine du composant Alpine
+                    const form = this.$el;
+                    
+                    if (!form || form.tagName !== 'FORM') {
+                        console.error('Erreur: Le composant doit être un formulaire', this.$el);
+                        this.showNotification('Erreur de configuration du formulaire', 'error');
+                        return false;
+                    }
+                    
+                    console.log('Mise à jour des champs du formulaire...');
+                    
+                    // Mettre à jour les champs cachés avec les valeurs actuelles
+                    const quantiteInput = document.getElementById('id_quantite');
+                    if (quantiteInput) {
+                        quantiteInput.value = quantite;
+                        console.log('Quantité mise à jour:', quantite);
+                    }
+                    
+                    const prixInput = document.getElementById('id_prix_unitaire');
+                    if (prixInput) {
+                        prixInput.value = prixUnitaire;
+                        console.log('Prix unitaire mis à jour:', prixUnitaire);
+                    }
+                    
+                    // Mettre à jour les valeurs dans l'état
+                    this.quantite = quantite;
+                    this.prixUnitaire = prixUnitaire;
+                    
+                    // Calculer les totaux une dernière fois
+                    this.calculerMontantTotal();
+                    
+                    // Vérifier les valeurs avant soumission
+                    console.log('Valeurs avant soumission:', {
+                        produitId: this.produitId,
+                        quantite: this.quantite,
+                        prixUnitaire: this.prixUnitaire,
+                        montantTotal: this.montantTotal
+                    });
+                    
                     // Créer un événement de soumission personnalisé
+                    console.log('Déclenchement de l\'événement submit...');
                     const event = new Event('submit', { cancelable: true });
                     const shouldSubmit = form.dispatchEvent(event);
                     
                     if (shouldSubmit) {
+                        console.log('Soumission du formulaire...');
                         form.submit();
+                    } else {
+                        console.log('Soumission annulée par un gestionnaire d\'événements');
                     }
+                    
+                    return false;
+                    
+                } catch (error) {
+                    console.error('Erreur lors de la soumission du formulaire:', error);
+                    this.showNotification('Une erreur est survenue lors de la soumission du formulaire', 'error');
+                    return false;
                 }
-                
-                return false;
+            },
+            
+            // Afficher une notification
+            showNotification(message, type = 'success') {
+                // Implémentez ici votre système de notification
+                // Par exemple, en utilisant un composant de notification
+                // ou simplement une alerte pour le moment
+                alert(`${type.toUpperCase()}: ${message}`);
             }
     }));
     

@@ -60,10 +60,10 @@ class ProduitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Produit
         fields = [
-            'id', 'reference', 'designation', 'description', 'categorie', 'categorie_nom',
+            'id', 'code', 'designation', 'description', 'categorie', 'categorie_nom',
             'fournisseur', 'fournisseur_nom', 'quantite_stock', 'seuil_alerte',
-            'prix_achat_ht', 'prix_vente_ht', 'tva', 'actif',
-            'date_creation', 'date_maj'
+            'prix_achat', 'prix_vente', 'photo',
+            'date_creation', 'date_mise_a_jour'
         ]
         read_only_fields = ['id', 'date_creation', 'date_maj']
     
@@ -73,13 +73,13 @@ class ProduitSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("La quantité en stock ne peut pas être négative.")
         return value
     
-    def validate_prix_achat_ht(self, value):
+    def validate_prix_achat(self, value):
         """Valide que le prix d'achat est positif."""
         if value <= 0:
             raise serializers.ValidationError("Le prix d'achat doit être supérieur à zéro.")
         return value
     
-    def validate_prix_vente_ht(self, value):
+    def validate_prix_vente(self, value):
         """Valide que le prix de vente est positif."""
         if value <= 0:
             raise serializers.ValidationError("Le prix de vente doit être supérieur à zéro.")
@@ -87,8 +87,8 @@ class ProduitSerializer(serializers.ModelSerializer):
     
     def validate(self, data):
         """Valide que le prix de vente est supérieur au prix d'achat."""
-        if 'prix_vente_ht' in data and 'prix_achat_ht' in data:
-            if data['prix_vente_ht'] <= data['prix_achat_ht']:
+        if 'prix_vente' in data and 'prix_achat' in data:
+            if data['prix_vente'] <= data['prix_achat']:
                 raise serializers.ValidationError(
                     "Le prix de vente doit être supérieur au prix d'achat."
                 )
@@ -107,12 +107,8 @@ class ProduitDetailSerializer(ProduitSerializer):
     
     def get_mouvements_recents(self, obj):
         """Récupère les 5 derniers mouvements du produit."""
-        entrees = obj.entrees.all().order_by('-date')[:3]
-        sorties = obj.sorties.all().order_by('-date')[:3]
-        
-        from .views import (
-            EntreeStockSerializer, SortieStockSerializer
-        )
+        entrees = EntreeStock.objects.filter(produit=obj).order_by('-date')[:3]
+        sorties = SortieStock.objects.filter(produit=obj).order_by('-date')[:3]
         
         return {
             'entrees': EntreeStockSerializer(entrees, many=True).data,
@@ -121,16 +117,25 @@ class ProduitDetailSerializer(ProduitSerializer):
     
     def get_total_entrees(self, obj):
         """Calcule le total des entrées de stock pour ce produit."""
-        return obj.entrees.aggregate(
+        from django.db.models import Sum, F
+        result = EntreeStock.objects.filter(produit=obj).aggregate(
             total_quantite=Sum('quantite'),
-            total_montant=Sum(F('quantite') * F('prix_unitaire_ht'))
+            total_montant=Sum(F('quantite') * F('prix_unitaire'))
         )
+        return {
+            'total_quantite': result['total_quantite'] or 0,
+            'total_montant': float(result['total_montant'] or 0)
+        }
     
     def get_total_sorties(self, obj):
         """Calcule le total des sorties de stock pour ce produit."""
-        return obj.sorties.aggregate(
+        from django.db.models import Sum
+        result = SortieStock.objects.filter(produit=obj).aggregate(
             total_quantite=Sum('quantite')
         )
+        return {
+            'total_quantite': result['total_quantite'] or 0
+        }
 
 class EntreeStockSerializer(serializers.ModelSerializer):
     """Sérialiseur pour le modèle EntreeStock."""
@@ -138,19 +143,18 @@ class EntreeStockSerializer(serializers.ModelSerializer):
     utilisateur_nom = serializers.CharField(source='utilisateur.get_full_name', read_only=True)
     montant_total = serializers.DecimalField(
         max_digits=12, decimal_places=2, read_only=True,
-        source='get_montant_total_ht'
+        source='get_montant_total'
     )
     
     class Meta:
         model = EntreeStock
         fields = [
-            'id', 'produit', 'produit_designation', 'quantite', 'prix_unitaire_ht',
-            'montant_total', 'date', 'utilisateur', 'utilisateur_nom', 'facture',
-            'num_serie', 'date_peremption', 'fournisseur', 'motif', 'annulee',
-            'date_creation', 'date_maj'
+            'id', 'produit', 'produit_designation', 'quantite', 'prix_unitaire',
+            'montant_total', 'date', 'utilisateur', 'utilisateur_nom',
+            'reference', 'notes', 'fournisseur', 'annulee'
         ]
         read_only_fields = [
-            'id', 'date_creation', 'date_maj', 'montant_total', 'utilisateur', 'annulee'
+            'id', 'date', 'montant_total', 'utilisateur', 'annulee'
         ]
     
     def validate_quantite(self, value):
@@ -159,7 +163,7 @@ class EntreeStockSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("La quantité doit être supérieure à zéro.")
         return value
     
-    def validate_prix_unitaire_ht(self, value):
+    def validate_prix_unitaire(self, value):
         """Valide que le prix unitaire est positif."""
         if value <= 0:
             raise serializers.ValidationError("Le prix unitaire doit être supérieur à zéro.")

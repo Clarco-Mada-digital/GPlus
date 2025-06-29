@@ -9,7 +9,15 @@ les données via des requêtes HTTP standardisées.
 from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, BasePermission, SAFE_METHODS
+
+class ReadOnly(BasePermission):
+    """
+    Autorise l'accès en lecture seule à n'importe quelle requête.
+    Cela signifie que les requêtes GET, HEAD ou OPTIONS seront autorisées.
+    """
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS
 from django.db.models import Sum, F, Q, Count
 from django.utils import timezone
 from datetime import timedelta
@@ -28,9 +36,18 @@ class ProduitViewSet(viewsets.ModelViewSet):
     """
     ViewSet pour gérer les produits via l'API.
     """
-    queryset = Produit.objects.all()
+    queryset = Produit.objects.select_related('categorie', 'fournisseur').all()
     serializer_class = ProduitSerializer
-    permission_classes = [IsAuthenticated]
+    
+    def get_permissions(self):
+        """
+        Instancie et retourne la liste des permissions requises pour cette vue.
+        """
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [ReadOnly]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
     
     def get_serializer_class(self):
         """Utilise un sérialiseur détaillé pour la récupération d'un seul objet."""
@@ -68,7 +85,16 @@ class CategorieViewSet(viewsets.ModelViewSet):
     """
     queryset = Categorie.objects.all()
     serializer_class = CategorieSerializer
-    permission_classes = [IsAuthenticated]
+    
+    def get_permissions(self):
+        """
+        Instancie et retourne la liste des permissions requises pour cette vue.
+        """
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [ReadOnly]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
     
     @action(detail=True, methods=['get'])
     def produits(self, request, pk=None):
@@ -91,7 +117,16 @@ class FournisseurViewSet(viewsets.ModelViewSet):
     """
     queryset = Fournisseur.objects.all()
     serializer_class = FournisseurSerializer
-    permission_classes = [IsAuthenticated]
+    
+    def get_permissions(self):
+        """
+        Instancie et retourne la liste des permissions requises pour cette vue.
+        """
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [ReadOnly]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
     
     @action(detail=True, methods=['get'])
     def produits(self, request, pk=None):
@@ -138,7 +173,16 @@ class EntreeStockViewSet(viewsets.ModelViewSet):
     """
     queryset = EntreeStock.objects.all()
     serializer_class = EntreeStockSerializer
-    permission_classes = [IsAuthenticated]
+    
+    def get_permissions(self):
+        """
+        Instancie et retourne la liste des permissions requises pour cette vue.
+        """
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [ReadOnly]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
     
     def perform_create(self, serializer):
         """Met à jour le stock lors de la création d'une entrée."""
@@ -189,7 +233,16 @@ class SortieStockViewSet(viewsets.ModelViewSet):
     """
     queryset = SortieStock.objects.all()
     serializer_class = SortieStockSerializer
-    permission_classes = [IsAuthenticated]
+    
+    def get_permissions(self):
+        """
+        Instancie et retourne la liste des permissions requises pour cette vue.
+        """
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [ReadOnly]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
     
     def perform_create(self, serializer):
         """Vérifie le stock et effectue la sortie."""
