@@ -47,7 +47,7 @@
 {% block content %}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Carte Nombre de produits -->
-        <div class="relative p-6 rounded-lg shadow-md overflow-hidden transition-all duration-300 transform hover:scale-[1.02] bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+        <div class="relative p-6 rounded-lg shadow-md overflow-hidden transition-all duration-300 transform hover:scale-[1.02] bg-blue-500 text-white">
             <i class="fas fa-box text-2xl mb-2 opacity-80"></i>
             <h3 class="text-2xl font-bold mb-1">{{ stats.total_produits|intcomma }}</h3>
             <p class="text-sm opacity-90">Produits en stock</p>
@@ -57,7 +57,7 @@
         </div>
         
         <!-- Carte Valeur du stock -->
-        <div class="relative p-6 rounded-lg shadow-md overflow-hidden transition-all duration-300 transform hover:scale-[1.02] bg-gradient-to-br from-green-500 to-green-600 text-white">
+        <div class="relative p-6 rounded-lg shadow-md overflow-hidden transition-all duration-300 transform hover:scale-[1.02] bg-green-500 text-white">
             <i class="fas fa-coins text-2xl mb-2 opacity-80"></i>
             <h3 class="text-2xl font-bold mb-1">{{ stats.valeur_totale|floatformat:0|intcomma }} FCFA</h3>
             <p class="text-sm opacity-90">Valeur du stock</p>
@@ -67,7 +67,7 @@
         </div>
         
         <!-- Carte Produits en alerte -->
-        <div class="relative p-6 rounded-lg shadow-md overflow-hidden transition-all duration-300 transform hover:scale-[1.02] bg-gradient-to-br from-yellow-500 to-yellow-600 text-white">
+        <div class="relative p-6 rounded-lg shadow-md overflow-hidden transition-all duration-300 transform hover:scale-[1.02] bg-yellow-500 text-white">
             <i class="fas fa-exclamation-triangle text-2xl mb-2 opacity-80"></i>
             <h3 class="text-2xl font-bold mb-1">{{ stats.produits_en_alerte|intcomma }}</h3>
             <p class="text-sm opacity-90">Produits en alerte</p>
@@ -80,7 +80,7 @@
         </div>
         
         <!-- Carte Mouvements récents -->
-        <div class="relative p-6 rounded-lg shadow-md overflow-hidden transition-all duration-300 transform hover:scale-[1.02] bg-gradient-to-br from-cyan-500 to-cyan-600 text-white">
+        <div class="relative p-6 rounded-lg shadow-md overflow-hidden transition-all duration-300 transform hover:scale-[1.02] bg-cyan-500 text-white">
             <i class="fas fa-exchange-alt text-2xl mb-2 opacity-80"></i>
             <h3 class="text-2xl font-bold mb-1">{{ stats.mouvements_7j|intcomma }}</h3>
             <p class="text-sm opacity-90">Mouvements (7j)</p>
