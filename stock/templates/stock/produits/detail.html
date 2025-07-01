@@ -109,11 +109,11 @@
                                 Stock actuel
                             </dt>
                             <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if produit.quantite_stock <= produit.seuil_alerte %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if produit.quantite_stock <= produit.seuil_alerte %}bg-red/10 text-red/80{% else %}bg-green-100 text-green-800{% endif %}">
                                     {{ produit.quantite_stock }} {{ produit.unite_mesure }}
                                 </span>
                                 {% if produit.quantite_stock <= produit.seuil_alerte %}
-                                    <span class="ml-2 text-sm text-red-600">
+                                    <span class="ml-2 text-sm text-red/60">
                                         <i class="fas fa-exclamation-triangle"></i> Stock en dessous du seuil d'alerte
                                     </span>
                                 {% endif %}

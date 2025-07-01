@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import models
 from django.db.models import Sum, F, Q, Count
 from django.utils import timezone
 from django.db import connection
@@ -141,6 +142,11 @@ class TableauBordView(LoginRequiredMixin, TemplateView):
             }
             for cat in categories_stats
         ]
+        
+        # Récupérer la liste des produits en alerte (stock <= seuil d'alerte)
+        context['produits_alerte_liste'] = Produit.objects.filter(
+            quantite_stock__lte=models.F('seuil_alerte')
+        ).order_by('quantite_stock')[:10]  # Limiter à 10 produits pour le tableau de bord
         
         return context
 
