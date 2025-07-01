@@ -83,13 +83,13 @@
 
 {% block page_actions %}
     <div class="flex flex-wrap gap-3">
-        <a href="{% url 'stock:ajouter_produit' %}" class="btn btn-primary">
+        <a href="{% url 'stock:ajouter_produit' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
             <i class="fas fa-plus mr-2"></i> Nouveau produit
         </a>
-        <a href="{% url 'stock:ajouter_entree' %}" class="btn btn-success">
+        <a href="{% url 'stock:ajouter_entree' %}" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
             <i class="fas fa-arrow-down mr-2"></i> Entrée stock
         </a>
-        <a href="{% url 'stock:ajouter_sortie' %}" class="btn btn-warning">
+        <a href="{% url 'stock:ajouter_sortie' %}" class="inline-flex items-center px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors">
             <i class="fas fa-arrow-up mr-2"></i> Sortie stock
         </a>
     </div>
@@ -98,30 +98,30 @@
 {% block content %}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Carte Nombre de produits -->
-        <div class="stat-card card-gradient-primary">
-            <i class="fas fa-box"></i>
-            <h3>{{ stats.total_produits|intcomma }}</h3>
-            <p>Produits en stock</p>
+        <div class="relative p-6 rounded-lg shadow-md overflow-hidden transition-all duration-300 transform hover:scale-[1.02] bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+            <i class="fas fa-box text-2xl mb-2 opacity-80"></i>
+            <h3 class="text-2xl font-bold mb-1">{{ stats.total_produits|intcomma }}</h3>
+            <p class="text-sm opacity-90">Produits en stock</p>
             <div class="absolute bottom-4 right-4 opacity-20">
                 <i class="fas fa-box text-4xl"></i>
             </div>
         </div>
         
         <!-- Carte Valeur du stock -->
-        <div class="stat-card card-gradient-success">
-            <i class="fas fa-coins"></i>
-            <h3>{{ stats.valeur_totale|floatformat:0|intcomma }} FCFA</h3>
-            <p>Valeur du stock</p>
+        <div class="relative p-6 rounded-lg shadow-md overflow-hidden transition-all duration-300 transform hover:scale-[1.02] bg-gradient-to-br from-green-500 to-green-600 text-white">
+            <i class="fas fa-coins text-2xl mb-2 opacity-80"></i>
+            <h3 class="text-2xl font-bold mb-1">{{ stats.valeur_totale|floatformat:0|intcomma }} FCFA</h3>
+            <p class="text-sm opacity-90">Valeur du stock</p>
             <div class="absolute bottom-4 right-4 opacity-20">
                 <i class="fas fa-coins text-4xl"></i>
             </div>
         </div>
         
         <!-- Carte Produits en alerte -->
-        <div class="stat-card card-gradient-warning">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h3>{{ stats.produits_en_alerte|intcomma }}</h3>
-            <p>Produits en alerte</p>
+        <div class="relative p-6 rounded-lg shadow-md overflow-hidden transition-all duration-300 transform hover:scale-[1.02] bg-gradient-to-br from-yellow-500 to-yellow-600 text-white">
+            <i class="fas fa-exclamation-triangle text-2xl mb-2 opacity-80"></i>
+            <h3 class="text-2xl font-bold mb-1">{{ stats.produits_en_alerte|intcomma }}</h3>
+            <p class="text-sm opacity-90">Produits en alerte</p>
             <div class="absolute bottom-4 right-4 opacity-20">
                 <i class="fas fa-exclamation-triangle text-4xl"></i>
             </div>
@@ -131,10 +131,10 @@
         </div>
         
         <!-- Carte Mouvements récents -->
-        <div class="stat-card card-gradient-info">
-            <i class="fas fa-exchange-alt"></i>
-            <h3>{{ stats.mouvements_7j|intcomma }}</h3>
-            <p>Mouvements (7j)</p>
+        <div class="relative p-6 rounded-lg shadow-md overflow-hidden transition-all duration-300 transform hover:scale-[1.02] bg-gradient-to-br from-cyan-500 to-cyan-600 text-white">
+            <i class="fas fa-exchange-alt text-2xl mb-2 opacity-80"></i>
+            <h3 class="text-2xl font-bold mb-1">{{ stats.mouvements_7j|intcomma }}</h3>
+            <p class="text-sm opacity-90">Mouvements (7j)</p>
             <div class="absolute bottom-4 right-4 opacity-20">
                 <i class="fas fa-exchange-alt text-4xl"></i>
             </div>

@@ -98,6 +98,60 @@ body {
 }
 
 /* Animation de la cloche de notification */
+
+/* Styles pour les cartes du tableau de bord */
+.stat-card {
+    @apply relative p-6 rounded-lg shadow-md overflow-hidden transition-all duration-300 transform hover:scale-[1.02];
+}
+
+.card-gradient-primary {
+    @apply bg-gradient-to-br from-blue-500 to-blue-600 text-white;
+}
+
+.card-gradient-success {
+    @apply bg-gradient-to-br from-green-500 to-green-600 text-white;
+}
+
+.card-gradient-warning {
+    @apply bg-gradient-to-br from-yellow-500 to-yellow-600 text-white;
+}
+
+.card-gradient-info {
+    @apply bg-gradient-to-br from-cyan-500 to-cyan-600 text-white;
+}
+
+.stat-card i {
+    @apply text-2xl mb-2 opacity-80;
+}
+
+.stat-card h3 {
+    @apply text-2xl font-bold mb-1;
+}
+
+.stat-card p {
+    @apply text-sm opacity-90;
+}
+
+/* Styles pour le mode sombre */
+.dark .stat-card {
+    @apply shadow-lg;
+}
+
+.dark .card-gradient-primary {
+    @apply from-blue-600 to-blue-700;
+}
+
+.dark .card-gradient-success {
+    @apply from-green-600 to-green-700;
+}
+
+.dark .card-gradient-warning {
+    @apply from-yellow-600 to-yellow-700;
+}
+
+.dark .card-gradient-info {
+    @apply from-cyan-600 to-cyan-700;
+}
 @keyframes bell-ring {
     0% { transform: rotate(0); }
     10% { transform: rotate(10deg); }
