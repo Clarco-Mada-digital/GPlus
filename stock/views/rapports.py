@@ -175,15 +175,20 @@ class RapportMouvementsView(LoginRequiredMixin, TemplateView):
                 current_date += timedelta(days=1)
         
         # Calculer les totaux
-        total_entrees = entrees.aggregate(
+        total_entrees_agg = entrees.aggregate(
             total_quantite=Sum('quantite'),
             total_montant=Sum(F('quantite') * F('prix_unitaire'))
         )
+        total_entrees = total_entrees_agg['total_montant'] or 0
         
-        total_sorties = sorties.aggregate(
+        total_sorties_agg = sorties.aggregate(
             total_quantite=Sum('quantite'),
             total_montant=Sum(F('quantite') * F('prix_unitaire'))
         )
+        total_sorties = total_sorties_agg['total_montant'] or 0
+        
+        # Calculer le solde total
+        total_general = total_entrees - total_sorties
         
         # Produits les plus vendus
         produits_vendus = sorties.values(
@@ -202,6 +207,40 @@ class RapportMouvementsView(LoginRequiredMixin, TemplateView):
             montant_total=Sum(F('quantite') * F('prix_unitaire'))
         ).filter(fournisseur__isnull=False).order_by('-montant_total')[:10]
         
+        # Préparer la liste des mouvements combinés
+        mouvements = []
+        
+        # Ajouter les entrées
+        for entree in entrees.select_related('produit', 'utilisateur', 'fournisseur'):
+            mouvements.append({
+                'date': entree.date,
+                'type': 'Entrée',
+                'produit': entree.produit,
+                'quantite': entree.quantite,
+                'prix_unitaire': entree.prix_unitaire,
+                'montant_total': entree.quantite * entree.prix_unitaire,
+                'reference': entree.reference,
+                'utilisateur': entree.utilisateur,
+                'objet': entree
+            })
+        
+        # Ajouter les sorties
+        for sortie in sorties.select_related('produit', 'utilisateur'):
+            mouvements.append({
+                'date': sortie.date,
+                'type': 'Sortie',
+                'produit': sortie.produit,
+                'quantite': sortie.quantite,
+                'prix_unitaire': sortie.prix_unitaire,
+                'montant_total': sortie.quantite * sortie.prix_unitaire,
+                'reference': sortie.reference,
+                'utilisateur': sortie.utilisateur,
+                'objet': sortie
+            })
+        
+        # Trier les mouvements par date (du plus récent au plus ancien)
+        mouvements.sort(key=lambda x: x['date'], reverse=True)
+        
         # Ajouter les données au contexte
         context.update({
             'date_debut': date_debut,
@@ -211,9 +250,11 @@ class RapportMouvementsView(LoginRequiredMixin, TemplateView):
             'mouvements_par_jour': mouvements_par_jour,
             'total_entrees': total_entrees,
             'total_sorties': total_sorties,
+            'total_general': total_general,
             'produits_vendus': produits_vendus,
             'fournisseurs': fournisseurs,
             'produits': Produit.objects.all().order_by('designation'),
+            'mouvements': mouvements,  # Ajout des mouvements combinés
         })
         
         return context

@@ -147,7 +147,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-3">
-                                    <a href="{% url 'stock:detail_sortie' sortie.pk %}" class="text-red-600 hover:text-red-800" title="Voir les détails">
+                                    <a href="{% url 'stock:detail_sortie' sortie.pk %}" class="text-blue-600 hover:text-blue-800" title="Voir les détails">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <a href="{% url 'stock:modifier_sortie' sortie.pk %}" class="text-indigo-600 hover:text-indigo-800" title="Modifier">
@@ -155,7 +155,7 @@
                                     </a>
                                     <form action="{% url 'stock:annuler_sortie' sortie.pk %}" method="post" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette sortie de stock ?');">
                                         {% csrf_token %}
-                                        <button type="submit" class="text-red-600 hover:text-red-800" title="Annuler">
+                                        <button type="submit" class="text-red/60 hover:text-red/80" title="Annuler">
                                             <i class="fas fa-times-circle"></i>
                                         </button>
                                     </form>

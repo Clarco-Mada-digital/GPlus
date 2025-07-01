@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.utils.translation import gettext_lazy as _
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from ..models import Categorie
 from ..forms import CategorieForm

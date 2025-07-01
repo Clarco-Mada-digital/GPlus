@@ -52,7 +52,7 @@
                 </div>
                 <div class="p-4">
                     <form method="get" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                        <div class="grid grid-cols-1 items-center md:grid-cols-12 gap-4">
                             <div class="md:col-span-3">
                                 <label for="id_date_debut" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     {{ form.date_debut.label }}
@@ -62,7 +62,7 @@
                                            id="id_date_debut"
                                            name="date_debut"
                                            value="{{ request.GET.date_debut }}"
-                                           class="block w-full dark:bg-gray-700 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400"
+                                           class="block w-full dark:bg-gray-700 dark:text-white rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400"
                                            required>
                                     {% if form.date_debut.errors %}
                                         <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -82,7 +82,7 @@
                                            id="id_date_fin"
                                            name="date_fin"
                                            value="{{ request.GET.date_fin }}"
-                                           class="block w-full dark:bg-gray-700 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400"
+                                           class="block w-full dark:bg-gray-700 dark:text-white rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400"
                                            required>
                                     {% if form.date_fin.errors %}
                                         <p class="mt-1 text-sm text-red-600 flex items-center">
@@ -100,8 +100,8 @@
                                 <div class="relative">
                                     <select id="id_produit" name="produit" class="block w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2.5 px-3 transition-colors hover:border-gray-400 dark:hover:border-gray-500">
                                         <option value="" class="dark:bg-gray-800">{% trans 'Tous les produits' %}</option>
-                                        {% for produit in form.produit.field.queryset %}
-                                            <option value="{{ produit.pk }}" {% if request.GET.produit == produit.pk %}selected{% endif %}>{{ produit }}</option>
+                                        {% for produit in produits %}
+                                            <option value="{{ produit.id }}" {% if request.GET.produit == produit.id|stringformat:'s' %}selected{% endif %}>{{ produit.designation }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -136,12 +136,12 @@
                 </div>
                 
                 <!-- Total Sorties -->
-                <div class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                <div class="bg-red/50 dark:bg-red-900/30 border border-red-200 dark:border-red/800 rounded-lg p-4">
                     <div class="text-center">
-                        <p class="text-sm font-medium text-red-800 dark:text-red-300">
-                            <i class="fas fa-arrow-up text-red-600 mr-1"></i> {% trans 'Total Sorties' %}
+                        <p class="text-sm font-medium text-red/80 dark:text-red/30">
+                            <i class="fas fa-arrow-up text-red/60 mr-1"></i> {% trans 'Total Sorties' %}
                         </p>
-                        <p class="mt-1 text-2xl font-semibold text-red-900 dark:text-red-100">
+                        <p class="mt-1 text-2xl font-semibold text-red/90 dark:text-red/10">
                             {{ total_sorties|floatformat:2|intcomma }} FCFA
                         </p>
                     </div>
@@ -196,31 +196,38 @@
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                             {% for mouvement in mouvements %}
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     {{ mouvement.date|date:"d/m/Y H:i" }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium {% if mouvement.type == 'Entrée' %}bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300{% else %}bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300{% endif %}">
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium {% if mouvement.type == 'Entrée' %}bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300{% else %}bg-red/10 dark:bg-red-900/50 text-red/80 dark:text-red/30{% endif %}">
                                         {{ mouvement.type }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     {{ mouvement.produit.designation }}
+                                    {% if mouvement.objet.notes %}
+                                    <p class="text-xs text-gray-500 mt-1">{{ mouvement.objet.notes|truncatechars:50 }}</p>
+                                    {% endif %}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">
                                     {{ mouvement.quantite|floatformat:2|intcomma }} {{ mouvement.produit.unite_mesure|default:'' }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">
                                     {{ mouvement.prix_unitaire|floatformat:2|intcomma }} FCFA
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-right">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100 text-right">
                                     {{ mouvement.montant_total|floatformat:2|intcomma }} FCFA
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ mouvement.reference|default:"-" }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ mouvement.utilisateur.get_full_name|default:mouvement.utilisateur.username }}
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                    {% if mouvement.utilisateur %}
+                                        {{ mouvement.utilisateur.get_full_name|default:mouvement.utilisateur.username }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% empty %}

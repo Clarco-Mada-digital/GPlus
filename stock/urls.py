@@ -40,6 +40,9 @@ urlpatterns = [
     path('entrees/annuler/<int:pk>/', login_required(views.mouvements.AnnulerEntreeView.as_view()), name='annuler_entree'),
     path('sorties/', login_required(views.mouvements.ListeSortiesView.as_view()), name='liste_sorties'),
     path('sorties/ajouter/', login_required(views.mouvements.AjouterSortieView.as_view()), name='ajouter_sortie'),
+    path('sorties/<int:pk>/', login_required(views.mouvements.DetailSortieView.as_view()), name='detail_sortie'),
+    path('sorties/modifier/<int:pk>/', login_required(views.mouvements.ModifierSortieView.as_view()), name='modifier_sortie'),
+    path('sorties/annuler/<int:pk>/', login_required(views.mouvements.AnnulerSortieView.as_view()), name='annuler_sortie'),
     
     # Historique et rapports
     path('historique/', login_required(views.historique.HistoriqueMouvementsView.as_view()), name='historique'),

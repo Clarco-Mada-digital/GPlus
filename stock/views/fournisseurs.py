@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.utils import timezone
 from datetime import timedelta
 from django.utils.translation import gettext_lazy as _
-from django.db.models import Count, Sum, F, DecimalField, ExpressionWrapper
+from django.db.models import Count, Sum, F, DecimalField, ExpressionWrapper, Q
 from django.db.models.functions import TruncMonth
 from django.shortcuts import get_object_or_404
 

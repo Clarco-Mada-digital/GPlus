@@ -257,21 +257,35 @@
         {% if messages %}
             <div class="mb-6 space-y-3">
                 {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} flex items-center justify-between p-4 rounded" role="alert" data-auto-dismiss="5000">
+                    <div class="flex items-center justify-between p-4 rounded-md shadow-sm border-l-4 {% if message.tags == 'success' %}bg-green-50 border-green-500 text-green-700{% elif message.tags == 'error' %}bg-red-50 border-red-500 text-red-700{% elif message.tags == 'warning' %}bg-yellow-50 border-yellow-500 text-yellow-700{% else %}bg-blue-50 border-blue-500 text-blue-700{% endif %}" 
+                         role="alert" 
+                         data-auto-dismiss="5000"
+                         x-data="{ show: true }"
+                         x-show="show"
+                         x-init="setTimeout(() => show = false, 5000)"
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform scale-95"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-end="opacity-0">
                         <div class="flex items-center">
                             {% if message.tags == 'success' %}
-                                <i class="fas fa-check-circle mr-2"></i>
+                                <i class="fas fa-check-circle text-green-500 mr-3"></i>
                             {% elif message.tags == 'error' %}
-                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
                             {% elif message.tags == 'warning' %}
-                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                <i class="fas fa-exclamation-triangle text-yellow-500 mr-3"></i>
                             {% else %}
-                                <i class="fas fa-info-circle mr-2"></i>
+                                <i class="fas fa-info-circle text-blue-500 mr-3"></i>
                             {% endif %}
-                            <span>{{ message }}</span>
+                            <span class="text-sm font-medium">{{ message }}</span>
                         </div>
-                        <button type="button" class="ml-4 text-gray-500 hover:text-gray-700" data-dismiss="alert" aria-label="Fermer">
-                            <i class="fas fa-times"></i>
+                        <button type="button" 
+                                class="ml-4 -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex h-8 w-8 items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 {% if message.tags == 'success' %}text-green-500 hover:bg-green-100 focus:ring-green-400{% elif message.tags == 'error' %}text-red-500 hover:bg-red-100 focus:ring-red-400{% elif message.tags == 'warning' %}text-yellow-500 hover:bg-yellow-100 focus:ring-yellow-400{% else %}text-blue-500 hover:bg-blue-100 focus:ring-blue-400{% endif %}" 
+                                data-dismiss="alert" 
+                                aria-label="Fermer"
+                                @click="show = false">
+                            <span class="sr-only">Fermer</span>
+                            <i class="fas fa-times text-lg"></i>
                         </button>
                     </div>
                 {% endfor %}

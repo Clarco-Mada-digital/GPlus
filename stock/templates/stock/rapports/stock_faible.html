@@ -93,11 +93,11 @@
         <div class="bg-blue-50 dark:bg-blue-900/30 p-4 border-b border-blue-100 dark:border-blue-800">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div>
-                    <h3 class="text-lg font-medium text-red-800 dark:text-red-400">
+                    <h3 class="text-lg font-medium text-red/80 dark:text-red/40">
                         <i class="fas fa-exclamation-triangle mr-2"></i>
                         {{ produits|length }} produit{{ produits|pluralize }} en stock faible
                     </h3>
-                    <p class="text-sm text-red-700 dark:text-red-300 mt-1">
+                    <p class="text-sm text-red/70 dark:text-red/30 mt-1">
                         Seuil d'alerte : {{ seuil_alerte }} unité{{ seuil_alerte|pluralize }}
                     </p>
                 </div>

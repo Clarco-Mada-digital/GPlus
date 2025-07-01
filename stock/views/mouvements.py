@@ -228,6 +228,27 @@ class ListeSortiesView(LoginRequiredMixin, ListView):
         return context
 
 
+class ModifierSortieView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = SortieStock
+    form_class = SortieStockForm
+    template_name = 'stock/mouvements/sortie_form.html'
+    context_object_name = 'sortie'
+    permission_required = 'stock.change_sortiestock'
+    
+    def get_queryset(self):
+        return SortieStock.objects.select_related('produit', 'utilisateur')
+    
+    def get_success_url(self):
+        messages.success(self.request, _("La sortie de stock a été modifiée avec succès."))
+        return reverse_lazy('stock:detail_sortie', kwargs={'pk': self.object.pk})
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titre'] = _("Modifier la sortie de stock")
+        context['submit_text'] = _("Enregistrer les modifications")
+        return context
+
+
 class AjouterSortieView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = SortieStock
     form_class = SortieStockForm
@@ -266,6 +287,41 @@ class AjouterSortieView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
         context['titre'] = _("Nouvelle sortie de stock")
         context['submit_text'] = _("Enregistrer")
         context['submit_and_add'] = True
+        return context
+
+
+class DetailSortieView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    model = SortieStock
+    template_name = 'stock/mouvements/sortie_detail.html'
+    context_object_name = 'sortie'
+    permission_required = 'stock.view_sortiestock'
+    
+    def get_queryset(self):
+        return SortieStock.objects.select_related('produit', 'utilisateur')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sortie = self.object
+        
+        # Calculer la quantité de stock après cette sortie
+        # On récupère toutes les entrées avant cette sortie
+        entree_avant = EntreeStock.objects.filter(
+            produit=sortie.produit,
+            date__lte=sortie.date
+        ).aggregate(total=Sum('quantite'))['total'] or 0
+        
+        # On récupère toutes les sorties avant cette sortie
+        # Note: Le champ 'annulee' n'existe pas dans le modèle, donc on ne le filtre pas
+        sortie_avant = SortieStock.objects.filter(
+            produit=sortie.produit,
+            date__lt=sortie.date
+        ).exclude(pk=sortie.pk).aggregate(total=Sum('quantite'))['total'] or 0
+        
+        # Calcul du stock après cette sortie
+        # On utilise la quantité actuelle en stock comme référence
+        stock_apres = sortie.produit.quantite_stock
+        
+        context['quantite_apres'] = stock_apres
         return context
 
 

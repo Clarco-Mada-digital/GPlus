@@ -40,7 +40,7 @@
             </a>
             <form action="{% url 'stock:annuler_sortie' sortie.pk %}" method="post" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette sortie de stock ?');">
                 {% csrf_token %}
-                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red/60 hover:bg-red/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                     <i class="fas fa-times-circle mr-2"></i> Annuler la sortie
                 </button>
             </form>
@@ -49,14 +49,14 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-white shadow overflow-hidden sm:rounded-lg">
-    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+<div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700">
         <div class="flex justify-between items-center">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
                 Détails de la sortie de stock
             </h3>
             {% if sortie.annulee %}
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red/80">
                     Annulée
                 </span>
             {% else %}
@@ -70,13 +70,13 @@
         </p>
     </div>
     
-    <div class="border-t border-gray-200">
+    <div class="border-t border-gray-200 dark:border-gray-700 dark:bg-gray-700">
         <dl>
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Produit
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-200 sm:mt-0 sm:col-span-2">
                     <div class="flex items-center">
                         {% if sortie.produit.photo %}
                             <div class="flex-shrink-0 h-10 w-10">
@@ -84,10 +84,10 @@
                             </div>
                         {% endif %}
                         <div class="ml-4">
-                            <div class="text-sm font-medium text-gray-900">
+                            <div class="text-sm font-medium text-gray-900 dark:text-gray-200">
                                 {{ sortie.produit.designation }}
                             </div>
-                            <div class="text-sm text-gray-500">
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
                                 {{ sortie.produit.code }}
                             </div>
                         </div>
@@ -95,11 +95,11 @@
                 </dd>
             </div>
             
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Client
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-200 sm:mt-0 sm:col-span-2">
                     {% if sortie.client %}
                         {{ sortie.client }}
                     {% else %}
@@ -108,85 +108,85 @@
                 </dd>
             </div>
             
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Quantité
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-200 sm:mt-0 sm:col-span-2">
                     {{ sortie.quantite|intcomma }} {{ sortie.produit.unite_mesure|default:"unité" }}{{ sortie.quantite|pluralize }}
                 </dd>
             </div>
             
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Prix unitaire
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-200 sm:mt-0 sm:col-span-2">
                     {{ sortie.prix_unitaire|default:0|floatformat:2 }} €
                 </dd>
             </div>
             
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Montant total
                 </dt>
-                <dd class="mt-1 text-sm font-semibold text-green-600 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm font-semibold text-green-600 dark:text-green-400 sm:mt-0 sm:col-span-2">
                     {{ sortie.montant_total|default:0|floatformat:2 }} €
                 </dd>
             </div>
             
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Date et heure
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-200 sm:mt-0 sm:col-span-2">
                     {{ sortie.date|date:"d/m/Y H:i" }}
                 </dd>
             </div>
             
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Effectuée par
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-200 sm:mt-0 sm:col-span-2">
                     {{ sortie.utilisateur.get_full_name|default:sortie.utilisateur.username }}
                 </dd>
             </div>
             
             {% if sortie.notes %}
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Notes
                 </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-200 sm:mt-0 sm:col-span-2">
                     {{ sortie.notes|linebreaksbr }}
                 </dd>
             </div>
             {% endif %}
             
             {% if sortie.annulee %}
-            <div class="bg-red-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-red-500">
+            <div class="bg-red-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 dark:bg-gray-700">
+                <dt class="text-sm font-medium text-red/50 dark:text-red/40">
                     Annulée le
                 </dt>
-                <dd class="mt-1 text-sm text-red-700 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-red/70 dark:text-red/20 sm:mt-0 sm:col-span-2">
                     {{ sortie.date_annulation|date:"d/m/Y H:i" }}
                 </dd>
                 
                 {% if sortie.utilisateur_annulation %}
-                <dt class="text-sm font-medium text-red-500">
+                <dt class="text-sm font-medium text-red/50 dark:text-red/40">
                     Annulée par
                 </dt>
-                <dd class="mt-1 text-sm text-red-700 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-red/70 dark:text-red/20 sm:mt-0 sm:col-span-2">
                     {{ sortie.utilisateur_annulation.get_full_name|default:sortie.utilisateur_annulation.username }}
                 </dd>
                 {% endif %}
                 
                 {% if sortie.motif_annulation %}
-                <dt class="text-sm font-medium text-red-500">
+                <dt class="text-sm font-medium text-red/50 dark:text-red/40">
                     Motif d'annulation
                 </dt>
-                <dd class="mt-1 text-sm text-red-700 sm:mt-0 sm:col-span-2">
+                <dd class="mt-1 text-sm text-red/70 dark:text-red/20 sm:mt-0 sm:col-span-2">
                     {{ sortie.motif_annulation }}
                 </dd>
                 {% endif %}
@@ -195,7 +195,7 @@
         </dl>
     </div>
     
-    <div class="bg-gray-50 px-4 py-4 sm:px-6 border-t border-gray-200">
+    <div class="bg-gray-50 px-4 py-4 sm:px-6 border-t border-gray-200 dark:bg-gray-700">
         <div class="flex justify-between items-center">
             <div class="text-sm text-gray-500">
                 Créée le {{ sortie.date_creation|date:"d/m/Y" }}
