@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'simple_history',
     'django.contrib.humanize',
     'widget_tweaks',
+    'vente',
 ]
 
 MIDDLEWARE = [

@@ -37,6 +37,7 @@ urlpatterns = [
     path("facture/", include("facture.urls", namespace='facture')),          # Pour la module du facture et devise
     path("client/", include("clients.urls", namespace='client')),          # Pour la module du clients et prospects
     path("stock/", include("stock.urls", namespace='stock')), # Pour la module du stock
+    path("vente/", include("vente.urls", namespace='vente')), # Pour la module de vente
     path("__reload__/", include("django_browser_reload.urls")),
     # API
     # path('api/', include('caisse.api_urls')),

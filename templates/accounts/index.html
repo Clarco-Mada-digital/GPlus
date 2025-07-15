@@ -41,6 +41,9 @@
         <a href="{% url 'stock:tableau_bord' %}">
         {% include 'components/Card.html' with title="Stock" description="Nouveau" notification_msg="Nouveau" image="static/images/stock.svg" %}
         </a>
+        <a href="{% url 'vente:index' %}">
+        {% include 'components/Card.html' with title="Vente" description="Module en développement" notification_msg="Nouveau" image="static/images/panier-icon.png" %}
+        </a>
       </div>
 
     </div>
