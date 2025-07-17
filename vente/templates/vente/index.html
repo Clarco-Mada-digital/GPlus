@@ -121,11 +121,11 @@
             <!-- Sélecteur de type (produit/service) -->
             <div class="relative">
               <div class="inline-flex rounded-md shadow-sm cursor-pointer" role="group">
-                <a @click="productView = true" class="px-4 py-2 text-sm font-medium rounded-l-lg border border-gray-200 dark:border-gray-600"
+                <a @click="cart = []; productView = true" class="px-4 py-2 text-sm font-medium rounded-l-lg border border-gray-200 dark:border-gray-600"
                 :class="{ 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100': productView }">
                   <i class="fas fa-box-open mr-2"></i>Produits
                 </a>
-                <a @click="productView = false" class="px-4 py-2 text-sm font-medium rounded-r-lg border-t border-b border-r border-gray-200 dark:border-gray-600"
+                <a @click="cart = []; productView = false" class="px-4 py-2 text-sm font-medium rounded-r-lg border-t border-b border-r border-gray-200 dark:border-gray-600"
                 :class="{ 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100': !productView }">
                   <i class="fas fa-concierge-bell mr-2"></i>Services
                 </a>
