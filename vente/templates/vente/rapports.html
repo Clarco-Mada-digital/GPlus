@@ -1,0 +1,516 @@
+{% extends 'layouts/vente_layout.html' %}
+{% load humanize %}
+
+{% block breadcrumb_items %}
+<nav class="flex" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-4">
+        <li>
+            <div class="flex items-center">
+                <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+                <button class="ml-4 text-sm font-medium text-gray-500 hover:text-blue-700">Rapports</button>
+            </div>
+        </li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block title %}Rapports et statistiques{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .card {
+        @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6;
+    }
+    .chart-container {
+        @apply relative h-80 w-full;
+    }
+    .stat-card {
+        @apply bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center justify-center text-center;
+    }
+    .stat-value {
+        @apply text-3xl font-bold text-blue-600 dark:text-blue-400;
+    }
+    .stat-label {
+        @apply text-gray-500 dark:text-gray-400 text-sm mt-2;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Overlay de chargement -->
+<div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 50; display: flex; align-items: center; justify-content: center;">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span class="text-gray-700 dark:text-gray-200">Chargement des données...</span>
+        </div>
+    </div>
+</div>
+
+<div class="container mx-auto px-4 py-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Rapports et statistiques</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Analyse des performances de vente</p>
+        </div>
+        <div class="flex flex-col sm:flex-row items-stretch gap-3 w-full md:w-auto">
+            <div class="relative flex-grow">
+                <input type="text" id="date-range" class="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm" placeholder="Sélectionner une période">
+            </div>
+            <button id="apply-filters" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap">
+                <i class="fas fa-filter mr-1"></i> Appliquer
+            </button>
+        </div>
+    </div>
+
+    <!-- Cartes de statistiques -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Chiffre d'affaires</p>
+                    <p class="text-2xl font-semibold text-gray-900 dark:text-white" id="total-ventes">0 Ar</p>
+                </div>
+                <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300">
+                    <i class="fas fa-money-bill-wave text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-4 text-sm text-green-600 dark:text-green-400 flex items-center">
+                <i class="fas fa-arrow-up mr-1"></i> <span id="ventes-evolution">0%</span> vs période précédente
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Commandes</p>
+                    <p class="text-2xl font-semibold text-gray-900 dark:text-white" id="total-commandes">0</p>
+                </div>
+                <div class="p-3 rounded-full bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-4 text-sm text-green-600 dark:text-green-400 flex items-center">
+                <i class="fas fa-arrow-up mr-1"></i> <span id="commandes-evolution">0%</span> vs période précédente
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Panier moyen</p>
+                    <p class="text-2xl font-semibold text-gray-900 dark:text-white" id="moyenne-panier">0 Ar</p>
+                </div>
+                <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300">
+                    <i class="fas fa-shopping-bag text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-4 text-sm text-green-600 dark:text-green-400 flex items-center">
+                <i class="fas fa-arrow-up mr-1"></i> <span id="panier-evolution">0%</span> vs période précédente
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Produits vendus</p>
+                    <p class="text-2xl font-semibold text-gray-900 dark:text-white" id="produits-vendus">0</p>
+                </div>
+                <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-300">
+                    <i class="fas fa-boxes text-xl"></i>
+                </div>
+            </div>
+            <div class="mt-4 text-sm text-green-600 dark:text-green-400 flex items-center">
+                <i class="fas fa-arrow-up mr-1"></i> <span id="produits-evolution">0%</span> vs période précédente
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphique des ventes par jour -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 border border-gray-200 dark:border-gray-700">
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Évolution des ventes</h2>
+        </div>
+        <div class="chart-container" style="height: 350px;">
+            <canvas id="ventes-chart"></canvas>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Graphique des ventes par catégorie -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+            <h2 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Répartition par catégorie</h2>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="categories-chart"></canvas>
+            </div>
+            <div class="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                Répartition du chiffre d'affaires par catégorie de produits
+            </div>
+        </div>
+
+        <!-- Tableau des meilleurs produits -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Top produits</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Produit</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Qté</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="top-products-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <tr>
+                                <td colspan="3" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                                    Chargement des données...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right text-sm">
+                <a href="#" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium">Voir tout</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Fonction utilitaire pour formater les nombres
+function formatNumber(number) {
+    return new Intl.NumberFormat('fr-MG', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(number);
+}
+
+// Fonction pour formater les montants en Ar
+function formatCurrency(amount) {
+    return formatNumber(amount) + ' Ar';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialisation du sélecteur de date
+    const dateRange = flatpickr("#date-range", {
+        mode: "range",
+        dateFormat: "d/m/Y",
+        locale: "fr",
+        defaultDate: [new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), new Date()]
+    });
+
+    // Variables pour les graphiques
+    let ventesChart, categoriesChart;
+    
+    // Fonction pour charger les données des rapports
+    async function loadReportsData(startDate, endDate) {
+        try {
+            // Afficher l'état de chargement
+            showLoading(true);
+            
+            // Convertir les dates au format YYYY-MM-DD
+            const formatDate = (date) => {
+                return date.toISOString().split('T')[0];
+            };
+            
+            // Construire les paramètres d'URL
+            const params = new URLSearchParams();
+            if (startDate) params.append('start_date', formatDate(startDate));
+            if (endDate) params.append('end_date', formatDate(endDate));
+            
+            // Charger les données en parallèle
+            const [ventesData, categoriesData, produitsData] = await Promise.all([
+                fetch(`/vente/api/rapports/ventes-par-jour?${params}`).then(res => res.json()),
+                fetch(`/vente/api/rapports/ventes-par-categorie?${params}`).then(res => res.json()),
+                fetch(`/vente/api/rapports/meilleurs-produits?${params}`).then(res => res.json())
+            ]);
+            
+            // Mettre à jour les graphiques
+            updateVentesChart(ventesData);
+            updateCategoriesChart(categoriesData);
+            updateTopProducts(produitsData);
+            
+            // Calculer et afficher les totaux
+            updateTotals(ventesData, categoriesData, produitsData);
+            
+        } catch (error) {
+            console.error('Erreur lors du chargement des données:', error);
+            alert('Une erreur est survenue lors du chargement des données.');
+        } finally {
+            showLoading(false);
+        }
+    }
+    
+    // Fonction pour afficher/masquer l'état de chargement
+    function showLoading(show) {
+        const loadingElement = document.getElementById('loading-overlay');
+        if (loadingElement) {
+            loadingElement.style.display = show ? 'flex' : 'none';
+        }
+    }
+    
+    // Fonction pour mettre à jour le graphique des ventes
+    function updateVentesChart(data) {
+        const ctx = document.getElementById('ventes-chart').getContext('2d');
+        
+        // Détruire le graphique existant s'il existe
+        if (ventesChart) {
+            ventesChart.destroy();
+        }
+        
+        // Vérifier si data est défini et contient des données
+        if (!data || !data.labels || !data.datasets) {
+            console.error('Format de données invalide pour le graphique des ventes:', data);
+            return;
+        }
+        
+        // Créer le graphique
+        ventesChart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'CA: ' + formatCurrency(context.raw);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return formatCurrency(value);
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Fonction pour mettre à jour le graphique des catégories
+    function updateCategoriesChart(data) {
+        const ctx = document.getElementById('categories-chart').getContext('2d');
+        
+        // Détruire le graphique existant s'il existe
+        if (categoriesChart) {
+            categoriesChart.destroy();
+        }
+        
+        // Vérifier si data est défini et contient des données
+        if (!data || !data.labels || !data.datasets) {
+            console.error('Format de données invalide pour le graphique des catégories:', data);
+            return;
+        }
+        
+        // Créer le graphique
+        categoriesChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${formatCurrency(value)} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Fonction pour mettre à jour le tableau des meilleurs produits
+    function updateTopProducts(data) {
+        const tbody = document.getElementById('top-products-body');
+        if (!tbody) return;
+        
+        // Vérifier si data est défini et contient des données
+        if (!data || !data.produits || !Array.isArray(data.produits)) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="3" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                        Aucune donnée disponible pour la période sélectionnée
+                    </td>
+                </tr>`;
+            console.error('Format de données invalide pour les meilleurs produits:', data);
+            return;
+        }
+        
+        if (data.produits.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="3" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                        Aucune donnée disponible pour la période sélectionnée
+                    </td>
+                </tr>`;
+            return;
+        }
+        
+        // Trier par montant total décroissant
+        const produitsTries = [...data.produits].sort((a, b) => parseFloat(b.total) - parseFloat(a.total));
+        
+        // Générer les lignes du tableau
+        const rows = produitsTries.map(item => `
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                    ${item.produit || 'Produit inconnu'}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-right text-sm text-gray-500 dark:text-gray-400">
+                    ${formatNumber(item.quantite || 0)}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium text-gray-900 dark:text-white">
+                    ${formatCurrency(item.total || 0)}
+                </td>
+            </tr>
+        `).join('');
+        
+        tbody.innerHTML = rows;
+    }
+    
+    // Fonction pour mettre à jour les totaux
+    function updateTotals(ventesData, categoriesData, produitsData) {
+        // Vérifier si les données sont valides
+        if (!ventesData || !ventesData.datasets || !ventesData.datasets[0] || !produitsData || !produitsData.produits) {
+            console.error('Données manquantes pour le calcul des totaux:', {ventesData, produitsData});
+            return;
+        }
+        
+        // Calculer le chiffre d'affaires total (somme de toutes les ventes)
+        const totalVentes = ventesData.datasets[0].data.reduce((sum, value) => sum + parseFloat(value || 0), 0);
+        
+        // Estimer le nombre de commandes (nombre de jours avec des ventes)
+        const joursAvecVentes = ventesData.datasets[0].data.filter(v => parseFloat(v) > 0).length;
+        const totalCommandes = Math.max(1, joursAvecVentes); // Éviter la division par zéro
+        
+        // Calculer le panier moyen
+        const panierMoyen = totalCommandes > 0 ? totalVentes / totalCommandes : 0;
+        
+        // Calculer le nombre total de produits vendus
+        const totalProduits = Array.isArray(produitsData.produits) 
+            ? produitsData.produits.reduce((sum, item) => sum + parseInt(item.quantite || 0), 0)
+            : 0;
+        
+        // Mettre à jour l'interface utilisateur
+        document.getElementById('total-ventes').textContent = formatCurrency(totalVentes);
+        document.getElementById('total-commandes').textContent = formatNumber(totalCommandes);
+        document.getElementById('moyenne-panier').textContent = formatCurrency(panierMoyen);
+        document.getElementById('produits-vendus').textContent = formatNumber(totalProduits);
+        
+        // Mettre à jour les évolutions (exemple avec des valeurs factices)
+        document.getElementById('ventes-evolution').textContent = '+5.2%';
+        document.getElementById('commandes-evolution').textContent = '+3.8%';
+        document.getElementById('panier-evolution').textContent = '+1.4%';
+        document.getElementById('produits-evolution').textContent = '+7.1%';
+    }
+
+    // Fonction utilitaire pour formater les dates au format YYYY-MM-DD
+    function formatDateForAPI(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+    
+    // Fonction pour charger les données des rapports
+    async function loadReportsData(startDate, endDate) {
+        try {
+            // Afficher l'état de chargement
+            showLoading(true);
+            
+            // Construire les paramètres d'URL
+            const params = new URLSearchParams({
+                start_date: formatDateForAPI(startDate),
+                end_date: formatDateForAPI(endDate)
+            });
+            
+            // Charger les données en parallèle
+            const [ventesData, categoriesData, produitsData] = await Promise.all([
+                fetch(`/vente/api/rapports/ventes-par-jour?${params}`).then(res => res.json()),
+                fetch(`/vente/api/rapports/ventes-par-categorie?${params}`).then(res => res.json()),
+                fetch(`/vente/api/rapports/meilleurs-produits?${params}&limit=5`).then(res => res.json())
+            ]);
+            
+            // Mettre à jour les graphiques et les totaux
+            updateVentesChart(ventesData);
+            updateCategoriesChart(categoriesData);
+            updateTopProducts(produitsData);
+            updateTotals(ventesData, categoriesData, produitsData);
+            
+        } catch (error) {
+            console.error('Erreur lors du chargement des données:', error);
+            alert('Une erreur est survenue lors du chargement des données.');
+        } finally {
+            showLoading(false);
+        }
+    }
+    
+    // Gestionnaire d'événement pour le bouton d'application des filtres
+    document.getElementById('apply-filters').addEventListener('click', function() {
+        const dates = dateRange.selectedDates;
+        if (dates.length === 2) {
+            loadReportsData(dates[0], dates[1]);
+        } else {
+            alert('Veuillez sélectionner une plage de dates valide');
+        }
+    });
+    
+    
+    // Charger les données initiales (30 derniers jours par défaut)
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - 30);
+    dateRange.setDate([startDate, endDate]);
+    loadReportsData(startDate, endDate);
+});
+</script>
+{% endblock %}

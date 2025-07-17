@@ -1,6 +1,7 @@
-from django.db import models
+from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.utils import timezone
 
 
 class Categorie(models.Model):
@@ -181,6 +182,16 @@ class SortieStock(models.Model):
     client = models.CharField(_('client'), max_length=200, blank=True)
     reference = models.CharField(_('référence'), max_length=100, blank=True)
     notes = models.TextField(_('notes'), blank=True)
+    annulee = models.BooleanField(_('annulée'), default=False, help_text=_("Indique si cette sortie a été annulée"))
+    date_annulation = models.DateTimeField(_("date d'annulation"), null=True, blank=True)
+    utilisateur_annulation = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='sorties_annulees',
+        verbose_name=_('utilisateur ayant annulé')
+    )
 
     class Meta:
         verbose_name = _('sortie de stock')
@@ -202,12 +213,41 @@ class SortieStock(models.Model):
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        """Restaure la quantité en stock du produit lors de la suppression."""
-        # Utilisation de F() pour éviter les conditions de course
-        from django.db.models import F
-        self.produit.quantite_stock = F('quantite_stock') + self.quantite
-        self.produit.save(update_fields=['quantite_stock'])
-        super().delete(*args, **kwargs)
+        """
+        Empêche la suppression directe des sorties de stock.
+        Utilisez annuler() à la place pour marquer une sortie comme annulée.
+        """
+        raise NotImplementedError("Utilisez annuler() au lieu de delete() pour annuler une sortie de stock.")
+        
+    def annuler(self, utilisateur):
+        """
+        Annule cette sortie de stock et restaure la quantité en stock.
+        """
+        if self.annulee:
+            raise ValueError("Cette sortie a déjà été annulée")
+            
+        with transaction.atomic():
+            # Restaurer la quantité en stock
+            from django.db.models import F
+            self.produit.quantite_stock = F('quantite_stock') + self.quantite
+            self.produit.save(update_fields=['quantite_stock'])
+            
+            # Marquer comme annulée
+            self.annulee = True
+            self.date_annulation = timezone.now()
+            self.utilisateur_annulation = utilisateur
+            self.save(update_fields=['annulee', 'date_annulation', 'utilisateur_annulation'])
+            
+            # Créer une entrée de stock pour l'annulation
+            EntreeStock.objects.create(
+                produit=self.produit,
+                quantite=self.quantite,
+                prix_unitaire=self.prix_unitaire,
+                motif_entree='ANNULATION',
+                reference=f'ANNUL-{self.reference or self.id}',
+                utilisateur=utilisateur,
+                commentaire=f'Annulation de la sortie {self.reference or self.id}'
+            )
 
     @property
     def montant_total(self):

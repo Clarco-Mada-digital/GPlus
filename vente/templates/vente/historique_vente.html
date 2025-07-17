@@ -1,0 +1,389 @@
+{% extends "layouts/vente_layout.html" %}
+{% load humanize %}
+
+{% block breadcrumb_items %}
+<nav class="flex" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-4">
+        <li>
+            <div class="flex items-center">
+                <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+                <button class="ml-4 text-sm font-medium text-gray-500 hover:text-blue-700">Historique</button>
+            </div>
+        </li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Historique des ventes</h1>
+        <a href="{% url 'vente:index' %}" 
+           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>Retour aux ventes
+        </a>
+    </div>
+
+    <!-- Filtres -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6">
+        <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label for="date_debut" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date de début</label>
+                <input type="date" name="date_debut" id="date_debut" 
+                       value="{{ date_debut }}" 
+                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            </div>
+            <div>
+                <label for="date_fin" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date de fin</label>
+                <input type="date" name="date_fin" id="date_fin" 
+                       value="{{ date_fin }}"
+                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            </div>
+            <div class="flex items-end">
+                <button type="submit" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <i class="fas fa-filter mr-2"></i>Filtrer
+                </button>
+            </div>
+            <div class="flex items-end justify-end">
+                <a href="{% url 'vente:historique_vente' %}" 
+                   class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600">
+                    Réinitialiser
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Cartes de synthèse -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300 mr-4">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total des ventes</p>
+                    <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ total_ventes|intcomma }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300 mr-4">
+                    <i class="fas fa-money-bill-wave text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Chiffre d'affaires</p>
+                    <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ montant_total|default:0|intcomma }} Ar</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-300 mr-4">
+                    <i class="fas fa-boxes text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Articles vendus</p>
+                    <p class="text-2xl font-semibold text-gray-900 dark:text-white">
+                        {{ total_articles|default:0|intcomma }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau des ventes -->
+    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Référence</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Articles</th>
+                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Vendeur</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for vente in ventes_groupes %}
+                    <tr 
+                        class="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-150"
+                        onclick="window.location.href='{% url 'vente:detail_vente' vente_id=vente.sorties.0.id %}'"
+                    >
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                            <div class="flex items-center">
+                                <i class="fas fa-receipt text-blue-500 mr-2"></i>
+                                <span>{{ vente.date|date:"d/m/Y H:i" }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                                {{ vente.reference|default:"N/A" }}
+                            </div>
+                            {% if vente.client %}
+                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <i class="fas fa-user mr-1"></i> {{ vente.client }}
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="space-y-1">
+                                {% for sortie in vente.sorties|slice:":2" %}
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10 mr-3">
+                                        {% if sortie.produit.photo %}
+                                            <img class="h-10 w-10 rounded-full object-cover" src="{{ sortie.produit.photo.url }}" alt="{{ sortie.produit.designation }}">
+                                        {% else %}
+                                            <div class="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+                                                <i class="fas fa-box text-gray-400"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                            {{ sortie.produit.designation }}
+                                        </p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                                            {{ sortie.quantite }} × {{ sortie.prix_unitaire|intcomma }} Ar
+                                        </p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                {% if vente.nombre_articles > 2 %}
+                                <div class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                    + {{ vente.nombre_articles|add:"-2" }} autres articles...
+                                </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                            <span class="text-blue-600 dark:text-blue-400 font-bold text-lg">{{ vente.montant_total|intcomma }} Ar</span>
+                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                {{ vente.nombre_articles }} article{{ vente.nombre_articles|pluralize }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500 dark:text-gray-300">
+                            <div class="flex items-center justify-end">
+                                <span class="mr-2">{{ vente.utilisateur.get_full_name|default:vente.utilisateur.username }}</span>
+                                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-sm font-medium">
+                                    {{ vente.utilisateur.username|first|upper }}
+                                </span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex justify-end space-x-2">
+                                <a href="{% url 'vente:detail_vente' vente_id=vente.sorties.0.id %}" 
+                                   class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                                   title="Voir les détails">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% if not vente.sorties.0.annulee %}
+                                <button onclick="event.stopPropagation(); annulerVente('{{ vente.reference }}')" 
+                                        class="text-red/60 hover:text-red/90 dark:text-red/40 dark:hover:text-red/30 ml-2"
+                                        title="Annuler cette vente">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                                {% else %}
+                                <span class="text-xs text-gray-400 dark:text-gray-500 ml-2" title="Vente annulée">
+                                    <i class="fas fa-ban"></i>
+                                </span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                            Aucune vente trouvée pour la période sélectionnée.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if pagination %}
+        <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
+            <div class="flex-1 flex justify-between sm:hidden">
+                {% if pagination.has_previous %}
+                <a href="?page={{ pagination.previous_page_number }}{% if date_debut %}&date_debut={{ date_debut }}{% endif %}{% if date_fin %}&date_fin={{ date_fin }}{% endif %}" 
+                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
+                    Précédent
+                </a>
+                {% else %}
+                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 cursor-not-allowed">
+                    Précédent
+                </span>
+                {% endif %}
+                
+                {% if pagination.has_next %}
+                <a href="?page={{ pagination.next_page_number }}{% if date_debut %}&date_debut={{ date_debut }}{% endif %}{% if date_fin %}&date_fin={{ date_fin }}{% endif %}" 
+                   class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
+                    Suivant
+                </a>
+                {% else %}
+                <span class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 cursor-not-allowed">
+                    Suivant
+                </span>
+                {% endif %}
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700 dark:text-gray-300">
+                        Affichage de <span class="font-medium">{{ pagination.start_index }}</span> à <span class="font-medium">{{ pagination.end_index }}</span> sur <span class="font-medium">{{ pagination.count }}</span> résultats
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        {% if pagination.has_previous %}
+                        <a href="?page={{ pagination.previous_page_number }}{% if date_debut %}&date_debut={{ date_debut }}{% endif %}{% if date_fin %}&date_fin={{ date_fin }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                            <span class="sr-only">Précédent</span>
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        {% else %}
+                        <span class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-300 dark:bg-gray-700 dark:border-gray-600 cursor-not-allowed">
+                            <span class="sr-only">Précédent</span>
+                            <i class="fas fa-chevron-left"></i>
+                        </span>
+                        {% endif %}
+
+                        {% for i in pagination.page_range %}
+                            {% if pagination.current_page == i %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 text-blue-600 text-sm font-medium dark:bg-blue-900 dark:text-blue-200">
+                                {{ i }}
+                            </span>
+                            {% else %}
+                            <a href="?page={{ i }}{% if date_debut %}&date_debut={{ date_debut }}{% endif %}{% if date_fin %}&date_fin={{ date_fin }}{% endif %}" 
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                                {{ i }}
+                            </a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if pagination.has_next %}
+                        <a href="?page={{ pagination.next_page_number }}{% if date_debut %}&date_debut={{ date_debut }}{% endif %}{% if date_fin %}&date_fin={{ date_fin }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                            <span class="sr-only">Suivant</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        {% else %}
+                        <span class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-300 dark:bg-gray-700 dark:border-gray-600 cursor-not-allowed">
+                            <span class="sr-only">Suivant</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+// Fonction pour annuler une vente via AJAX
+function annulerVente(reference) {
+    Swal.fire({
+        title: 'Êtes-vous sûr ?',
+        text: "Vous êtes sur le point d'annuler cette vente. Cette action est irréversible !",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Oui, annuler la vente',
+        cancelButtonText: 'Non, annuler',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Afficher un indicateur de chargement
+            Swal.fire({
+                title: 'Traitement en cours',
+                text: 'Annulation de la vente...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Récupérer le token CSRF depuis les cookies
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            
+            const csrftoken = getCookie('csrftoken');
+            
+            // Envoyer la requête AJAX avec le token CSRF
+            fetch(`/vente/api/annuler-vente/${reference}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Succès !',
+                        text: data.message || 'La vente a été annulée avec succès.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Recharger la page pour mettre à jour les données
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.message || 'Une erreur est survenue lors de l\'annulation de la vente');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                Swal.fire({
+                    title: 'Erreur !',
+                    text: error.message || 'Une erreur est survenue lors de l\'annulation de la vente',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+        }
+    });
+}
+
+    // Initialisation des sélecteurs de date
+    document.addEventListener('DOMContentLoaded', function() {
+        // Si une date de fin n'est pas définie, définir la date d'aujourd'hui
+        if (!document.getElementById('date_fin').value) {
+            document.getElementById('date_fin').valueAsDate = new Date();
+        }
+        
+        // Si une date de début n'est pas définie, définir la date d'il y a 7 jours
+        if (!document.getElementById('date_debut').value) {
+            const date = new Date();
+            date.setDate(date.getDate() - 7);
+            document.getElementById('date_debut').valueAsDate = date;
+        }
+    });
+</script>
+{% endblock %}

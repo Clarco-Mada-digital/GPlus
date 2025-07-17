@@ -1,12 +1,12 @@
 {% load static tailwind_tags %}
 <!DOCTYPE html>
-<html lang="fr" class="{% if is_dark_theme %}dark{% endif %}">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Ajout du CDN de Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
-    <title>G+</title>
+    <title>G+ {% block title_page %}{% endblock title_page %}</title>
     {% tailwind_css %}
     <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">   
   </head>
@@ -99,4 +99,3 @@
     }, 5000); // 3000 millisecondes = 3 secondes
   </script>
 </html>
-

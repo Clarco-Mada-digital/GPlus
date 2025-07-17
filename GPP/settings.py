@@ -35,6 +35,21 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("PROJECT_ENV") == 'dev'
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.164.67'] if env("PROJECT_ENV") == 'dev' else ['*']
+
+# Paramètres CORS
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
+# Paramètres CSRF
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+CSRF_COOKIE_HTTPONLY = False  # Permet l'accès au cookie CSRF via JavaScript
+CSRF_USE_SESSIONS = False  # Utilise les cookies pour le CSRF
+CSRF_COOKIE_SECURE = False  # Mettez à True en production avec HTTPS
 # Application definition
 
 INSTALLED_APPS = [

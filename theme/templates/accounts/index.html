@@ -1,48 +1,44 @@
 {% extends "base.html" %}
 
-{% block contentPage %}    
+{% block title_page %} Modules {% endblock title_page %}
 
-  <!-- Content -->
-  <div class="flex-1 px-2 sm:px-0 bg-white dark:bg-gray-800 min-h-screen">
-    {% comment %} Header Page {% endcomment %}
-    {% include 'accounts/header.html' with header_title="Applications" %} 
+{% block contentPage %}
+  <div class="w-full flex items-center justify-between my-5 px-4">
+    <h4 class="py-4 text-gray-800 dark:text-white font-extralight">Modules installés (9)</h4>
+    <button class="hover:bg-primary hover:text-white border border-primary text-primary dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-600 dark:hover:text-white font-bold py-2 px-4 rounded inline-flex justify-center items-center transition-colors duration-200">
+      <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+        <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/>
+      </svg>        
+      <span class="hidden xl:block">Télécharger plus d'applications</span>
+    </button>
+  </div>
 
-    <div class="w-full flex items-center justify-between mr-12 my-5">
-      <h4 class="py-4 text-gray-800 dark:text-gray-200 font-extralight">Modules installées (9)</h4>
-      <button class="hover:bg-primary hover:text-white border border-primary text-primary dark:text-blue-400 dark:border-blue-400 dark:hover:bg-blue-600 dark:hover:text-white font-bold py-2 px-4 rounded inline-flex justify-center items-center transition-colors duration-200">
-         <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>        
-        <span class="hidden xl:block">Télécharger plus Applications</span>
-      </button>
+  <div class="h-full overflow-auto">    
+    <h5 class="text-primary/75 dark:text-blue-400/80 font-medium mb-4">Gestion des Ressources Humaines (RH)</h5>
+
+    <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+      <a href="{% url 'accounts:pricing_page' %}">
+        {% include 'components/Card.html' with title="Personnel" description="55 Personnes" notification_msg="Nouveau" image="static/images/User.svg" %}
+      </a>
     </div>
 
-    <div class="h-full overflow-auto p-4">    
-      <h5 class="text-primary/75 dark:text-blue-400/80 font-medium mb-4">Gestion des Ressources Humaines (RH)</h5>
-
-      <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
-        <a href="{% url 'accounts:pricing_page' %}">
-        {% include 'components/Card.html' with title="Personelle" description="55 Personnes" notification_msg="Nouveau" image="static/images/User.svg" %}
-        </a>
-      </div>
-
-      <h5 class="text-primary/75 dark:text-blue-400/80 font-medium mb-4 mt-8">Gestion des Finances</h5>
-      <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
-        <a href="{% url 'caisse:index' %}">
-        {% include 'components/Card.html' with title="Caisse" description="Nouveau" notification_msg="Nouveau" image="static/images/Comptabilite.svg" %}
-        </a>
-        <a href="#">
-        {% include 'components/Card.html' with title="Statistiques" description="Nouveau" notification_msg="Nouveau" image="static/images/statistique.svg" %}
-        </a>
-        <a href="{% url 'facture:index' %}">
-        {% include 'components/Card.html' with title="Factures & Devis" description="Nouveau" notification_msg="Nouveau" image="static/images/factures.svg" %}
-        </a>
-        <a href="{% url 'client:index' %}">
-        {% include 'components/Card.html' with title="Clients & Prospects" description="Nouveau" notification_msg="Nouveau" image="static/images/client.svg" %}
-        </a>
-        <a href="{% url 'stock:tableau_bord' %}">
-        {% include 'components/Card.html' with title="Stock" description="Nouveau" notification_msg="Nouveau" image="static/images/stock.svg" %}
-        </a>
-      </div>
-
+    <h5 class="text-primary/75 dark:text-blue-400/80 font-medium mb-4 mt-8">Gestion des Finances</h5>
+    <div class="h-auto overflow-auto sm:mb-0 lg:mb-5 mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+      <a href="{% url 'caisse:index' %}">
+        {% include 'components/Card.html' with title="Caisse" description="Gestion de trésorerie" notification_msg="Nouveau" image="static/images/Comptabilite.svg" %}
+      </a>
+      <a href="#">
+        {% include 'components/Card.html' with title="Statistiques" description="Analyses et rapports" notification_msg="Nouveau" image="static/images/statistique.svg" %}
+      </a>
+      <a href="{% url 'facture:index' %}">
+        {% include 'components/Card.html' with title="Factures & Devis" description="Gestion commerciale" notification_msg="Nouveau" image="static/images/factures.svg" %}
+      </a>
+      <a href="{% url 'client:index' %}">
+        {% include 'components/Card.html' with title="Clients" description="Portefeuille clients" notification_msg="Nouveau" image="static/images/client.svg" %}
+      </a>
+      <a href="{% url 'stock:tableau_bord' %}">
+        {% include 'components/Card.html' with title="Stock" description="Gestion des stocks" notification_msg="Nouveau" image="static/images/stock.svg" %}
+      </a>
     </div>
-  </div> 
+  </div>
 {% endblock contentPage %}

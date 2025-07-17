@@ -1,25 +1,1264 @@
-{% extends "base.html" %}
+{% extends "layouts/vente_layout.html" %}
+{% load humanize %}
 
-{% block contentPage %}    
-  <div class="flex-1 px-2 sm:px-0 dark:text-white text-black">
-    <div class="flex flex-col items-center justify-center min-h-[200px] p-8">
-      <h1 class="text-3xl font-bold mb-4">Module de Vente</h1>
-      <p class="text-gray-600 dark:text-gray-400 mb-6">Ce module est en cours de développement et sera bientôt disponible.</p>
-      <div class="flex flex-col items-center space-y-4">
-        <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg">
-          <h2 class="text-xl font-semibold mb-2">Fonctionnalités à venir</h2>
-          <ul class="list-disc list-inside">
-            <li>Gestion complète des ventes</li>
-            <li>Intégration avec le stock</li>
-            <li>Création automatique des factures</li>
-            <li>Système de remises</li>
-            <li>Statistiques des ventes</li>
-          </ul>
+{% block content %}
+<div class="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
+  <!-- En-tête fixe -->
+  <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-12 z-10 mb-4">
+    <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Point de Vente</h1>
+        <div class="flex space-x-4">
+          <a href="{% url 'vente:historique_vente' %}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <i class="fas fa-receipt mr-2"></i>Voir l'historique
+          </a>
         </div>
-        <a href="{% url 'accounts:index' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-          Retour à l'accueil
-        </a>
       </div>
     </div>
+  </header>
+
+  <div x-data="{productView: true}" class="grid grid-cols-1 md:grid-cols-2 gap-4">    
+  
+
+    <!-- Panier fixe en haut -->
+    <div class="mb-4">
+      <div class="max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-2">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+            <i class="fas fa-shopping-cart mr-2"></i>Panier
+          </h2>
+          <span id="cart-count" class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300">0</span>
+        </div>
+        
+        <!-- Liste des articles du panier -->
+        <div class="overflow-x-auto min-h-64">
+          <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+                <th scope="col" class="px-4 py-2">Produit</th>
+                <th scope="col" class="px-4 py-2 text-center">Quantité</th>
+                <th scope="col" class="px-4 py-2 text-right">Prix</th>
+                <th scope="col" class="px-4 py-2 text-right">Total</th>
+                <th scope="col" class="px-4 py-2"></th>
+              </tr>
+            </thead>
+            <tbody id="cart-items">
+              <!-- Les éléments du panier seront insérés ici dynamiquement -->
+              <tr>
+                <td colspan="5" class="px-4 py-4 text-center text-gray-500 dark:text-gray-400">
+                  <i class="fas fa-shopping-cart text-2xl mb-2 block mx-auto"></i>
+                  <p>Votre panier est vide</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Récapitulatif -->
+        <div class="bg-gray-50 dark:bg-gray-700 p-4 mt-2">
+          <div class="space-y-1">
+            <div class="flex justify-between">
+              <span class="text-gray-600 dark:text-gray-300">Sous-total</span>
+              <span class="font-medium text-gray-900 dark:text-white" id="subtotal">0 Ar</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600 dark:text-gray-300">Remise</span>
+              <span class="font-medium text-gray-900 dark:text-white" id="discount">0 Ar</span>
+            </div>
+            <div class="flex justify-between text-gray-900 dark:text-white text-2xl font-bold border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
+              <span>Total</span>
+              <span id="total">0 Ar</span>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <button x-show="productView" id="pay-button" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold">
+              <i class="fas fa-credit-card mr-2"></i>Payer
+            </button>
+            <button 
+                x-show="!productView" 
+                id="pay-button-service" 
+                class="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold"
+            >
+                <i class="fas fa-credit-card mr-2"></i>Confirmer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>    
+      
+      <!-- Messages pour l'utilisateur -->
+      {% if messages %}
+      <div class="max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8 w-full">
+        {% for message in messages %}
+        <div class="p-4 mb-4 text-sm rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700 dark:bg-red-200 dark:text-red-800{% elif message.tags == 'success' %}bg-green-100 text-green-700 dark:bg-green-200 dark:text-green-800{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-700 dark:bg-yellow-200 dark:text-yellow-800{% else %}bg-blue-100 text-blue-700 dark:bg-blue-200 dark:text-blue-800{% endif %}" role="alert">
+          <span class="font-medium">
+            {% if message.tags == 'error' %}
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            {% elif message.tags == 'success' %}
+            <i class="fas fa-check-circle mr-2"></i>
+            {% elif message.tags == 'warning' %}
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            {% else %}
+            <i class="fas fa-info-circle mr-2"></i>
+            {% endif %}
+            {{ message }}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Barre de recherche et filtres améliorée -->
+      <div class="mx-auto px-4 py-4 sm:px-6 lg:px-8 w-full bg-white dark:bg-gray-800 shadow-sm rounded-lg mb-6">        
+
+        <div class="flex flex-col space-y-4">
+          <!-- Titre de la section -->
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-white">Rechercher des Produits/Services</h2>
+            <!-- Sélecteur de type (produit/service) -->
+            <div class="relative">
+              <div class="inline-flex rounded-md shadow-sm cursor-pointer" role="group">
+                <a @click="productView = true" class="px-4 py-2 text-sm font-medium rounded-l-lg border border-gray-200 dark:border-gray-600"
+                :class="{ 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100': productView }">
+                  <i class="fas fa-box-open mr-2"></i>Produits
+                </a>
+                <a @click="productView = false" class="px-4 py-2 text-sm font-medium rounded-r-lg border-t border-b border-r border-gray-200 dark:border-gray-600"
+                :class="{ 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100': !productView }">
+                  <i class="fas fa-concierge-bell mr-2"></i>Services
+                </a>
+              </div>
+            </div>
+            {% if recherche or categorie_active %}
+            <button id="clear-filters" class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center">
+              <i class="fas fa-times-circle mr-1"></i> Réinitialiser les filtres
+            </button>
+            {% endif %}
+          </div>
+
+          <div class="w-full flex flex-col md:flex-row items-center gap-2">        
+          
+            <!-- Filtres et sélecteur de type -->
+            <div class="w-full mx-auto px-2 py-2 sm:px-6 lg:px-4 mb-4">
+              <div class="flex flex-col sm:flex-row gap-4">                
+                
+                <!-- Barre de recherche -->
+                <div class="flex-1">
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" id="search-input" name="recherche" value="{{ filters.recherche }}" 
+                          class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" 
+                          placeholder="Rechercher un {{ filters.type }}...">
+                    <!-- Suggestions de recherche -->
+                    <div id="search-suggestions" class="hidden absolute z-10 mt-1 w-full bg-white dark:bg-gray-700 shadow-lg rounded-md overflow-hidden border border-gray-200 dark:border-gray-600">
+                      <!-- Les suggestions seront ajoutées ici dynamiquement -->
+                    </div>
+                  </div>            
+                </div>
+
+                <!-- Filtre par catégorie -->
+                <div>
+                  <div x-show="productView" class="relative">
+                    <select id="category-select" class="block w-full pl-3 pr-10 py-2.5 text-base border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg dark:bg-gray-700 dark:text-white">
+                      <option value="">Toutes les catégories</option>
+                      {% for category in categories %}
+                      <option value="{{ category.id }}" {% if categorie_active == category.id|stringformat:'s' %}selected{% endif %}>
+                        {{ category.nom }} ({{ category.produit_set.count }})
+                      </option>
+                      {% endfor %}
+                    </select>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                  </div>
+                  <!-- Ajoutez ce bloc juste après le filtre de catégories des produits -->
+                  <div x-show="!productView" class="relative">
+                    <select id="service-category-select" class="block w-full pl-3 pr-10 py-2.5 text-base border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg dark:bg-gray-700 dark:text-white">
+                        <option value="">Toutes les catégories de services</option>
+                        {% for category in service_categories %}
+                        <option value="{{ category }}">
+                            {{ category }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Bouton de filtre (optionnel) -->
+                {% comment %} <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
+                  <i class="fas fa-sliders-h mr-2"></i>Filtres
+                </button> {% endcomment %}
+              </div>
+            </div>
+
+          </div>
+
+          
+          <!-- Filtres actifs -->
+          {% if recherche or categorie_active %}
+          <div class="flex flex-wrap gap-2 pt-2">
+            {% if recherche %}
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+              Recherche: {{ recherche }}
+              <button type="button" class="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full text-blue-400 hover:bg-blue-200 hover:text-blue-500 dark:hover:bg-blue-800">
+                <span class="sr-only">Supprimer le filtre</span>
+                <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                  <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                </svg>
+              </button>
+            </span>
+            {% endif %}
+            
+            {% if categorie_active %}
+              {% for category in categories %}
+                {% if categorie_active == category.id|stringformat:'s' %}
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                  Catégorie: {{ category.nom }}
+                  <button type="button" class="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full text-green-400 hover:bg-green-200 hover:text-green-500 dark:hover:bg-green-800">
+                    <span class="sr-only">Supprimer le filtre</span>
+                    <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                      <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                    </svg>
+                  </button>
+                </span>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Liste des produits -->
+      <div x-show="productView" class="max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8 w-full flex-1">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-sm md:text-lg font-semibold text-gray-900 dark:text-white">Produits disponibles</h2>
+          <div class="flex items-center space-x-2">
+            <span class="hidden md:block text-sm text-gray-500 dark:text-gray-400 mr-2">Affichage :</span>
+            <button id="grid-view-btn" class="p-2 rounded-md bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200" title="Vue grille">
+              <i class="fas fa-th-large"></i>
+            </button>
+            <button id="list-view-btn" class="p-2 rounded-md text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700" title="Vue liste">
+              <i class="fas fa-list"></i>
+            </button>
+          </div>
+        </div>
+        
+        {% if produits %}
+          <div class="products-view">
+            <!-- Vue Grille (par défaut) -->
+            <div class="grid-view-content">
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {% for product in produits %}
+                <div onclick="addToCart('{{ product.id }}', '{{ product.designation|escapejs }}', {{ product.prix_vente }}, 1)" 
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden product-card flex flex-col h-full cursor-pointer hover:shadow-lg transition-shadow duration-200">
+                  <div class="product-image relative flex-shrink-0" style="height: 140px;">
+                    {% if product.photo %}
+                      <img src="{{ product.photo.url }}" alt="{{ product.designation }}" class="w-full h-full object-cover">
+                    {% else %}
+                      <div class="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                        <i class="fas fa-box-open text-4xl text-gray-400"></i>
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="product-details p-3 flex flex-col flex-grow">
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2 line-clamp-2" style="min-height: 2.5rem;">
+                      {{ product.designation }}
+                    </h3>
+                    <div class="mt-auto">
+                      <div class="flex justify-between items-center">
+                        <div class="text-sm font-bold text-blue-600 dark:text-blue-400">
+                            {{ product.prix_vente|floatformat:0|intcomma }} Ar
+                          </div>
+                          <div class="text-xs mt-1">
+                            <span class="px-2 py-0.5 rounded-full whitespace-nowrap {% if product.quantite_stock > stock_seuils.stock_eleve %}
+                                bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                              {% elif product.quantite_stock > stock_seuils.stock_faible %}
+                                bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100
+                              {% else %}
+                                bg-red/70 text-gray-900
+                              {% endif %}">
+                              {{ product.quantite_stock }} en stock
+                            </span>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Vue Liste (cachée par défaut) -->
+            <div class="list-view-content hidden">
+              <div class="products-list overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600">
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Produit</th>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix de vente</th>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stock</th>
+                      <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for product in produits %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer" 
+                        onclick="addToCart('{{ product.id }}', '{{ product.designation|escapejs }}', {{ product.prix_vente }}, 1)">
+                      <td class="px-4 py-3 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div class="flex-shrink-0 h-12 w-12">
+                            {% if product.photo %}
+                              <img class="h-12 w-12 rounded-md object-cover" src="{{ product.photo.url }}" alt="{{ product.designation }}">
+                            {% else %}
+                              <div class="h-12 w-12 rounded-md bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+                                <i class="fas fa-box text-gray-400 text-xl"></i>
+                              </div>
+                            {% endif %}
+                          </div>
+                          <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ product.designation }}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">#{{ product.code|default:'-' }}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-4 py-3 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ product.prix_vente|floatformat:0|intcomma }} Ar</div>
+                      </td>
+                      <td class="px-4 py-3 whitespace-nowrap">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap {% if product.quantite_stock > stock_seuils.stock_eleve %}
+                            bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                          {% elif product.quantite_stock > stock_seuils.stock_faible %}
+                            bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-900
+                          {% else %}
+                            bg-red text-gray-900 
+                          {% endif %}">
+                          {{ product.quantite_stock }} en stock
+                        </span>
+                      </td>
+                      <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                        <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 dark:bg-blue-400 hover:bg-blue-700 dark:hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-600">
+                          <i class="fas fa-plus mr-1"></i> Ajouter
+                        </button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-yellow-700">
+                  Aucun produit trouvé. Vérifiez vos filtres ou ajoutez des produits dans la section Stock.
+                </p>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+
+      <!-- Section des services -->
+      <div x-show="!productView" class="max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8 w-full flex-1 mt-8">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-sm md:text-lg font-semibold text-gray-900 dark:text-white">Services disponibles</h2>
+          <div class="flex items-center space-x-2">
+            <span class="hidden md:block text-sm text-gray-500 dark:text-gray-400 mr-2">Affichage :</span>
+            <button id="service-grid-view-btn" class="p-2 rounded-md bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200" title="Vue grille">
+              <i class="fas fa-th-large"></i>
+            </button>
+            <button id="service-list-view-btn" class="p-2 rounded-md text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700" title="Vue liste">
+              <i class="fas fa-list"></i>
+            </button>
+          </div>
+        </div>
+        
+        {% if services %}
+          <div class="services-view">
+            <!-- Vue Grille (par défaut) -->
+            <div class="service-grid-view">
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {% for service in services %}
+                <div onclick="addToCart('{{ service.id }}', '{{ service.nom_service|escapejs }}', {{ service.prix_unitaire }}, 1, 'service')" 
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden service-card flex flex-col h-full cursor-pointer hover:shadow-lg transition-shadow duration-200">
+                  <div class="service-image relative flex-shrink-0" style="height: 140px; background-color: #f0f9ff;">
+                    <div class="w-full h-full flex items-center justify-center">
+                      <i class="fas fa-concierge-bell text-5xl text-blue-400"></i>
+                    </div>
+                  </div>
+                  <div class="service-details p-3 flex flex-col flex-grow">
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2 line-clamp-2" style="min-height: 2.5rem;">
+                      {{ service.nom_service }}
+                    </h3>
+                    <div class="mt-auto">
+                      <div class="flex justify-between items-center">
+                        <div class="text-sm font-bold text-blue-600 dark:text-blue-400">
+                          {{ service.prix_unitaire|floatformat:0|intcomma }} Ar
+                        </div>
+                        <div class="text-xs">
+                          <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            Service
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Vue Liste (cachée par défaut) -->
+            <div class="service-list-view hidden">
+              <div class="services-list overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600">
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Service</th>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix</th>
+                      <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for service in services %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer" 
+                        onclick="addToCart('{{ service.id }}', '{{ service.nom_service|escapejs }}', {{ service.prix_unitaire }}, 1, 'service')">
+                      <td class="px-4 py-3 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div class="flex-shrink-0 h-10 w-10 bg-blue-100 dark:bg-blue-900 rounded-md flex items-center justify-center">
+                            <i class="fas fa-concierge-bell text-blue-500 dark:text-blue-300"></i>
+                          </div>
+                          <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ service.nom_service }}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">Service</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-4 py-3 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ service.prix_unitaire|floatformat:0|intcomma }} Ar</div>
+                      </td>
+                      <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                        <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 dark:bg-blue-400 hover:bg-blue-700 dark:hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-600">
+                          <i class="fas fa-plus mr-1"></i> Ajouter
+                        </button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <i class="fas fa-info-circle text-blue-400"></i>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-blue-700">
+                  Aucun service disponible pour le moment.
+                </p>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+    
   </div>
-{% endblock contentPage %}
+
+</div>
+
+<!-- Popup d'information -->
+<div id="serviceInfoModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+      <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Fonctionnalité à venir</h3>
+          <button onclick="closeServiceModal()" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+              <i class="fas fa-times text-xl"></i>
+          </button>
+      </div>
+      <div class="mb-6">
+          <p class="text-gray-700 dark:text-gray-300 mb-4">
+              La fonctionnalité de confirmation des services est en cours de développement.
+          </p>
+          <p class="text-gray-700 dark:text-gray-300">
+              Veuillez passer par le module Facturation pour gérer les services.
+          </p>
+      </div>
+      <div class="flex justify-end space-x-3">
+          <button onclick="closeServiceModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors">
+              Fermer
+          </button>
+          <a href="{% url 'facture:new_facture' %}" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors">
+              Aller aux factures
+          </a>
+      </div>
+  </div>
+</div>
+
+
+{% endblock content %}
+
+{% block extra_css %}
+<style>
+  /* Styles personnalisés */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+  
+  .product-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  /* Styles pour la vue liste */
+  .list-view .products-grid {
+    display: block;
+    overflow-x: auto;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  }
+  .list-view .products-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .list-view .products-table th,
+  .list-view .products-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #edf2f7;
+  }
+  .list-view .products-table th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 12px 16px;
+  }
+  .list-view .product-card {
+    display: table-row;
+    transition: background-color 0.2s;
+  }
+  .list-view .product-card:hover {
+    background-color: #f8fafc;
+  }
+  .list-view .product-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+  }
+  .list-view .product-name {
+    font-weight: 500;
+    color: #1e293b;
+    font-size: 0.9rem;
+  }
+  .list-view .product-code {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+  .list-view .product-price {
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap;
+  }
+  .list-view .stock-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .list-view .stock-in {
+    color: #065f46;
+    background-color: #d1fae5;
+  }
+  .list-view .stock-low {
+    color: #92400e;
+    background-color: #fef3c7;
+  }
+  .list-view .stock-out {
+    color: #991b1b;
+    background-color: #fee2e2;
+  }
+  .list-view .add-to-cart-btn {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .list-view .add-to-cart-btn:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+  }
+  .list-view .add-to-cart-btn i {
+    font-size: 0.7rem;
+  }
+  .modal-enter-active, .modal-leave-active {
+    transition: opacity 0.3s ease;
+  }
+  .modal-enter-from, .modal-leave-to {
+      opacity: 0;
+  }
+</style>
+{% endblock extra_css %}
+
+{% block extra_scripts %}
+<script>
+  // Panier
+  let cart = [];
+
+  // Formatage des nombres avec séparateurs de milliers
+  function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  }
+
+  // Mise à jour du panier dans l'interface
+  function updateCartUI() {
+    const cartItemsContainer = document.getElementById('cart-items');
+    const subtotalElement = document.getElementById('subtotal');
+    const totalElement = document.getElementById('total');
+    const cartCountElement = document.getElementById('cart-count');
+    
+    // Calcul des totaux
+    let subtotal = 0;
+    
+    // Vider le conteneur des articles
+    cartItemsContainer.innerHTML = '';
+    
+    if (cart.length === 0) {
+      // Afficher le message de panier vide
+      cartItemsContainer.innerHTML = `
+        <tr>
+          <td colspan="5" class="px-4 py-4 text-center text-gray-500 dark:text-gray-400">
+            <i class="fas fa-shopping-cart text-4xl mb-2 block mx-auto"></i>
+            <p>Votre panier est vide</p>
+          </td>
+        </tr>`;
+      
+      // Mettre à jour les totaux
+      subtotalElement.textContent = '0 Ar';
+      totalElement.textContent = '0 Ar';
+      cartCountElement.textContent = '0';
+      return;
+    }
+    
+    // Construire le tableau des articles
+    let cartItemsHTML = '';
+    
+    cart.forEach((item, index) => {
+      const itemTotal = item.price * item.quantity;
+      subtotal += itemTotal;
+      
+      cartItemsHTML += `
+        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <td class="px-4 py-2 font-medium text-gray-900 dark:text-white">
+            ${item.name}
+          </td>
+          <td class="px-4 py-2 text-center">
+            <div class="flex items-center justify-center space-x-2">
+              <button onclick="updateQuantity(${index}, ${item.quantity - 1})" class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
+                <i class="fas fa-minus text-xs"></i>
+              </button>
+              <span class="w-8 text-center">${item.quantity}</span>
+              <button onclick="updateQuantity(${index}, ${item.quantity + 1})" class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
+                <i class="fas fa-plus text-xs"></i>
+              </button>
+            </div>
+          </td>
+          <td class="px-4 py-2 text-right">
+            ${formatNumber(item.price)} Ar
+          </td>
+          <td class="px-4 py-2 text-right font-medium">
+            ${formatNumber(itemTotal)} Ar
+          </td>
+          <td class="px-4 py-2 text-right">
+            <button onclick="removeFromCart(${index})" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>`;
+    });
+    
+    // Mettre à jour l'interface
+    cartItemsContainer.innerHTML = cartItemsHTML;
+    
+    // Mettre à jour les totaux
+    subtotalElement.textContent = `${formatNumber(subtotal)} Ar`;
+    totalElement.textContent = `${formatNumber(subtotal)} Ar`; // Pour l'instant, le total est égal au sous-total
+    cartCountElement.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+  }
+
+  // Ajouter un produit au panier
+  function addToCart(id, name, price, quantity = 1) {
+    // S'assurer que la quantité est au moins 1
+
+    quantity = Math.max(1, parseInt(quantity) || 1);
+    
+    // Vérifier si le produit est déjà dans le panier
+    const existingItemIndex = cart.findIndex(item => item.id === id);
+    
+    if (existingItemIndex >= 0) {
+      // Si le produit existe déjà, augmenter la quantité
+      cart[existingItemIndex].quantity += quantity;
+    } else {
+      // Sinon, ajouter un nouvel élément au panier avec une quantité minimale de 1
+      cart.push({
+        id: id,
+        name: name,
+        price: price,
+        quantity: quantity
+      });
+    }
+    
+    // Mettre à jour l'interface
+    updateCartUI();
+    
+    // Afficher une notification
+    showNotification(`${name} ajouté au panier`);
+  }
+
+  // Mettre à jour la quantité d'un article
+  function updateQuantity(index, newQuantity) {
+    if (newQuantity < 1) {
+      // Si la quantité est inférieure à 1, supprimer l'article
+      cart.splice(index, 1);
+      showNotification('Article retiré du panier');
+    } else {
+      // Sinon, mettre à jour la quantité
+      cart[index].quantity = newQuantity;
+    }
+    
+    // Mettre à jour l'interface
+    updateCartUI();
+  }
+
+  // Supprimer un article du panier
+  function removeFromCart(index) {
+    const itemName = cart[index].name;
+    cart.splice(index, 1);
+    updateCartUI();
+    showNotification(`${itemName} retiré du panier`);
+  }
+
+  // Afficher une notification
+  function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+      type === 'error' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
+      type === 'success' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+      'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+    }`;
+    
+    notification.innerHTML = `
+      <div class="flex items-center">
+        <i class="fas ${
+          type === 'error' ? 'fa-exclamation-circle' :
+          type === 'success' ? 'fa-check-circle' : 'fa-info-circle'
+        } mr-2"></i>
+        <span>${message}</span>
+      </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Supprimer la notification après 5 secondes
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      notification.style.transition = 'opacity 0.5s';
+      setTimeout(() => notification.remove(), 500);
+    }, 5000);
+  }
+
+  // Gérer la validation de la vente
+  document.getElementById('pay-button').addEventListener('click', async function() {
+    if (cart.length === 0) {
+      showNotification('Le panier est vide', 'error');
+      return;
+    }
+    
+    const button = this;
+    const originalText = button.innerHTML;
+    
+    try {
+      // Désactiver le bouton pendant la validation
+      button.disabled = true;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Validation en cours...';
+      
+      // Préparer les données de la vente
+      const items = cart.map(item => ({
+        id: item.id,
+        quantite: item.quantity,
+        prix_unitaire: item.price,
+        designation: item.name
+      }));
+      
+      // Envoyer la requête au serveur
+      const response = await fetch('/vente/api/valider-vente/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+          items: items,
+          client: 'Client en magasin',
+          montant_total: cart.reduce((total, item) => total + (item.price * item.quantity), 0)
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok) {
+        if (result.status === 'redirect') {
+          // Rediriger vers la page de détail de la vente
+          window.location.href = result.url;
+          return;
+        }
+        
+        // Vente validée avec succès (fallback si pas de redirection)
+        showNotification('Vente validée avec succès!', 'success');
+        
+        // Réinitialiser le panier
+        cart = [];
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartUI();
+        
+        // Afficher un message de confirmation
+        const confirmation = confirm('Vente enregistrée avec succès! Voulez-vous voir les détails?');
+        if (confirmation && result.reference) {
+          // Rediriger vers la page d'historique
+          window.location.href = '{% url 'vente:historique_vente' %}';
+        }
+      } else {
+        // Afficher l'erreur retournée par le serveur
+        showNotification(result.message || 'Erreur lors de la validation de la vente', 'error');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la validation de la vente:', error);
+      showNotification('Une erreur est survenue lors de la validation de la vente', 'error');
+    } finally {
+      // Réactiver le bouton
+      button.disabled = false;
+      button.innerHTML = originalText;
+    }
+  });
+
+  // Gérer la recherche
+  const searchInput = document.getElementById('search-input');
+  const categorySelect = document.getElementById('category-select');
+
+  function applyFilters() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const categoryId = categorySelect.value;
+    
+    // Construire l'URL avec les paramètres de recherche
+    let url = window.location.pathname + '?';
+    
+    if (searchTerm) {
+      url += `recherche=${encodeURIComponent(searchTerm)}&`;
+    }
+    
+    if (categoryId) {
+      url += `categorie=${categoryId}`;
+    }
+    
+    // Recharger la page avec les nouveaux filtres
+    window.location.href = url;
+  }
+
+  // Écouter les changements de filtre
+  searchInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      applyFilters();
+    }
+  });
+
+  categorySelect.addEventListener('change', applyFilters);
+
+  // Gestion de la recherche et des filtres
+  let searchTimeout;
+
+  // Gestion du basculement entre les vues grille et liste
+  function setupViewToggle() {
+    const gridViewBtn = document.getElementById('grid-view-btn');
+    const listViewBtn = document.getElementById('list-view-btn');
+    const productsGrid = document.querySelector('.products-grid');
+    
+    // Vérifier la préférence utilisateur dans le localStorage
+    const viewPreference = localStorage.getItem('productView') || 'grid';
+    
+    // Fonction pour basculer vers la vue grille
+    function switchToGridView() {
+      const listView = document.querySelector('.list-view-content');
+      const gridView = document.querySelector('.grid-view-content');
+      
+      // Afficher la vue grille et cacher la vue liste
+      if (listView) listView.classList.add('hidden');
+      if (gridView) gridView.classList.remove('hidden');
+      
+      // Mettre à jour les classes des boutons
+      gridViewBtn.classList.add('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900', 'dark:text-blue-200');
+      gridViewBtn.classList.remove('text-gray-500', 'hover:bg-gray-100', 'dark:text-gray-400', 'dark:hover:bg-gray-700');
+      listViewBtn.classList.remove('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900', 'dark:text-blue-200');
+      listViewBtn.classList.add('text-gray-500', 'hover:bg-gray-100', 'dark:text-gray-400', 'dark:hover:bg-gray-700');
+      
+      // Sauvegarder la préférence
+      localStorage.setItem('productView', 'grid');
+    }
+    
+    // Fonction pour basculer vers la vue liste
+    function switchToListView() {
+      const gridView = document.querySelector('.grid-view-content');
+      const listView = document.querySelector('.list-view-content');
+      
+      // Afficher la vue liste et cacher la vue grille
+      if (gridView) gridView.classList.add('hidden');
+      if (listView) listView.classList.remove('hidden');
+      
+      // Mettre à jour les classes des boutons
+      listViewBtn.classList.add('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900', 'dark:text-blue-200');
+      listViewBtn.classList.remove('text-gray-500', 'hover:bg-gray-100', 'dark:text-gray-400', 'dark:hover:bg-gray-700');
+      gridViewBtn.classList.remove('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900', 'dark:text-blue-200');
+      gridViewBtn.classList.add('text-gray-500', 'hover:bg-gray-100', 'dark:text-gray-400', 'dark:hover:bg-gray-700');
+      
+      // Sauvegarder la préférence
+      localStorage.setItem('productView', 'list');
+    }
+    
+    // Appliquer la vue enregistrée au chargement
+    if (viewPreference === 'list') {
+      switchToListView();
+    } else {
+      switchToGridView();
+    }
+    
+    // Gestion du clic sur le bouton de vue grille
+    gridViewBtn.addEventListener('click', switchToGridView);
+    
+    // Gestion du clic sur le bouton de vue liste
+    listViewBtn.addEventListener('click', switchToListView);
+  }
+
+  // Initialisation des événements
+  document.addEventListener('DOMContentLoaded', function() {
+    setupViewToggle();
+    updateCartUI();
+    setupSearchAndFilters();
+  });
+
+  // Configuration de la recherche et des filtres
+  function setupSearchAndFilters() {
+    const searchInput = document.getElementById('search-input');
+    const searchSuggestions = document.getElementById('search-suggestions');
+    const clearSearchBtn = document.getElementById('clear-search');
+    const categorySelect = document.getElementById('category-select');
+    const minPriceInput = document.getElementById('min-price');
+    const maxPriceInput = document.getElementById('max-price');
+    const applyFiltersBtn = document.getElementById('apply-filters');
+    const clearFiltersBtn = document.getElementById('clear-filters');
+    const activeFilterButtons = document.querySelectorAll('.inline-flex button');
+
+    // Gestion de la recherche en temps réel
+    searchInput.addEventListener('input', function() {
+      clearTimeout(searchTimeout);
+      const searchTerm = this.value.trim();
+      
+      // Afficher/masquer le bouton d'effacement
+      if (clearSearchBtn) {
+        clearSearchBtn.style.display = searchTerm ? 'flex' : 'none';
+      }
+      
+      if (searchTerm.length > 1) {
+        // Délai pour éviter trop de requêtes
+        searchTimeout = setTimeout(() => {
+          fetchSearchSuggestions(searchTerm);
+        }, 300);
+      } else {
+        searchSuggestions.classList.add('hidden');
+      }
+    });
+
+    // Effacer la recherche
+    if (clearSearchBtn) {
+      clearSearchBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        this.style.display = 'none';
+        searchSuggestions.classList.add('hidden');
+        applyFilters();
+      });
+    }
+
+    // Gestion du clic en dehors des suggestions
+    document.addEventListener('click', function(e) {
+      if (!searchSuggestions.contains(e.target) && e.target !== searchInput) {
+        searchSuggestions.classList.add('hidden');
+      }
+    });
+
+    // Appliquer les filtres
+    if (applyFiltersBtn) {
+      applyFiltersBtn.addEventListener('click', applyFilters);
+    }
+
+    // Réinitialiser tous les filtres
+    if (clearFiltersBtn) {
+      clearFiltersBtn.addEventListener('click', function() {
+        window.location.href = window.location.pathname;
+      });
+    }
+
+    // Gestion des filtres actifs
+    activeFilterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const filterType = this.closest('span').textContent.split(':')[0].trim();
+        
+        if (filterType === 'Recherche') {
+          // Réinitialiser la recherche
+          window.location.href = window.location.pathname + window.location.search.replace(/[?&]recherche=[^&]*(?:&|$)/, '').replace(/^&/, '?');
+        } else if (filterType === 'Catégorie') {
+          // Réinitialiser la catégorie
+          const cleanUrl = window.location.search
+            .replace(/[?&]categorie=[^&]*(?:&|$)/, '')
+            .replace(/^&/, '?');
+          window.location.href = window.location.pathname + (cleanUrl === '?' ? '' : cleanUrl);
+        }
+      });
+    });
+  }
+
+  // Récupérer les suggestions de recherche
+  function fetchSearchSuggestions(term) {
+    const searchSuggestions = document.getElementById('search-suggestions');
+    
+    // Afficher le chargement
+    searchSuggestions.innerHTML = '<div class="p-2 text-gray-500 dark:text-gray-400">Recherche en cours...</div>';
+    searchSuggestions.classList.remove('hidden');
+    
+    // Construire l'URL en utilisant le nom de l'URL Django
+    const url = new URL('{% url 'vente:produit_suggestions' %}', window.location.origin);
+    url.searchParams.append('q', term);
+    
+    // Faire la requête AJAX
+    fetch(url.toString())
+      .then(response => response.json())
+      .then(data => {
+        if (data.length > 0) {
+          let html = '';
+          // Vider les suggestions actuelles
+          searchSuggestions.innerHTML = '';
+          
+          data.forEach(item => {
+            // Créer un élément div pour la suggestion
+            const suggestionDiv = document.createElement('div');
+            suggestionDiv.className = 'px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer flex items-center';
+            
+            // Créer le contenu de la suggestion
+            suggestionDiv.innerHTML = `
+              <div class="flex-1">
+                <div class="font-medium text-gray-900 dark:text-white">${item.designation}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">${item.code || ''}</div>
+              </div>
+              <div class="ml-2 text-sm font-bold text-gray-600 dark:text-gray-400">${item.prix_vente} Ar</div>`;
+            
+            // Ajouter l'événement de clic
+            suggestionDiv.addEventListener('click', (e) => {
+              e.stopPropagation();
+              addToCart(item.id, item.designation, item.prix_vente, 1);
+              
+              // Mettre à jour l'apparence après l'ajout
+              suggestionDiv.innerHTML = `
+                <div class="flex-1 flex items-center justify-center text-green-600">
+                  <i class="fas fa-check-circle mr-2"></i> Ajouté au panier
+                </div>`;
+              
+              // Cacher les suggestions après un court délai
+              setTimeout(() => {
+                searchSuggestions.classList.add('hidden');
+                searchInput.value = '';
+                searchInput.focus();
+              }, 800);
+            });
+            
+            // Ajouter la suggestion au conteneur
+            searchSuggestions.appendChild(suggestionDiv);
+          });
+          // Ne plus écraser le contenu ici
+        } else {
+          searchSuggestions.innerHTML = '<div class="p-2 text-gray-500 dark:text-gray-400">Aucun résultat trouvé</div>';
+        }
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des suggestions:', error);
+        searchSuggestions.innerHTML = '<div class="p-2 text-red-500">Erreur lors de la recherche</div>';
+      });
+  }
+
+  // Sélectionner une suggestion
+  function selectSuggestion(term) {
+    const searchInput = document.getElementById('search-input');
+    searchInput.value = term;
+    document.getElementById('search-suggestions').classList.add('hidden');
+    applyFilters();
+  }
+
+  // Appliquer les filtres
+  function applyFilters() {
+    const searchTerm = document.getElementById('search-input')?.value.trim() || '';
+    const categoryId = document.getElementById('category-select')?.value || '';
+    const minPrice = document.getElementById('min-price')?.value || '';
+    const maxPrice = document.getElementById('max-price')?.value || '';
+    
+    // Construire l'URL avec les paramètres
+    const params = new URLSearchParams(window.location.search);
+    
+    // Mettre à jour les paramètres
+    if (searchTerm) {
+      params.set('recherche', searchTerm);
+    } else {
+      params.delete('recherche');
+    }
+    
+    if (categoryId) {
+      params.set('categorie', categoryId);
+    } else {
+      params.delete('categorie');
+    }
+    
+    if (minPrice) {
+      params.set('prix_min', minPrice);
+    } else {
+      params.delete('prix_min');
+    }
+    
+    if (maxPrice) {
+      params.set('prix_max', maxPrice);
+    } else {
+      params.delete('prix_max');
+    }
+    
+    // Recharger la page avec les nouveaux filtres
+    const queryString = params.toString();
+    window.location.href = `${window.location.pathname}${queryString ? '?' + queryString : ''}`;
+  }
+
+  // Gestion du basculement entre les vues grille et liste pour les services
+  function setupServiceViewToggle() {
+    const gridViewBtn = document.getElementById('service-grid-view-btn');
+    const listViewBtn = document.getElementById('service-list-view-btn');
+    const gridView = document.querySelector('.service-grid-view');
+    const listView = document.querySelector('.service-list-view');
+
+    if (!gridViewBtn || !listViewBtn || !gridView || !listView) return;
+
+    // Activer la vue grille
+    function activateGridView() {
+      gridView.classList.remove('hidden');
+      listView.classList.add('hidden');
+      gridViewBtn.classList.add('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900', 'dark:text-blue-200');
+      gridViewBtn.classList.remove('text-gray-500', 'hover:bg-gray-100', 'dark:text-gray-400', 'dark:hover:bg-gray-700');
+      listViewBtn.classList.remove('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900', 'dark:text-blue-200');
+      listViewBtn.classList.add('text-gray-500', 'hover:bg-gray-100', 'dark:text-gray-400', 'dark:hover:bg-gray-700');
+      localStorage.setItem('serviceViewPreference', 'grid');
+    }
+
+    // Activer la vue liste
+    function activateListView() {
+      gridView.classList.add('hidden');
+      listView.classList.remove('hidden');
+      gridViewBtn.classList.remove('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900', 'dark:text-blue-200');
+      gridViewBtn.classList.add('text-gray-500', 'hover:bg-gray-100', 'dark:text-gray-400', 'dark:hover:bg-gray-700');
+      listViewBtn.classList.add('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900', 'dark:text-blue-200');
+      listViewBtn.classList.remove('text-gray-500', 'hover:bg-gray-100', 'dark:text-gray-400', 'dark:hover:bg-gray-700');
+      localStorage.setItem('serviceViewPreference', 'list');
+    }
+
+    // Écouteurs d'événements
+    gridViewBtn.addEventListener('click', activateGridView);
+    listViewBtn.addEventListener('click', activateListView);
+
+    // Restaurer la préférence de l'utilisateur
+    const viewPreference = localStorage.getItem('serviceViewPreference');
+    if (viewPreference === 'list') {
+      activateListView();
+    } else {
+      activateGridView();
+    }
+  }
+
+  // Mettre à jour la fonction d'initialisation
+  document.addEventListener('DOMContentLoaded', function() {
+    setupViewToggle();
+    setupServiceViewToggle();
+    updateCartUI();
+    setupSearchAndFilters();   
+   
+  });
+
+  // Fonction pour afficher le modal
+  function showServiceModal() {
+    const modal = document.getElementById('serviceInfoModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Empêche le défilement de la page
+  }
+
+  // Fonction pour fermer le modal
+  function closeServiceModal() {
+    const modal = document.getElementById('serviceInfoModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto'; // Réactive le défilement
+  }
+
+  // Gestionnaire d'événement pour le bouton de confirmation
+  document.getElementById('pay-button-service').addEventListener('click', function(e) {
+    e.preventDefault();
+    showServiceModal();
+  });
+
+  // Fermer le modal en cliquant en dehors
+  window.addEventListener('click', function(e) {
+    const modal = document.getElementById('serviceInfoModal');
+    if (e.target === modal) {
+        closeServiceModal();
+    }
+  })
+</script>
+{% endblock %}

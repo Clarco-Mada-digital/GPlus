@@ -1,0 +1,159 @@
+{% extends "layouts/vente_layout.html" %}
+{% load humanize %}
+
+{% block breadcrumb_items %}
+<nav class="flex" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-4">
+        <li>
+            <div class="flex items-center">
+                <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+                <a href="{% url 'vente:historique_vente' %}" class="ml-4 text-sm font-medium text-gray-500 hover:text-blue-700">Historique</a>
+            </div>
+        </li>
+        <li>
+            <div class="flex items-center">
+                <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+                <button class="ml-4 text-sm font-medium text-gray-500 hover:text-blue-700">Vente</button>
+            </div>
+        </li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Détails de la vente #{{ vente.id }}</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                {{ vente.date|date:"d/m/Y H:i" }} - {{ vente.utilisateur.get_full_name|default:vente.utilisateur.username }}
+            </p>
+        </div>
+        <div class="flex space-x-3">
+            <a href="{% url 'vente:historique_vente' %}" 
+               class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Retour à l'historique
+            </a>
+            <button onclick="window.print()" 
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-file-invoice mr-2"></i>Créer un facture
+            </button>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Informations de la vente</h2>
+                    <div class="space-y-2">
+                        <p class="text-gray-700 dark:text-gray-200"><span class="font-medium text-gray-600 dark:text-gray-400">Référence :</span> {{ vente.reference }}</p>
+                        <p class="text-gray-700 dark:text-gray-200"><span class="font-medium text-gray-600 dark:text-gray-400">Date :</span> {{ vente.date|date:"d/m/Y H:i" }}</p>
+                        <p class="text-gray-700 dark:text-gray-200"><span class="font-medium text-gray-600 dark:text-gray-400">Vendeur :</span> {{ vente.utilisateur.get_full_name|default:vente.utilisateur.username }}</p>
+                        {% if vente.client %}
+                        <p class="text-gray-700 dark:text-gray-200"><span class="font-medium text-gray-600 dark:text-gray-400">Client :</span> {{ vente.client }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Résumé</h2>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">Articles :</span>
+                            <span class="font-medium text-gray-700 dark:text-gray-200">{{ sorties|length }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">Total articles :</span>
+                            <span class="font-medium text-gray-700 dark:text-gray-200">
+                                {{ quantite_totale|default:'0' }}
+                            </span>
+                        </div>
+                        <div class="border-t border-gray-200 dark:border-gray-600 my-2"></div>
+                        <div class="flex justify-between text-lg font-bold">
+                            <span class="text-gray-700 dark:text-gray-200">Total :</span>
+                            <span class="text-blue-600 dark:text-blue-400">{{ montant_total|intcomma }} Ar</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">Détails du produit</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Produit</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prix unitaire</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantité</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            {% for sortie in sorties %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        {% if sortie.produit.photo %}
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full object-cover" src="{{ sortie.produit.photo.url }}" alt="{{ sortie.produit.designation }}">
+                                        </div>
+                                        {% endif %}
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ sortie.produit.designation }}</div>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ sortie.produit.code }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500 dark:text-gray-300">
+                                    {{ sortie.prix_unitaire|intcomma }} Ar
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-300">
+                                    {{ sortie.quantite }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ sortie.montant_total|intcomma }} Ar
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% if vente.notes %}
+            <div class="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
+                <h3 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</h3>
+                <p class="text-gray-600 dark:text-gray-400">{{ vente.notes|linebreaksbr }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #printable-area, #printable-area * {
+            visibility: visible;
+        }
+        #printable-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>
+{% endblock %}
