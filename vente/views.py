@@ -265,9 +265,19 @@ class ValiderVenteView(View):
                         sorties_crees.append(sortie)
                         
                         # Mettre à jour le stock du produit de manière atomique
-                        Produit.objects.filter(id=produit.id, quantite_stock__gte=quantite).update(
+                        updated = Produit.objects.filter(
+                            id=produit.id, 
+                            quantite_stock__gte=quantite
+                        ).update(
                             quantite_stock=models.F('quantite_stock') - quantite
                         )
+                        
+                        # Vérifier que la mise à jour a bien eu lieu
+                        if not updated:
+                            raise ValueError(f"Échec de la mise à jour du stock pour {produit.designation}. Stock insuffisant ou produit introuvable.")
+                            
+                        # Rafraîchir l'objet produit pour avoir la valeur mise à jour
+                        produit.refresh_from_db()
                     
                     # Traitement des services (création de facture)
                     if services_factures:
@@ -356,36 +366,22 @@ def annuler_vente(request, reference):
     try:
         with transaction.atomic():
             # Récupérer toutes les sorties liées à cette référence
-            sorties = SortieStock.objects.filter(reference=reference).select_related('produit')
+            sorties = SortieStock.objects.filter(
+                reference=reference,
+                annulee=False  # Ne pas traiter les sorties déjà annulées
+            ).select_related('produit')
             
             if not sorties.exists():
-                return JsonResponse({'success': False, 'message': 'Aucune vente trouvée avec cette référence'}, status=404)
-            
-            # Vérifier si la vente n'a pas déjà été annulée
-            if sorties.first().annulee:
-                return JsonResponse({'success': False, 'message': 'Cette vente a déjà été annulée'}, status=400)
-            
-            # Restaurer les quantités en stock pour chaque produit
-            for sortie in sorties:
-                produit = sortie.produit
-                produit.quantite_stock += sortie.quantite
-                produit.save()
-                
-                # Marquer la sortie comme annulée
-                sortie.annulee = True
-                sortie.date_annulation = timezone.now()
-                sortie.utilisateur_annulation = request.user
-                sortie.save()
-                
-                # Créer une entrée de stock pour l'annulation
-                EntreeStock.objects.create(
-                    produit=produit,
-                    quantite=sortie.quantite,
-                    prix_unitaire=sortie.prix_unitaire,
-                    reference=f'ANNUL-{reference}',
-                    utilisateur=request.user,
-                    notes=f'Annulation de la vente {reference}'
+                return JsonResponse(
+                    {'success': False, 'message': 'Aucune vente active trouvée avec cette référence'}, 
+                    status=404
                 )
+            
+            # Annuler chaque sortie de la vente
+            for sortie in sorties:
+                # Utiliser la méthode annuler() du modèle qui gère déjà la restauration du stock
+                # et la création de l'entrée d'annulation
+                sortie.annuler(utilisateur=request.user)
             
             messages.success(request, f'La vente {reference} a été annulée avec succès.')
             return JsonResponse({'success': True, 'message': 'Vente annulée avec succès'})
@@ -454,28 +450,37 @@ class HistoriqueVenteView(LoginRequiredMixin, ListView):
             date_fin = date_fin + timedelta(days=1)
             queryset = queryset.filter(date__date__lte=date_fin)
         
-        # Récupérer les références uniques avec les informations nécessaires
-        references = queryset.order_by('-date').values_list('reference', flat=True).distinct()
+        # Utiliser annotate pour regrouper par référence et calculer les totaux
+        from django.db.models import Sum, Count, Min
         
-        # Créer une liste de tuples (référence, première sortie, nombre d'articles, montant total)
+        # Récupérer les références uniques avec les informations agrégées
+        references = queryset.values('reference').annotate(
+            date_min=Min('date'),
+            montant_total=Sum('prix_unitaire'),
+            nombre_articles=Count('id'),
+            first_sortie_id=Min('id')  # Pour récupérer les informations de la première sortie
+        ).order_by('-date_min')
+        
+        # Récupérer les informations détaillées des premières sorties
+        sorties_ids = [ref['first_sortie_id'] for ref in references]
+        sorties_map = {s.id: s for s in SortieStock.objects.filter(id__in=sorties_ids).select_related('utilisateur')}
+        
+        # Construire la liste des ventes groupées
         ventes_groupes = []
         for ref in references:
-            sorties = queryset.filter(reference=ref).order_by('date')
-            if sorties.exists():
-                premiere_sortie = sorties.first()
-                montant_total = sum(s.montant_total for s in sorties if hasattr(s, 'montant_total'))
+            sortie = sorties_map.get(ref['first_sortie_id'])
+            if sortie:
                 ventes_groupes.append({
-                    'reference': ref,
-                    'date': premiere_sortie.date,
-                    'utilisateur': premiere_sortie.utilisateur,
-                    'client': premiere_sortie.client,
-                    'nombre_articles': sorties.count(),
-                    'montant_total': montant_total,
-                    'sorties': sorties  # Pour accéder aux détails si nécessaire
+                    'reference': ref['reference'],
+                    'date': sortie.date,
+                    'utilisateur': sortie.utilisateur,
+                    'client': sortie.client,
+                    'nombre_articles': ref['nombre_articles'],
+                    'montant_total': ref['montant_total'],
+                    'sorties': queryset.filter(reference=ref['reference'])  # Pour la compatibilité
                 })
         
-        # Trier par date décroissante
-        return sorted(ventes_groupes, key=lambda x: x['date'], reverse=True)
+        return ventes_groupes
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

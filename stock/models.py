@@ -199,17 +199,12 @@ class SortieStock(models.Model):
         ordering = ['-date']
 
     def save(self, *args, **kwargs):
-        """Vérifie et met à jour la quantité en stock du produit lors de la sauvegarde."""
-        if not self.pk:  # Si c'est une nouvelle sortie
-            # Vérifier si la quantité en stock est suffisante
-            if self.produit.quantite_stock < self.quantite:
-                raise ValueError("Quantité en stock insuffisante")
-            
-            # Utilisation de F() pour éviter les conditions de course
-            from django.db.models import F
-            self.produit.quantite_stock = F('quantite_stock') - self.quantite
-            self.produit.save(update_fields=['quantite_stock'])
-        
+        """
+        Vérifie et met à jour la quantité en stock du produit lors de la sauvegarde.
+        La mise à jour du stock est maintenant gérée uniquement dans la vue de validation de vente.
+        """
+        # Ne pas mettre à jour le stock ici, c'est géré dans la vue de validation
+        # pour éviter les problèmes de concurrence et de cohérence
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -222,31 +217,27 @@ class SortieStock(models.Model):
     def annuler(self, utilisateur):
         """
         Annule cette sortie de stock et restaure la quantité en stock.
+        La restauration du stock est gérée par la méthode save() de EntreeStock.
         """
         if self.annulee:
             raise ValueError("Cette sortie a déjà été annulée")
             
         with transaction.atomic():
-            # Restaurer la quantité en stock
-            from django.db.models import F
-            self.produit.quantite_stock = F('quantite_stock') + self.quantite
-            self.produit.save(update_fields=['quantite_stock'])
-            
-            # Marquer comme annulée
+            # Marquer comme annulée d'abord
             self.annulee = True
             self.date_annulation = timezone.now()
             self.utilisateur_annulation = utilisateur
             self.save(update_fields=['annulee', 'date_annulation', 'utilisateur_annulation'])
             
             # Créer une entrée de stock pour l'annulation
+            # La méthode save() de EntreeStock s'occupera de mettre à jour le stock
             EntreeStock.objects.create(
                 produit=self.produit,
                 quantite=self.quantite,
                 prix_unitaire=self.prix_unitaire,
-                motif_entree='ANNULATION',
                 reference=f'ANNUL-{self.reference or self.id}',
                 utilisateur=utilisateur,
-                commentaire=f'Annulation de la sortie {self.reference or self.id}'
+                notes=f'Annulation de la sortie {self.reference or self.id}'
             )
 
     @property
