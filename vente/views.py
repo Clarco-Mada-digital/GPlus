@@ -537,17 +537,66 @@ class RapportsView(LoginRequiredMixin, TemplateView):
 
 @login_required
 def ventes_par_jour(request):
-    """API pour les données de ventes par jour"""
+    """API pour les données de ventes par jour avec comparaison à la période précédente"""
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
     
-    # Filtrer les ventes par date si fourni
-    sorties = SortieStock.objects.all()
+    if not start_date or not end_date:
+        return JsonResponse({'error': 'Les dates de début et de fin sont requises'}, status=400)
     
-    if start_date and end_date:
-        sorties = sorties.filter(date__date__range=[start_date, end_date])
+    # Convertir les dates en objets date
+    from datetime import datetime, timedelta
+    start = datetime.strptime(start_date, '%Y-%m-%d').date()
+    end = datetime.strptime(end_date, '%Y-%m-%d').date()
     
-    # Calculer le total pour chaque jour
+    # Calculer la période précédente (même durée que la période actuelle)
+    delta = end - start
+    prev_start = start - delta - timedelta(days=1)
+    prev_end = start - timedelta(days=1)
+    
+    # Fonction pour calculer les totaux sur une période
+    def get_period_totals(start_dt, end_dt):
+        sorties = SortieStock.objects.filter(
+            date__date__range=[start_dt, end_dt]
+        ).annotate(
+            total_vente=ExpressionWrapper(
+                F('prix_unitaire') * F('quantite'),
+                output_field=DecimalField()
+            )
+        )
+        
+        # Calculer les indicateurs clés
+        total_ventes = sorties.aggregate(total=Sum('total_vente'))['total'] or 0
+        nb_commandes = sorties.values('reference').distinct().count()
+        nb_produits = sorties.aggregate(total=Sum('quantite'))['total'] or 0
+        panier_moyen = total_ventes / nb_commandes if nb_commandes > 0 else 0
+        
+        return {
+            'total_ventes': float(total_ventes),
+            'nb_commandes': nb_commandes,
+            'nb_produits': nb_produits,
+            'panier_moyen': float(panier_moyen)
+        }
+    
+    # Récupérer les totaux pour la période actuelle et précédente
+    current_period = get_period_totals(start, end)
+    previous_period = get_period_totals(prev_start, prev_end)
+    
+    # Calculer les évolutions en pourcentage
+    def calculate_evolution(current, previous):
+        if previous == 0:
+            return 0
+        return ((current - previous) / previous) * 100
+    
+    evolutions = {
+        'ventes': calculate_evolution(current_period['total_ventes'], previous_period['total_ventes']),
+        'commandes': calculate_evolution(current_period['nb_commandes'], previous_period['nb_commandes']),
+        'produits': calculate_evolution(current_period['nb_produits'], previous_period['nb_produits']),
+        'panier': calculate_evolution(current_period['panier_moyen'], previous_period['panier_moyen'])
+    }
+    
+    # Récupérer les données pour le graphique (période actuelle uniquement)
+    sorties = SortieStock.objects.filter(date__date__range=[start, end])
     ventes_par_jour = sorties.annotate(
         jour=TruncDate('date'),
         total_vente=ExpressionWrapper(
@@ -570,7 +619,9 @@ def ventes_par_jour(request):
             'backgroundColor': 'rgba(59, 130, 246, 0.5)',
             'borderColor': 'rgba(59, 130, 246, 1)',
             'borderWidth': 1
-        }]
+        }],
+        'totals': current_period,
+        'evolutions': evolutions
     })
 
 

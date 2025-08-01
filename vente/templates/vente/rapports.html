@@ -231,12 +231,29 @@ document.addEventListener('DOMContentLoaded', function() {
             if (startDate) params.append('start_date', formatDate(startDate));
             if (endDate) params.append('end_date', formatDate(endDate));
             
-            // Charger les données en parallèle
-            const [ventesData, categoriesData, produitsData] = await Promise.all([
-                fetch(`/vente/api/rapports/ventes-par-jour?${params}`).then(res => res.json()),
-                fetch(`/vente/api/rapports/ventes-par-categorie?${params}`).then(res => res.json()),
-                fetch(`/vente/api/rapports/meilleurs-produits?${params}`).then(res => res.json())
+            // Charger les données en parallèle avec gestion d'erreur pour chaque requête
+            const [ventesResponse, categoriesResponse, produitsResponse] = await Promise.all([
+                fetch(`/vente/api/rapports/ventes-par-jour?${params}`),
+                fetch(`/vente/api/rapports/ventes-par-categorie?${params}`),
+                fetch(`/vente/api/rapports/meilleurs-produits?${params}`)
             ]);
+            
+            // Vérifier les réponses
+            if (!ventesResponse.ok) throw new Error('Erreur lors du chargement des ventes par jour');
+            if (!categoriesResponse.ok) throw new Error('Erreur lors du chargement des ventes par catégorie');
+            if (!produitsResponse.ok) throw new Error('Erreur lors du chargement des meilleurs produits');
+            
+            // Convertir les réponses en JSON
+            const [ventesData, categoriesData, produitsData] = await Promise.all([
+                ventesResponse.json(),
+                categoriesResponse.json(),
+                produitsResponse.json()
+            ]);
+            
+            // Vérifier les erreurs dans les données
+            if (ventesData.error) throw new Error(ventesData.error);
+            if (categoriesData.error) throw new Error(categoriesData.error);
+            if (produitsData.error) throw new Error(produitsData.error);
             
             // Mettre à jour les graphiques
             updateVentesChart(ventesData);
@@ -417,40 +434,66 @@ document.addEventListener('DOMContentLoaded', function() {
         tbody.innerHTML = rows;
     }
     
+    // Fonction pour formater un pourcentage d'évolution
+    function formatEvolution(value) {
+        const prefix = value >= 0 ? '+' : '';
+        return prefix + value.toFixed(1) + '%';
+    }
+    
+    // Fonction pour mettre à jour la couleur d'un élément d'évolution
+    function updateEvolutionColor(elementId, value) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+        
+        // Supprimer les classes de couleur existantes
+        element.classList.remove('text-green-600', 'dark:text-green-400', 'text-red-600', 'dark:text-red-400');
+        
+        // Ajouter les classes appropriées
+        if (value >= 0) {
+            element.classList.add('text-green-600', 'dark:text-green-400');
+        } else {
+            element.classList.add('text-red-600', 'dark:text-red-400');
+        }
+    }
+    
     // Fonction pour mettre à jour les totaux
     function updateTotals(ventesData, categoriesData, produitsData) {
         // Vérifier si les données sont valides
-        if (!ventesData || !ventesData.datasets || !ventesData.datasets[0] || !produitsData || !produitsData.produits) {
-            console.error('Données manquantes pour le calcul des totaux:', {ventesData, produitsData});
+        if (!ventesData || !ventesData.totals || !ventesData.evolutions) {
+            console.error('Données manquantes pour le calcul des totaux:', ventesData);
             return;
         }
         
-        // Calculer le chiffre d'affaires total (somme de toutes les ventes)
-        const totalVentes = ventesData.datasets[0].data.reduce((sum, value) => sum + parseFloat(value || 0), 0);
+        const { totals, evolutions } = ventesData;
         
-        // Estimer le nombre de commandes (nombre de jours avec des ventes)
-        const joursAvecVentes = ventesData.datasets[0].data.filter(v => parseFloat(v) > 0).length;
-        const totalCommandes = Math.max(1, joursAvecVentes); // Éviter la division par zéro
+        // Mettre à jour les totaux avec les données du serveur
+        document.getElementById('total-ventes').textContent = formatCurrency(totals.total_ventes || 0);
+        document.getElementById('total-commandes').textContent = formatNumber(totals.nb_commandes || 0);
+        document.getElementById('moyenne-panier').textContent = formatCurrency(totals.panier_moyen || 0);
+        document.getElementById('produits-vendus').textContent = formatNumber(totals.nb_produits || 0);
         
-        // Calculer le panier moyen
-        const panierMoyen = totalCommandes > 0 ? totalVentes / totalCommandes : 0;
+        // Mettre à jour les évolutions
+        const evolutionElements = {
+            'ventes': document.getElementById('ventes-evolution'),
+            'commandes': document.getElementById('commandes-evolution'),
+            'panier': document.getElementById('panier-evolution'),
+            'produits': document.getElementById('produits-evolution')
+        };
         
-        // Calculer le nombre total de produits vendus
-        const totalProduits = Array.isArray(produitsData.produits) 
-            ? produitsData.produits.reduce((sum, item) => sum + parseInt(item.quantite || 0), 0)
-            : 0;
-        
-        // Mettre à jour l'interface utilisateur
-        document.getElementById('total-ventes').textContent = formatCurrency(totalVentes);
-        document.getElementById('total-commandes').textContent = formatNumber(totalCommandes);
-        document.getElementById('moyenne-panier').textContent = formatCurrency(panierMoyen);
-        document.getElementById('produits-vendus').textContent = formatNumber(totalProduits);
-        
-        // Mettre à jour les évolutions (exemple avec des valeurs factices)
-        document.getElementById('ventes-evolution').textContent = '+5.2%';
-        document.getElementById('commandes-evolution').textContent = '+3.8%';
-        document.getElementById('panier-evolution').textContent = '+1.4%';
-        document.getElementById('produits-evolution').textContent = '+7.1%';
+        // Mettre à jour chaque élément d'évolution
+        Object.entries(evolutionElements).forEach(([key, element]) => {
+            if (element && evolutions[key] !== undefined) {
+                const value = parseFloat(evolutions[key]);
+                element.textContent = formatEvolution(value);
+                updateEvolutionColor(element.id, value);
+                
+                // Mettre à jour l'icône (flèche vers le haut ou vers le bas)
+                const icon = element.querySelector('i');
+                if (icon) {
+                    icon.className = value >= 0 ? 'fas fa-arrow-up mr-1' : 'fas fa-arrow-down mr-1';
+                }
+            }
+        });
     }
 
     // Fonction utilitaire pour formater les dates au format YYYY-MM-DD

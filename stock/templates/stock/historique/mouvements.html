@@ -238,11 +238,11 @@
                             {{ mouvement.quantite|intcomma }} {{ mouvement.produit.unite_mesure|default:"unité" }}{{ mouvement.quantite|pluralize }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
-                            {{ mouvement.prix_unitaire|floatformat:2|intcomma }} €
+                            {{ mouvement.prix_unitaire|floatformat:2|intcomma }} Ar
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <span class="{% if mouvement.type == 'entree' %}text-green-600{% else %}text-red-600{% endif %}">
-                                {{ mouvement.total|floatformat:2|intcomma }} €
+                                {{ mouvement.total|floatformat:2|intcomma }} Ar
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">

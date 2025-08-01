@@ -138,11 +138,11 @@
                                 {{ sortie.quantite|intcomma }} {{ sortie.produit.unite_mesure|default:"unité" }}{{ sortie.quantite|pluralize }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
-                                {{ sortie.prix_unitaire|default:0|floatformat:2 }} €
+                                {{ sortie.prix_unitaire|default:0|floatformat:2 }} Ar
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <span class="text-green-600 font-medium">
-                                    {{ sortie.montant_total|default:0|floatformat:2 }} €
+                                    {{ sortie.montant_total|default:0|floatformat:2 }} Ar
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
